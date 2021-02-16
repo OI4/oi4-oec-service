@@ -50,7 +50,7 @@ export class OPCUABuilder {
   oi4Id: string;
   serviceType: string;
   publisherId: string;
-  jsonValidator: Ajv;
+  jsonValidator: Ajv.Ajv;
   lastMessageId: string;
 
   constructor(oi4Id: string, serviceType: string) {
