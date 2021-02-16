@@ -27,7 +27,7 @@ class OI4WebProxy extends OI4Proxy {
     });
     this.client.use(cors());
     this.client.use(bodyParser.json());
-    this.client.options('*', cors());
+    //this.client.options('*', cors());
     let certpath = '';
     if (process.platform === 'win32') {
       certpath = 'C:/certs';
