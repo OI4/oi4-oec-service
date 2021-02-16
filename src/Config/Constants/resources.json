@@ -1,0 +1,33 @@
+{
+    "application": {
+        "mandatory": [
+            "mam",
+            "health",
+            "license",
+            "licenseText",
+            "publicationList",
+            "profile"
+        ]
+    },
+    "device": {
+        "mandatory": [
+            "mam",
+            "health",
+            "profile"
+        ]
+    },
+    "full": [
+        "mam",
+        "health",
+        "license",
+        "licenseText",
+        "profile",
+        "data",
+        "rtLicense",
+        "config",
+        "event",
+        "metadata",
+        "publicationList",
+        "subscriptionList"
+    ]
+}
