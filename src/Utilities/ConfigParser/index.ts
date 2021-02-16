@@ -10,7 +10,7 @@ import { EventEmitter } from 'events';
 // TODO: Is this even needed???
 class ConfigParser extends EventEmitter {
   private _config: IContainerConfig;
-  private configPath: string = path.join(__dirname, '..', '..', '..', 'Config', 'containerConfig.json');
+  private configPath: string = path.join(__dirname, '..', '..', 'Config', 'containerConfig.json');
   constructor() {
     super();
     this._config = {
