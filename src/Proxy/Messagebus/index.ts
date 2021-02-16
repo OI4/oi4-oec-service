@@ -7,7 +7,7 @@ import { Logger } from '../../Utilities/Logger/index';
 import { EDeviceHealth, ESubResource, IDataSetClassIds, ESubscriptionListConfig } from '../../Models/IContainer';
 
 // DSCIds
-import dataSetClassIds = require('../../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
+import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
 const dscids: IDataSetClassIds = <IDataSetClassIds>dataSetClassIds;
 
 interface TMqttOpts {

@@ -20,9 +20,9 @@ import {
 
 import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, EOPCUALocale } from '../Models/IOPCUAPayload';
 
-import masterAssetModel from '../../Config/masterAssetModel.json'; /*tslint:disable-line*/
+import masterAssetModel from '../Config/masterAssetModel.json'; /*tslint:disable-line*/
 
-import resources from '../../Config/Constants/resources.json'; /*tslint:disable-line*/
+import resources from '../Config/Constants/resources.json'; /*tslint:disable-line*/
 
 class ContainerState extends ConfigParser implements IContainerState {
   public oi4Id: string; // TODO: doubling? Not needed here
