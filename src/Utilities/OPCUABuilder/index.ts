@@ -32,7 +32,7 @@ import configSchemaJson = require('../../../Config/Schemas/schemas/config.schema
 import publicationListSchemaJson = require('../../../Config/Schemas/schemas/publicationList.schema.json');
 import subscriptionListSchemaJson = require('../../../Config/Schemas/schemas/subscriptionList.schema.json');
 
-import uuid from 'uuid/v4'; /*tslint:disable-line*/
+import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 
 export interface IOPCUABuilderFieldProperties {
   [key: string]: IOPCUABuilderProps;
