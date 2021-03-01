@@ -14,11 +14,21 @@ import {
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import NetworkMessageSchemaJson = require('../../Config/Schemas/schemas/NetworkMessage.schema.json');
-import MetaDataVersionSchemaJson = require('../../Config/Schemas/schemas/MetaDataVersion.schema.json');
+import ConfigurationVersionDataTypeSchemaJson = require('../../Config/Schemas/schemas/ConfigurationVersionDataType.schema.json');
 import oi4IdentifierSchemaJson = require('../../Config/Schemas/schemas/oi4Identifier.schema.json');
 import DataSetMessageSchemaJson = require('../../Config/Schemas/schemas/DataSetMessage.schema.json');
+
+// Constants
 import LocalizedTextSchemaJson = require('../../Config/Schemas/schemas/LocalizedText.schema.json');
-import resourcesSchemaJson = require('../../Config/Schemas/schemas/resources.schema.json');
+import resourcesSchemaJson = require('../../Config/Schemas/schemas/constants/resources.schema.json');
+
+// DataTypes
+import byteSchemaJson = require('../../Config/Schemas/schemas/dataTypes/byte.schema.json');
+import int8SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int8.schema.json');
+import int16SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int16.schema.json');
+import int32SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int32.schema.json');
+import uint16SchemaJson = require('../../Config/Schemas/schemas/dataTypes/uint16.schema.json');
+import uint32SchemaJson = require('../../Config/Schemas/schemas/dataTypes/uint32.schema.json');
 
 // Payloads
 import healthSchemaJson = require('../../Config/Schemas/schemas/health.schema.json');
@@ -63,11 +73,21 @@ export class OPCUABuilder {
     // Add Validation Schemas
     // First common Schemas
     this.jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
-    this.jsonValidator.addSchema(MetaDataVersionSchemaJson, 'MetaDataVersion.schema.json');
+    this.jsonValidator.addSchema(ConfigurationVersionDataTypeSchemaJson, 'ConfigurationVersionDataType.schema.json');
     this.jsonValidator.addSchema(oi4IdentifierSchemaJson, 'oi4Identifier.schema.json');
     this.jsonValidator.addSchema(DataSetMessageSchemaJson, 'DataSetMessage.schema.json');
+
+    // Then constants
     this.jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
     this.jsonValidator.addSchema(resourcesSchemaJson, 'resources.schema.json');
+
+    // Then dataTypes
+    this.jsonValidator.addSchema(byteSchemaJson, 'byte.schema.json');
+    this.jsonValidator.addSchema(int8SchemaJson, 'int8.schema.json');
+    this.jsonValidator.addSchema(int16SchemaJson, 'int16.schema.json');
+    this.jsonValidator.addSchema(int32SchemaJson, 'int32.schema.json');
+    this.jsonValidator.addSchema(uint16SchemaJson, 'uint16.schema.json');
+    this.jsonValidator.addSchema(uint32SchemaJson, 'uint32.schema.json');
 
     // Then payload Schemas
     this.jsonValidator.addSchema(healthSchemaJson, 'health.schema.json');
