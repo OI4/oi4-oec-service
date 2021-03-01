@@ -287,6 +287,9 @@ export class OPCUABuilder {
     } catch (validateErr) {
       networkMessageValidationResult = false;
     }
+    if (networkMessageValidationResult === false) {
+      const errJSON = this.jsonValidator.errors;
+    }
     return networkMessageValidationResult;
   }
 }
