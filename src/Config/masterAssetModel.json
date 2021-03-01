@@ -3,14 +3,14 @@
     "Locale": "en-US",
     "Text": "Hilscher"
   },
-  "ManufacturerUri": "urn:hilscher.com",
+  "ManufacturerUri": "hilscher.com",
   "Model": {
     "Locale": "en-US",
     "Text": "Registry Application"
   },
   "ProductCode": "OI4-REG",
   "HardwareRevision": "",
-  "SoftwareRevision": "0.11.8",
+  "SoftwareRevision": "0.12.x",
   "DeviceRevision": "",
   "DeviceManual": "Not available",
   "DeviceClass": "Registry",
