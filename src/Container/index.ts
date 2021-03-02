@@ -43,9 +43,9 @@ class ContainerState extends ConfigParser implements IContainerState {
     super();
 
     this._mam = masterAssetModel as IMasterAssetModel; // Import MAM from JSON
-    this._mam.Description.Locale = EOPCUALocale.enUS; // Fill in container-specific values
+    this._mam.Description.locale = EOPCUALocale.enUS; // Fill in container-specific values
     this._mam.SerialNumber = process.env.APPLICATION_INSTANCE_NAME as string;
-    this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.Text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
+    this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
 
     this.oi4Id = this._mam.ProductInstanceUri;
 
@@ -65,7 +65,7 @@ class ContainerState extends ConfigParser implements IContainerState {
 
     this._health = {
       health: EDeviceHealth.NORMAL_0,
-      healthState: 100,
+      healthScore: 100,
     };
 
     this._license = {
@@ -75,7 +75,7 @@ class ContainerState extends ConfigParser implements IContainerState {
           components: [
             {
               component: 'Async-Mqtt.js',
-              licAuthor: [
+              licAuthors: [
                 'Adam Rudd',
                 'Octavian Ionescu',
                 'Nick O\'Leary',
@@ -89,7 +89,7 @@ class ContainerState extends ConfigParser implements IContainerState {
             },
             {
               component: 'Express.js',
-              licAuthor: [
+              licAuthors: [
                 'Andrew Kelley',
                 'Ryan',
                 'Rand McKinney',
@@ -103,7 +103,7 @@ class ContainerState extends ConfigParser implements IContainerState {
             },
             {
               component: 'chalk',
-              licAuthor: [
+              licAuthors: [
                 'sindresorhus',
                 'Qix-',
                 'et al',
@@ -112,7 +112,7 @@ class ContainerState extends ConfigParser implements IContainerState {
             },
             {
               component: 'uuid',
-              licAuthor: [
+              licAuthors: [
                 'ctavan',
                 'broofa',
                 'defunctzombie',
@@ -124,7 +124,7 @@ class ContainerState extends ConfigParser implements IContainerState {
             },
             {
               component: 'ajv',
-              licAuthor: [
+              licAuthors: [
                 'epoberezkin',
                 'blakeembrey',
                 'gajus',
@@ -139,7 +139,7 @@ class ContainerState extends ConfigParser implements IContainerState {
           components: [
             {
               component: 'dotenv',
-              licAuthor: [
+              licAuthors: [
                 'motdotla',
                 'maxbeatty',
                 'jcblw',
@@ -155,7 +155,7 @@ class ContainerState extends ConfigParser implements IContainerState {
           components: [
             {
               component: 'OI4-Registry',
-              licAuthor: [
+              licAuthors: [
                 'OI4-Hilscher',
                 'Berti Martens',
               ],
@@ -265,8 +265,8 @@ class ContainerState extends ConfigParser implements IContainerState {
       this.addPublication({
         resource: resources,
         tag: this.oi4Id,
-        DataSetWriterId: this.oi4Id,
-        status: true,
+        DataSetWriterId: 0,
+        oi4Identifier: this.oi4Id,
         interval: resInterval,
         config: EPublicationListConfig.NONE_0,
       });
@@ -288,14 +288,14 @@ class ContainerState extends ConfigParser implements IContainerState {
   }
 
   set health(health: IContainerHealth) {
-    if (health.healthState >= 100 && health.healthState <= 0) throw new RangeError('healthState out of range');
+    if (health.healthScore >= 100 && health.healthScore <= 0) throw new RangeError('healthState out of range');
     this._health = health;
     this.emit('resourceChanged', 'health');
   }
 
   setHealthState(healthState: number) {
     if (healthState >= 100 && healthState <= 0) throw new RangeError('healthState out of range');
-    this._health.healthState = healthState;
+    this._health.healthScore = healthState;
     this.emit('resourceChanged', 'health');
   }
 
