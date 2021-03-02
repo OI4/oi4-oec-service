@@ -1,12 +1,12 @@
 {
   "Manufacturer": {
-    "Locale": "en-US",
-    "Text": "Hilscher"
+    "locale": "en-US",
+    "text": "Hilscher"
   },
   "ManufacturerUri": "hilscher.com",
   "Model": {
-    "Locale": "en-US",
-    "Text": "Registry Application"
+    "locale": "en-US",
+    "text": "Registry Application"
   },
   "ProductCode": "OI4-REG",
   "HardwareRevision": "",
@@ -18,7 +18,7 @@
   "ProductInstanceUri": "",
   "RevisionCounter": 0,
   "Description": {
-    "Locale": "en-US",
-    "Text": "OI4 Registry application"
+    "locale": "en-US",
+    "text": "OI4 Registry application"
   }
 }
