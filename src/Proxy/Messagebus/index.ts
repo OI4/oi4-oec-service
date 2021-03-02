@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { IContainerState, IContainerConfig } from '../../Container/index';
-import { IOPCUAData, IMasterAssetModel } from '../../Models/IOPCUAPayload.js';
+import { IOPCUAData, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUAPayload.js';
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
@@ -46,10 +46,10 @@ class OI4MessageBusProxy extends OI4Proxy {
       servers: [serverObj],
       will: {
         topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-        payload: JSON.stringify(this.builder.buildOPCUADataMessage({
+        payload: JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: {
           health: EDeviceHealth.FAILURE_1,
           healthState: 0,
-        }, new Date(), dscids.health)), /*tslint:disable-line*/
+        }}], new Date(), dscids.health)), /*tslint:disable-line*/
         qos: 0,
       },
     };
@@ -62,7 +62,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.logger.log('Connected successfully', ESubResource.info);
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-        JSON.stringify(this.builder.buildOPCUADataMessage(this.containerState.mam, new Date(), dscids.mam)),
+        JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
       );
       this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESubResource.info);
 
@@ -337,17 +337,43 @@ class OI4MessageBusProxy extends OI4Proxy {
    */
   async sendResource(resource: string, messageId: string = '', tag?: string) {
     let endTag = '';
-    let payload = {};
+    let payload: IOPCUAPayload[] = [];
     if (hasKey(this.containerState, resource)) {
       if (resource === 'licenseText') { // FIXME: REMOVE THE HOTFIX AND BUILD A CHECKER INTO OPCUABUILDER..
         if (typeof tag !== 'undefined') {
           if (typeof this.containerState.licenseText[tag] === 'undefined') {
             return;
           }
-          payload = { licText: this.containerState.licenseText[tag] }; // licenseText is special...
+          payload = [{ payload: { licText: this.containerState.licenseText[tag] }}]; // licenseText is special...
         }
       } else {
-        payload = this.containerState[resource];
+        if (resource === 'license') {
+          payload = [];
+          for (const license of this.containerState['license'].licenses) {
+            payload.push({
+              poi: license.licenseId,
+              payload: {
+                components: license.components,
+              }
+            })
+          }
+        } else if (resource === 'publicationList') {
+          for (const pubs of this.containerState['publicationList'].publicationList) {
+            payload.push({
+              poi: this.oi4Id,
+              payload: pubs,
+            })
+          }
+        } else if (resource === 'subscriptionList') {
+          for (const subs of this.containerState['subscriptionList'].subscriptionList) {
+            payload.push({
+              poi: this.oi4Id,
+              payload: subs,
+            })
+          }
+        } else {
+          payload = [{payload: this.containerState[resource]}];
+        }
       }
       if (typeof tag === 'undefined') {
         endTag = `/${this.oi4Id}`;
@@ -369,14 +395,14 @@ class OI4MessageBusProxy extends OI4Proxy {
    * @param level - the level that is used as a <subresource> element in the event topic
    */
   async sendEvent(eventStr: string, level: string) {
-    const opcUAEvent = this.builder.buildOPCUADataMessage({
+    const opcUAEvent = this.builder.buildOPCUADataMessage([{
       number: 1,
       description: 'Registry sendEvent',
       payload: {
         logLevel: level,
         logString: eventStr,
       },
-    }, new Date(), dscids.event); /*tslint:disable-line*/
+    }], new Date(), dscids.event); /*tslint:disable-line*/
     await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
     this.logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
   }
