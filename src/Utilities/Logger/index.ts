@@ -100,14 +100,14 @@ class Logger {
         if (this._mqttClient) {
           let logPayload;
           if (this._builder) {
-            logPayload = this._builder.buildOPCUADataMessage({
+            logPayload = this._builder.buildOPCUADataMessage([{ payload: {
               number: 0,
               description: logstring,
               payload: {
                 logLevel: level,
                 logOrigin: this._name,
               },
-            }, new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
+            }}], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
           }
           /* Optimistic log...if we want to be certain, we have to convert this to async */
           this._mqttClient.publish(`oi4/${this._serviceType}/${this._oi4Id}/pub/event/${level}/${this._oi4Id}`, JSON.stringify(logPayload));
