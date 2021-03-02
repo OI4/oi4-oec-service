@@ -20,7 +20,7 @@ export interface IContainerConfig {
 
 export interface IContainerHealth {
   health: EDeviceHealth;
-  healthState: number; // UInt16 (from 0 to 100%)
+  healthScore: number; // UInt16 (from 0 to 100%)
 }
 
 export interface IContainerEvent {
@@ -39,7 +39,7 @@ export interface IContainerProfile {
 
 export interface IComponentObject {
   component: string;
-  licAuthor: string[];
+  licAuthors: string[];
   licAddText: string;
 }
 
@@ -72,11 +72,13 @@ export interface ISubscriptionListObject {
 
 export interface IPublicationListObject {
   resource: string;
-  tag: string;
-  DataSetWriterId: string; // Actually OI4-Identifier: TODO: Validator
-  status?: boolean;
+  tag?: string;
+  DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
+  oi4Identifier: string;
+  active?: boolean;
+  explicit?: EPublicationListExplicit;
   interval?: number; // UINT32
-  precision?: number; // REAL
+  precisions?: number; // REAL
   config?: EPublicationListConfig;
 }
 
@@ -127,6 +129,13 @@ export enum EDeviceHealth {
   CHECK_FUNCTION_2 = 'CHECK_FUNCTION_2',
   OFF_SPEC_3 = 'OFF_SPEC_3',
   MAINTENANCE_REQUIRED_4 = 'MAINTENANCE_REQUIRED_4',
+}
+
+export enum EPublicationListExplicit {
+  EXPL_OFF_0 = 'EXPL_OFF_0',
+  EXPL_TAG_1 = 'EXPL_TAG_1',
+  EXPL_DSWID_2 = 'EXPL_DSWID_2',
+  EXPL_TAG_AND_DSWID_3 = 'EXPL_TAG_AND_DSWID_3'
 }
 
 export enum EPublicationListConfig {
