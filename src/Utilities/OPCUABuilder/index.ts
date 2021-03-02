@@ -10,6 +10,7 @@ import {
   EOPCUALocale,
   EValueRank,
   IOPCUAConfigurationVersion,
+  IOPCUAPayload,
 } from '../../Models/IOPCUAPayload';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
@@ -109,15 +110,17 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUADataMessage(actualPayload: any, timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersion): IOPCUAData {
-    let opcUaDataPayload: IOPCUADataMessage[];
+  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersion): IOPCUAData {
+    let opcUaDataPayload: IOPCUADataMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
     //   opcUaDataPayload = [];
     // } else {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
-    opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp, metaDataVersion)];
+    for (const payloads of actualPayload) {
+      opcUaDataPayload.push(this.buildOPCUAData(payloads.payload, timestamp, payloads.poi, metaDataVersion));
+    }
     const opcUaDataMessage: IOPCUAData = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
       MessageType: EOPCUAMessageType.uadata,
@@ -149,9 +152,10 @@ export class OPCUABuilder {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
       MessageType: EOPCUAMessageType.uametadata,
       PublisherId: this.publisherId,
-      DataSetWriterId: 'somecompany.com/sensor/someid/someserial', // Currently hardcoded, originID
+      POI: 'somecompany.com/sensor/someid/someserial', // Currently hardcoded, originID
       MetaData: opcUaMetaDataPayload,
       CorrelationId: correlationId,
+      DataSetWriterId: 0, // Hardcoded
     };
     if (this.lastMessageId === opcUaMetaDataMessage.MessageId) {
       opcUaMetaDataMessage.MessageId = `OverFlow${opcUaMetaDataMessage.MessageId}`;
@@ -166,11 +170,12 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUAData(actualPayload: any, timestamp: Date, metaDataVersion?: IOPCUAConfigurationVersion): IOPCUADataMessage {
+  private buildOPCUAData(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersion): IOPCUADataMessage {
     const opcUaDataPayload: IOPCUADataMessage = { // TODO: More elements
-      DataSetWriterId: this.oi4Id,
+      DataSetWriterId: 0,
       Timestamp: timestamp.toISOString(),
       Status: 0, // TODO switch to UASTATUSCODES
+      POI: poi,
       Payload: actualPayload,
     };
     if (typeof metaDataVersion !== 'undefined' && metaDataVersion !== null) {
@@ -203,8 +208,8 @@ export class OPCUABuilder {
         minorVersion: 0,
       },
       description: {
-        Locale: EOPCUALocale.enUS,
-        Text: metaDataDescription,
+        locale: EOPCUALocale.enUS,
+        text: metaDataDescription,
       },
       fields: fieldArray,
     };
@@ -217,8 +222,8 @@ export class OPCUABuilder {
       valueRank,
       name: key,
       description: {
-        Locale: EOPCUALocale.enUS,
-        Text: description,
+        locale: EOPCUALocale.enUS,
+        text: description,
       },
       fieldFlags: 0, // Currently not parsed
       builtInType: type,
