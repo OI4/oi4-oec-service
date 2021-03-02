@@ -34,11 +34,12 @@ interface IMessageBusDataPayload {
 
 // Data Message containing the values
 export interface IOPCUADataMessage {
-  DataSetWriterId: string; // oi4ID
+  DataSetWriterId: number; // oi4ID
   SequenceNumber?: number;
   MetaDataVersion?: IOPCUAConfigurationVersion;
   Timestamp?: string; // TODO: Date type?
   Status?: number;
+  POI?: string;
   Payload: any; // TODO: arbitrary object?
 }
 
@@ -46,9 +47,10 @@ interface IMessageBusMetaDataPayload {
   MessageId: string; // TODO: Not yet defined
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
-  DataSetWriterId: string;
+  DataSetWriterId: number;
   CorrelationId: string;
   MetaData: IOPCUAMetaDataMessage; // TODO: This should be generic (MetaData)
+  POI: string;
 }
 
 // MetaData Message containing information about units etc.
@@ -89,13 +91,18 @@ interface IOPCUADataType {
 }
 
 interface IOPCUALocalizedText {
-  Locale: EOPCUALocale;
-  Text: string;
+  locale: EOPCUALocale;
+  text: string;
 }
 
 export interface IOPCUAConfigurationVersion{
   majorVersion: number;
   minorVersion: number;
+}
+
+export interface IOPCUAPayload {
+  poi?: string;
+  payload: any;
 }
 
 export enum EOPCUALocale {
