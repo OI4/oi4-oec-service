@@ -90,7 +90,7 @@ interface IOPCUADataType {
   Id: number;
 }
 
-interface IOPCUALocalizedText {
+export interface IOPCUALocalizedText {
   locale: EOPCUALocale;
   text: string;
 }
@@ -140,6 +140,14 @@ export enum EBuiltInType {
   DataValue = 23,
   Variant = 24,
   DiagnosticInfo = 25,
+}
+
+export enum EOPCUABaseDataType { // TODO: Needs to be expanded
+  Boolean = 'Boolean',
+  ByteString = 'ByteString',
+  DateTime = 'DateTime',
+  Number = 'Number',
+  String = 'String',
 }
 
 export enum EValueRank {
