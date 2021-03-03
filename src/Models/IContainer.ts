@@ -1,4 +1,4 @@
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel } from './IOPCUAPayload';
+import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText, EOPCUABaseDataType } from './IOPCUAPayload';
 
 export interface IEventObject {
   originId?: string;
@@ -15,9 +15,35 @@ export interface IContainerMetaData {
 }
 
 export interface IContainerConfig {
-
+  [key:string]: IContainerConfigGroupName;
 }
 
+export interface IContainerConfigGroupName {
+  [key: string]: IContainerConfigConfigName | IOPCUALocalizedText | undefined; // TODO: Better to use intersected types here, this solution is a hotfix.
+  name: IOPCUALocalizedText;
+  description?: IOPCUALocalizedText;
+}
+
+export interface IContainerConfigConfigName {
+  type: EOPCUABaseDataType;
+  value: string;
+  unit?: string;
+  defaultValue?: string;
+  mandatory?: boolean;
+  sensitive? : boolean;
+  name: IOPCUALocalizedText;
+  description?: IOPCUALocalizedText;
+  validation?: IContainerConfigValidation; 
+}
+
+
+export interface IContainerConfigValidation {
+  length?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
+  values?: string[]; 
+}
 export interface IContainerHealth {
   health: EDeviceHealth;
   healthScore: number; // UInt16 (from 0 to 100%)
