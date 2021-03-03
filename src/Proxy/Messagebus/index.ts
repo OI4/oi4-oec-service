@@ -145,8 +145,8 @@ class OI4MessageBusProxy extends OI4Proxy {
               break;
             }
             case 'license': {
-              if (topicTag === this.oi4Id) {
-                await this.sendResource('license', parsedMessage.MessageId);
+              if (topicTag === '') {
+                await this.sendResource('license', parsedMessage.MessageId, '');
               }
               break;
             }
@@ -344,7 +344,7 @@ class OI4MessageBusProxy extends OI4Proxy {
           if (typeof this.containerState.licenseText[tag] === 'undefined') {
             return;
           }
-          payload = [{ payload: { licText: this.containerState.licenseText[tag] }}]; // licenseText is special...
+          payload = [{ payload: { licenseText: this.containerState.licenseText[tag] }}]; // licenseText is special...
         }
       } else {
         if (resource === 'license') {
