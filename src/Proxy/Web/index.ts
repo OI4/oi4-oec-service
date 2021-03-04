@@ -6,7 +6,7 @@ import os = require('os');
 import https = require('https');
 import { IContainerState, IContainerConfig } from '../../Container/index';
 import { OI4Proxy } from '../index.js';
-import { IOPCUAData, IOPCUAMetaData } from '../../Models/IOPCUAPayload';
+import { IOPCUAData, IOPCUAMetaData } from '../../Models/IOPCUA';
 import { Logger } from '../../Utilities/Logger';
 import { EGenericEventFilter } from '../../Models/IContainer';
 

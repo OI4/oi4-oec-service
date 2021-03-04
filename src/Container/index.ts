@@ -18,7 +18,7 @@ import {
   IPublicationListObject,
 } from '../Models/IContainer';
 
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel } from '../Models/IOPCUAPayload';
+import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel } from '../Models/IOPCUA';
 
 import masterAssetModel from '../Config/masterAssetModel.json'; /*tslint:disable-line*/
 

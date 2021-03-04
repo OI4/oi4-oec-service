@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { IContainerState, IContainerConfig } from '../../Container/index';
-import { IOPCUAData, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUAPayload.js';
+import { IOPCUAData, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUA.js';
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';

@@ -7,7 +7,7 @@ import {
   IOPCUAFieldMetaData,
   IOPCUAConfigurationVersionDataType,
   IOPCUAPayload,
-} from '../../Models/IOPCUAPayload';
+} from '../../Models/IOPCUA';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import NetworkMessageSchemaJson = require('../../Config/Schemas/schemas/NetworkMessage.schema.json');
