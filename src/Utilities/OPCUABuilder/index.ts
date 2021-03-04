@@ -3,13 +3,13 @@ import {
   IOPCUAMetaData,
   IOPCUAMasterAssetModel,
   EOPCUAMessageType,
-  EBuiltInType,
-  IOPCUADataMessage,
-  IOPCUAMetaDataMessage,
+  EOPCUABuiltInType,
+  IOPCUADataSetMessage,
+  IOPCUADataSetMetaDataType,
   IOPCUAFieldMetaData,
   EOPCUALocale,
-  EValueRank,
-  IOPCUAConfigurationVersion,
+  EOPCUAValueRank,
+  IOPCUAConfigurationVersionDataType,
   IOPCUAPayload,
 } from '../../Models/IOPCUAPayload';
 
@@ -52,7 +52,7 @@ export interface IOPCUABuilderFieldProperties {
 interface IOPCUABuilderProps {
   unit: string;
   description: string;
-  type: EBuiltInType;
+  type: EOPCUABuiltInType;
   min: number;
   max: number;
 }
@@ -110,8 +110,8 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersion): IOPCUAData {
-    let opcUaDataPayload: IOPCUADataMessage[] = [];
+  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUAData {
+    let opcUaDataPayload: IOPCUADataSetMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
     //   opcUaDataPayload = [];
@@ -147,7 +147,7 @@ export class OPCUABuilder {
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
   buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, timestamp: Date, classId: string, correlationId: string = ''): IOPCUAMetaData {
-    const opcUaMetaDataPayload: IOPCUAMetaDataMessage = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
+    const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
     const opcUaMetaDataMessage: IOPCUAMetaData = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
       MessageType: EOPCUAMessageType.uametadata,
@@ -170,8 +170,8 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUAData(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersion): IOPCUADataMessage {
-    const opcUaDataPayload: IOPCUADataMessage = { // TODO: More elements
+  private buildOPCUAData(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+    const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: 0,
       Timestamp: timestamp.toISOString(),
       Status: 0, // TODO switch to UASTATUSCODES
@@ -185,7 +185,7 @@ export class OPCUABuilder {
   }
 
   // PropertyObject contains objects with name of property as key, and values: unit, description, builtInTypeype, min, max
-  private buildOPCUAMetaData(metaDataName: string, metaDataDescription: string, classId: string, propertyObject: any): IOPCUAMetaDataMessage {
+  private buildOPCUAMetaData(metaDataName: string, metaDataDescription: string, classId: string, propertyObject: any): IOPCUADataSetMetaDataType {
     const fieldArray: IOPCUAFieldMetaData[] = [];
     let fieldObject: IOPCUAFieldMetaData;
     for (const items of Object.keys(propertyObject)) {
@@ -200,7 +200,7 @@ export class OPCUABuilder {
       );
       fieldArray.push(fieldObject);
     }
-    const metaDataObject: IOPCUAMetaDataMessage = {
+    const metaDataObject: IOPCUADataSetMetaDataType = {
       name: metaDataName,
       dataSetClassId: classId,
       configurationVersion: {
@@ -217,7 +217,7 @@ export class OPCUABuilder {
   }
 
   // Hardcoded dataSetFieldId
-  private buildOPCUAMetaDataField(key: string, unit: string, description: string, type: EBuiltInType, min: number, max: number, valueRank: number): IOPCUAFieldMetaData {
+  private buildOPCUAMetaDataField(key: string, unit: string, description: string, type: EOPCUABuiltInType, min: number, max: number, valueRank: number): IOPCUAFieldMetaData {
     const field = {
       valueRank,
       name: key,
@@ -258,13 +258,13 @@ export class OPCUABuilder {
         },
       ],
     };
-    if (type === EBuiltInType.String) {
+    if (type === EOPCUABuiltInType.String) {
       field.maxStringLength = max; // If The type is a string, we interpret min/max as string-length!
     }
-    if (valueRank === EValueRank.Array) {
+    if (valueRank === EOPCUAValueRank.Array) {
       field.arrayDimensions = [max];
     }
-    if (valueRank === EValueRank.Matrix) {
+    if (valueRank === EOPCUAValueRank.Matrix) {
       field.arrayDimensions = [min, max];
     }
     return field;
