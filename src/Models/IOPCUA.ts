@@ -1,8 +1,6 @@
 import { EOPCUALocale, EOPCUAMessageType } from "../Enums/EOPCUA";
 
-export type IOPCUAData = IOPCUANetworkMessage;
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
-export type IOPCUAMasterAssetModel = IOPCUANetworkMessage;
 
 export interface IOPCUAPayload {
   [key:string]: any;
@@ -24,7 +22,7 @@ export interface IMasterAssetModel {
   Description: IOPCUALocalizedText;
 }
 
-interface IOPCUANetworkMessage {
+export interface IOPCUANetworkMessage {
   MessageId: string; // TODO: Not yet defined
   MessageType: EOPCUAMessageType;
   DataSetClassId: GUID; // TODO: STRING for now, validators found below (thanks to node-opcua)

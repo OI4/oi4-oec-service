@@ -1,5 +1,5 @@
 import { EOPCUABaseDataType } from '../Enums/EOPCUA';
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from './IOPCUA';
+import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from './IOPCUA';
 
 export interface IEventObject {
   originId?: string;
@@ -8,7 +8,7 @@ export interface IEventObject {
 }
 
 export interface IContainerData {
-  [key: string]: IOPCUAData; // TODO: should this really be an object? Maybe an array is better suited here.
+  [key: string]: IOPCUANetworkMessage; // TODO: should this really be an object? Maybe an array is better suited here.
 }
 
 export interface IContainerMetaData {
@@ -146,7 +146,7 @@ export interface IContainerState {
   on(event: string, listener: Function): this;
 
   // Methods
-  addDataSet(dataname: string, data: IOPCUAData, metadata: IOPCUAMetaData): void;
+  addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }
 
 export enum ESubResource {

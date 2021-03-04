@@ -18,7 +18,7 @@ import {
   IPublicationListObject,
 } from '../Models/IContainer';
 
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel } from '../Models/IOPCUA';
+import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel } from '../Models/IOPCUA';
 
 import masterAssetModel from '../Config/masterAssetModel.json'; /*tslint:disable-line*/
 
@@ -380,7 +380,7 @@ class ContainerState extends ConfigParser implements IContainerState {
    * @param data - the completely built OPCUA Data message
    * @param metadata - the completely build OPCUA Metadata message (optional)
    */
-  public addDataSet(key: string, data: IOPCUAData, metadata?: IOPCUAMetaData) {
+  public addDataSet(key: string, data: IOPCUANetworkMessage, metadata?: IOPCUAMetaData) {
     this.dataLookup[key] = data;
     if (metadata) {
       this.metaDataLookup[key] = metadata;

@@ -6,7 +6,7 @@ import os = require('os');
 import https = require('https');
 import { IContainerState, IContainerConfig } from '../../Container/index';
 import { OI4Proxy } from '../index.js';
-import { IOPCUAData, IOPCUAMetaData } from '../../Models/IOPCUA';
+import { IOPCUANetworkMessage, IOPCUAMetaData } from '../../Models/IOPCUA';
 import { Logger } from '../../Utilities/Logger';
 import { EGenericEventFilter } from '../../Models/IContainer';
 
@@ -147,7 +147,7 @@ class OI4WebProxy extends OI4Proxy {
 
   }
 
-  addData(tagName: string, data: IOPCUAData) {
+  addData(tagName: string, data: IOPCUANetworkMessage) {
     // This topicObject is also specific to the resource. The data resource will include the TagName!
     const dataLookup = this.containerState.dataLookup;
     if (tagName === '') {

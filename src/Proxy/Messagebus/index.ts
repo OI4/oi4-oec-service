@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { IContainerState, IContainerConfig } from '../../Container/index';
-import { IOPCUAData, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUA.js';
+import { IOPCUANetworkMessage, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUA.js';
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
@@ -418,7 +418,7 @@ class OI4MessageBusProxy extends OI4Proxy {
   }
 
   // SET Function section ------//
-  setData(cutTopic: string, data: IOPCUAData) {
+  setData(cutTopic: string, data: IOPCUANetworkMessage) {
     const tagName = cutTopic;
     // This topicObject is also specific to the resource. The data resource will include the TagName!
     const dataLookup = this.containerState.dataLookup;

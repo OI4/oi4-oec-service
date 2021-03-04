@@ -1,7 +1,6 @@
 import {
-  IOPCUAData,
+  IOPCUANetworkMessage,
   IOPCUAMetaData,
-  IOPCUAMasterAssetModel,
   IOPCUADataSetMessage,
   IOPCUADataSetMetaDataType,
   IOPCUAFieldMetaData,
@@ -107,7 +106,7 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUAData {
+  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
     let opcUaDataPayload: IOPCUADataSetMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
@@ -118,7 +117,7 @@ export class OPCUABuilder {
     for (const payloads of actualPayload) {
       opcUaDataPayload.push(this.buildOPCUAData(payloads.payload, timestamp, payloads.poi, metaDataVersion));
     }
-    const opcUaDataMessage: IOPCUAData = {
+    const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
       MessageType: EOPCUAMessageType.uadata,
       DataSetClassId: classId, // TODO: Generate UUID, but not here, make a lookup,
