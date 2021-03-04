@@ -4,7 +4,7 @@ import { IOPCUAData, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCU
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
-import { EDeviceHealth, ESubResource, IDataSetClassIds, ESubscriptionListConfig } from '../../Models/IContainer';
+import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, EGenericEventFilter } from '../../Models/IContainer';
 
 // DSCIds
 import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
@@ -55,16 +55,16 @@ class OI4MessageBusProxy extends OI4Proxy {
     };
 
     this.client = mqtt.connect(mqttOpts);
-    this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESubResource, this.client, this.oi4Id, this.serviceType);
-    this.logger.log(`Standardroute: ${this.topicPreamble}`, ESubResource.info);
+    this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as EGenericEventFilter, this.client, this.oi4Id, this.serviceType);
+    this.logger.log(`Standardroute: ${this.topicPreamble}`, EGenericEventFilter.medium);
     // Publish Birth Message and start listening to topics
     this.client.on('connect', async (connack: mqtt.IConnackPacket) => {
-      this.logger.log('Connected successfully', ESubResource.info);
+      this.logger.log('Connected successfully', EGenericEventFilter.medium);
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
         JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
       );
-      this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESubResource.info);
+      this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, EGenericEventFilter.medium);
 
       // Listen to own routes
       this.ownSubscribe(`${this.topicPreamble}/get/#`);
@@ -109,12 +109,12 @@ class OI4MessageBusProxy extends OI4Proxy {
     try {
       parsedMessage = JSON.parse(message.toString());
     } catch (e) {
-      this.logger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESubResource.warn);
+      this.logger.log(`Error when parsing JSON in processMqttMessage: ${e}`, EGenericEventFilter.medium);
       return;
     }
     const schemaResult = await this.builder.checkOPCUAJSONValidity(parsedMessage);
     if (!schemaResult) {
-      this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESubResource.warn);
+      this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', EGenericEventFilter.medium);
       return;
     }
     // Split the topic into its different elements
@@ -414,7 +414,7 @@ class OI4MessageBusProxy extends OI4Proxy {
 
   // Basic Error Functions
   async sendError(error: string) {
-    this.logger.log(`Error: ${error}`, ESubResource.error);
+    this.logger.log(`Error: ${error}`, EGenericEventFilter.high);
   }
 
   // SET Function section ------//
@@ -458,9 +458,9 @@ class OI4MessageBusProxy extends OI4Proxy {
     }
     if ((tagName in dataLookup)) {
       delete this.containerState.dataLookup[tagName];
-      this.logger.log(`Deleted ${tagName} from dataLookup`, ESubResource.warn);
+      this.logger.log(`Deleted ${tagName} from dataLookup`, EGenericEventFilter.medium);
     } else {
-      this.logger.log(`Cannot find ${tagName} in lookup`, ESubResource.warn);
+      this.logger.log(`Cannot find ${tagName} in lookup`, EGenericEventFilter.medium);
     }
   }
 

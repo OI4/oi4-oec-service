@@ -8,15 +8,15 @@ import { IContainerState, IContainerConfig } from '../../Container/index';
 import { OI4Proxy } from '../index.js';
 import { IOPCUAData, IOPCUAMetaData } from '../../Models/IOPCUAPayload';
 import { Logger } from '../../Utilities/Logger';
-import { ESubResource } from '../../Models/IContainer';
+import { EGenericEventFilter } from '../../Models/IContainer';
 
 class OI4WebProxy extends OI4Proxy {
   private client: express.Application;
   private logger: Logger;
   constructor(container: IContainerState, port: number = 4567) {
     super(container);
-    this.logger = new Logger(true, 'Registry-WebProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESubResource);
-    this.logger.log(`WebProxy: Standardroute: ${this.topicPreamble}`, ESubResource.info);
+    this.logger = new Logger(true, 'Registry-WebProxy', process.env.OI4_EDGE_EVENT_LEVEL as EGenericEventFilter);
+    this.logger.log(`WebProxy: Standardroute: ${this.topicPreamble}`, EGenericEventFilter.medium);
 
     this.client = express();
     this.client.use((initReq, initRes, initNext) => {
@@ -36,7 +36,7 @@ class OI4WebProxy extends OI4Proxy {
     }
     if ((process.env.USE_HTTPS) && process.env.USE_HTTPS === 'true') { // Environment variable found, so we should use HTTPS, check for key/cert
       if (fs.existsSync(`${certpath}/cert.pem`) && fs.existsSync(`${certpath}/key.pem`)) {
-        this.logger.log('Key and Cert exist, using HTTPS for Express...', ESubResource.info);
+        this.logger.log('Key and Cert exist, using HTTPS for Express...', EGenericEventFilter.medium);
         https.createServer(
           {
             key: fs.readFileSync(`${certpath}/key.pem`),
@@ -44,18 +44,18 @@ class OI4WebProxy extends OI4Proxy {
           },
           this.client)
           .listen(port, () => {
-            this.logger.log('WebProxy of Registry listening on port over HTTPS', ESubResource.info);
+            this.logger.log('WebProxy of Registry listening on port over HTTPS', EGenericEventFilter.medium);
           });
       } else {
-        this.logger.log('Key and / or Cert dont exist..fallback to HTTP', ESubResource.info);
+        this.logger.log('Key and / or Cert dont exist..fallback to HTTP', EGenericEventFilter.medium);
         this.client.listen(port, () => {
-          this.logger.log(`WebProxy of Registry listening on ${port} over HTTP`, ESubResource.info);
+          this.logger.log(`WebProxy of Registry listening on ${port} over HTTP`, EGenericEventFilter.medium);
         });
       }
     } else { // No environment variable found, use HTTP
-      this.logger.log('USE_HTTPS not set to "true" or not found..fallback to HTTP', ESubResource.info);
+      this.logger.log('USE_HTTPS not set to "true" or not found..fallback to HTTP', EGenericEventFilter.medium);
       this.client.listen(port, () => {
-        this.logger.log(`WebProxy of Registry listening on ${port} over HTTP`, ESubResource.info);
+        this.logger.log(`WebProxy of Registry listening on ${port} over HTTP`, EGenericEventFilter.medium);
       });
     }
 
