@@ -24,8 +24,8 @@ class OI4MessageBusProxy extends OI4Proxy {
 
     // Add Server Object depending on configuration
     const serverObj = {
-      host: process.env.MQTT_BROKER_ADDRESS as string,
-      port: parseInt(process.env.MQTT_PORT as string, 10),
+      host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
+      port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
     };
     console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
 
@@ -42,7 +42,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     // Initialize MQTT Options
 
     const mqttOpts: TMqttOpts = {
-      clientId: `MessageBus${process.env.APPLICATION_INSTANCE_NAME as string}`,
+      clientId: `MessageBus${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}`,
       servers: [serverObj],
       will: {
         topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
@@ -55,7 +55,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     };
 
     this.client = mqtt.connect(mqttOpts);
-    this.logger = new Logger(true, 'Registry-BusProxy', process.env.LOG_LEVEL as ESubResource, this.client, this.oi4Id, this.serviceType);
+    this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESubResource, this.client, this.oi4Id, this.serviceType);
     this.logger.log(`Standardroute: ${this.topicPreamble}`, ESubResource.info);
     // Publish Birth Message and start listening to topics
     this.client.on('connect', async (connack: mqtt.IConnackPacket) => {
