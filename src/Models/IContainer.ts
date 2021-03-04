@@ -51,8 +51,16 @@ export interface IContainerHealth {
 
 export interface IContainerEvent {
   number: number;
-  description: string;
-  payload: object;
+  description?: string;
+  category: EContainerEventCategory;
+  details?: object;
+}
+
+export enum EContainerEventCategory {
+  CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
+  CAT_OPCSC_1 = 'CAT_OPCSC_1',
+  CAT_NE107_2 = 'CAT_NE107_2',
+  CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
 export interface IContainerRTLicense {
@@ -141,12 +149,16 @@ export interface IContainerState {
 }
 
 export enum ESubResource {
-  trace = 'trace',
-  debug = 'debug',
-  info = 'info',
-  warn = 'warn',
-  error = 'error',
-  fatal = 'fatal',
+  syslog = 'syslog',
+  opcSC = 'opcSC',
+  ne107 = 'ne107',
+  generic = 'generic',
+}
+
+export enum EGenericEventFilter {
+  low = 'low',
+  medium = 'medium',
+  high = 'high',
 }
 
 export enum EDeviceHealth {

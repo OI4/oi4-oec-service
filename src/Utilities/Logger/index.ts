@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { OPCUABuilder } from '../OPCUABuilder/index';
-import { ESubResource } from '../../Models/IContainer';
+import { EContainerEventCategory, EGenericEventFilter, ESubResource, IContainerEvent } from '../../Models/IContainer';
 
 /**
  * Logger implementation.<br>
@@ -14,22 +14,26 @@ class Logger {
    */
 
   private _enabled: boolean; /*tslint:disable-line*/
-  private _level: ESubResource; /*tslint:disable-line*/
+  private _level: EGenericEventFilter; /*tslint:disable-line*/
   private _name: string; /*tslint:disable-line*/
   private _mqttClient?: mqtt.AsyncClient;
   private _oi4Id?: string;
   private _serviceType?: string;
   private _builder?: OPCUABuilder;
-  private readonly topicToEnum = {
-    trace: 0,
-    debug: 1,
-    info: 2,
-    warn: 3,
-    error: 4,
-    fatal: 5,
+  private readonly genericFilterToEnum = {
+    low: 0,
+    medium: 1,
+    high: 2,
   };
 
-  constructor(enabled: boolean = true, name: string, level: ESubResource = ESubResource.info, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string) {
+  private readonly categoryToTopic = {
+    CAT_SYSLOG_0: 'syslog',
+    CAT_OPCSC_1: 'opcSC',
+    CAT_NE107_2: 'ne107',
+    CAT_GENERIC_99: 'generic',
+  }
+
+  constructor(enabled: boolean = true, name: string, level: EGenericEventFilter = EGenericEventFilter.medium, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string) {
     /**
      * Enables or disables the logging. Default: `true`
      * @type {boolean}
@@ -73,7 +77,7 @@ class Logger {
   }
 
   set level(lvl) {
-    if (typeof lvl !== 'string') throw new Error('level must be of type string/ESubResource String');
+    if (typeof lvl !== 'string') throw new Error('level must be of type string/EGenericFilter String');
     console.log(`Set logger level of ${this._name} level to: ${lvl}`);
     this._level = lvl;
   }
@@ -93,24 +97,27 @@ class Logger {
    * @param {string} color - either the chalk-color or the abbreviated version (e.g 'r' = chalk.red)
    * @param {number} level - the level that the log is to be logged to
    */
-  log(logstring: string, level = ESubResource.trace) {
+  log(logstring: string, level = EGenericEventFilter.low, category: EContainerEventCategory = EContainerEventCategory.CAT_GENERIC_99,) {
     if (this.enabled) {
-      if (this.topicToEnum[level] >= this.topicToEnum[this.level]) {
+      if (this.genericFilterToEnum[level] >= this.genericFilterToEnum[this.level]) {
         console.log(`${this._name}: ${logstring}`); // eslint-disable-line no-console
         if (this._mqttClient) {
-          let logPayload;
+          let logDataMessage;
           if (this._builder) {
-            logPayload = this._builder.buildOPCUADataMessage([{ payload: {
+            const logPayload: IContainerEvent = {
+              category: category,
               number: 0,
               description: logstring,
-              payload: {
+              details: {
                 logLevel: level,
                 logOrigin: this._name,
-              },
-            }}], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
+              }
+            };
+            logDataMessage = this._builder.buildOPCUADataMessage([{ payload: logPayload }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
           }
+          const topicCategory = this.categoryToTopic[category];
           /* Optimistic log...if we want to be certain, we have to convert this to async */
-          this._mqttClient.publish(`oi4/${this._serviceType}/${this._oi4Id}/pub/event/${level}/${this._oi4Id}`, JSON.stringify(logPayload));
+          this._mqttClient.publish(`oi4/${this._serviceType}/${this._oi4Id}/pub/event/${topicCategory}/${level}/${this._oi4Id}`, JSON.stringify(logDataMessage));
         }
       }
     }
