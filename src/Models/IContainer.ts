@@ -161,6 +161,24 @@ export enum EGenericEventFilter {
   high = 'high',
 }
 
+export enum ESyslogEventFilter {
+  debug = 'debug',
+  informational = 'informational',
+  notice = 'notice',
+  warning = 'warning',
+  error = 'error',
+  alert = 'alert',
+  emergency = 'emergency',
+}
+
+export enum ENamurEventFilter {
+  normal = 'normal',
+  failure = 'failure',
+  checkFunction = 'checkFunction',
+  outOfSpecification = 'outOfSpecification',
+  maintenanceRequired = 'maintenanceRequired',
+}
+
 export enum EDeviceHealth {
   NORMAL_0 = 'NORMAL_0',
   FAILURE_1 = 'FAILURE_1',
