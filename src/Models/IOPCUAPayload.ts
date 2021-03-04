@@ -1,6 +1,6 @@
-export type IOPCUAData = IMessageBusDataPayload;
-export type IOPCUAMetaData = IMessageBusMetaDataPayload;
-export type IOPCUAMasterAssetModel = IMessageBusDataPayload;
+export type IOPCUAData = IOPCUANetworkMessage;
+export type IOPCUAMetaData = IOPCUADataSetMetaData;
+export type IOPCUAMasterAssetModel = IOPCUANetworkMessage;
 
 export interface IOPCUAPayload {
   [key:string]: any;
@@ -22,44 +22,43 @@ export interface IMasterAssetModel {
   Description: IOPCUALocalizedText;
 }
 
-// (NetworkMessage!)
-interface IMessageBusDataPayload {
+interface IOPCUANetworkMessage {
   MessageId: string; // TODO: Not yet defined
   MessageType: EOPCUAMessageType;
   DataSetClassId: GUID; // TODO: STRING for now, validators found below (thanks to node-opcua)
-  Messages: IOPCUADataMessage[]; // TODO: This should be generic (either Messages or MetaData)
+  Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
   PublisherId: string; // TODO: string in the OI4-format, need to add validators
   CorrelationId: string;
 }
 
 // Data Message containing the values
-export interface IOPCUADataMessage {
+export interface IOPCUADataSetMessage {
   DataSetWriterId: number; // oi4ID
   SequenceNumber?: number;
-  MetaDataVersion?: IOPCUAConfigurationVersion;
+  MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
   Status?: number;
   POI?: string;
   Payload: any; // TODO: arbitrary object?
 }
 
-interface IMessageBusMetaDataPayload {
+interface IOPCUADataSetMetaData {
   MessageId: string; // TODO: Not yet defined
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
   CorrelationId: string;
-  MetaData: IOPCUAMetaDataMessage; // TODO: This should be generic (MetaData)
+  MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
   POI: string;
 }
 
 // MetaData Message containing information about units etc.
-export interface IOPCUAMetaDataMessage {
+export interface IOPCUADataSetMetaDataType {
   name: string; // name of DataSet
   description: IOPCUALocalizedText;
   fields: IOPCUAFieldMetaData[];
   dataSetClassId: GUID;
-  configurationVersion: IOPCUAConfigurationVersion;
+  configurationVersion: IOPCUAConfigurationVersionDataType;
 }
 
 export interface IOPCUAFieldMetaData {
@@ -95,7 +94,7 @@ export interface IOPCUALocalizedText {
   text: string;
 }
 
-export interface IOPCUAConfigurationVersion{
+export interface IOPCUAConfigurationVersionDataType{
   majorVersion: number;
   minorVersion: number;
 }
@@ -114,7 +113,7 @@ export enum EOPCUAMessageType {
   uametadata = 'ua-metadata',
 }
 
-export enum EBuiltInType {
+export enum EOPCUABuiltInType {
   Boolean = 1,
   SByte = 2,
   Byte = 3,
@@ -150,7 +149,7 @@ export enum EOPCUABaseDataType { // TODO: Needs to be expanded
   String = 'String',
 }
 
-export enum EValueRank {
+export enum EOPCUAValueRank {
   Any = -2,
   Scalar = -1,
   ArrayAny = 0,
