@@ -139,8 +139,8 @@ class OI4MessageBusProxy extends OI4Proxy {
               break;
             }
             case 'config': {
-              if (topicTag === this.oi4Id) {
-                await this.sendResource('config', parsedMessage.MessageId);
+              if (topicTag === '') {
+                await this.sendResource('config', parsedMessage.MessageId, '');
               }
               break;
             }
@@ -360,17 +360,22 @@ class OI4MessageBusProxy extends OI4Proxy {
         } else if (resource === 'publicationList') {
           for (const pubs of this.containerState['publicationList'].publicationList) {
             payload.push({
-              poi: this.oi4Id,
+              poi: pubs.resource,
               payload: pubs,
             })
           }
         } else if (resource === 'subscriptionList') {
           for (const subs of this.containerState['subscriptionList'].subscriptionList) {
-            payload.push({
-              poi: this.oi4Id,
+            payload.push({ // TODO: poi out of topicPath property
+              poi: subs.topicPath.split('/')[7],
               payload: subs,
             })
           }
+        } else if (resource === 'config') {
+          payload = [{
+            poi: 'default',
+            payload: this.containerState[resource],
+          }];
         } else {
           payload = [{payload: this.containerState[resource]}];
         }
