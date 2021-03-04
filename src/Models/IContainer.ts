@@ -1,4 +1,5 @@
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText, EOPCUABaseDataType } from './IOPCUAPayload';
+import { EOPCUABaseDataType } from '../Enums/EOPCUA';
+import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from './IOPCUAPayload';
 
 export interface IEventObject {
   originId?: string;

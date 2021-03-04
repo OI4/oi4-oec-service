@@ -2,13 +2,9 @@ import {
   IOPCUAData,
   IOPCUAMetaData,
   IOPCUAMasterAssetModel,
-  EOPCUAMessageType,
-  EOPCUABuiltInType,
   IOPCUADataSetMessage,
   IOPCUADataSetMetaDataType,
   IOPCUAFieldMetaData,
-  EOPCUALocale,
-  EOPCUAValueRank,
   IOPCUAConfigurationVersionDataType,
   IOPCUAPayload,
 } from '../../Models/IOPCUAPayload';
@@ -44,6 +40,7 @@ import publicationListSchemaJson = require('../../Config/Schemas/schemas/publica
 import subscriptionListSchemaJson = require('../../Config/Schemas/schemas/subscriptionList.schema.json');
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
+import { EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAValueRank } from '../../Enums/EOPCUA';
 
 export interface IOPCUABuilderFieldProperties {
   [key: string]: IOPCUABuilderProps;

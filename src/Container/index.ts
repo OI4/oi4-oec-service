@@ -18,11 +18,12 @@ import {
   IPublicationListObject,
 } from '../Models/IContainer';
 
-import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel, EOPCUALocale } from '../Models/IOPCUAPayload';
+import { IOPCUAData, IOPCUAMetaData, IMasterAssetModel } from '../Models/IOPCUAPayload';
 
 import masterAssetModel from '../Config/masterAssetModel.json'; /*tslint:disable-line*/
 
 import resources from '../Config/Constants/resources.json'; /*tslint:disable-line*/
+import { EOPCUALocale } from '../Enums/EOPCUA';
 
 class ContainerState extends ConfigParser implements IContainerState {
   public oi4Id: string; // TODO: doubling? Not needed here

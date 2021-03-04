@@ -3,7 +3,7 @@ import path = require('path');
 
 import { IContainerConfig } from '../../Container/index';
 import { EventEmitter } from 'events';
-import { EOPCUABaseDataType, EOPCUALocale } from '../../Models/IOPCUAPayload';
+import { EOPCUABaseDataType, EOPCUALocale } from '../../Enums/EOPCUA';
 
 /**
  * Responsible for reading / writing configuration data to a containerConfig.json file (currently hardcoded name and path)
