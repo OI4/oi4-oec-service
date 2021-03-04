@@ -3,6 +3,7 @@ import path = require('path');
 
 import { IContainerConfig } from '../../Container/index';
 import { EventEmitter } from 'events';
+import { EOPCUABaseDataType, EOPCUALocale } from '../../Models/IOPCUAPayload';
 
 /**
  * Responsible for reading / writing configuration data to a containerConfig.json file (currently hardcoded name and path)
@@ -14,11 +15,23 @@ class ConfigParser extends EventEmitter {
   constructor() {
     super();
     this._config = {
-      updateInterval: 1337,
-      textColor: 'white',
+      dummyConfGroup: {
+        name: {
+          locale: EOPCUALocale.enUS,
+          text: 'DummyConfigGroup'
+        },
+        dummyConf: {
+          name: {
+            locale: EOPCUALocale.enUS,
+            text: 'DummyConfig',
+          },
+          value: '0',
+          type: EOPCUABaseDataType.Number,
+        }
+      }
     };
-    const initData = fs.readFileSync(this.configPath);
-    this._config = JSON.parse(initData.toString());
+    // const initData = fs.readFileSync(this.configPath);
+    // this._config = JSON.parse(initData.toString());
   }
 
   /**
@@ -33,11 +46,11 @@ class ConfigParser extends EventEmitter {
    * Retrieve current config from JSON
    */
   get config() {
-    const getConfigData = fs.readFileSync(this.configPath);
-    // TODO: Remove this level of complexity and reduce to one line
-    const getConfigString = getConfigData.toString();
-    const getConfigObj = JSON.parse(getConfigString);
-    this._config = getConfigObj;
+    // const getConfigData = fs.readFileSync(this.configPath);
+    // // TODO: Remove this level of complexity and reduce to one line
+    // const getConfigString = getConfigData.toString();
+    // const getConfigObj = JSON.parse(getConfigString);
+    // this._config = getConfigObj;
     return this._config;
   }
 
