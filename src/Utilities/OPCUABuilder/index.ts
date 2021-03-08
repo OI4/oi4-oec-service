@@ -37,6 +37,7 @@ import rtLicenseSchemaJson = require('../../Config/Schemas/schemas/rtLicense.sch
 import configSchemaJson = require('../../Config/Schemas/schemas/config.schema.json');
 import publicationListSchemaJson = require('../../Config/Schemas/schemas/publicationList.schema.json');
 import subscriptionListSchemaJson = require('../../Config/Schemas/schemas/subscriptionList.schema.json');
+import referenceDesignationSchemaJson = require('../../Config/Schemas/schemas/referenceDesignation.schema.json');
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import { EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAValueRank } from '../../Enums/EOPCUA';
@@ -97,6 +98,7 @@ export class OPCUABuilder {
     this.jsonValidator.addSchema(configSchemaJson, 'config.schema.json');
     this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
     this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
+    this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json')
   }
 
   /**
