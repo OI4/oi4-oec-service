@@ -28,6 +28,7 @@
         "event",
         "metadata",
         "publicationList",
-        "subscriptionList"
+        "subscriptionList",
+        "referenceDesignation"
     ]
 }
