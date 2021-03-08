@@ -1,4 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
+import { IClientOptions } from 'async-mqtt';
 import { IContainerState, IContainerConfig } from '../../Container/index';
 import { IOPCUANetworkMessage, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUA.js';
 import { OI4Proxy } from '../index';
@@ -9,12 +10,6 @@ import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, ESyslogEventF
 // DSCIds
 import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
 const dscids: IDataSetClassIds = <IDataSetClassIds>dataSetClassIds;
-
-interface TMqttOpts {
-  clientId: string;
-  servers: object[];
-  will: object;
-}
 
 class OI4MessageBusProxy extends OI4Proxy {
   private client: mqtt.AsyncClient;
@@ -40,8 +35,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     //   protocol: 'mqtts',
     // };
     // Initialize MQTT Options
-
-    const mqttOpts: TMqttOpts = {
+    const mqttOpts: IClientOptions = {
       clientId: `MessageBus${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}`,
       servers: [serverObj],
       will: {
@@ -51,7 +45,12 @@ class OI4MessageBusProxy extends OI4Proxy {
           healthState: 0,
         }}], new Date(), dscids.health)), /*tslint:disable-line*/
         qos: 0,
+        retain: false,
       },
+      username: process.env.OI4_EDGE_MQTT_USERNAME as string,
+      password: process.env.OI4_EDGE_MQTT_PASSWORD as string,
+      protocol: 'mqtts',
+      rejectUnauthorized: false,
     };
 
     this.client = mqtt.connect(mqttOpts);
