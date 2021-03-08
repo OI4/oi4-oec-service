@@ -2,9 +2,12 @@ import { EOPCUABaseDataType } from '../Enums/EOPCUA';
 import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from './IOPCUA';
 
 export interface IEventObject {
-  originId?: string;
-  logLevel: string;
-  logText: string;
+  number: number;
+  description?: string;
+  category: string;
+  details: any;
+  level?: string; // NOT OI4 Conform and just for us
+  timestamp: string; // NOT OI4 Conform and just for us
 }
 
 export interface IContainerData {
@@ -168,6 +171,7 @@ export enum ESyslogEventFilter {
   notice = 'notice',
   warning = 'warning',
   error = 'error',
+  critical = 'critical',
   alert = 'alert',
   emergency = 'emergency',
 }
