@@ -184,6 +184,12 @@ export enum ENamurEventFilter {
   maintenanceRequired = 'maintenanceRequired',
 }
 
+export enum EOpcUaEventFilter {
+  good = 'good',
+  uncertain = 'uncertain',
+  bad = 'bad',
+}
+
 export enum EDeviceHealth {
   NORMAL_0 = 'NORMAL_0',
   FAILURE_1 = 'FAILURE_1',
