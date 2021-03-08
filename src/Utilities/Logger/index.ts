@@ -90,7 +90,6 @@ class Logger {
       ]
     })
     this._winstonLogger.on('data', (data) => {
-      console.log(data);
       const prod = this._syslogTransport.producer
       const msg = prod.produce({
         severity: data.level,
@@ -154,6 +153,7 @@ class Logger {
   log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.warning) {
     if (this.enabled) {
       if (this.syslogFilterToEnum[level] >= this.syslogFilterToEnum[this.level]) {
+        console.log(logstring);
         this._winstonLogger.log(this.syslogToWinston[level], `${this._name}: ${logstring}`);
         }
         winston.config.syslog.levels
