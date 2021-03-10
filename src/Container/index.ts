@@ -61,6 +61,7 @@ class ContainerState extends ConfigParser implements IContainerState {
         'licenseText',
         'publicationList',
         'subscriptionList',
+        'event',
       ],
     };
 
