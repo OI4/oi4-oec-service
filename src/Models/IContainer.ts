@@ -8,6 +8,7 @@ export interface IEventObject {
   details: any;
   level?: string; // NOT OI4 Conform and just for us
   timestamp: string; // NOT OI4 Conform and just for us
+  tag: string; // Oi4Id of log originator
 }
 
 export interface IContainerData {
