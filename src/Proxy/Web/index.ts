@@ -13,7 +13,7 @@ import { ESyslogEventFilter } from '../../Models/IContainer';
 class OI4WebProxy extends OI4Proxy {
   private client: express.Application;
   private logger: Logger;
-  constructor(container: IContainerState, port: number = 4567) {
+  constructor(container: IContainerState, port: number = 5799) {
     super(container);
     this.logger = new Logger(true, 'Registry-WebProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
     this.logger.log(`WebProxy: Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
