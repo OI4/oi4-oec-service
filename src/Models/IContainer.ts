@@ -166,14 +166,18 @@ export enum EGenericEventFilter {
 }
 
 export enum ESyslogEventFilter {
-  debug = 'debug',
-  informational = 'informational',
-  notice = 'notice',
-  warning = 'warning',
-  error = 'error',
-  critical = 'critical',
-  alert = 'alert',
   emergency = 'emergency',
+  
+  alert = 'alert',
+  
+  critical = 'critical',
+  
+  error = 'error',
+  
+  warning = 'warning',
+  notice = 'notice',
+  informational = 'informational',
+  debug = 'debug',
 }
 
 export enum ENamurEventFilter {
