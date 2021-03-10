@@ -292,6 +292,7 @@ export class OPCUABuilder {
     }
     if (networkMessageValidationResult === false) {
       const errJSON = this.jsonValidator.errors;
+      throw JSON.stringify(errJSON);
     }
     return networkMessageValidationResult;
   }
