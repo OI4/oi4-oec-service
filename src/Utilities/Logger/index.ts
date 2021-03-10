@@ -27,14 +27,14 @@ class Logger {
   private _serviceType?: string;
   private _builder?: OPCUABuilder;
   private readonly syslogFilterToEnum = {
-    debug: 0,
-    informational: 1,
-    notice: 2,
-    warning: 3,
-    error: 4,
-    critical: 5,
-    alert: 6,
-    emergency: 7,
+    debug: 7,
+    informational: 6,
+    notice: 5,
+    warning: 4,
+    error: 3,
+    critical: 2,
+    alert: 1,
+    emergency: 0,
   }
   private readonly syslogToWinston = {
     debug: 'debug',
