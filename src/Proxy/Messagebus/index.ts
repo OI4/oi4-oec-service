@@ -111,7 +111,14 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.logger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
       return;
     }
-    const schemaResult = await this.builder.checkOPCUAJSONValidity(parsedMessage);
+    let schemaResult = false;
+    try {
+      schemaResult = await this.builder.checkOPCUAJSONValidity(parsedMessage);
+    } catch (e) {
+      if (typeof e === 'string') {
+        this.logger.log(e, ESyslogEventFilter.warning);
+      }
+    }
     if (!schemaResult) {
       this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
       return;
