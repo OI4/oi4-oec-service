@@ -40,7 +40,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       servers: [serverObj],
       will: {
         topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-        payload: JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: {
+        payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
           health: EDeviceHealth.FAILURE_1,
           healthState: 0,
         }}], new Date(), dscids.health)), /*tslint:disable-line*/
@@ -75,7 +75,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.containerState.brokerState = true;
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-        JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
+        JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
       );
       this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESyslogEventFilter.warning);
 
@@ -409,7 +409,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       }
       await this.client.publish(
         `${this.topicPreamble}/pub/${resource}${endTag}`,
-        JSON.stringify(this.builder.buildOPCUADataMessage(payload, new Date(), dscids[resource], messageId)));
+        JSON.stringify(this.builder.buildOPCUANetworkMessage(payload, new Date(), dscids[resource], messageId)));
       this.logger.log(`Published ${resource} on ${this.topicPreamble}/pub/${resource}${endTag}`);
     }
   }
@@ -420,7 +420,7 @@ class OI4MessageBusProxy extends OI4Proxy {
    * @param level - the level that is used as a <subresource> element in the event topic
    */
   async sendEvent(eventStr: string, level: string) {
-    const opcUAEvent = this.builder.buildOPCUADataMessage([{
+    const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
       number: 1,
       description: 'Registry sendEvent',
       payload: {

@@ -108,7 +108,7 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUADataMessage(actualPayload: IOPCUAPayload[], timestamp: Date, classId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
+  buildOPCUANetworkMessage(dataSetPayloads: IOPCUAPayload[], timestamp: Date, dataSetClassId: string, correlationId: string = '', metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
     let opcUaDataPayload: IOPCUADataSetMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
@@ -116,13 +116,13 @@ export class OPCUABuilder {
     // } else {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
-    for (const payloads of actualPayload) {
-      opcUaDataPayload.push(this.buildOPCUAData(payloads.payload, timestamp, payloads.poi, metaDataVersion));
+    for (const payloads of dataSetPayloads) {
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.poi, metaDataVersion));
     }
     const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
       MessageType: EOPCUAMessageType.uadata,
-      DataSetClassId: classId, // TODO: Generate UUID, but not here, make a lookup,
+      DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
       PublisherId: this.publisherId,
       Messages: opcUaDataPayload,
       CorrelationId: correlationId,
@@ -168,7 +168,7 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUAData(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: 0,
       Timestamp: timestamp.toISOString(),
