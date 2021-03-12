@@ -10,7 +10,7 @@
   },
   "ProductCode": "OI4-REG",
   "HardwareRevision": "",
-  "SoftwareRevision": "0.12.x",
+  "SoftwareRevision": "0.12.0-beta",
   "DeviceRevision": "",
   "DeviceManual": "Not available",
   "DeviceClass": "Registry",
