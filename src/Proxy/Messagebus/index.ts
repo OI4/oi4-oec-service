@@ -54,11 +54,25 @@ class OI4MessageBusProxy extends OI4Proxy {
     };
 
     this.client = mqtt.connect(mqttOpts);
+    
     this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
     this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
+
+    this.client.on('error', async (err: Error) => {
+      console.log(`Error in mqtt client: ${err}`);
+    });
+    this.client.on('disconnect', async () => {
+      this.containerState.brokerState = false;
+      console.log('Disconnected from mqtt broker');
+    });
+    this.client.on('reconnect', async() => {
+      this.containerState.brokerState = false;
+      console.log('Reconnecting to mqtt broker');
+    })
     // Publish Birth Message and start listening to topics
     this.client.on('connect', async (connack: mqtt.IConnackPacket) => {
       this.logger.log('Connected successfully', ESyslogEventFilter.warning);
+      this.containerState.brokerState = true;
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
         JSON.stringify(this.builder.buildOPCUADataMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
