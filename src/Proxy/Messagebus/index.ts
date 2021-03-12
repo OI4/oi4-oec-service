@@ -5,7 +5,7 @@ import { IOPCUANetworkMessage, IMasterAssetModel, IOPCUAPayload } from '../../Mo
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
-import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, ESyslogEventFilter } from '../../Models/IContainer';
+import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, ESyslogEventFilter, CDataSetWriterIdLookup } from '../../Models/IContainer';
 
 // DSCIds
 import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
@@ -43,7 +43,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
           health: EDeviceHealth.FAILURE_1,
           healthState: 0,
-        }}], new Date(), dscids.health)), /*tslint:disable-line*/
+        }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
         qos: 0,
         retain: false,
       },
@@ -75,7 +75,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.containerState.brokerState = true;
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-        JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: this.containerState.mam}], new Date(), dscids.mam)),
+        JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: this.containerState.mam, dswid: CDataSetWriterIdLookup['mam']}], new Date(), dscids.mam)),
       );
       this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESyslogEventFilter.warning);
 
@@ -364,7 +364,7 @@ class OI4MessageBusProxy extends OI4Proxy {
           if (typeof this.containerState.licenseText[tag] === 'undefined') {
             return;
           }
-          payload = [{ payload: { licenseText: this.containerState.licenseText[tag] }}]; // licenseText is special...
+          payload = [{ payload: { licenseText: this.containerState.licenseText[tag] }, dswid: CDataSetWriterIdLookup[resource]}]; // licenseText is special...
         }
       } else {
         if (resource === 'license') {
@@ -374,7 +374,8 @@ class OI4MessageBusProxy extends OI4Proxy {
               poi: license.licenseId,
               payload: {
                 components: license.components,
-              }
+              },
+              dswid: CDataSetWriterIdLookup[resource],
             })
           }
         } else if (resource === 'publicationList') {
@@ -382,6 +383,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             payload.push({
               poi: pubs.resource,
               payload: pubs,
+              dswid: CDataSetWriterIdLookup[resource],
             })
           }
         } else if (resource === 'subscriptionList') {
@@ -389,15 +391,17 @@ class OI4MessageBusProxy extends OI4Proxy {
             payload.push({ // TODO: poi out of topicPath property
               poi: subs.topicPath.split('/')[7],
               payload: subs,
+              dswid: CDataSetWriterIdLookup[resource],
             })
           }
         } else if (resource === 'config') {
           payload = [{
             poi: 'default',
             payload: this.containerState[resource],
+            dswid: CDataSetWriterIdLookup[resource],
           }];
         } else {
-          payload = [{payload: this.containerState[resource]}];
+          payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
         }
       }
       if (typeof tag === 'undefined') {
@@ -427,6 +431,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         logLevel: level,
         logString: eventStr,
       },
+      dswid: CDataSetWriterIdLookup['event'],
     }], new Date(), dscids.event); /*tslint:disable-line*/
     await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
     this.logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);

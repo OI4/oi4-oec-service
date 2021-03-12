@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { OPCUABuilder } from '../OPCUABuilder/index';
-import { EContainerEventCategory, ESyslogEventFilter, IContainerEvent } from '../../Models/IContainer';
+import { CDataSetWriterIdLookup, EContainerEventCategory, ESyslogEventFilter, IContainerEvent } from '../../Models/IContainer';
 import { Logger as WinstonLogger, transports } from 'winston';
 import winston = require('winston');
 import { Syslog, SyslogTransportInstance } from 'winston-syslog';
@@ -108,7 +108,7 @@ class Logger {
               HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
             },
           };
-          syslogDataMessage = this._builder.buildOPCUANetworkMessage([{ payload: logPayload }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
+          syslogDataMessage = this._builder.buildOPCUANetworkMessage([{ payload: logPayload, dswid: CDataSetWriterIdLookup['event'] }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
           if (this._mqttClient) {
             /* Optimistic log...if we want to be certain, we have to convert this to async */
             this._mqttClient.publish(
