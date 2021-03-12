@@ -30,6 +30,7 @@ class ContainerState extends ConfigParser implements IContainerState {
   private _profile: IContainerProfile;
   private _mam: IMasterAssetModel;
   private _health: IContainerHealth;
+  private _brokerState: boolean;
   public _license: IContainerLicense;
   public _licenseText: IContainerLicenseText;
   public _rtLicense: IContainerRTLicense;
@@ -49,6 +50,8 @@ class ContainerState extends ConfigParser implements IContainerState {
     this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
 
     this.oi4Id = this._mam.ProductInstanceUri;
+
+    this._brokerState = false;
 
     this._profile = {
       resource: [
@@ -281,7 +284,14 @@ class ContainerState extends ConfigParser implements IContainerState {
     }
 
   }
+  // Property accessor section
+  get brokerState() {
+    return this._brokerState;
+  }
 
+  set brokerState(brokerState: boolean) {
+    this._brokerState = brokerState;
+  }
   // Resource accesor section
   // --- HEALTH ---
 

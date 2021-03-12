@@ -132,6 +132,7 @@ export interface IContainerState {
   config: IContainerConfig;
   publicationList: IContainerPublicationList;
   subscriptionList: IContainerSubscriptionList;
+  brokerState: boolean;
 
   dataLookup: IContainerData;
   metaDataLookup: IContainerMetaData;
