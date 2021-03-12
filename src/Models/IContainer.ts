@@ -236,3 +236,20 @@ export interface IDataSetClassIds {
   publicationList: string;
   subscriptionList: string;
 }
+
+interface IDataSetWriterIdLookup { // TODO: need better types here, EResources or so
+  [key: string]: number;
+}
+
+export const CDataSetWriterIdLookup: IDataSetWriterIdLookup = {
+  mam: 1,
+  health: 2,
+  license: 3,
+  licenseText: 4,
+  rtLicense: 5,
+  event: 6,
+  profile: 7,
+  config: 8,
+  publicationList: 9,
+  subscriptionList: 10,
+}
