@@ -117,7 +117,7 @@ export class OPCUABuilder {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
     for (const payloads of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.poi, metaDataVersion));
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.dswid, payloads.poi, metaDataVersion));
     }
     const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
@@ -168,9 +168,9 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dswid: number, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
-      DataSetWriterId: 0,
+      DataSetWriterId: dswid,
       Timestamp: timestamp.toISOString(),
       Status: 0, // TODO switch to UASTATUSCODES
       POI: poi,

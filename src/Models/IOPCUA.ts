@@ -102,6 +102,7 @@ export interface IOPCUAConfigurationVersionDataType{
 export interface IOPCUAPayload {
   poi?: string;
   payload: any;
+  dswid: number;
 }
 
 type GUID = string;
