@@ -64,6 +64,10 @@ class OI4WebProxy extends OI4Proxy {
       indexResp.send(JSON.stringify(this.oi4Id));
     });
 
+    this.client.get('/brokerState', (brokerReq, brokerResp) => {
+      brokerResp.send(this.containerState.brokerState);
+    });
+
     this.client.get('/health', (healthReq, healthResp) => {
       healthResp.send(JSON.stringify(this.containerState.health));
     });
