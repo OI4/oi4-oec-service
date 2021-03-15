@@ -41,7 +41,7 @@
           "locale": "en-US",
           "text": "After this size, the logfile will cycle to the next one"
         },
-        "value": 250000,
+        "value": "250000",
         "type": "Number",
         "unit": "byte"
       }
@@ -64,7 +64,7 @@
           "locale": "en-US",
           "text": "Enables or disables the development mode of the frontend"
         },
-        "value": false,
+        "value": "false",
         "type": "Boolean"
       },
       "showRegistry": {
@@ -76,7 +76,7 @@
           "locale": "en-US",
           "text": "Decides, whether to save the Registry along the other assets or not"
         },
-        "value": true,
+        "value": "true",
         "type": "Boolean"
       }
     }
