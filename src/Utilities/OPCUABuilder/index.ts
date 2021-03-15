@@ -61,6 +61,7 @@ export class OPCUABuilder {
   publisherId: string;
   jsonValidator: Ajv.Ajv;
   lastMessageId: string;
+  private topicRex: RegExp;
 
   constructor(oi4Id: string, serviceType: string) {
     this.oi4Id = oi4Id;
@@ -68,6 +69,8 @@ export class OPCUABuilder {
     this.publisherId = `${serviceType}/${oi4Id}`;
     this.jsonValidator = new Ajv();
     this.lastMessageId = '';
+
+    this.topicRex = new RegExp(topicPathSchemaJson.pattern);
 
     // Add Validation Schemas
     // First common Schemas
@@ -276,6 +279,10 @@ export class OPCUABuilder {
 
   parseOPCUAMetaData() {
 
+  }
+
+  checkTopicPath(topicPath: string): boolean {
+    return this.topicRex.test(topicPath);
   }
 
   /**
