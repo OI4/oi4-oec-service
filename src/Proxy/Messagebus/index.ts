@@ -86,14 +86,14 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.ownSubscribe(`${this.topicPreamble}/del/#`);
 
       this.client.on('message', this.processMqttMessage);
-      setInterval(() => { this.sendResource('health'); }, 60000); // send our own health every 30 seconds!
+      setInterval(() => { this.sendResource('health', '', this.oi4Id); }, 60000); // send our own health every 30 seconds!
       this.containerState.on('resourceChanged', this.handleResourceChanged.bind(this));
     });
   }
 
   private handleResourceChanged(resource: string): void {
     if (resource === 'health') {
-      this.sendResource('health');
+      this.sendResource('health', '', this.oi4Id);
     }
   }
 
@@ -119,7 +119,7 @@ class OI4MessageBusProxy extends OI4Proxy {
    */
   private processMqttMessage = async (topic: string, message: Buffer) => {
     // Convert message to JSON, TODO: if this fails, we return an Error
-    let parsedMessage;
+    let parsedMessage: IOPCUANetworkMessage;
     try {
       parsedMessage = JSON.parse(message.toString());
     } catch (e) {
@@ -138,13 +138,19 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
       return;
     }
+
+    if (!this.builder.checkTopicPath(topic)) {
+      this.logger.log('Error in pre-check topic Path, please correct topic Path', ESyslogEventFilter.warning);
+      return;
+    }
+
     // Split the topic into its different elements
     const topicArray = topic.split('/');
     const topicServiceType = topicArray[1];
     const topicAppId = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
     const topicMethod = topicArray[6];
     const topicResource = topicArray[7];
-    const topicTag = topicArray.splice(8).join('/');
+    const topicFilter = topicArray.splice(8).join('/');
 
     // The following switch/case reacts depending on the different topic elements
 
@@ -152,68 +158,15 @@ class OI4MessageBusProxy extends OI4Proxy {
     if (topicAppId === this.oi4Id) {
       switch (topicMethod) {
         case 'get': {
-          switch (topicResource) {
-            case 'health': {
-              if (topicTag === this.oi4Id) {
-                await this.sendResource('health', parsedMessage.MessageId);
-              }
-              break;
-            }
-            case 'config': {
-              if (topicTag === '') {
-                await this.sendResource('config', parsedMessage.MessageId, '');
-              }
-              break;
-            }
-            case 'license': {
-              if (topicTag === '') {
-                await this.sendResource('license', parsedMessage.MessageId, '');
-              }
-              break;
-            }
-            case 'rtLicense': {
-              if (topicTag !== '') {
-                await this.sendResource('rtLicense', parsedMessage.MessageId);
-              }
-              break;
-            }
-            case 'licenseText': {
-              if (topicTag !== '') {
-                await this.sendResource('licenseText', parsedMessage.MessageId, topicTag);
-              }
-              break;
-            }
-            case 'mam': {
-              await this.sendResource(topicResource, parsedMessage.MessageId);
-              break;
-            }
-            case 'data': {
-              this.emit('getData', { topic, message: parsedMessage });
-              break;
-            }
-            case 'metadata': {
-              await this.sendMetaData(topicTag);
-              break;
-            }
-            case 'profile': {
-              if (topicTag !== '') {
-                await this.sendResource('profile', parsedMessage.MessageId);
-              }
-              break;
-            }
-            case 'publicationList': {
-              await this.sendResource('publicationList', parsedMessage.MessageId, '');
-              break;
-            }
-            case 'subscriptionList': {
-              await this.sendResource('subscriptionList', parsedMessage.MessageId, '');
-              break;
-            }
-            default: {
-              await this.sendError(`Internal GetError with resource ${topicResource}`);
-              break;
-            }
+          if (topicResource === 'data') {
+            this.emit('getData', { topic, message: parsedMessage });
+            break;
           }
+          if (topicResource === 'metadata') {
+            await this.sendMetaData(topicFilter);
+            break;
+          }
+          this.sendResource(topicResource, parsedMessage.MessageId, topicFilter)
           break;
         }
         case 'pub': {
@@ -222,11 +175,11 @@ class OI4MessageBusProxy extends OI4Proxy {
         case 'set': {
           switch (topicResource) {
             case 'data': {
-              this.setData(topicTag, parsedMessage);
+              this.setData(topicFilter, parsedMessage);
               break;
             }
             case 'config': {
-              this.setConfig(parsedMessage);
+              await this.setConfig(parsedMessage.Messages.map((dsm => { return dsm.Payload })), topicFilter);
               break;
             }
             default: {
@@ -239,7 +192,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         case 'del': {
           switch (topicResource) {
             case 'data': {
-              this.deleteData(topicTag);
+              this.deleteData(topicFilter);
               break;
             }
             default: {
@@ -255,59 +208,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       }
       // External Request (External device put this on the message bus, we need this for birth messages)
     } else {
-      switch (topicMethod) {
-        case 'get': {
-          switch (topicResource) {
-            case 'mam': {
-              if (topicServiceType === 'Registry') {
-                this.sendResource(topicResource); // Exception in base-app. Since the registry does not know itself, we need to send out the mam here
-              }
-              break;
-            }
-            default: {
-              this.sendError('GetError');
-              break;
-            }
-          }
-          break;
-        }
-        case 'pub': {
-          break; // Only break here, we don't listen to pubs
-        }
-        case 'set': {
-          switch (topicResource) {
-            case 'data': {
-              this.setData(topicTag, parsedMessage);
-              break;
-            }
-            case 'config': {
-              this.setConfig(parsedMessage);
-              break;
-            }
-            default: {
-              this.sendError('SetError');
-              break;
-            }
-          }
-          break;
-        }
-        case 'del': {
-          switch (topicResource) {
-            case 'data': {
-              this.deleteData(topicTag);
-              break;
-            }
-            default: {
-              this.sendError('DeleteError');
-              break;
-            }
-          }
-          break;
-        }
-        default: {
-          break;
-        }
-      }
+      this.logger.log(`Detected Message from: ${topicAppId}`)
     }
   }
 
@@ -354,22 +255,26 @@ class OI4MessageBusProxy extends OI4Proxy {
    * Sends the saved Resource from containerState to the message bus
    * @param resource - the resource that is to be sent to the bus (health, license etc.)
    * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
-   * @param [tag] - the tag of the resource
+   * @param [filter] - the tag of the resource
    */
-  async sendResource(resource: string, messageId: string = '', tag?: string) {
+  async sendResource(resource: string, messageId: string, filter: string) {
     let endTag = '';
     let payload: IOPCUAPayload[] = [];
-    if (hasKey(this.containerState, resource)) {
-      if (resource === 'licenseText') { // FIXME: REMOVE THE HOTFIX AND BUILD A CHECKER INTO OPCUABUILDER..
-        if (typeof tag !== 'undefined') {
-          if (typeof this.containerState.licenseText[tag] === 'undefined') {
-            return;
-          }
-          payload = [{ payload: { licenseText: this.containerState.licenseText[tag] }, dswid: CDataSetWriterIdLookup[resource]}]; // licenseText is special...
+
+      switch(resource) {
+        case 'mam':
+        case 'health':
+        case 'profile':
+        case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
+          payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+          break;
         }
-      } else {
-        if (resource === 'license') {
-          payload = [];
+        case 'licenseText': {
+          if (typeof this.containerState.licenseText[filter] === 'undefined') return; // FIXME: Hotfix
+          payload = [{ payload: { licenseText: this.containerState.licenseText[filter] }, dswid: CDataSetWriterIdLookup[resource]}]; // licenseText is special...
+          break;
+        }
+        case 'license': {
           for (const license of this.containerState['license'].licenses) {
             payload.push({
               poi: license.licenseId,
@@ -379,7 +284,9 @@ class OI4MessageBusProxy extends OI4Proxy {
               dswid: CDataSetWriterIdLookup[resource],
             })
           }
-        } else if (resource === 'publicationList') {
+          break;
+        }
+        case 'publicationList': {
           for (const pubs of this.containerState['publicationList'].publicationList) {
             payload.push({
               poi: pubs.resource,
@@ -387,7 +294,9 @@ class OI4MessageBusProxy extends OI4Proxy {
               dswid: CDataSetWriterIdLookup[resource],
             })
           }
-        } else if (resource === 'subscriptionList') {
+          break;
+        }
+        case 'subscriptionList': {
           for (const subs of this.containerState['subscriptionList'].subscriptionList) {
             payload.push({ // TODO: poi out of topicPath property
               poi: subs.topicPath.split('/')[7],
@@ -395,32 +304,47 @@ class OI4MessageBusProxy extends OI4Proxy {
               dswid: CDataSetWriterIdLookup[resource],
             })
           }
-        } else if (resource === 'config') {
-          for (const configGroup of Object.keys(this.containerState[resource])) {
+          break;
+        }
+        case 'config': {
+          if (filter === '') { // Send all configs out
+            for (const configGroup of Object.keys(this.containerState['config'])) {
+              const actualPayload: IContainerConfig = {};
+              actualPayload[configGroup] = this.containerState[resource][configGroup];
+              payload.push({
+                poi: configGroup,
+                payload: actualPayload,
+                dswid: parseInt(`${CDataSetWriterIdLookup[resource]}${42}`), // TODO:
+              });
+            }
+          } else { // Send only filtered config out
             const actualPayload: IContainerConfig = {};
-            actualPayload[configGroup] = this.containerState[resource][configGroup];
+            actualPayload[filter] = this.containerState['config'][filter];
             payload.push({
-              poi: configGroup,
-              payload: actualPayload,
-              dswid: parseInt(`${CDataSetWriterIdLookup[resource]}${42}`), // TODO:
+              poi: filter,
+              payload:  actualPayload,
+              dswid: parseInt('12312')
             });
           }
-        } else {
-          payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+
+          break;
+        }
+        default: {
+          this.sendError(`Unknown Resource: ${resource}`);
         }
       }
-      if (typeof tag === 'undefined') {
-        endTag = `/${this.oi4Id}`;
-      } else if (tag === '') {
-        endTag = tag;
+
+      // Don't forget the slash
+      if (filter === '') {
+        endTag = filter;
       } else {
-        endTag = `/${tag}`;
+        endTag = `/${filter}`;
       }
+
       await this.client.publish(
         `${this.topicPreamble}/pub/${resource}${endTag}`,
         JSON.stringify(this.builder.buildOPCUANetworkMessage(payload, new Date(), dscids[resource], messageId)));
       this.logger.log(`Published ${resource} on ${this.topicPreamble}/pub/${resource}${endTag}`);
-    }
   }
 
   /**
@@ -468,9 +392,28 @@ class OI4MessageBusProxy extends OI4Proxy {
    * Update the containerstate with the configObject
    * @param configObject - the object that is to be passed to the ContainerState
    */
-  setConfig(configObject: ISpecificContainerConfig) {
-    this.containerState.config = configObject;
-    this.logger.log('Updated config(no CREATE possible)');
+  async setConfig(configObjectArr: ISpecificContainerConfig[], filter: string) {
+    const tempConfig = JSON.parse(JSON.stringify(this.containerState.config));
+    if (filter === '') { // We want to update the entire config object
+      for (const configObjects of configObjectArr) {
+        for (const configGroups of Object.keys(configObjects)) {
+          for (const configItems of Object.keys(configObjects[configGroups])) {
+          if (configItems === 'name' || configItems === 'description') continue; // We only care about the actual config content
+          tempConfig[configGroups][configItems] = configObjects[configGroups][configItems]; // TODO: This is *very* optimistic, we need more safety checks here
+        }
+      }
+      }
+    } else { // We want to update for a specific filter
+      for (const configObjects of configObjectArr) {
+        for (const configItems of Object.keys(configObjects[filter])) {
+          if (configItems === 'name' || configItems === 'description') continue; // We only care about the actual config content
+          tempConfig[filter][configItems] = configObjects[filter][configItems]; // TODO: This is *very* optimistic, we need more safety checks here
+        }
+      }
+    }
+    this.containerState.config = tempConfig;
+    this.logger.log('Updated config');
+    await this.sendResource('config', '', filter);
   }
 
   // DELETE Function section
