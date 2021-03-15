@@ -17,6 +17,7 @@ import DataSetMessageSchemaJson = require('../../Config/Schemas/schemas/DataSetM
 // Constants
 import LocalizedTextSchemaJson = require('../../Config/Schemas/schemas/LocalizedText.schema.json');
 import resourcesSchemaJson = require('../../Config/Schemas/schemas/constants/resources.schema.json');
+import topicPathSchemaJson = require('../../Config/Schemas/schemas/constants/topicPath.schema.json');
 
 // DataTypes
 import byteSchemaJson = require('../../Config/Schemas/schemas/dataTypes/byte.schema.json');
@@ -78,6 +79,7 @@ export class OPCUABuilder {
     // Then constants
     this.jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
     this.jsonValidator.addSchema(resourcesSchemaJson, 'resources.schema.json');
+    this.jsonValidator.addSchema(topicPathSchemaJson, 'topicPath.schema.json');
 
     // Then dataTypes
     this.jsonValidator.addSchema(byteSchemaJson, 'byte.schema.json');
