@@ -9,6 +9,7 @@ import { OI4Proxy } from '../index.js';
 import { IOPCUANetworkMessage, IOPCUAMetaData } from '../../Models/IOPCUA';
 import { Logger } from '../../Utilities/Logger';
 import { ESyslogEventFilter } from '../../Models/IContainer';
+import { ISpecificContainerConfig } from '../../Config/IContainerConfig';
 
 class OI4WebProxy extends OI4Proxy {
   private client: express.Application;
@@ -132,7 +133,8 @@ class OI4WebProxy extends OI4Proxy {
     return this.client;
   }
 
-  updateConfig(configObject: IContainerConfig) {
+  updateConfig(configObject: ISpecificContainerConfig) {
+    this.containerState.config.registry.developmentMode.value
     this.containerState.config = configObject;
   }
 

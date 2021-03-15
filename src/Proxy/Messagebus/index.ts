@@ -9,6 +9,7 @@ import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, ESyslogEventF
 
 // DSCIds
 import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
+import { ISpecificContainerConfig } from '../../Config/IContainerConfig';
 const dscids: IDataSetClassIds = <IDataSetClassIds>dataSetClassIds;
 
 class OI4MessageBusProxy extends OI4Proxy {
@@ -395,11 +396,13 @@ class OI4MessageBusProxy extends OI4Proxy {
             })
           }
         } else if (resource === 'config') {
-          payload = [{
-            poi: 'default',
-            payload: this.containerState[resource],
-            dswid: CDataSetWriterIdLookup[resource],
-          }];
+          for (const configGroup of Object.keys(this.containerState[resource])) {
+            payload.push({
+              poi: configGroup,
+              payload: this.containerState[resource][configGroup],
+              dswid: parseInt(`${CDataSetWriterIdLookup[resource]}${42}`), // TODO:
+            })
+          }
         } else {
           payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
         }
@@ -463,7 +466,7 @@ class OI4MessageBusProxy extends OI4Proxy {
    * Update the containerstate with the configObject
    * @param configObject - the object that is to be passed to the ContainerState
    */
-  setConfig(configObject: IContainerConfig) {
+  setConfig(configObject: ISpecificContainerConfig) {
     this.containerState.config = configObject;
     this.logger.log('Updated config(no CREATE possible)');
   }
