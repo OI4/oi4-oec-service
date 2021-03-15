@@ -397,11 +397,13 @@ class OI4MessageBusProxy extends OI4Proxy {
           }
         } else if (resource === 'config') {
           for (const configGroup of Object.keys(this.containerState[resource])) {
+            const actualPayload: IContainerConfig = {};
+            actualPayload[configGroup] = this.containerState[resource][configGroup];
             payload.push({
               poi: configGroup,
-              payload: this.containerState[resource][configGroup],
+              payload: actualPayload,
               dswid: parseInt(`${CDataSetWriterIdLookup[resource]}${42}`), // TODO:
-            })
+            });
           }
         } else {
           payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
