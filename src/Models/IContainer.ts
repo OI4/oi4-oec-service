@@ -1,3 +1,4 @@
+import { ISpecificContainerConfig } from '../Config/IContainerConfig';
 import { EOPCUABaseDataType } from '../Enums/EOPCUA';
 import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from './IOPCUA';
 
@@ -19,6 +20,7 @@ export interface IContainerMetaData {
   [key: string]: IOPCUAMetaData;
 }
 
+// Common Container config interfaces
 export interface IContainerConfig {
   [key:string]: IContainerConfigGroupName;
 }
@@ -31,7 +33,7 @@ export interface IContainerConfigGroupName {
 
 export interface IContainerConfigConfigName {
   type: EOPCUABaseDataType;
-  value: string;
+  value: any; // This depends on the specified type
   unit?: string;
   defaultValue?: string;
   mandatory?: boolean;
@@ -41,7 +43,6 @@ export interface IContainerConfigConfigName {
   validation?: IContainerConfigValidation; 
 }
 
-
 export interface IContainerConfigValidation {
   length?: number;
   min?: number;
@@ -49,6 +50,7 @@ export interface IContainerConfigValidation {
   pattern?: string;
   values?: string[]; 
 }
+
 export interface IContainerHealth {
   health: EDeviceHealth;
   healthScore: number; // UInt16 (from 0 to 100%)
@@ -129,7 +131,7 @@ export interface IContainerState {
   license: IContainerLicense;
   licenseText: IContainerLicenseText;
   rtLicense: IContainerRTLicense;
-  config: IContainerConfig;
+  config: ISpecificContainerConfig;
   publicationList: IContainerPublicationList;
   subscriptionList: IContainerSubscriptionList;
   brokerState: boolean;
