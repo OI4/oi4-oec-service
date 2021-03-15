@@ -33,7 +33,7 @@ export interface IContainerConfigGroupName {
 
 export interface IContainerConfigConfigName {
   type: EOPCUABaseDataType;
-  value: any; // This depends on the specified type
+  value: string; // This depends on the specified type
   unit?: string;
   defaultValue?: string;
   mandatory?: boolean;
