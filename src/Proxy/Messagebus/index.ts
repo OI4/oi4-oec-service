@@ -37,7 +37,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     // };
     // Initialize MQTT Options
     const mqttOpts: IClientOptions = {
-      clientId: `MessageBus${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}`,
+      clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
       servers: [serverObj],
       will: {
         topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
