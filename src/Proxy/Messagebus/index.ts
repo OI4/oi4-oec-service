@@ -134,7 +134,13 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log(e, ESyslogEventFilter.warning);
       }
     }
-    const payloadType = await this.builder.checkPayloadType(parsedMessage.Messages[0].Payload);
+
+    let payloadType = 'none';
+    if (parsedMessage.Messages.length === 0) {
+      this.logger.log('Messages Array empty in pub - check DataSetMessage format', ESyslogEventFilter.warning);
+    } else {
+      payloadType = await this.builder.checkPayloadType(parsedMessage.Messages[0].Payload);
+    }
 
     if (payloadType === 'locale') {
       this.logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
@@ -193,12 +199,7 @@ class OI4MessageBusProxy extends OI4Proxy {
               this.setData(topicFilter, parsedMessage);
               break;
             }
-            case 'config': {
-              await this.setConfig(parsedMessage.Messages.map((dsm => { return dsm.Payload })), topicFilter);
-              break;
-            }
             default: {
-              this.sendError('SetError');
               break;
             }
           }
@@ -211,7 +212,6 @@ class OI4MessageBusProxy extends OI4Proxy {
               break;
             }
             default: {
-              this.sendError('DeleteError');
               break;
             }
           }
@@ -327,23 +327,24 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
         case 'config': {
           if (filter === '') { // Send all configs out
-            for (const configGroup of Object.keys(this.containerState['config'])) {
-              const actualPayload: IContainerConfig = {};
-              actualPayload[configGroup] = this.containerState[resource][configGroup];
-              payload.push({
-                poi: configGroup,
-                payload: actualPayload,
-                dswid: parseInt(`${CDataSetWriterIdLookup[resource]}${42}`), // TODO:
-              });
-            }
-          } else { // Send only filtered config out
-            const actualPayload: IContainerConfig = {};
-            actualPayload[filter] = this.containerState['config'][filter];
+            const actualPayload: ISpecificContainerConfig = this.containerState[resource];
             payload.push({
-              poi: filter,
-              payload:  actualPayload,
-              dswid: parseInt('12312')
+              poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+              payload: actualPayload,
+              dswid: CDataSetWriterIdLookup[resource]
             });
+          } else { // Send only filtered config out
+            const actualPayload: ISpecificContainerConfig = this.containerState[resource];
+            if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) {
+              actualPayload[filter] = this.containerState['config'][filter];
+              payload.push({
+                poi: filter,
+                payload:  actualPayload,
+                dswid: CDataSetWriterIdLookup[resource]
+              });
+            } else {
+              return;
+            }
           }
 
           break;
@@ -416,34 +417,6 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.containerState.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
       this.logger.log(`${tagName} already exists in dataLookup`);
     }
-  }
-
-  /**
-   * Update the containerstate with the configObject
-   * @param configObject - the object that is to be passed to the ContainerState
-   */
-  async setConfig(configObjectArr: ISpecificContainerConfig[], filter: string) {
-    const tempConfig = JSON.parse(JSON.stringify(this.containerState.config));
-    if (filter === '') { // We want to update the entire config object
-      for (const configObjects of configObjectArr) {
-        for (const configGroups of Object.keys(configObjects)) {
-          for (const configItems of Object.keys(configObjects[configGroups])) {
-          if (configItems === 'name' || configItems === 'description') continue; // We only care about the actual config content
-          tempConfig[configGroups][configItems] = configObjects[configGroups][configItems]; // TODO: This is *very* optimistic, we need more safety checks here
-        }
-      }
-      }
-    } else { // We want to update for a specific filter
-      for (const configObjects of configObjectArr) {
-        for (const configItems of Object.keys(configObjects[filter])) {
-          if (configItems === 'name' || configItems === 'description') continue; // We only care about the actual config content
-          tempConfig[filter][configItems] = configObjects[filter][configItems]; // TODO: This is *very* optimistic, we need more safety checks here
-        }
-      }
-    }
-    this.containerState.config = tempConfig;
-    this.logger.log('Updated config');
-    await this.sendResource('config', '', filter);
   }
 
   // DELETE Function section
