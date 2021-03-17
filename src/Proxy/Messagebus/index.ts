@@ -134,6 +134,12 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log(e, ESyslogEventFilter.warning);
       }
     }
+    const payloadType = await this.builder.checkPayloadType(parsedMessage.Messages[0].Payload);
+
+    if (payloadType === 'locale') {
+      this.logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
+    }
+
     if (!schemaResult) {
       this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
       return;
@@ -166,7 +172,16 @@ class OI4MessageBusProxy extends OI4Proxy {
             await this.sendMetaData(topicFilter);
             break;
           }
-          this.sendResource(topicResource, parsedMessage.MessageId, topicFilter)
+
+          let page = 0;
+          let perPage = 0;
+
+          if (payloadType === 'pagination') {
+            page = parsedMessage.Messages[0].Payload.page;
+            perPage = parsedMessage.Messages[0].Payload.perPage;
+          }
+
+          this.sendResource(topicResource, parsedMessage.MessageId, topicFilter, page, perPage)
           break;
         }
         case 'pub': {
@@ -257,7 +272,7 @@ class OI4MessageBusProxy extends OI4Proxy {
    * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
    * @param [filter] - the tag of the resource
    */
-  async sendResource(resource: string, messageId: string, filter: string) {
+  async sendResource(resource: string, messageId: string, filter: string, page: number = 0, perPage: number = 0) {
     let endTag = '';
     let payload: IOPCUAPayload[] = [];
 
@@ -266,7 +281,11 @@ class OI4MessageBusProxy extends OI4Proxy {
         case 'health':
         case 'profile':
         case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
-          payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+          if (filter === this.oi4Id) {
+            payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+          } else {
+            return;
+          }
           break;
         }
         case 'licenseText': {
@@ -331,6 +350,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
         default: {
           this.sendError(`Unknown Resource: ${resource}`);
+          return;
         }
       }
 
@@ -341,10 +361,20 @@ class OI4MessageBusProxy extends OI4Proxy {
         endTag = `/${filter}`;
       }
 
-      await this.client.publish(
-        `${this.topicPreamble}/pub/${resource}${endTag}`,
-        JSON.stringify(this.builder.buildOPCUANetworkMessage(payload, new Date(), dscids[resource], messageId)));
-      this.logger.log(`Published ${resource} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+      try {
+        const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), dscids[resource], messageId, page, perPage);
+        if (typeof networkMessageArray[0] === 'undefined') {
+          this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
+        }
+        for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
+          await this.client.publish(
+            `${this.topicPreamble}/pub/${resource}${endTag}`,
+            JSON.stringify(networkMessages));
+          this.logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+        }
+      } catch {
+        console.log('Error in building paginated NMA');
+      }
   }
 
   /**
