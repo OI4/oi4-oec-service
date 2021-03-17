@@ -122,7 +122,7 @@ export class OPCUABuilder {
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const stringifiedMsg = JSON.stringify(networkMessageArray[currentNetworkMessageIndex]);
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
-      if (wholeMsgLengthBytes + 1000 < 256000 && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
+      if (wholeMsgLengthBytes + 1000 < parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10) && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.payload, timestamp, remainingPayloads.dswid, remainingPayloads.poi, metadataVersion));
       } else {
         // This is the paginationObject
@@ -159,11 +159,8 @@ export class OPCUABuilder {
     }
     // If a specific page was requested, wo only send that page
     if ((page !== 0 && page > 0)) {
-      try {
-        return [networkMessageArray[page-1]];
-      } catch  {
-        throw 'outofrange';
-      }
+      if (page > networkMessageArray.length) return [];
+      return [networkMessageArray[page-1]];
     } else {
       return networkMessageArray;
     }
