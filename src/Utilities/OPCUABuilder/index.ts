@@ -18,6 +18,7 @@ import DataSetMessageSchemaJson = require('../../Config/Schemas/schemas/DataSetM
 import LocalizedTextSchemaJson = require('../../Config/Schemas/schemas/LocalizedText.schema.json');
 import resourcesSchemaJson = require('../../Config/Schemas/schemas/constants/resources.schema.json');
 import topicPathSchemaJson = require('../../Config/Schemas/schemas/constants/topicPath.schema.json');
+import localePatternSchemaJson = require('../../Config/Schemas/schemas/constants/locale.pattern.schema.json')
 
 // DataTypes
 import byteSchemaJson = require('../../Config/Schemas/schemas/dataTypes/byte.schema.json');
@@ -39,6 +40,9 @@ import configSchemaJson = require('../../Config/Schemas/schemas/config.schema.js
 import publicationListSchemaJson = require('../../Config/Schemas/schemas/publicationList.schema.json');
 import subscriptionListSchemaJson = require('../../Config/Schemas/schemas/subscriptionList.schema.json');
 import referenceDesignationSchemaJson = require('../../Config/Schemas/schemas/referenceDesignation.schema.json');
+import localeSchemaJson = require('../../Config/Schemas/schemas/locale.schema.json');
+import paginationSchemaJson = require('../../Config/Schemas/schemas/pagination.schema.json');
+
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import { EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAValueRank } from '../../Enums/EOPCUA';
@@ -83,6 +87,8 @@ export class OPCUABuilder {
     this.jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
     this.jsonValidator.addSchema(resourcesSchemaJson, 'resources.schema.json');
     this.jsonValidator.addSchema(topicPathSchemaJson, 'topicPath.schema.json');
+    this.jsonValidator.addSchema(localePatternSchemaJson, 'locale.pattern.schema.json');
+    
 
     // Then dataTypes
     this.jsonValidator.addSchema(byteSchemaJson, 'byte.schema.json');
@@ -104,6 +110,64 @@ export class OPCUABuilder {
     this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
     this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
     this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json')
+    this.jsonValidator.addSchema(localeSchemaJson, 'locale.schema.json');
+    this.jsonValidator.addSchema(paginationSchemaJson, 'pagination.schema.json');
+  }
+
+
+  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUAPayload[], timestamp: Date, dataSetClassId: string, correlationId: string = '', page: number = 0, perPage: number = 0, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
+    const networkMessageArray: IOPCUANetworkMessage[] = [];
+    networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId, metadataVersion));
+    let currentNetworkMessageIndex = 0;
+    for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
+      const stringifiedMsg = JSON.stringify(networkMessageArray[currentNetworkMessageIndex]);
+      const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
+      if (wholeMsgLengthBytes + 1000 < 256000 && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.payload, timestamp, remainingPayloads.dswid, remainingPayloads.poi, metadataVersion));
+      } else {
+        // This is the paginationObject
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
+          {
+            totalCount: dataSetPayloads.length,
+            perPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+            page: currentNetworkMessageIndex + 1,
+            hasNext: true,
+          }, timestamp, parseInt(`${remainingPayloads.dswid}${currentNetworkMessageIndex}`, 10)
+        ));
+        if (page !== 0 && currentNetworkMessageIndex >= page) {
+          if (payloadIndex === dataSetPayloads.length) {
+            networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].Payload.hasNext = false;
+          }
+          break; // If we request a certain page, there's no need to build more than necessary
+        }
+        networkMessageArray.push(this.buildOPCUANetworkMessage([remainingPayloads], timestamp, dataSetClassId, correlationId, metadataVersion));
+        currentNetworkMessageIndex++;
+      }
+      //console.log('');
+    }
+    if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
+      // Pagination Object
+      networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
+        {
+          totalCount: dataSetPayloads.length,
+          perPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+          page: currentNetworkMessageIndex + 1,
+          hasNext: false,
+        },
+        timestamp,
+        parseInt(`${networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
+      ));
+    }
+    // If a specific page was requested, wo only send that page
+    if ((page !== 0 && page > 0)) {
+      try {
+        return [networkMessageArray[page-1]];
+      } catch  {
+        throw 'outofrange';
+      }
+    } else {
+      return networkMessageArray;
+    }
   }
 
   /**
@@ -304,5 +368,26 @@ export class OPCUABuilder {
       throw JSON.stringify(errJSON);
     }
     return networkMessageValidationResult;
+  }
+
+  async checkPayloadType(payload: any): Promise<string> {
+    let payloadMessageValidation = false;
+    try {
+      payloadMessageValidation = await this.jsonValidator.validate('pagination.schema.json', payload);
+    } catch (validateErr) {
+      payloadMessageValidation = false;
+    }
+    if (payloadMessageValidation === true) {
+      return 'pagination';
+    }
+    try {
+      payloadMessageValidation = await this.jsonValidator.validate('locale.schema.json', payload);
+    } catch (validateErr) {
+      payloadMessageValidation = false;
+    }
+    if (payloadMessageValidation === true) {
+      return 'locale';
+    }
+    return 'none';
   }
 }
