@@ -150,7 +150,7 @@ class Logger {
     this._name = newname;
   }
 
-  log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.warning) {
+  log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
     if (this.enabled) {
       if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.level]) {
         console.log(logstring);
