@@ -152,11 +152,10 @@ class Logger {
 
   log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.warning) {
     if (this.enabled) {
-      if (this.syslogFilterToEnum[level] >= this.syslogFilterToEnum[this.level]) {
+      if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.level]) {
         console.log(logstring);
         this._winstonLogger.log(this.syslogToWinston[level], `${this._name}: ${logstring}`);
         }
-        winston.config.syslog.levels
       }
     return logstring;
   }
