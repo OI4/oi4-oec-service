@@ -143,7 +143,6 @@ export class OPCUABuilder {
         networkMessageArray.push(this.buildOPCUANetworkMessage([remainingPayloads], timestamp, dataSetClassId, correlationId, metadataVersion));
         currentNetworkMessageIndex++;
       }
-      //console.log('');
     }
     if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
       // Pagination Object
