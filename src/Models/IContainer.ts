@@ -22,7 +22,13 @@ export interface IContainerMetaData {
 
 // Common Container config interfaces
 export interface IContainerConfig {
-  [key:string]: IContainerConfigGroupName;
+  [key:string]: IContainerConfigGroupName | IContainerConfigContext;
+  Context: IContainerConfigContext;
+}
+
+export interface IContainerConfigContext {
+  name: IOPCUALocalizedText;
+  description?: IOPCUALocalizedText;
 }
 
 export interface IContainerConfigGroupName {
