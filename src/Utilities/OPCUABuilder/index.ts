@@ -237,7 +237,6 @@ export class OPCUABuilder {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: dswid,
       Timestamp: timestamp.toISOString(),
-      Status: 0, // TODO switch to UASTATUSCODES
       POI: poi,
       Payload: actualPayload,
     };
