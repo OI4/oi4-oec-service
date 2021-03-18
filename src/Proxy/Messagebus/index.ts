@@ -5,11 +5,12 @@ import { IOPCUANetworkMessage, IMasterAssetModel, IOPCUAPayload } from '../../Mo
 import { OI4Proxy } from '../index';
 import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
-import { EDeviceHealth, IDataSetClassIds, ESubscriptionListConfig, ESyslogEventFilter, CDataSetWriterIdLookup } from '../../Models/IContainer';
+import { IDataSetClassIds, CDataSetWriterIdLookup } from '../../Models/IContainer';
 
 // DSCIds
 import dataSetClassIds = require('../../Config/Constants/dataSetClassIds.json'); /*tslint:disable-line*/
 import { ISpecificContainerConfig } from '../../Config/IContainerConfig';
+import { EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter } from '../../Enums/EContainer';
 const dscids: IDataSetClassIds = <IDataSetClassIds>dataSetClassIds;
 
 class OI4MessageBusProxy extends OI4Proxy {
