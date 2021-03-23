@@ -8,12 +8,9 @@ import {
   IContainerRTLicense,
   IContainerData,
   IContainerMetaData,
-  EDeviceHealth,
   IContainerProfile,
   IContainerPublicationList,
   IContainerSubscriptionList,
-  EPublicationListConfig,
-  ESubscriptionListConfig,
   ISubscriptionListObject,
   IPublicationListObject,
 } from '../Models/IContainer';
@@ -24,6 +21,7 @@ import masterAssetModel from '../Config/masterAssetModel.json'; /*tslint:disable
 
 import resources from '../Config/Constants/resources.json'; /*tslint:disable-line*/
 import { EOPCUALocale } from '../Enums/EOPCUA';
+import { EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig } from '../Enums/EContainer';
 
 class ContainerState extends ConfigParser implements IContainerState {
   public oi4Id: string; // TODO: doubling? Not needed here
