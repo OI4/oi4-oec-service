@@ -37,23 +37,41 @@ class OI4MessageBusProxy extends OI4Proxy {
     //   protocol: 'mqtts',
     // };
     // Initialize MQTT Options
-    const mqttOpts: IClientOptions = {
-      clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
-      servers: [serverObj],
-      will: {
-        topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-        payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
-          health: EDeviceHealth.FAILURE_1,
-          healthState: 0,
-        }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
-        qos: 0,
-        retain: false,
-      },
-      username: process.env.OI4_EDGE_MQTT_USERNAME as string,
-      password: process.env.OI4_EDGE_MQTT_PASSWORD as string,
-      protocol: 'mqtts',
-      rejectUnauthorized: false,
-    };
+    let mqttOpts: IClientOptions;
+    if (process.env.USE_UNSECURE_BROKER as string === 'true') {
+      mqttOpts = {
+        clientId: `MessageBus${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}`,
+        servers: [serverObj],
+        will: {
+          topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
+          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
+            health: EDeviceHealth.FAILURE_1,
+            healthState: 0,
+          }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
+          qos: 0,
+          retain: false,
+        },
+      };
+    } else {
+      mqttOpts = {
+        clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
+        servers: [serverObj],
+        will: {
+          topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
+          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
+            health: EDeviceHealth.FAILURE_1,
+            healthState: 0,
+          }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
+          qos: 0,
+          retain: false,
+        },
+        username: process.env.OI4_EDGE_MQTT_USERNAME as string,
+        password: process.env.OI4_EDGE_MQTT_PASSWORD as string,
+        protocol: 'mqtts',
+        rejectUnauthorized: false,
+      };
+    }
+
 
     this.client = mqtt.connect(mqttOpts);
     
