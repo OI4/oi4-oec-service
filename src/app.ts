@@ -1,10 +1,10 @@
 import { OI4MessageBusProxy } from './Proxy/Messagebus/index';
 import { OI4WebProxy } from './Proxy/Web/index';
 import { ContainerState } from './Container/index';
-import { ESyslogEventFilter } from './Models/IContainer';
 import { Logger } from './Utilities/Logger/index';
 import dotenv from 'dotenv';
 import path from 'path';
+import { ESyslogEventFilter } from './Enums/EContainer';
 
 // Here, we get our configuration from Environment variables. If either of them is not specified, we use a provided .env file
 if (!(process.env.OI4_EDGE_MQTT_BROKER_ADDRESS) ||
