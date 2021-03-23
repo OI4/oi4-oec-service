@@ -8,8 +8,8 @@ import { IContainerState, IContainerConfig } from '../../Container/index';
 import { OI4Proxy } from '../index.js';
 import { IOPCUANetworkMessage, IOPCUAMetaData } from '../../Models/IOPCUA';
 import { Logger } from '../../Utilities/Logger';
-import { ESyslogEventFilter } from '../../Models/IContainer';
 import { ISpecificContainerConfig } from '../../Config/IContainerConfig';
+import { ESyslogEventFilter } from '../../Enums/EContainer';
 
 class OI4WebProxy extends OI4Proxy {
   private client: express.Application;
@@ -63,6 +63,27 @@ class OI4WebProxy extends OI4Proxy {
     // Handle Get Requests
     this.client.get('/', (indexReq, indexResp) => {
       indexResp.send(JSON.stringify(this.oi4Id));
+    });
+
+    this.client.get('/containerInfo', (contInfoReq, contInfoResp) => {
+      contInfoResp.send(JSON.stringify({
+        name: this.containerState.mam.Model.text,
+        version: this.containerState.mam.SoftwareRevision,
+        description: this.containerState.mam.Description.text,
+        dependencies: ["none"],
+        vendor: "Hilscher Gesellschaft f\u00fcr Systemautomation mbH",
+        licenses: ["HILSCHER netIOT Source Code LICENSE AGREEMENT"],
+        disclaimer: "see https://www.netiot.com/fileadmin/user_upload/netIOT/en/pdf/Hilscher_Source_Code_License.pdf"
+      }));
+    });
+
+    this.client.get('/mqttSettings', (mqttSettingsReq, mqttSettingsResp) => {
+      mqttSettingsResp.send(JSON.stringify({
+        brokerUrl: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS,
+        brokerPort: process.env.OI4_EDGE_MQTT_SECURE_PORT,
+        userName: process.env.OI4_EDGE_MQTT_USERNAME,
+        password: process.env.OI4_EDGE_MQTT_PASSWORD,
+      }));
     });
 
     this.client.get('/brokerState', (brokerReq, brokerResp) => {
