@@ -1,9 +1,10 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { OPCUABuilder } from '../OPCUABuilder/index';
-import { CDataSetWriterIdLookup, EContainerEventCategory, ESyslogEventFilter, IContainerEvent } from '../../Models/IContainer';
+import { CDataSetWriterIdLookup, EContainerEventCategory, IContainerEvent } from '../../Models/IContainer';
 import { Logger as WinstonLogger, transports } from 'winston';
 import winston = require('winston');
 import { Syslog, SyslogTransportInstance } from 'winston-syslog';
+import { ESyslogEventFilter } from '../../Enums/EContainer';
 
 // @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
 const glossyParser = require('glossy').Parse;
