@@ -9,40 +9,42 @@ import {
 } from '../../Models/IOPCUA';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import NetworkMessageSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/NetworkMessage.schema.json');
-import ConfigurationVersionDataTypeSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/ConfigurationVersionDataType.schema.json');
-import oi4IdentifierSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/oi4Identifier.schema.json');
-import DataSetMessageSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/DataSetMessage.schema.json');
 
-// Constants
-import LocalizedTextSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/LocalizedText.schema.json');
-import resourcesSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/resources.schema.json');
-import topicPathSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/topicPath.schema.json');
-import localePatternSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/locale.pattern.schema.json')
-
-// DataTypes
-import byteSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/byte.schema.json');
-import int8SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int8.schema.json');
-import int16SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int16.schema.json');
-import int32SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int32.schema.json');
-import uint16SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/uint16.schema.json');
-import uint32SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/uint32.schema.json');
-
-// Payloads
-import healthSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/health.schema.json');
-import mamSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/mam.schema.json');
-import licenseSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/license.schema.json');
-import licenseTextSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/licenseText.schema.json');
-import profileSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/profile.schema.json');
-import eventSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/event.schema.json');
-import rtLicenseSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/rtLicense.schema.json');
-import configSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/config.schema.json');
-import publicationListSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/publicationList.schema.json');
-import subscriptionListSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/subscriptionList.schema.json');
-import referenceDesignationSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/referenceDesignation.schema.json');
-import localeSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/locale.schema.json');
-import paginationSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/pagination.schema.json');
-
+import {
+  // Base
+  NetworkMessageSchemaJson,
+  ConfigurationVersionDataTypeSchemaJson,
+  oi4IdentifierSchemaJson,
+  DataSetMessageSchemaJson,
+  // Constants
+  LocalizedTextSchemaJson,
+  resourcesSchemaJson,
+  topicPathSchemaJson,
+  localePatternSchemaJson,
+  serviceTypeSchemaJson,
+  DeviceHealthEnumerationSchemaJson,
+  //DataTypes
+  byteSchemaJson,
+  int8SchemaJson,
+  int16SchemaJson,
+  int32SchemaJson,
+  uint16SchemaJson,
+  uint32SchemaJson,
+  // Payloads
+  healthSchemaJson,
+  mamSchemaJson,
+  licenseSchemaJson,
+  licenseTextSchemaJson,
+  profileSchemaJson,
+  eventSchemaJson,
+  rtLicenseSchemaJson,
+  configSchemaJson,
+  publicationListSchemaJson,
+  subscriptionListSchemaJson,
+  referenceDesignationSchemaJson,
+  localeSchemaJson,
+  paginationSchemaJson
+} from '../../Utilities/SchemaProvider';
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import { EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAValueRank } from '../../Enums/EOPCUA';
