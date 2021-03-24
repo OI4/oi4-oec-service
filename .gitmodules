@@ -1,3 +1,0 @@
-[submodule "src/Config/Schemas"]
-	path = src/Config/Schemas
-	url = git@github.com:OI4/oi4-json-schemas.git
