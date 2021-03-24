@@ -8,17 +8,17 @@
     "locale": "en-US",
     "text": "Registry Application"
   },
-  "ProductCode": "OI4-REG",
+  "ProductCode": "OEC-REG",
   "HardwareRevision": "",
   "SoftwareRevision": "0.12.0-beta",
   "DeviceRevision": "",
   "DeviceManual": "Not available",
   "DeviceClass": "Registry",
-  "SerialNumber": "OI4-Registry",
+  "SerialNumber": "OEC-Registry",
   "ProductInstanceUri": "",
   "RevisionCounter": 0,
   "Description": {
     "locale": "en-US",
-    "text": "OI4 Registry application"
+    "text": "OEC Registry application"
   }
 }
