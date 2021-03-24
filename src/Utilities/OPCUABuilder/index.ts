@@ -9,39 +9,39 @@ import {
 } from '../../Models/IOPCUA';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import NetworkMessageSchemaJson = require('../../Config/Schemas/schemas/NetworkMessage.schema.json');
-import ConfigurationVersionDataTypeSchemaJson = require('../../Config/Schemas/schemas/ConfigurationVersionDataType.schema.json');
-import oi4IdentifierSchemaJson = require('../../Config/Schemas/schemas/oi4Identifier.schema.json');
-import DataSetMessageSchemaJson = require('../../Config/Schemas/schemas/DataSetMessage.schema.json');
+import NetworkMessageSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/NetworkMessage.schema.json');
+import ConfigurationVersionDataTypeSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/ConfigurationVersionDataType.schema.json');
+import oi4IdentifierSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/oi4Identifier.schema.json');
+import DataSetMessageSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/DataSetMessage.schema.json');
 
 // Constants
-import LocalizedTextSchemaJson = require('../../Config/Schemas/schemas/LocalizedText.schema.json');
-import resourcesSchemaJson = require('../../Config/Schemas/schemas/constants/resources.schema.json');
-import topicPathSchemaJson = require('../../Config/Schemas/schemas/constants/topicPath.schema.json');
-import localePatternSchemaJson = require('../../Config/Schemas/schemas/constants/locale.pattern.schema.json')
+import LocalizedTextSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/LocalizedText.schema.json');
+import resourcesSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/resources.schema.json');
+import topicPathSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/topicPath.schema.json');
+import localePatternSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/constants/locale.pattern.schema.json')
 
 // DataTypes
-import byteSchemaJson = require('../../Config/Schemas/schemas/dataTypes/byte.schema.json');
-import int8SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int8.schema.json');
-import int16SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int16.schema.json');
-import int32SchemaJson = require('../../Config/Schemas/schemas/dataTypes/int32.schema.json');
-import uint16SchemaJson = require('../../Config/Schemas/schemas/dataTypes/uint16.schema.json');
-import uint32SchemaJson = require('../../Config/Schemas/schemas/dataTypes/uint32.schema.json');
+import byteSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/byte.schema.json');
+import int8SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int8.schema.json');
+import int16SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int16.schema.json');
+import int32SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/int32.schema.json');
+import uint16SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/uint16.schema.json');
+import uint32SchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/dataTypes/uint32.schema.json');
 
 // Payloads
-import healthSchemaJson = require('../../Config/Schemas/schemas/health.schema.json');
-import mamSchemaJson = require('../../Config/Schemas/schemas/mam.schema.json');
-import licenseSchemaJson = require('../../Config/Schemas/schemas/license.schema.json');
-import licenseTextSchemaJson = require('../../Config/Schemas/schemas/licenseText.schema.json');
-import profileSchemaJson = require('../../Config/Schemas/schemas/profile.schema.json');
-import eventSchemaJson = require('../../Config/Schemas/schemas/event.schema.json');
-import rtLicenseSchemaJson = require('../../Config/Schemas/schemas/rtLicense.schema.json');
-import configSchemaJson = require('../../Config/Schemas/schemas/config.schema.json');
-import publicationListSchemaJson = require('../../Config/Schemas/schemas/publicationList.schema.json');
-import subscriptionListSchemaJson = require('../../Config/Schemas/schemas/subscriptionList.schema.json');
-import referenceDesignationSchemaJson = require('../../Config/Schemas/schemas/referenceDesignation.schema.json');
-import localeSchemaJson = require('../../Config/Schemas/schemas/locale.schema.json');
-import paginationSchemaJson = require('../../Config/Schemas/schemas/pagination.schema.json');
+import healthSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/health.schema.json');
+import mamSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/mam.schema.json');
+import licenseSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/license.schema.json');
+import licenseTextSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/licenseText.schema.json');
+import profileSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/profile.schema.json');
+import eventSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/event.schema.json');
+import rtLicenseSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/rtLicense.schema.json');
+import configSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/config.schema.json');
+import publicationListSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/publicationList.schema.json');
+import subscriptionListSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/subscriptionList.schema.json');
+import referenceDesignationSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/referenceDesignation.schema.json');
+import localeSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/locale.schema.json');
+import paginationSchemaJson = require('../../../node_modules/@oi4/json-schemas/schemas/pagination.schema.json');
 
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
