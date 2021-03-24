@@ -79,5 +79,11 @@
         "value": "true",
         "type": "Boolean"
       }
+    },
+    "Context": {
+      "name": {
+        "locale": "en-US",
+        "text": "Registry Configuration"
+      }
     }
   }
