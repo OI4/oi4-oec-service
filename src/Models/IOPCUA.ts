@@ -1,4 +1,4 @@
-import { EOPCUALocale, EOPCUAMessageType } from "../Enums/EOPCUA";
+import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from "../Enums/EOPCUA";
 
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
 
@@ -103,6 +103,7 @@ export interface IOPCUAPayload {
   poi?: string;
   payload: any;
   dswid: number;
+  status?: EOPCUAStatusCode;
 }
 
 type GUID = string;
