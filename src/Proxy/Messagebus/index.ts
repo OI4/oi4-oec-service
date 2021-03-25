@@ -368,13 +368,13 @@ class OI4MessageBusProxy extends OI4Proxy {
         if (filter === '') { // Send all configs out
           const actualPayload: ISpecificContainerConfig = this.containerState[resource];
           payload.push({
-            poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+            poi: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
             payload: actualPayload,
             dswid: CDataSetWriterIdLookup[resource]
           });
         } else { // Send only filtered config out
           const actualPayload: ISpecificContainerConfig = this.containerState[resource];
-          if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) { // Filtered by poi
+          if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) { // Filtered by poi
             actualPayload[filter] = this.containerState['config'][filter];
             payload.push({
               poi: filter,
@@ -386,7 +386,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             if (dswidFilter === 8) { // Filtered by dswid
               const actualPayload: ISpecificContainerConfig = this.containerState[resource];
               payload.push({
-                poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+                poi: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 payload: actualPayload,
                 dswid: CDataSetWriterIdLookup[resource]
               });

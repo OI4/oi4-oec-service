@@ -24,7 +24,7 @@ export interface IContainerMetaData {
 // Common Container config interfaces
 export interface IContainerConfig {
   [key:string]: IContainerConfigGroupName | IContainerConfigContext;
-  Context: IContainerConfigContext;
+  context: IContainerConfigContext;
 }
 
 export interface IContainerConfigContext {

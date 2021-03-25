@@ -80,7 +80,7 @@
         "type": "Boolean"
       }
     },
-    "Context": {
+    "context": {
       "name": {
         "locale": "en-US",
         "text": "Registry Configuration"
