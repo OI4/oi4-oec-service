@@ -125,7 +125,7 @@ export class OPCUABuilder {
       const stringifiedMsg = JSON.stringify(networkMessageArray[currentNetworkMessageIndex]);
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
       if (wholeMsgLengthBytes + 1000 < parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10) && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
-        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.payload, timestamp, remainingPayloads.dswid, remainingPayloads.poi, metadataVersion));
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.payload, timestamp, remainingPayloads.dswid, remainingPayloads.poi, remainingPayloads.status, metadataVersion));
       } else {
         // This is the paginationObject
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
@@ -184,7 +184,7 @@ export class OPCUABuilder {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
     for (const payloads of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.dswid, payloads.poi, metaDataVersion));
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.dswid, payloads.poi, payloads.status, metaDataVersion));
     }
     const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
@@ -235,7 +235,7 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dswid: number, poi: string = this.oi4Id, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dswid: number, poi: string = this.oi4Id, status: number = 0, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: dswid,
       Timestamp: timestamp.toISOString(),
@@ -244,6 +244,9 @@ export class OPCUABuilder {
     };
     if (typeof metaDataVersion !== 'undefined' && metaDataVersion !== null) {
       opcUaDataPayload.MetaDataVersion = metaDataVersion;
+    }
+    if (status !== 0) {
+      opcUaDataPayload.Status = status;
     }
     return opcUaDataPayload;
   }
