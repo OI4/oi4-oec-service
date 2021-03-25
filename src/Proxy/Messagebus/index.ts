@@ -44,10 +44,12 @@ class OI4MessageBusProxy extends OI4Proxy {
         servers: [serverObj],
         will: {
           topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
-            health: EDeviceHealth.FAILURE_1,
-            healthState: 0,
-          }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
+          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+            payload: {
+              health: EDeviceHealth.FAILURE_1,
+              healthState: 0,
+            }, dswid: CDataSetWriterIdLookup['health']
+          }], new Date(), dscids.health)), /*tslint:disable-line*/
           qos: 0,
           retain: false,
         },
@@ -58,10 +60,12 @@ class OI4MessageBusProxy extends OI4Proxy {
         servers: [serverObj],
         will: {
           topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: {
-            health: EDeviceHealth.FAILURE_1,
-            healthState: 0,
-          }, dswid: CDataSetWriterIdLookup['health']}], new Date(), dscids.health)), /*tslint:disable-line*/
+          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+            payload: {
+              health: EDeviceHealth.FAILURE_1,
+              healthState: 0,
+            }, dswid: CDataSetWriterIdLookup['health']
+          }], new Date(), dscids.health)), /*tslint:disable-line*/
           qos: 0,
           retain: false,
         },
@@ -74,7 +78,7 @@ class OI4MessageBusProxy extends OI4Proxy {
 
 
     this.client = mqtt.connect(mqttOpts);
-    
+
     this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
     this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
@@ -85,7 +89,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.containerState.brokerState = false;
       console.log('Disconnected from mqtt broker');
     });
-    this.client.on('reconnect', async() => {
+    this.client.on('reconnect', async () => {
       this.containerState.brokerState = false;
       console.log('Reconnecting to mqtt broker');
     })
@@ -95,7 +99,7 @@ class OI4MessageBusProxy extends OI4Proxy {
       this.containerState.brokerState = true;
       await this.client.publish(
         `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-        JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: this.containerState.mam, dswid: CDataSetWriterIdLookup['mam']}], new Date(), dscids.mam)),
+        JSON.stringify(this.builder.buildOPCUANetworkMessage([{ payload: this.containerState.mam, dswid: CDataSetWriterIdLookup['mam'] }], new Date(), dscids.mam)),
       );
       this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESyslogEventFilter.warning);
 
@@ -306,120 +310,120 @@ class OI4MessageBusProxy extends OI4Proxy {
       return;
     }
 
-      switch(resource) {
-        case 'mam':
-        case 'health':
-        case 'profile':
-        case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
-          if (filter === this.oi4Id) {
-            payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+    switch (resource) {
+      case 'mam':
+      case 'health':
+      case 'profile':
+      case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
+        if (filter === this.oi4Id) {
+          payload = [{ payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource] }];
+        } else {
+          if (Number.isNaN(dswidFilter)) return;
+          if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
+            payload = [{ payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource] }];
+            break;
+          }
+          return;
+        }
+        break;
+      }
+      case 'licenseText': {
+        if (typeof this.containerState.licenseText[filter] === 'undefined') return; // FIXME: Hotfix
+        payload = [{ payload: { licenseText: this.containerState.licenseText[filter] }, dswid: CDataSetWriterIdLookup[resource] }]; // licenseText is special...
+        break;
+      }
+      case 'license': {
+        for (const license of this.containerState['license'].licenses) {
+          payload.push({
+            poi: license.licenseId,
+            payload: {
+              components: license.components,
+            },
+            dswid: CDataSetWriterIdLookup[resource],
+          })
+        }
+        break;
+      }
+      case 'publicationList': {
+        for (const pubs of this.containerState['publicationList'].publicationList) {
+          payload.push({
+            poi: pubs.resource,
+            payload: pubs,
+            dswid: CDataSetWriterIdLookup[resource],
+          })
+        }
+        break;
+      }
+      case 'subscriptionList': {
+        for (const subs of this.containerState['subscriptionList'].subscriptionList) {
+          payload.push({ // TODO: poi out of topicPath property
+            poi: subs.topicPath.split('/')[7],
+            payload: subs,
+            dswid: CDataSetWriterIdLookup[resource],
+          })
+        }
+        break;
+      }
+      case 'config': {
+        if (filter === '') { // Send all configs out
+          const actualPayload: ISpecificContainerConfig = this.containerState[resource];
+          payload.push({
+            poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+            payload: actualPayload,
+            dswid: CDataSetWriterIdLookup[resource]
+          });
+        } else { // Send only filtered config out
+          const actualPayload: ISpecificContainerConfig = this.containerState[resource];
+          if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) { // Filtered by poi
+            actualPayload[filter] = this.containerState['config'][filter];
+            payload.push({
+              poi: filter,
+              payload: actualPayload,
+              dswid: CDataSetWriterIdLookup[resource]
+            });
           } else {
-            if (Number.isNaN(dswidFilter)) return;
-            if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
-              payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+            if (Number.isNaN(dswidFilter)) return; // No poi filter means we can only filter by dswid in this else
+            if (dswidFilter === 8) { // Filtered by dswid
+              const actualPayload: ISpecificContainerConfig = this.containerState[resource];
+              payload.push({
+                poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+                payload: actualPayload,
+                dswid: CDataSetWriterIdLookup[resource]
+              });
               break;
             }
             return;
           }
-          break;
         }
-        case 'licenseText': {
-          if (typeof this.containerState.licenseText[filter] === 'undefined') return; // FIXME: Hotfix
-          payload = [{ payload: { licenseText: this.containerState.licenseText[filter] }, dswid: CDataSetWriterIdLookup[resource]}]; // licenseText is special...
-          break;
-        }
-        case 'license': {
-          for (const license of this.containerState['license'].licenses) {
-            payload.push({
-              poi: license.licenseId,
-              payload: {
-                components: license.components,
-              },
-              dswid: CDataSetWriterIdLookup[resource],
-            })
-          }
-          break;
-        }
-        case 'publicationList': {
-          for (const pubs of this.containerState['publicationList'].publicationList) {
-            payload.push({
-              poi: pubs.resource,
-              payload: pubs,
-              dswid: CDataSetWriterIdLookup[resource],
-            })
-          }
-          break;
-        }
-        case 'subscriptionList': {
-          for (const subs of this.containerState['subscriptionList'].subscriptionList) {
-            payload.push({ // TODO: poi out of topicPath property
-              poi: subs.topicPath.split('/')[7],
-              payload: subs,
-              dswid: CDataSetWriterIdLookup[resource],
-            })
-          }
-          break;
-        }
-        case 'config': {
-          if (filter === '') { // Send all configs out
-            const actualPayload: ISpecificContainerConfig = this.containerState[resource];
-            payload.push({
-              poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
-              payload: actualPayload,
-              dswid: CDataSetWriterIdLookup[resource]
-            });
-          } else { // Send only filtered config out
-            const actualPayload: ISpecificContainerConfig = this.containerState[resource];
-            if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) { // Filtered by poi
-              actualPayload[filter] = this.containerState['config'][filter];
-              payload.push({
-                poi: filter,
-                payload:  actualPayload,
-                dswid: CDataSetWriterIdLookup[resource]
-              });
-            } else {
-              if (Number.isNaN(dswidFilter)) return; // No poi filter means we can only filter by dswid in this else
-              if (dswidFilter === 8) { // Filtered by dswid
-                const actualPayload: ISpecificContainerConfig = this.containerState[resource];
-                payload.push({
-                  poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
-                  payload: actualPayload,
-                  dswid: CDataSetWriterIdLookup[resource]
-                });
-                break;
-              }
-              return;
-            }
-          }
-          break;
-        }
-        default: {
-          this.sendError(`Unknown Resource: ${resource}`);
-          return;
-        }
+        break;
       }
+      default: {
+        this.sendError(`Unknown Resource: ${resource}`);
+        return;
+      }
+    }
 
-      // Don't forget the slash
-      if (filter === '') {
-        endTag = filter;
-      } else {
-        endTag = `/${filter}`;
-      }
+    // Don't forget the slash
+    if (filter === '') {
+      endTag = filter;
+    } else {
+      endTag = `/${filter}`;
+    }
 
-      try {
-        const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), dscids[resource], messageId, page, perPage);
-        if (typeof networkMessageArray[0] === 'undefined') {
-          this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
-        }
-        for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
-          await this.client.publish(
-            `${this.topicPreamble}/pub/${resource}${endTag}`,
-            JSON.stringify(networkMessages));
-          this.logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
-        }
-      } catch {
-        console.log('Error in building paginated NMA');
+    try {
+      const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), dscids[resource], messageId, page, perPage);
+      if (typeof networkMessageArray[0] === 'undefined') {
+        this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
       }
+      for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
+        await this.client.publish(
+          `${this.topicPreamble}/pub/${resource}${endTag}`,
+          JSON.stringify(networkMessages));
+        this.logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+      }
+    } catch {
+      console.log('Error in building paginated NMA');
+    }
   }
 
   /**
