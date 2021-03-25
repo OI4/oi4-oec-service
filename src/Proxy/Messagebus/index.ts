@@ -1,9 +1,8 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { IClientOptions } from 'async-mqtt';
-import { IContainerState, IContainerConfig } from '../../Container/index';
-import { IOPCUANetworkMessage, IMasterAssetModel, IOPCUAPayload } from '../../Models/IOPCUA.js';
+import { IContainerState } from '../../Container/index';
+import { IOPCUANetworkMessage, IOPCUAPayload } from '../../Models/IOPCUA.js';
 import { OI4Proxy } from '../index';
-import { hasKey } from '../../Utilities/index';
 import { Logger } from '../../Utilities/Logger/index';
 import { IDataSetClassIds, CDataSetWriterIdLookup } from '../../Models/IContainer';
 
@@ -26,56 +25,29 @@ class OI4MessageBusProxy extends OI4Proxy {
     };
     console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
 
-    // Create dummy TLS object, that is certain to be rejected!
-    // serverObj = {
-    //   host: environment.broker.ip,
-    //   port: 8883,
-    //   key: 'dummykey',
-    //   cert: 'dummycert',
-    //   rejectUnauthorized: true,
-    //   ca: 'dummyca',
-    //   protocol: 'mqtts',
-    // };
     // Initialize MQTT Options
-    let mqttOpts: IClientOptions;
-    if (process.env.USE_UNSECURE_BROKER as string === 'true') {
-      mqttOpts = {
-        clientId: `MessageBus${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}`,
-        servers: [serverObj],
-        will: {
-          topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-            payload: {
-              health: EDeviceHealth.FAILURE_1,
-              healthState: 0,
-            }, dswid: CDataSetWriterIdLookup['health']
-          }], new Date(), dscids.health)), /*tslint:disable-line*/
-          qos: 0,
-          retain: false,
-        },
-      };
-    } else {
-      mqttOpts = {
-        clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
-        servers: [serverObj],
-        will: {
-          topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-          payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-            payload: {
-              health: EDeviceHealth.FAILURE_1,
-              healthState: 0,
-            }, dswid: CDataSetWriterIdLookup['health']
-          }], new Date(), dscids.health)), /*tslint:disable-line*/
-          qos: 0,
-          retain: false,
-        },
-        username: process.env.OI4_EDGE_MQTT_USERNAME as string,
-        password: process.env.OI4_EDGE_MQTT_PASSWORD as string,
-        protocol: 'mqtts',
-        rejectUnauthorized: false,
-      };
-    }
+    const mqttOpts: IClientOptions = {
+      clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
+      servers: [serverObj],
+      will: {
+        topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
+        payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+          payload: {
+            health: EDeviceHealth.FAILURE_1,
+            healthState: 0,
+          }, dswid: CDataSetWriterIdLookup['health']
+        }], new Date(), dscids.health)), /*tslint:disable-line*/
+        qos: 0,
+        retain: false,
+      },
+    };
 
+    if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
+      mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
+      mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
+      mqttOpts.protocol = 'mqtts';
+      mqttOpts.rejectUnauthorized = false;
+    }
 
     this.client = mqtt.connect(mqttOpts);
 
@@ -318,7 +290,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         if (filter === this.oi4Id) {
           payload = [{ payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource] }];
         } else {
-          if (Number.isNaN(dswidFilter)) return;
+          if (Number.isNaN(dswidFilter)) return; // If the filter is not an oi4Id and not a number, we don't know how to handle it
           if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
             payload = [{ payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource] }];
             break;
@@ -339,7 +311,8 @@ class OI4MessageBusProxy extends OI4Proxy {
             payload: {
               components: license.components,
             },
-            dswid: CDataSetWriterIdLookup[resource],
+            dswid: CDataSetWriterIdLookup[resource], // FIXME: I'm not sure if the dswid can be a constant like that.
+            // Instead, it should be a combination of licenseDSWID and the index of the license array element concatenated
           })
         }
         break;
