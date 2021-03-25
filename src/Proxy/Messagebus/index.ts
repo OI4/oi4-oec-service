@@ -156,7 +156,7 @@ class OI4MessageBusProxy extends OI4Proxy {
 
     let payloadType = 'none';
     if (parsedMessage.Messages.length === 0) {
-      this.logger.log('Messages Array empty in pub - check DataSetMessage format', ESyslogEventFilter.warning);
+      this.logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
     } else {
       payloadType = await this.builder.checkPayloadType(parsedMessage.Messages[0].Payload);
     }
@@ -294,6 +294,17 @@ class OI4MessageBusProxy extends OI4Proxy {
   async sendResource(resource: string, messageId: string, filter: string, page: number = 0, perPage: number = 0) {
     let endTag = '';
     let payload: IOPCUAPayload[] = [];
+    let dswidFilter: number = -1; // Initialized with -1, so we know when to use string-based filters or not
+    try {
+      dswidFilter = parseInt(filter, 10);
+      if (dswidFilter === 0) {
+        this.logger.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
+        return;
+      }
+    } catch (err: any) {
+      this.logger.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
+      return;
+    }
 
       switch(resource) {
         case 'mam':
@@ -303,6 +314,11 @@ class OI4MessageBusProxy extends OI4Proxy {
           if (filter === this.oi4Id) {
             payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
           } else {
+            if (Number.isNaN(dswidFilter)) return;
+            if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
+              payload = [{payload: this.containerState[resource], dswid: CDataSetWriterIdLookup[resource]}];
+              break;
+            }
             return;
           }
           break;
@@ -354,7 +370,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             });
           } else { // Send only filtered config out
             const actualPayload: ISpecificContainerConfig = this.containerState[resource];
-            if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) {
+            if (filter === actualPayload.Context.name.text.toLowerCase().replace(' ', '')) { // Filtered by poi
               actualPayload[filter] = this.containerState['config'][filter];
               payload.push({
                 poi: filter,
@@ -362,10 +378,19 @@ class OI4MessageBusProxy extends OI4Proxy {
                 dswid: CDataSetWriterIdLookup[resource]
               });
             } else {
+              if (Number.isNaN(dswidFilter)) return; // No poi filter means we can only filter by dswid in this else
+              if (dswidFilter === 8) { // Filtered by dswid
+                const actualPayload: ISpecificContainerConfig = this.containerState[resource];
+                payload.push({
+                  poi: actualPayload.Context.name.text.toLowerCase().replace(' ', ''),
+                  payload: actualPayload,
+                  dswid: CDataSetWriterIdLookup[resource]
+                });
+                break;
+              }
               return;
             }
           }
-
           break;
         }
         default: {
