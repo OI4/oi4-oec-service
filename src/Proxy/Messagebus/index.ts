@@ -130,15 +130,8 @@ class OI4MessageBusProxy extends OI4Proxy {
       }
     }
 
-    let payloadType = 'none';
     if (parsedMessage.Messages.length === 0) {
       this.logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
-    } else {
-      payloadType = await this.builder.checkPayloadType(parsedMessage.Messages[0].Payload);
-    }
-
-    if (payloadType === 'locale') {
-      this.logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
     }
 
     if (!schemaResult) {
@@ -159,8 +152,13 @@ class OI4MessageBusProxy extends OI4Proxy {
     const topicResource = topicArray[7];
     const topicFilter = topicArray.splice(8).join('/');
 
-    // The following switch/case reacts depending on the different topic elements
+    // Safety-Check: DataSetClassId
+    if (parsedMessage.DataSetClassId !== dscids[topicResource]) {
+      this.logger.log(`Error in pre-check, dataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${dscids[topicResource]}`, ESyslogEventFilter.warning);
+      return;
+    }
 
+    // The following switch/case reacts depending on the different topic elements
     // The message is directed directly at us
     if (topicAppId === this.oi4Id) {
       switch (topicMethod) {
@@ -174,12 +172,24 @@ class OI4MessageBusProxy extends OI4Proxy {
             break;
           }
 
+          let payloadType = 'empty';
           let page = 0;
           let perPage = 0;
 
-          if (payloadType === 'pagination') {
-            page = parsedMessage.Messages[0].Payload.page;
-            perPage = parsedMessage.Messages[0].Payload.perPage;
+          if (parsedMessage.Messages.length !== 0) {
+            for (const messages of parsedMessage.Messages) {
+              payloadType = await this.builder.checkPayloadType(messages.Payload);
+              if (payloadType === 'locale') {
+                this.logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
+              }
+              if (payloadType === 'pagination') {
+                page = messages.Payload.page;
+                perPage = messages.Payload.perPage;
+              }
+              if (payloadType === 'none') { // Not empty, locale or pagination
+                this.logger.log('Payload must be either empty, locale or pagination type in a /get/ request. Future versions might lead to an abort in message processing', ESyslogEventFilter.informational);
+              }
+            }
           }
 
           this.sendResource(topicResource, parsedMessage.MessageId, topicFilter, page, perPage)
