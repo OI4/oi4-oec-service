@@ -287,7 +287,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
         return;
       }
-    } catch (err: any) {
+    } catch (err) {
       this.logger.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
       return;
     }
