@@ -65,18 +65,6 @@ class OI4WebProxy extends OI4Proxy {
       indexResp.send(JSON.stringify(this.oi4Id));
     });
 
-    this.client.get('/containerInfo', (contInfoReq, contInfoResp) => {
-      contInfoResp.send(JSON.stringify({
-        name: this.containerState.mam.Model.text,
-        version: this.containerState.mam.SoftwareRevision,
-        description: this.containerState.mam.Description.text,
-        dependencies: ["none"],
-        vendor: "Hilscher Gesellschaft f\u00fcr Systemautomation mbH",
-        licenses: ["HILSCHER netIOT Source Code LICENSE AGREEMENT"],
-        disclaimer: "see https://www.netiot.com/fileadmin/user_upload/netIOT/en/pdf/Hilscher_Source_Code_License.pdf"
-      }));
-    });
-
     this.client.get('/mqttSettings', (mqttSettingsReq, mqttSettingsResp) => {
       mqttSettingsResp.send(JSON.stringify({
         brokerUrl: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS,
