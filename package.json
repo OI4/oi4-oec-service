@@ -1,6 +1,6 @@
 {
   "name": "oi4-service-node",
-  "version": "0.12.0-beta",
+  "version": "0.12.0",
   "description": "An OI4-compliant base service covering most of the \"mandatory\" functionality by the development guideline",
   "main": "app.ts",
   "scripts": {
