@@ -320,19 +320,62 @@ class OI4MessageBusProxy extends OI4Proxy {
         break;
       }
       case 'license': {
+        if (Number.isNaN(dswidFilter)) { // Try to filter with licenseId
+          if (this.containerState['license'].licenses.some((elem) => elem.licenseId === filter)) { // Does it even make sense to filter?
+            const filteredLicenseArr = this.containerState['license'].licenses.filter((elem) => { if (elem.licenseId === filter) return elem; });
+            for (const filteredLicense of filteredLicenseArr) {
+              payload.push({
+                poi: filteredLicense.licenseId,
+                payload: {
+                  components: filteredLicense.components,
+                },
+                dswid: CDataSetWriterIdLookup['license'],
+              });
+            }
+            break;
+          }
+        } else {
+          // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
+          // Whether there's a DSWID filter, or not we always send all licenses
+          // We only need a check here, if the DSWID even fits. If not, we just abort sending
+          if (dswidFilter !== CDataSetWriterIdLookup[resource]) {
+            this.logger.log(`DSWID does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+            return;
+          }
+        }
         for (const license of this.containerState['license'].licenses) {
           payload.push({
             poi: license.licenseId,
             payload: {
               components: license.components,
             },
-            dswid: CDataSetWriterIdLookup[resource], // FIXME: I'm not sure if the dswid can be a constant like that.
-            // Instead, it should be a combination of licenseDSWID and the index of the license array element concatenated
+            dswid: CDataSetWriterIdLookup[resource],
           })
         }
         break;
       }
       case 'publicationList': {
+        if (Number.isNaN(dswidFilter)) { // Try to filter with resource
+          if (this.containerState['publicationList'].publicationList.some((elem) => elem.resource === filter)) { // Does it even make sense to filter?
+            const filteredPubsArr = this.containerState['publicationList'].publicationList.filter((elem) => { if (elem.resource === filter) return elem; });
+            for (const filteredPubs of filteredPubsArr) {
+              payload.push({
+                poi: filteredPubs.resource,
+                payload: filteredPubs,
+                dswid: CDataSetWriterIdLookup[resource],
+              });
+            }
+            break;
+          }
+        } else {
+          // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
+          // Whether there's a DSWID filter, or not we always send all licenses
+          // We only need a check here, if the DSWID even fits. If not, we just abort sending
+          if (dswidFilter !== CDataSetWriterIdLookup[resource]) {
+            this.logger.log(`DSWID does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+            return;
+          }
+        }
         for (const pubs of this.containerState['publicationList'].publicationList) {
           payload.push({
             poi: pubs.resource,
@@ -343,6 +386,28 @@ class OI4MessageBusProxy extends OI4Proxy {
         break;
       }
       case 'subscriptionList': {
+        if (Number.isNaN(dswidFilter)) { // Try to filter with resource
+          // 7 is resource
+          if (this.containerState['subscriptionList'].subscriptionList.some((elem) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
+            const filteredSubsArr = this.containerState['subscriptionList'].subscriptionList.filter((elem) => { if (elem.topicPath.split('/')[7] === filter) return elem; });
+            for (const filteredSubs of filteredSubsArr) {
+              payload.push({
+                poi: filteredSubs.topicPath.split('/')[7],
+                payload: filteredSubs,
+                dswid: CDataSetWriterIdLookup[resource],
+              });
+            }
+            break;
+          }
+        } else {
+          // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
+          // Whether there's a DSWID filter, or not we always send all licenses
+          // We only need a check here, if the DSWID even fits. If not, we just abort sending
+          if (dswidFilter !== CDataSetWriterIdLookup[resource]) {
+            this.logger.log(`DSWID does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+            return;
+          }
+        }
         for (const subs of this.containerState['subscriptionList'].subscriptionList) {
           payload.push({ // TODO: poi out of topicPath property
             poi: subs.topicPath.split('/')[7],
