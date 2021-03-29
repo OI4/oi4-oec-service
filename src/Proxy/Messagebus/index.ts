@@ -185,6 +185,10 @@ class OI4MessageBusProxy extends OI4Proxy {
               if (payloadType === 'pagination') {
                 page = messages.Payload.page;
                 perPage = messages.Payload.perPage;
+                if (page === 0 || perPage === 0) {
+                  this.logger.log('Pagination requested either page or perPage 0, aborting send...');
+                  return;
+                }
               }
               if (payloadType === 'none') { // Not empty, locale or pagination
                 this.logger.log('Message must be either empty, locale or pagination type in a /get/ request. Future versions might lead to an abort in message processing', ESyslogEventFilter.informational);
