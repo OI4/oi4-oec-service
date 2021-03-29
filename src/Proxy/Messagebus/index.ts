@@ -131,7 +131,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     }
 
     if (parsedMessage.Messages.length === 0) {
-      this.logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
+      this.logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
     }
 
     if (!schemaResult) {
