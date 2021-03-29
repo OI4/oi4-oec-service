@@ -76,7 +76,7 @@ export class OPCUABuilder {
     this.publisherId = `${serviceType}/${oi4Id}`;
     this.jsonValidator = new Ajv();
     this.lastMessageId = '';
-    this.msgSizeOffset = parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10);
+    this.msgSizeOffset = 1000;
 
     this.topicRex = new RegExp(topicPathSchemaJson.pattern);
 
