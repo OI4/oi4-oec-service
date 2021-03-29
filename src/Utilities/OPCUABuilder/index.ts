@@ -163,7 +163,10 @@ export class OPCUABuilder {
     // If a specific page was requested, wo only send that page
     if ((page !== 0 && page > 0)) {
       if (page > networkMessageArray.length) return [];
-      return [networkMessageArray[page-1]];
+      // Since the request was for one specific page, we always set hasNext to false here
+      const returnedPage = networkMessageArray[page-1];
+      returnedPage.Messages[returnedPage.Messages.length - 1].Payload.hasNext = false;
+      return [returnedPage];
     } else {
       return networkMessageArray;
     }
