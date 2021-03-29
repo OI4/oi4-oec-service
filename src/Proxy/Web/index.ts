@@ -10,6 +10,7 @@ import { IOPCUANetworkMessage, IOPCUAMetaData } from '../../Models/IOPCUA';
 import { Logger } from '../../Utilities/Logger';
 import { ISpecificContainerConfig } from '../../Config/IContainerConfig';
 import { ESyslogEventFilter } from '../../Enums/EContainer';
+import pjson from '../../../package.json';
 
 class OI4WebProxy extends OI4Proxy {
   private client: express.Application;
@@ -65,13 +66,12 @@ class OI4WebProxy extends OI4Proxy {
       indexResp.send(JSON.stringify(this.oi4Id));
     });
 
-    this.client.get('/mqttSettings', (mqttSettingsReq, mqttSettingsResp) => {
-      mqttSettingsResp.send(JSON.stringify({
-        brokerUrl: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS,
-        brokerPort: process.env.OI4_EDGE_MQTT_SECURE_PORT,
-        userName: process.env.OI4_EDGE_MQTT_USERNAME,
-        password: process.env.OI4_EDGE_MQTT_PASSWORD,
-      }));
+    this.client.get('/packageVersion', (packageVersionReq, packageVersionResp) => {
+      packageVersionResp.send(pjson.version);
+    });
+
+    this.client.get('/packageLicense', (packageLicenseReq, packageLicenseResp) => {
+      packageLicenseResp.send(pjson.license);
     });
 
     this.client.get('/brokerState', (brokerReq, brokerResp) => {
