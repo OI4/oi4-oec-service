@@ -1,4 +1,4 @@
-import { ConfigParser } from '../Utilities/ConfigParser/index';
+import { ConfigParser } from '../Utilities/ConfigParser';
 import {
   IContainerState,
   IContainerConfig,

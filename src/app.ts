@@ -1,7 +1,7 @@
-import { OI4MessageBusProxy } from './Proxy/Messagebus/index';
-import { OI4WebProxy } from './Proxy/Web/index';
-import { ContainerState } from './Container/index';
-import { Logger } from './Utilities/Logger/index';
+import { OI4MessageBusProxy } from './Proxy/Messagebus';
+import { OI4WebProxy } from './Proxy/Web';
+import { ContainerState } from './Container';
+import { Logger } from './Utilities/Logger';
 import dotenv from 'dotenv';
 import path from 'path';
 import { ESyslogEventFilter } from './Enums/EContainer';

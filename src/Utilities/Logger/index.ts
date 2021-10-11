@@ -1,5 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import { OPCUABuilder } from '../OPCUABuilder/index';
+import { OPCUABuilder } from '../OPCUABuilder';
 import { CDataSetWriterIdLookup, EContainerEventCategory, IContainerEvent } from '../../Models/IContainer';
 import { Logger as WinstonLogger, transports } from 'winston';
 import winston = require('winston');
