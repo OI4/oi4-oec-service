@@ -1,6 +1,6 @@
 import { IContainerState } from '../Container';
 import { EventEmitter } from 'events';
-import { OPCUABuilder } from '../Utilities/OPCUABuilder/index';
+import { OPCUABuilder } from '../Utilities/OPCUABuilder';
 export class OI4Proxy extends EventEmitter {
   public oi4Id: string;
   public serviceType: string;
