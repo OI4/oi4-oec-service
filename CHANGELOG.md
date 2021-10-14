@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Click to see more.</summary>
 
 ### Added
-- 
+- Conformity validator added
 
 ### Changed
-- 
+- Refactored project to monorepo including the conformity validator
 
 ### Deprecated
 -
