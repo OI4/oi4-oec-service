@@ -1,0 +1,25 @@
+{
+  "name": "oi4-conformity-validator",
+  "version": "0.12.2-pre1",
+  "description": "OI4 conformity validator",
+  "main": "app.ts",
+  "author": "Open Industry 4.0 Alliance - Community",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "keywords": [
+    "oi4",
+    "conformity",
+    "validator"
+  ],
+  "devDependencies": {
+    "tslint": "^6.1.3",
+    "tslint-config-airbnb": "^5.11.2",
+    "typescript": "^4.1.5",
+    "typescript-tslint-plugin": "^1.0.1"
+  },
+  "scripts": {
+    "build": "yarn run clean && tsc -p tsconfig.json",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
