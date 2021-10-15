@@ -41,12 +41,12 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }}
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
+      # Generate the changelog based on the CHANGELOG.md
       - name: Generate Changelog
-          run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
+        run: echo "# Good things have arrived" > CHANGELOG.md
+      # Create GitHub Repo release
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: CHANGELOG.txt
-          # note you'll typically need to create a personal access token
-          # with permissions to create releases in the other repo
-          token: ${{ secrets.GITHUB_TOKEN }}
