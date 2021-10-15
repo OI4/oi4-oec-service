@@ -21,7 +21,9 @@ jobs:
           node-version: 14.x
           registry-url: 'https://npm.pkg.github.com'
       - name: install
-        run: npm install
+        run: |
+          export PACKAGES_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          npm install
       - name: test
         run: npm test
       # Publish to npm if this version is not published
@@ -48,6 +50,6 @@ jobs:
       # Create GitHub Repo release
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: CHANGELOG.txt
+          tag_name: v${{ env.PACKAGE_VERSION }}
