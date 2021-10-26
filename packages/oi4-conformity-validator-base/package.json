@@ -11,13 +11,9 @@
     "conformity",
     "validator"
   ],
-  "devDependencies": {
-    "tslint": "^6.1.3",
-    "tslint-config-airbnb": "^5.11.2",
-    "typescript": "^4.1.5",
-    "typescript-tslint-plugin": "^1.0.1"
-  },
+
   "scripts": {
+    "install": "yarn install",
     "build": "yarn run clean && tsc -p tsconfig.json",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "test": "echo \"Error: no test specified\" && exit 1"
