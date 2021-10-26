@@ -23,10 +23,9 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
       - name: install
         run: |
-          export PACKAGES_AUTH_TOKEN=${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
           yarn install
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # No test so far -> skip them for now
       #- name: test
       #  run: npm test
