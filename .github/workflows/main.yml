@@ -23,9 +23,10 @@ jobs:
       - name: install
         run: |
           export PACKAGES_AUTH_TOKEN=${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
-          npm install
-      - name: test
-        run: npm test
+          yarn install
+      # No test so far -> skip them for now
+      #- name: test
+      #  run: npm test
       # Publish to npm if this version is not published
       - name: publish
         run: |
