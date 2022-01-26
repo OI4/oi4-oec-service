@@ -1,9 +1,12 @@
-# oi4-service
+# Open Industry 4.0 Alliance - Open Edge Computing Service
+
 An OI4-compliant base service covering most of the "mandatory" functionality by the development guideline
 
-Contained packages:
-## oi4-conformity-validator-base
+To install locally run
 
-## oi4-service-node
-
-- force a build -
+```sh
+export PACKAGES_AUTH_TOKEN = YOUR_GIT_HUB_PERSONAL_ACCESS_TOKEN
+yarn install
+yarn bootstrap
+yarn build
+```

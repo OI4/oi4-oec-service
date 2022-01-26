@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "types": [
+      "node",
+      "jest"
+    ],
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules/**/*"
+  ]
+}

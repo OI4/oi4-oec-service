@@ -1,0 +1,34 @@
+{
+  "name": "@oi4/oi4-oec-service-model",
+  "version": "0.1.0",
+  "description": "OI4 Open Edge Computing model",
+  "author": "Open Industry 4.0 Alliance - Community",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "keywords": [
+    "oi4",
+    "oec",
+    "opc-ua"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OI4/oi4-service.git",
+    "directory": "packages/oi4-oec-service-model"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "dependencies": {
+    "@oi4/oi4-oec-service-opcua-model": "^0.1.0"
+  },
+  "scripts": {
+    "build": "yarn run clean && tsc -b tsconfig.json",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "deploy": "echo \"Deploy not specified\" && exit 0",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
+    "package": "echo \"Package not specified\" && exit 0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
