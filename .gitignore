@@ -91,9 +91,6 @@ dist
 # vuepress build output
 .vuepress/dist
 
-# Serverless directories
-.serverless/
-
 # FuseBox cache
 .fusebox/
 
@@ -107,5 +104,5 @@ dist
 out
 .vscode
 .idea
-.idea
 /oi4-service.iml
+.DS_Store

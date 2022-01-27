@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - development
     tags:
       - "!*"
 jobs:
@@ -51,5 +50,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body_path: CHANGELOG.md
+          body_path: RELEASE_NOTES.md
           tag_name: v${{ env.PACKAGE_VERSION }}
