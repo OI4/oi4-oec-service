@@ -14,11 +14,11 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/OI4/oi4-service.git",
+    "url": "https://github.com/OI4/oi4-service.git",
     "directory": "packages/oi4-oec-service-model"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/@oi4"
   },
   "dependencies": {
     "@oi4/oi4-oec-service-opcua-model": "^0.4.0"

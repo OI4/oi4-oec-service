@@ -14,11 +14,11 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/OI4/oi4-service.git",
+    "url": "https://github.com/OI4/oi4-service.git",
     "directory": "packages/oi4-oec-service-opcua-model"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/@oi4"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
