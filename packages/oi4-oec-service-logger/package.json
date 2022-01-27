@@ -12,13 +12,13 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OI4/oi4-service.git",
-    "directory": "packages/oi4-oec-service-logger"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@oi4"
+    "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
     "@oi4/oi4-oec-service-model": "^0.4.1",
