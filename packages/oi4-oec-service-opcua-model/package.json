@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-opcua-model",
-  "version": "0.3.0",
+  "version": "0.1.0",
   "description": "OI4 Open Edge Computing OPC UA model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
