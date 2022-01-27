@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-model",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "OI4 Open Edge Computing model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -14,7 +14,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OI4/oi4-service.git",
+    "url": "git://github.com/OI4/oi4-service.git",
     "directory": "packages/oi4-oec-service-model"
   },
   "publishConfig": {
