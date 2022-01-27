@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-conformity-validator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "OI4 conformity validator",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -20,7 +20,7 @@
     "registry": "https://npm.pkg.github.com/"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-logger": "^0.2.0",
+    "@oi4/oi4-oec-service-logger": "^0.3.0",
     "async-mqtt": "^2.5.0"
   },
   "scripts": {
