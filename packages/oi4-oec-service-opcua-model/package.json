@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-opcua-model",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "OI4 Open Edge Computing OPC UA model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -27,5 +27,6 @@
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "package": "echo \"Package not specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "gitHead": "60e0f60fee349ddeb8ddcfe2979372bc7c65e9dd"
 }
