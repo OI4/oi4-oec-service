@@ -4,7 +4,7 @@
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": true,
+  "private": false,
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
@@ -32,6 +32,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "publish": "lerna publish --force-publish --loglevel silly\n",
     "clean": "lerna clean",
     "clean:build": "lerna run clean",
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",

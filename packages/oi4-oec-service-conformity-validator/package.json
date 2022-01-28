@@ -4,7 +4,7 @@
   "description": "OI4 conformity validator",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": true,
+  "private": false,
   "main": "index.ts",
   "keywords": [
     "oi4",
