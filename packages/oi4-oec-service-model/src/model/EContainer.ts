@@ -18,13 +18,9 @@ export enum EGenericEventFilter {
 
 export enum ESyslogEventFilter {
   emergency = 'emergency',
-
   alert = 'alert',
-
   critical = 'critical',
-
   error = 'error',
-
   warning = 'warning',
   notice = 'notice',
   informational = 'informational',
