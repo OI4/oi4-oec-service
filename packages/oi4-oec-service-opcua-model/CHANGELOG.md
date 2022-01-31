@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.9-alpha.0](https://github.com/OI4/oi4-service/compare/@oi4/oi4-oec-service-opcua-model@0.4.8...@oi4/oi4-oec-service-opcua-model@0.4.9-alpha.0) (2022-01-31)
+
+**Note:** Version bump only for package @oi4/oi4-oec-service-opcua-model
+
+
+
+
+
+## [0.4.9-alpha.0](https://github.com/OI4/oi4-service/compare/@oi4/oi4-oec-service-opcua-model@0.4.8...@oi4/oi4-oec-service-opcua-model@0.4.9-alpha.0) (2022-01-31)
+
+**Note:** Version bump only for package @oi4/oi4-oec-service-opcua-model
+
+
+
+
+
+## [0.4.9](https://github.com/OI4/oi4-service/compare/@oi4/oi4-oec-service-opcua-model@0.4.8...@oi4/oi4-oec-service-opcua-model@0.4.9) (2022-01-31)
+
+**Note:** Version bump only for package @oi4/oi4-oec-service-opcua-model
+
+
+
+
+
 ## [0.4.8](https://github.com/OI4/oi4-service/compare/@oi4/oi4-oec-service-opcua-model@0.4.7...@oi4/oi4-oec-service-opcua-model@0.4.8) (2022-01-28)
 
 **Note:** Version bump only for package @oi4/oi4-oec-service-opcua-model
