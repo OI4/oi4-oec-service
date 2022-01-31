@@ -1351,37 +1351,6 @@
   resolved "https://npm.pkg.github.com/download/@oi4/json-schemas/0.12.2/14480ba42b5bba95456692c061325125bce58b611dd05d013d4170622b9ae95c"
   integrity sha512-Sj6gAdA62hFCbvMMOrBLeXU2Sb9jo4WJUQSK8eMnWV8Lq3NuisopMDlL1BFoIlnz+dN1poQjcmQSYhxSsTaC9w==
 
-"@oi4/oi4-oec-service-conformity-validator@^0.3.0":
-  version "0.4.11-alpha.0"
-  resolved "https://npm.pkg.github.com/download/@oi4/oi4-oec-service-conformity-validator/0.4.11-alpha.0/002e590694962b64d211025284b9efc165c3884c0f36e5747fde69727d42c217#ed04c665c0fde2086f11b13c1d5fe5c8fa83ef5a"
-  integrity sha512-1qSEPTD5ZLK0JqSwlL39IsfwFjPFt3PykWw7+zRCdXtW57s+jJPsIrq9dFv1Cn3o1wi6lMhg/7blgAXho7vJcw==
-  dependencies:
-    "@oi4/oi4-oec-service-logger" "^0.4.11-alpha.0"
-    async-mqtt "^2.5.0"
-
-"@oi4/oi4-oec-service-logger@^0.4.11-alpha.0":
-  version "0.4.11-alpha.0"
-  resolved "https://npm.pkg.github.com/download/@oi4/oi4-oec-service-logger/0.4.11-alpha.0/6c9377602653286a0f1a39365b8f71e890abd4e140f0dc1cfe161a268b97268d#81786388f2c15f73ab5272e8b4201a5ea0c31186"
-  integrity sha512-UrrkBVUqCKpkbScGq0eUbVw5pzzqAo01YgJcxW9uMmjMP7RiGgL7Qu8GKCOjab3zunmbskooKm7dgaaMOWUeiw==
-  dependencies:
-    "@oi4/oi4-oec-service-model" "^0.4.11-alpha.0"
-    "@oi4/oi4-oec-service-opcua-model" "^0.4.11-alpha.0"
-    async-mqtt "^2.5.0"
-    winston "^3.3.3"
-    winston-syslog "^2.4.4"
-
-"@oi4/oi4-oec-service-model@^0.4.11-alpha.0":
-  version "0.4.11-alpha.0"
-  resolved "https://npm.pkg.github.com/download/@oi4/oi4-oec-service-model/0.4.11-alpha.0/82a9b84be68f0fc791f3ac0b7c6e11067897672bd8ac23fff766cb590d679a63#a98900dcc91bcf6e7bcec81f8d761b1fb822ea3e"
-  integrity sha512-lJ1onqA+W1mijGXDDFgu610JQycwCeK2ANYyyTxuOmRddDMZqHDAgf5ovegvSxf3CPqO8a5aN+K6g8bdFgMTJQ==
-  dependencies:
-    "@oi4/oi4-oec-service-opcua-model" "^0.4.11-alpha.0"
-
-"@oi4/oi4-oec-service-opcua-model@^0.4.11-alpha.0":
-  version "0.4.11-alpha.0"
-  resolved "https://npm.pkg.github.com/download/@oi4/oi4-oec-service-opcua-model/0.4.11-alpha.0/649971c918c77e2d6ace4ab17e71245c414b5f7d1d4ef17c9696756b499b0219#24d447954f587ed6b358101312e8bcab4100ff06"
-  integrity sha512-3DEa0Du069ewEKs/3SqsKPkn5SW7YPmT2G9DyD5SPqj5npYdouh2L4YEMRh9A53ut/EvWn9gEg5Z939zx3VcQA==
-
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
   resolved "https://registry.npmjs.org/@sinonjs/commons/-/commons-1.8.3.tgz"
