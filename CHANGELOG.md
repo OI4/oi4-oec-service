@@ -11,10 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Click to see more.</summary>
 
 ### Added
-- Conformity validator added
+- 
 
 ### Changed
-- Refactored project to monorepo including the conformity validator
+- 
 
 ### Deprecated
 -
@@ -30,4 +30,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 </details>
 
-[Unreleased]: https://github.com/OI4/oi4-service/compare/HEAD
+## [0.12.2] - 2022-01-31
+
+### Added
+- Conformity validator added
+
+### Changed
+- Refactored project to monorepo including the conformity validator
+
+## [0.12.1] - 2021-10-14
+
+Initial commit before refactoring
+
+[Unreleased]: https://github.com/OI4/oi4-service/compare/HEAD/compare/0.12.2...HEAD
+[0.12.2]: https://github.com/OI4/oi4-service/compare/HEAD/compare/0.12.1...0.12.2
+[0.12.1]: https://github.com/PCPS/sgc400-gateway-lambda/releases/tag/0.12.1
