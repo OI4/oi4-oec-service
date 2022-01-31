@@ -1,0 +1,36 @@
+name: release
+
+env:
+  CI: true
+on:
+  push:
+    branches:
+      - development
+    tags:
+      - "!*"
+jobs:
+  release:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+          registry-url: 'https://npm.pkg.github.com'
+      - name: install
+        run: |
+          yarn install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
+      # No test so far -> skip them for now
+      #- name: test
+      #  run: npm test
+      # Publish to npm.pkg.github.com if this version is not published
+      - name: publish
+        run: |
+          yarn prePublish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
