@@ -31,7 +31,7 @@ jobs:
       # Publish to npm if this version is not published
       - name: publish
         run: |
-          publishIt
+          yarn publishIt
         env:
           NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # Push tag to GitHub if package.json version's tag is not tagged
