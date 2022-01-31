@@ -4,7 +4,7 @@
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": false,
+  "private": true,
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
