@@ -19,8 +19,8 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-conformity-validator": "^0.4.10-alpha.0",
-    "@oi4/oi4-oec-service-logger": "^0.4.10-alpha.0",
+    "@oi4/oi4-oec-service-conformity-validator": "^0.4.11-alpha.0",
+    "@oi4/oi4-oec-service-logger": "^0.4.11-alpha.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1"
