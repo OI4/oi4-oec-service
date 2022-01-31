@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - development
     tags:
       - "!*"
 jobs:
@@ -47,12 +46,9 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }}
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
-      # Generate the changelog based on the CHANGELOG.md
-      - name: Generate Changelog
-        run: echo "# Good things have arrived" > CHANGELOG.md
       # Create GitHub Repo release
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body_path: CHANGELOG.txt
+          body_path: RELEASE_NOTES.md
           tag_name: v${{ env.PACKAGE_VERSION }}

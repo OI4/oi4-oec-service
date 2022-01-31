@@ -1,49 +1,42 @@
 {
-  "name": "oi4-service",
-  "version": "0.12.2-pre1",
+  "name": "@oi4/oi4-oec-service",
+  "version": "0.4.11",
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
   "private": true,
+  "keywords": [],
+  "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
     "packages/*"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:OI4/oi4-service.git"
-  },
   "dependencies": {
     "@oi4/json-schemas": "^0.12.0"
   },
   "devDependencies": {
-    "@types/ws": "^8.2.0",
-    "@types/node": "^14.14.28",
     "@types/jest": "^25.1.4",
+    "@types/node": "^14.14.28",
+    "@types/ws": "^8.2.0",
+    "@types/lodash": "^4.14.178",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
     "eslint": "^6.8.0",
     "jest": "^25.2.1",
     "lerna": "^4.0.0",
     "lint-staged": "^10.1.3",
-    "ts-jest": "^25.4.0",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.8.3"
+    "madge": "^4.0.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.2",
+    "lodash": "^4.17.21"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "clean": "lerna clean",
-    "install": "lerna run install",
     "build": "lerna run build",
-    "lint": "lerna run lint"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
-  "engines": {
-    "node": ">=12.0.0 <17.0.0",
-    "yarn": ">=1.22.0 <2"
+    "clean": "lerna clean",
+    "clean:build": "lerna run clean",
+    "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prePublish": "lerna publish prepatch --no-git-tag-version --preid alpha --loglevel silly --yes --force-publish",
+    "publishIt": "lerna publish --no-git-tag-version --loglevel silly --yes"
   }
 }

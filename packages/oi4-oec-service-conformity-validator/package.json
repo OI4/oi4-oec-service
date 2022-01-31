@@ -1,0 +1,35 @@
+{
+  "name": "@oi4/oi4-oec-service-conformity-validator",
+  "version": "0.4.11",
+  "description": "OI4 conformity validator",
+  "author": "Open Industry 4.0 Alliance - Community",
+  "license": "BSD-3-Clause",
+  "private": false,
+  "main": "index.ts",
+  "keywords": [
+    "oi4",
+    "conformity",
+    "validator"
+  ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OI4/oi4-service.git"
+  },
+  "dependencies": {
+    "@oi4/oi4-oec-service-logger": "^0.4.11",
+    "async-mqtt": "^2.5.0"
+  },
+  "scripts": {
+    "build": "yarn run clean && tsc -b tsconfig.json",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "deploy": "echo \"Deploy not specified\" && exit 0",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
+    "package": "echo \"Package not specified\" && exit 0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "gitHead": "334eba63fdecdf5c522c3158a96932b4e7d237b5"
+}
