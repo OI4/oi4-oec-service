@@ -12,7 +12,7 @@ import { ISpecificContainerConfig } from '@oi4/oi4-oec-service-model';
 import { EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter } from '@oi4/oi4-oec-service-model';
 
 class OI4MessageBusProxy extends OI4Proxy {
-  private client: mqtt.AsyncClient;
+  private readonly client: mqtt.AsyncClient;
   private logger: Logger;
   constructor(container: IContainerState) {
     super(container);

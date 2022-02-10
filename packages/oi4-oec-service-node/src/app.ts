@@ -1,10 +1,14 @@
-import { OI4MessageBusProxy } from './Proxy/Messagebus';
-// import { OI4WebProxy } from './Proxy/Web';
-import { ContainerState } from './Container';
-import { Logger } from '@oi4/oi4-oec-service-logger';
+import {OI4MessageBusProxy} from './Proxy/Messagebus';
+import {ContainerState} from './Container';
+import {Logger} from '@oi4/oi4-oec-service-logger';
 import dotenv from 'dotenv';
 import path from 'path';
-import { ESyslogEventFilter } from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
+
+export {OI4MessageBusProxy} from './Proxy/Messagebus';
+export {ContainerState} from './Container';
+export {OI4WebProxy} from './Proxy/Web';
+export {FileLogger} from './Utilities/FileLogger';
 
 // Here, we get our configuration from Environment variables. If either of them is not specified, we use a provided .env file
 if (!(process.env.OI4_EDGE_MQTT_BROKER_ADDRESS) ||
@@ -12,7 +16,7 @@ if (!(process.env.OI4_EDGE_MQTT_BROKER_ADDRESS) ||
     !(process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME) ||
     !(process.env.USE_HTTPS) ||
     !(process.env.OI4_EDGE_EVENT_LEVEL)) {
-    dotenv.config({ path: path.join(__dirname, '.env') });
+    dotenv.config({path: path.join(__dirname, '.env')});
     if (!(process.env.OI4_EDGE_EVENT_LEVEL) || !(process.env.OI4_EDGE_EVENT_LEVEL in ESyslogEventFilter)) {
         console.log('Init: LOG_LEVEL either not specified or wrong enum value');
         process.env.OI4_EDGE_EVENT_LEVEL = 'warning';

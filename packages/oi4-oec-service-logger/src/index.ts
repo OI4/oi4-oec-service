@@ -18,15 +18,15 @@ class Logger {
    * @param {boolean} enabled - enables or disables logging
    * @param {number} level  - sets the minimum logging level
    */
-  private _syslogTransport: SyslogTransportInstance;
+  private readonly _syslogTransport: SyslogTransportInstance;
   private _winstonLogger: WinstonLogger;
   private _enabled: boolean; /*tslint:disable-line*/
   private _level: ESyslogEventFilter; /*tslint:disable-line*/
   private _name: string; /*tslint:disable-line*/
-  private _mqttClient?: mqtt.AsyncClient;
-  private _oi4Id?: string;
-  private _serviceType?: string;
-  private _builder?: OPCUABuilder;
+  private readonly _mqttClient?: mqtt.AsyncClient;
+  private readonly _oi4Id?: string;
+  private readonly _serviceType?: string;
+  private readonly _builder?: OPCUABuilder;
   private readonly syslogFilterToEnum = {
     debug: 7,
     informational: 6,
