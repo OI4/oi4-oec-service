@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -37,6 +37,7 @@
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prePublish": "lerna publish prepatch --no-git-tag-version --preid alpha --loglevel silly --yes --force-publish",
-    "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes"
+    "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes",
+    "linkIt": "lerna run linkIt"
   }
 }
