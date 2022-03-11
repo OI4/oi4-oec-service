@@ -46,7 +46,7 @@ import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {EAssetType, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 import {IClientOptions} from 'async-mqtt';
 
-const {promiseTimeout} = require('../../Service/src/Utilities/Timeout/index');
+import {promiseTimeout} from './timeout';
 
 export * from './model/IConformityValidator';
 
@@ -442,7 +442,6 @@ export class ConformityValidator extends EventEmitter {
             1000, /*tslint:disable-line*/ // 700ms as the timeout
             `checkResourceConformity-${resource}Error-onTopic-${fullTopic}/get/${resource}${endTag}`, /*tslint:disable-line*/
         );
-
     }
 
     /**

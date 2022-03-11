@@ -84,7 +84,7 @@ class Logger {
     }
     this._syslogTransport = new Syslog({ type: '5424'});
     this._winstonLogger = winston.createLogger({
-      levels: winston.config.syslog.levels,
+      //levels: winston.config.syslog.levels,
       transports: [
         new transports.Console(),
         this._syslogTransport,
