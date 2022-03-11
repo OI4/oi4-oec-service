@@ -10,23 +10,27 @@ import { CDataSetWriterIdLookup } from '@oi4/oi4-oec-service-model';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import { ISpecificContainerConfig } from '@oi4/oi4-oec-service-model';
 import { EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter } from '@oi4/oi4-oec-service-model';
+import {MqttSettings} from "./MqttSettings";
 
 class OI4MessageBusProxy extends OI4Proxy {
   private readonly client: mqtt.AsyncClient;
   private logger: Logger;
-  constructor(container: IContainerState) {
+  constructor(container: IContainerState, mqttSettings: MqttSettings) {
     super(container);
 
     // Add Server Object depending on configuration
     const serverObj = {
-      host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
-      port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
+      host: mqttSettings.host,
+      port: mqttSettings.port,
+      //host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
+      //port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
     };
     console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
 
     // Initialize MQTT Options
     const mqttOpts: IClientOptions = {
-      clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
+      clientId: mqttSettings.clientId,
+      //clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
       servers: [serverObj],
       will: {
         topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
@@ -41,13 +45,17 @@ class OI4MessageBusProxy extends OI4Proxy {
       },
     };
 
-    if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
-      mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
-      mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
+    if (!mqttSettings.useUnsecureBroker) { // This should be the normal case, we connect securely
+      mqttOpts.username = mqttSettings.username;
+      mqttOpts.password = mqttSettings.password;
+    //if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
+      //mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
+      //mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
       mqttOpts.protocol = 'mqtts';
       mqttOpts.rejectUnauthorized = false;
     }
 
+    console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
     this.client = mqtt.connect(mqttOpts);
 
     this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
@@ -55,6 +63,10 @@ class OI4MessageBusProxy extends OI4Proxy {
 
     this.client.on('error', async (err: Error) => {
       console.log(`Error in mqtt client: ${err}`);
+    });
+    this.client.on('close', async () => {
+      this.containerState.brokerState = false;
+      console.log('Connection to mqtt broker closed');
     });
     this.client.on('disconnect', async () => {
       this.containerState.brokerState = false;

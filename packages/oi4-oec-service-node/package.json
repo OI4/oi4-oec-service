@@ -1,12 +1,12 @@
 {
   "name": "@oi4/oi4-oec-service-node",
-  "version": "0.12.4",
+  "version": "0.12.3",
   "description": "An OI4-compliant base service covering most of the \"mandatory\" functionality by the development guideline",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
   "private": false,
-  "main": "dist/app.ts",
-  "types": "dist/app.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "keywords": [
     "oi4",
     "servcie"
@@ -20,8 +20,8 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-conformity-validator": "^0.12.4",
-    "@oi4/oi4-oec-service-logger": "^0.12.4",
+    "@oi4/oi4-oec-service-conformity-validator": "^0.12.3",
+    "@oi4/oi4-oec-service-logger": "^0.12.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1"
