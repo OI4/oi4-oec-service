@@ -1,5 +1,5 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/BaseDataType.schema.json'
+import schema from '../schemas/BaseDataType.schema.json'
 
 expect.extend(
   matchersWithOptions({

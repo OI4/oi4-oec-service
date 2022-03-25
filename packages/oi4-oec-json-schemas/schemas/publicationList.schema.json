@@ -1,0 +1,63 @@
+{
+  "$id": "publicationList.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resource", "DataSetWriterId", "oi4Identifier"],
+  "properties": {
+    "resource": {
+      "description": "Resource of publication",
+      "$ref": "resources.schema.json"
+    },
+    "tag": {
+      "description": "Tag of publication",
+      "type": "string"
+    },
+    "DataSetWriterId": {
+      "$ref": "dataTypes/uint16.schema.json"
+    },
+    "oi4Identifier": {
+      "$ref": "oi4Identifier.schema.json"
+    },
+    "active": {
+      "description": "Defaults to true if omitted",
+      "type": "boolean"
+    },
+    "interval": {
+      "description": "Interval",
+      "type": "integer",
+      "minimum": 0
+    },
+    "precisions": {
+      "$ref": "#/definitions/precisionObject"
+    },
+    "explicit": {
+      "description": "Defaults EXPL_OFF_0",
+      "type": "string",
+      "enum": [
+        "EXPL_OFF_0",
+        "EXPL_TAG_1",
+        "EXPL_DSWID_2",
+        "EXPL_TAG_AND_DSWID_3"
+      ]
+    },
+    "config": {
+      "description": "Config-ENUM(!)",
+      "type": "string",
+      "enum": ["NONE_0", "STATUS_1", "INTERVAL_2", "STATUS_AND_INTERVAL_3"]
+    }
+  },
+  "definitions": {
+    "precisionObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^.*$": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

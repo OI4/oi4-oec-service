@@ -1,0 +1,35 @@
+{
+  "$id": "NetworksMessage.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of an event",
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "TODO: oi4identifier needs to be updated and implemented here",
+  "properties": {
+    "CorrelationId": {
+      "type": "string",
+      "description": "Correlation ID used for logging and as debug information"
+    },
+    "DataSetClassId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Dataset Class ID"
+    },
+    "MessageId": {
+      "type": "string",
+      "description": "Message ID",
+      "$comment": "TODO: find a way to include the oi4Identifier better here",
+      "pattern": "^.{1,}-{oi4Identifier}"
+    },
+    "MessageType": {
+      "type": "string",
+      "enum": ["ua-data"],
+      "description": "Message Type"
+    },
+    "PublisherId": {
+      "description": "Publisher ID",
+      "$ref": "oi4Identifier.schema.json"
+    }
+  },
+  "required": ["MessageId", "MessageType", "PublisherId"]
+}

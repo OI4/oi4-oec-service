@@ -1,6 +1,6 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/ConfigurationVersionDataType.schema.json'
-import uint32 from '../src/schemas/dataTypes/uint32.schema.json'
+import schema from '../schemas/ConfigurationVersionDataType.schema.json'
+import uint32 from '../schemas/dataTypes/uint32.schema.json'
 
 import validObjs from './__fixtures__/ConfigurationVersionDataType_valid.json'
 import invalidObjs from './__fixtures__/ConfigurationVersionDataType_invalid.json'

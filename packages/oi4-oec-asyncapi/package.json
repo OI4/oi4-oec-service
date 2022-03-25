@@ -1,8 +1,8 @@
 {
   "name": "@oi4/oi4-oec-asyncapi",
-  "version": "1.0.0",
+  "version": "0.12.3",
   "description": "AsyncAPI description of the OI4 OEC topics and messages",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "publishConfig": {
     "access": "restricted",
     "registry": "https://npm.pkg.github.com"
@@ -15,6 +15,9 @@
     "OI4",
     "AsynchAPI"
   ],
+  "dependencies": {
+    "@oi4/oi4-oec-json-schemas": "^0.12.3"
+  },
   "devDependencies": {
     "@asyncapi/generator": "^1.9.0",
     "@asyncapi/html-template": "^0.24.8",

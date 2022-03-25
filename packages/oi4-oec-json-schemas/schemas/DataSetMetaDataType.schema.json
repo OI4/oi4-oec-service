@@ -1,0 +1,37 @@
+{
+  "$id": "DataSetMetaDataType.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a metadata message",
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "TODO: needs to be specified",
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of DataSet"
+    },
+    "dataSetClassId": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "$ref": "LocalizedText.schema.json"
+    },
+    "fields": {
+      "$ref": "FieldMetaData.schema.json"
+    },
+    "namespaces": {
+      "description": "TODO"
+    },
+    "structuredDataTypes": {
+      "description": "TODO"
+    },
+    "enumDataTypes": {
+      "description": "TODO"
+    },
+    "simpleDataTypes": {
+      "description": "TODO"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import configSchema from '../src/schemas/configPublish.schema.json'
-import localizationSchema from '../src/schemas/LocalizedText.schema.json'
-import localeSchema from '../src/schemas/constants/locale.pattern.schema.json'
+import configSchema from '../schemas/config.schema.json'
+import localizationSchema from '../schemas/LocalizedText.schema.json'
+import localeSchema from '../schemas/constants/locale.pattern.schema.json'
 
 import validConfigObjs from './__fixtures__/configs_valid.json'
 import invalidConfigObjs from './__fixtures__/configs_invalid.json'

@@ -1,0 +1,8 @@
+{
+  "$id": "locale.pattern.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "string",
+  "pattern": "^[A-z]{2}(-[A-z]{2,3})?$",
+  "description": "ISO639-1 concatenation",
+  "$comment": "This is more relaxed than IETF RFC 5646, because some variations are used."
+}

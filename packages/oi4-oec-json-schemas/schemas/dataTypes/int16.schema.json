@@ -1,0 +1,8 @@
+{
+  "$id": "int16.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a metadata message",
+  "type": "integer",
+  "minimum": -32768,
+  "maximum": 32767
+}

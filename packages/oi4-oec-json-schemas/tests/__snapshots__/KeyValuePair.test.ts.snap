@@ -1,63 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`KeyValuePair schema (0) match fails for invalid config -> empty: empty 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'key'[39m
-[31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  must have required property 'value'[39m
-[31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m"
+  should have required property 'key'
+    Path:     KeyValuePair.schema.json#/required
+  should have required property 'value'
+    Path:     KeyValuePair.schema.json#/required
+"
 `;
 
 exports[`KeyValuePair schema (1) match fails for invalid config -> empty key: empty key 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /key must have required property 'name'[39m
-[31m    Received: [33m<object> [39m[31m{}[39m
-[31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  /key must have required property 'namespaceIndex'[39m
-[31m    Received: [33m<object> [39m[31m{}[39m
-[31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m"
+  .key should have required property 'name'
+    Received: <object> {}
+    Path:     KeyValuePair.schema.json#/required
+  .key should have required property 'namespaceIndex'
+    Received: <object> {}
+    Path:     KeyValuePair.schema.json#/required
+"
 `;
 
 exports[`KeyValuePair schema (2) match fails for invalid config -> invalid key: invalid key 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /key must have required property 'namespaceIndex'[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}[39m
-[31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'nameSpaceIndex'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}[39m
-[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
-[31m[39m"
+  should NOT have additional properties, but found 'nameSpaceIndex'
+    Expected: <boolean> false
+    Received: <object> {\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}
+    Path:     KeyValuePair.schema.json#/additionalProperties
+  .key should have required property 'namespaceIndex'
+    Received: <object> {\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}
+    Path:     KeyValuePair.schema.json#/required
+"
 `;
 
 exports[`KeyValuePair schema (3) match fails for invalid config -> invalid key property value: invalid key property value 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /key/namespaceIndex must be integer[39m
-[31m    Received: [33m<string>[39m[31m 0[39m
-[31m    Path:     KeyValuePair.schema.jsondataTypes/uint16.schema.json/type[39m
-[31m[39m"
+  .key.namespaceIndex should be integer
+    Received: <string> 0
+    Path:     KeyValuePair.schema.jsonuint16.schema.json/type
+"
 `;
 
 exports[`KeyValuePair schema (4) match fails for invalid config -> additional properties: additional properties 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must NOT have additional properties, but found 'bar'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
-[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"namespaceIndex\\":0,\\"foo\\":\\"bar\\"}[39m
-[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
-[31m[39m"
+  should NOT have additional properties, but found 'bar'
+    Expected: <boolean> false
+    Path:     KeyValuePair.schema.json#/additionalProperties
+  should NOT have additional properties, but found 'foo'
+    Expected: <boolean> false
+    Received: <object> {\\"name\\":\\"\\",\\"namespaceIndex\\":0,\\"foo\\":\\"bar\\"}
+    Path:     KeyValuePair.schema.json#/additionalProperties
+"
 `;

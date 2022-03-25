@@ -1,8 +1,8 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/mam.schema.json'
-import LocalizedText from '../src/schemas/LocalizedText.schema.json'
-import int32 from '../src/schemas/dataTypes/int32.schema.json'
-import localeSchema from '../src/schemas/constants/locale.pattern.schema.json'
+import schema from '../schemas/mam.schema.json'
+import LocalizedText from '../schemas/LocalizedText.schema.json'
+import int32 from '../schemas/dataTypes/int32.schema.json'
+import localeSchema from '../schemas/constants/locale.pattern.schema.json'
 
 import validObjs from './__fixtures__/mam_valid.json'
 import invalidObjs from './__fixtures__/mam_invalid.json'

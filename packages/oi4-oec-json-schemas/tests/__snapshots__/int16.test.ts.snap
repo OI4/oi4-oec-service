@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`int16 schema test invalid values: -32769 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must be >= -32768[39m
-[31m    Path:     dataTypes/int16.schema.json#/minimum[39m
-[31m[39m"
+  should be >= -32768
+    Path:     int16.schema.json#/minimum
+"
 `;
 
 exports[`int16 schema test invalid values: 1.5 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must be integer[39m
-[31m    Path:     dataTypes/int16.schema.json#/type[39m
-[31m[39m"
+  should be integer
+    Path:     int16.schema.json#/type
+"
 `;
 
 exports[`int16 schema test invalid values: 32768 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must be <= 32767[39m
-[31m    Path:     dataTypes/int16.schema.json#/maximum[39m
-[31m[39m"
+  should be <= 32767
+    Path:     int16.schema.json#/maximum
+"
 `;

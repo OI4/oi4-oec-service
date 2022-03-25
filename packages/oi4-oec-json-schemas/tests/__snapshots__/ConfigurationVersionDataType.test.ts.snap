@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ConfigurationVersionDataType schema (0) match fails for invalid config -> empty: empty 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'majorVersion'[39m
-[31m    Path:     ConfigurationVersionDataType.schema.json#/required[39m
-[31m[39m[31m  must have required property 'minorVersion'[39m
-[31m    Path:     ConfigurationVersionDataType.schema.json#/required[39m
-[31m[39m"
+  should have required property 'majorVersion'
+    Path:     ConfigurationVersionDataType.schema.json#/required
+  should have required property 'minorVersion'
+    Path:     ConfigurationVersionDataType.schema.json#/required
+"
 `;
 
 exports[`ConfigurationVersionDataType schema (1) match fails for invalid config -> versions out of range: versions out of range 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /majorVersion must be <= 4294967295[39m
-[31m    Received: [33m<number>[39m[31m 4294967296[39m
-[31m    Path:     ConfigurationVersionDataType.schema.jsondataTypes/uint32.schema.json/maximum[39m
-[31m[39m[31m  /minorVersion must be >= 0[39m
-[31m    Received: [33m<number>[39m[31m -4294967295[39m
-[31m    Path:     ConfigurationVersionDataType.schema.jsondataTypes/uint32.schema.json/minimum[39m
-[31m[39m"
+  .majorVersion should be <= 4294967295
+    Received: <number> 4294967296
+    Path:     ConfigurationVersionDataType.schema.jsonuint32.schema.json/maximum
+  .minorVersion should be >= 0
+    Received: <number> -4294967295
+    Path:     ConfigurationVersionDataType.schema.jsonuint32.schema.json/minimum
+"
 `;

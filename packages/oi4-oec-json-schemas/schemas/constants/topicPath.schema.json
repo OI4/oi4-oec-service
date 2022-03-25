@@ -1,0 +1,7 @@
+{
+  "$id": "topicPath.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Topic of subscription",
+  "type": "string",
+  "pattern": "^oi4\\/(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector|\\+|#)\\/(((([a-z0-9-]+\\.)*([a-z0-9-]*))|\\+|#)(?:\\/[^\\/`\\^\r\n]+){3})\\/(pub|get|set|del|req|res|\\+|#)\\/(mam|health|config|license|licenseText|rtLicense|data|metadata|event|profile|publicationList|subscriptionList|referenceDesignation|\\+|#)(.*)$"
+}
