@@ -1,0 +1,106 @@
+[
+  [
+    "valid mam with all properties",
+    {
+      "Description": {
+        "locale": "en-US",
+        "text": "Descriptive text"
+      },
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": 0,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ],
+  [
+    "valid mam mandatory properties",
+    {
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": 0,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ],
+  [
+    "valid mam with lowest int32",
+    {
+      "Description": {
+        "locale": "en-US",
+        "text": "Descriptive text"
+      },
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": -2147483648,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ],
+  [
+    "valid mam with highest int32",
+    {
+      "Description": {
+        "locale": "en-US",
+        "text": "Descriptive text"
+      },
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": 2147483647,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ]
+]

@@ -1,0 +1,937 @@
+[
+  ["empty", {}],
+  [
+    "name missing in network1, group name missing for password",
+    {
+      "network1": {
+        "ip": {
+          "type": "string"
+        },
+        "snm": {
+          "name": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          },
+          "type": "string"
+        }
+      },
+      "network2": {
+        "name": {
+          "locale": "de-DE",
+          "text": "Netzwerk 2"
+        },
+        "ip": {
+          "name": {
+            "locale": "de-DE",
+            "text": "IP Adresse"
+          },
+          "type": "string"
+        },
+        "snm": {
+          "name": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          },
+          "type": "string"
+        }
+      },
+      "password": {
+        "name": {
+          "locale": "de-DE",
+          "text": "Passwort"
+        },
+        "type": "string"
+      }
+    }
+  ],
+  [
+    "only name provided",
+    {
+      "network1": {
+        "name": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      }
+    }
+  ],
+  [
+    "only description provided",
+    {
+      "network1": {
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      }
+    }
+  ],
+  [
+    "group name starts with invalid character",
+    {
+      ".network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "-network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "#network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "%network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "$network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      }
+    }
+  ],
+  [
+    "config name starts with invalid character",
+    {
+      "network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        },
+        "-ip": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "#snm": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "%foo": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "$bar": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        }
+      }
+    }
+  ],
+  [
+    "group name contains with invalid character",
+    {
+      "ip#": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "snm%": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "foo$": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar&": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar:": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar§": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar!": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar?": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar=": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar(": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar)": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar<": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar>": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar[": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar]": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar{": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar}": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar/": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar\\": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar\"": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar'": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar+": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar*": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar@": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "bar°": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "barß": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "barü": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "barä": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      },
+      "barö": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        }
+      }
+    }
+  ],
+  [
+    "config name contains with invalid character",
+    {
+      "network1": {
+        "name": {
+          "locale": "en-UK",
+          "text": "test"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        },
+        "ip#": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "snm%": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "foo$": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar&": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar:": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar§": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar!": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar?": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar=": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar(": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar)": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar<": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar>": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar[": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar]": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar{": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar}": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar/": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar\\": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar\"": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar'": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar+": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar*": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar@": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "bar°": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "barß": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "barü": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "barä": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        },
+        "barö": {
+          "name": {
+            "locale": "en-UK",
+            "text": "test"
+          },
+          "description": {
+            "locale": "de-DE",
+            "text": "Subnetzmaske"
+          }
+        }
+      }
+    }
+  ],
+  [
+    "name and description with suffix",
+    {
+      "network1": {
+        "name-1": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        },
+        "description-1": {
+          "locale": "de-DE",
+          "text": "Mein toller Text"
+        }
+      }
+    }
+  ],
+  [
+    "complex example with different errors",
+    {
+      "device1": {
+        "name": {
+          "locale": "en-US",
+          "text": "Device 1"
+        },
+        "description": {
+          "locale": "en-US",
+          "text": "Describes device one configuration options"
+        },
+        "aut0-r3fr3sh": {
+          "mandatory": true,
+          "name": {
+            "locale": "en-US",
+            "text": "Automatic Refresh Enabled"
+          },
+          "type": "Boolean",
+          "value": "false"
+        },
+        "ip_address": {
+          "description": {
+            "locale": "en-US",
+            "text": "IP address of device to read values from"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "IP Address"
+          },
+          "type": "String",
+          "validation": {
+            "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+          },
+          "value": ""
+        },
+        "password": {
+          "name": {
+            "locale": "en-US",
+            "text": "Password"
+          },
+          "sensitive": true,
+          "type": "String",
+          "value": ""
+        },
+        "port": {
+          "defaultValue": "80",
+          "mandatory": false,
+          "name": {
+            "locale": "en-US",
+            "text": "Port"
+          },
+          "type": "Number",
+          "validation": {
+            "min": 0,
+            "max": 65535
+          },
+          "value": ""
+        },
+        "protocol": {
+          "mandatory": true,
+          "name": {
+            "locale": "en-US",
+            "text": "Protocol"
+          },
+          "type": "String",
+          "validation": {},
+          "validation": {
+            "min": "",
+            "max": ""
+          },
+          "value": ""
+        },
+        "readInterval": {
+          "description": {
+            "locale": "en-US",
+            "text": "Interval in which value is read from device"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "Read Interval"
+          },
+          "type": "Number",
+          "value": ""
+        },
+        "unit": {
+          "defaultValue": "°C",
+          "description": {
+            "locale": "en-US",
+            "text": "Unit of measurement"
+          },
+          "mandatory": false,
+          "name": {
+            "locale": "en-US",
+            "text": "Unit"
+          },
+          "type": "String",
+          "unit": "Temperature",
+          "validation": {
+            "values": [
+              "K",
+              "°C",
+              "°De",
+              "°F",
+              "°N",
+              {
+                "a": "b"
+              },
+              2,
+              1
+            ]
+          },
+          "value": ""
+        },
+        "user-name": {
+          "name": {
+            "locale": "en-US",
+            "text": "Username"
+          },
+          "type": "String",
+          "value": ""
+        }
+      },
+      "general": {
+        "name": {
+          "locale": "en-US",
+          "text": "general configuration"
+        },
+        "date-time": {
+          "description": {
+            "locale": "en-US",
+            "text": "Date Time for service"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "Date Time"
+          },
+          "type": "Datetime",
+          "value": ""
+        }
+      }
+    }
+  ]
+]

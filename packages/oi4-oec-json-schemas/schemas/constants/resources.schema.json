@@ -1,0 +1,21 @@
+{
+  "$id": "resources.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A list of acceptable resources",
+  "type": "string",
+  "enum": [
+    "mam",
+    "health",
+    "config",
+    "license",
+    "licenseText",
+    "rtLicense",
+    "data",
+    "metadata",
+    "event",
+    "profile",
+    "publicationList",
+    "subscriptionList",
+    "referenceDesignation"
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  [
+    "versions 0",
+    {
+      "majorVersion": 0,
+      "minorVersion": 0
+    }
+  ],
+  [
+    "versions 1",
+    {
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ],
+  [
+    "versions 0.1",
+    {
+      "majorVersion": 0,
+      "minorVersion": 1
+    }
+  ],
+  [
+    "versions 4294967295.0",
+    {
+      "majorVersion": 4294967295,
+      "minorVersion": 0
+    }
+  ],
+  [
+    "versions 4294967295.7295",
+    {
+      "majorVersion": 4294967295,
+      "minorVersion": 7295
+    }
+  ],
+  [
+    "versions 4294967295.4294967295",
+    {
+      "majorVersion": 4294967295,
+      "minorVersion": 4294967295
+    }
+  ]
+]

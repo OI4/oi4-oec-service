@@ -1,0 +1,23 @@
+{
+  "$id": "subscriptionList.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["topicPath"],
+  "properties": {
+    "topicPath": {
+      "$ref": "topicPath.schema.json"
+    },
+    "interval": {
+      "description": "Interval???",
+      "type": "integer",
+      "minimum": 0
+    },
+    "config": {
+      "description": "Config-ENUM(!)",
+      "type": "string",
+      "enum": ["NONE_0", "CONF_1"]
+    }
+  }
+}

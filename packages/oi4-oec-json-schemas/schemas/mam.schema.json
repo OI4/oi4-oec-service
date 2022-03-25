@@ -1,0 +1,76 @@
+{
+  "$id": "mam.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "A representation of an Master Asset Model payload",
+  "properties": {
+    "Description": {
+      "$ref": "LocalizedText.schema.json"
+    },
+    "DeviceClass": {
+      "type": "string",
+      "description": "This property is a placeholder for storing semantic references regarding the application domain role of the asset in question."
+    },
+    "DeviceManual": {
+      "type": "string",
+      "description": "A DeviceManual property shall contain a URL that points to a human-readable manual document for the asset."
+    },
+    "DeviceRevision": {
+      "type": "string",
+      "description": "The DeviceRevision is a conglomerate revision that manufacturers may use to distinguish certain shipment configurations of their device. Typically, a device revision will contain a specific hardware revision and a specific software revision, where the latter may change during the life-cycle through updates."
+    },
+    "HardwareRevision": {
+      "type": "string",
+      "description": "The HardwareRevision shall be given according to the manufacturer-internal revision number of the hardware. If for a physical asset a manufacturer does not have a formalized hardware revision, it shall be set by default to \"undefined\". For any subsequent hardware revisions, this value shall be incremented in an appropriate way.\nA recommended best practice is to use a dot-separated four numbers schema."
+    },
+    "Manufacturer": {
+      "$ref": "LocalizedText.schema.json",
+      "description": "The name of the manufacturer of an asset."
+    },
+    "ManufacturerUri": {
+      "type": "string",
+      "pattern": "^([a-z0-9-]+\\.)*([a-z0-9-]*)$",
+      "description": "Manufacturer URI"
+    },
+    "Model": {
+      "$ref": "LocalizedText.schema.json",
+      "description": "The property Model shall provide the name of the product that the Master Asset information belongs to."
+    },
+    "ProductCode": {
+      "type": "string",
+      "description": "A ProductCode has the purpose of unambiguously identifying the model of an asset. Typically, every manufacturer has their own schematics for generating product codes.\nThe ProductCode given for this property shall also be used for the oi4Identifier of the asset."
+    },
+    "ProductInstanceUri": {
+      "type": "string",
+      "description": "The ProductInstanceUri shall contain a unique ID, provided by the manufacturer. This ID, likely a DIN SPEC 91406 conform URL, might not be equal to the oi4Identifier.",
+      "maxLength": 255
+    },
+    "RevisionCounter": {
+      "description": "Changes to the configuration of the master asset information shall lead to an increment of the revision counter by one.",
+      "$ref": "dataTypes/int32.schema.json"
+    },
+    "SerialNumber": {
+      "type": "string",
+      "description": "The serial number shall be a unique identifier for an instance of an asset. It is the manufacturer's responsibility to provide globally-unique serial numbers for all their products."
+    },
+    "SoftwareRevision": {
+      "type": "string",
+      "description": "The SoftwareRevision shall be given according to the manufacturer-internal revision number of the software installed on the asset. If for any asset a manufacturer does not have a formalized software revision, it shall be set by default to \"undefined\". For any subsequent software revisions, this value shall be incremented in an appropriate way.\nA recommended best practice is to use a dot-separated four numbers schema. "
+    }
+  },
+  "required": [
+    "DeviceClass",
+    "DeviceManual",
+    "DeviceRevision",
+    "HardwareRevision",
+    "Manufacturer",
+    "ManufacturerUri",
+    "Model",
+    "ProductCode",
+    "ProductInstanceUri",
+    "RevisionCounter",
+    "SerialNumber",
+    "SoftwareRevision"
+  ],
+  "type": "object"
+}

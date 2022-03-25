@@ -1,0 +1,23 @@
+{
+  "$id": "event.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["number", "category"],
+  "properties": {
+    "number": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["CAT_SYSLOG_0", "CAT_OPCSC_1", "CAT_NE107", "CAT_UNDEF_99"]
+    },
+    "details": {
+      "$comment": "The type of this property depends on the category. TODO: Create all CAT_subschemas"
+    }
+  }
+}

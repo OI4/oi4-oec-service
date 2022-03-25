@@ -1,0 +1,30 @@
+[
+  [
+    "English Locale",
+    {
+      "locale": "en",
+      "text": "my text"
+    }
+  ],
+  [
+    "English (UK) Locale",
+    {
+      "locale": "en-UK",
+      "text": "my text"
+    }
+  ],
+  [
+    "English (USA) Locale",
+    {
+      "locale": "en-US",
+      "text": "my text"
+    }
+  ],
+  [
+    "Chinese Simplified",
+    {
+      "locale": "cn-CHS",
+      "text": "some chinese text"
+    }
+  ]
+]

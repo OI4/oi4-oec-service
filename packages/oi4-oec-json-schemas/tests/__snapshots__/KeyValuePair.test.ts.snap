@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KeyValuePair schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'key'
+    Path:     KeyValuePair.schema.json#/required
+  should have required property 'value'
+    Path:     KeyValuePair.schema.json#/required
+"
+`;
+
+exports[`KeyValuePair schema (1) match fails for invalid config -> empty key: empty key 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .key should have required property 'name'
+    Received: <object> {}
+    Path:     KeyValuePair.schema.json#/required
+  .key should have required property 'namespaceIndex'
+    Received: <object> {}
+    Path:     KeyValuePair.schema.json#/required
+"
+`;
+
+exports[`KeyValuePair schema (2) match fails for invalid config -> invalid key: invalid key 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should NOT have additional properties, but found 'nameSpaceIndex'
+    Expected: <boolean> false
+    Received: <object> {\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}
+    Path:     KeyValuePair.schema.json#/additionalProperties
+  .key should have required property 'namespaceIndex'
+    Received: <object> {\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}
+    Path:     KeyValuePair.schema.json#/required
+"
+`;
+
+exports[`KeyValuePair schema (3) match fails for invalid config -> invalid key property value: invalid key property value 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .key.namespaceIndex should be integer
+    Received: <string> 0
+    Path:     KeyValuePair.schema.jsonuint16.schema.json/type
+"
+`;
+
+exports[`KeyValuePair schema (4) match fails for invalid config -> additional properties: additional properties 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should NOT have additional properties, but found 'bar'
+    Expected: <boolean> false
+    Path:     KeyValuePair.schema.json#/additionalProperties
+  should NOT have additional properties, but found 'foo'
+    Expected: <boolean> false
+    Received: <object> {\\"name\\":\\"\\",\\"namespaceIndex\\":0,\\"foo\\":\\"bar\\"}
+    Path:     KeyValuePair.schema.json#/additionalProperties
+"
+`;

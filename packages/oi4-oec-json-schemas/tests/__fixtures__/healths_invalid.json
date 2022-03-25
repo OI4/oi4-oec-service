@@ -1,0 +1,37 @@
+[
+  ["empty", {}],
+  [
+    "health is missing",
+    {
+      "healthScore": 50
+    }
+  ],
+  [
+    "health is not within enum",
+    {
+      "health": "blub",
+      "healthScore": 50
+    }
+  ],
+  [
+    "health score is larger 100",
+    {
+      "health": "CHECK_FUNCTION_2",
+      "healthScore": 101
+    }
+  ],
+  [
+    "health score is negative",
+    {
+      "health": "CHECK_FUNCTION_2",
+      "healthScore": -1
+    }
+  ],
+  [
+    "swapped key and value",
+    {
+      "health": 0,
+      "healthScore": "CHECK_FUNCTION_2"
+    }
+  ]
+]

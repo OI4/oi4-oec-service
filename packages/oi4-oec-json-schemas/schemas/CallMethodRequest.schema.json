@@ -1,0 +1,25 @@
+{
+  "$id": "CallMethodRequest.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "",
+  "additionalProperties": false,
+  "type": "object",
+  "required": ["inputArguments", "methodId"],
+  "properties": {
+    "methodId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputArguments": {
+      "type": "array",
+      "additionalItems": false,
+      "items": [
+        {
+          "$ref": "BaseDataType.schema.json"
+        }
+      ],
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  }
+}

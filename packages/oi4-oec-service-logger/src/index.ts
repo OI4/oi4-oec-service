@@ -1,7 +1,7 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import { OPCUABuilder } from '@oi4/oi4-oec-service-opcua-model';
 import { CDataSetWriterIdLookup, EContainerEventCategory, IContainerEvent } from '@oi4/oi4-oec-service-model';
-import { Logger as WinstonLogger, transports, level } from 'winston';
+import { Logger as WinstonLogger, transports } from 'winston';
 import winston from 'winston';
 import { Syslog, SyslogTransportInstance } from 'winston-syslog';
 import { ESyslogEventFilter } from '@oi4/oi4-oec-service-model';
@@ -37,7 +37,7 @@ class Logger {
     alert: 1,
     emergency: 0,
   }
-  private readonly syslogToWinston: { [index: string]: level } = {
+  private readonly syslogToWinston: { [index: string]: string } = {
     debug: 'debug',
     informational: 'info',
     notice: 'info',

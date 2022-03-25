@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "schemas",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "preserveSymlinks": true,
+    "outDir": "dist",
+    "types": ["node", "jest"],
+    "lib": ["es2019", "DOM"]
+  },
+  "include": ["schemas/**/*"],
+  "exclude": ["dist", "node_modules/**/*", ".vscode/**/*"]
+}

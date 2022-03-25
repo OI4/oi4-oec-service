@@ -1,0 +1,728 @@
+asyncapi: '2.3.0'
+info:
+  title: OI4 Open Edge Computing
+  version: '0.12.0'
+  description: |
+    This document is the result of the work of the technical committee of the Open Industry 4.0 Alliance. Its goal is to provide a starting point for developers who want to provide Alliance-compliant software or devices. When reading, please keep in mind that the document is a guideline, not a specification, which means that some content is still ambiguous or in discussion and some of the definitions given might be subject to change after the proof of concept implementation for the fair demonstrators.\
+    \
+    This document describes the message exchange between the Field, Edge and Cloud layers of the Alliance overall architecture. In the first four chapters, it discusses the basic models and paradigms for future work in the Open Industry 4.0 Alliance. In the subsequent four chapters, the MQTT infrastructure for Open Industry 4.0 alliance systems is presented. An additional chapter explains the structure of the message payload. Finally, examples are provided to facilitate integration with an eye on the upcoming trade show. The document is concluded with open issues for future discussion and a glossary of relevant terms.
+  license:
+    name: BSD-3-Clause
+    url: https://opensource.org/licenses/BSD-3-Clause
+
+servers:
+  production:
+    url: 127.0.0.1:{port}
+    protocol: mqtt
+    protocolVersion: 3.1.1
+    description: OEC MQTT Broker
+    variables:
+      port:
+        description: Secure connection (TLS) is available through port 8883.
+        default: '8883'
+        enum:
+          - '1883'
+          - '8883'
+      container-name:
+        description: The name of the docker container
+      health-topic:
+        description: Health topic as descirbed in 10.1.2
+      health-message:
+        description: Health message as descirbed in 9.3.2
+    security:
+      - user-password: []
+      - mutual-tls: []
+    bindings:
+      mqtt:
+        clientId: { container-name }
+        cleanSession: true
+        lastWill:
+          topic: { health-topic }
+          qos: 1
+          message: { health-message }
+          retain: false
+
+defaultContentType: application/json
+
+#############################
+# AsyncAPI channels       #
+#############################
+channels:
+  #############################
+  # Master Asset Model        #
+  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/mam:
+    description: Publishing topic for all Master Asset Model (mam) data. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    publish:
+      operationId: sendAllMasterAssetModels
+      tags:
+        - name: mam
+      message:
+        $ref: '#/components/messages/mam'
+
+  oi4/{serviceType}/{oi4Identifier}/pub/mam/{tag}:
+    description: Publishing topic for Master Asset Model (mam) data. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendMasterAssetModel
+      tags:
+        - name: mam
+      message:
+        $ref: '#/components/messages/mam'
+  oi4/{serviceType}/{oi4Identifier}/get/mam:
+    description: Request all Master Asset Models (mam) present at this service. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllMasterAssetModel
+      tags:
+        - name: mam
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{serviceType}/{oi4Identifier}/get/mam/{tag}:
+    description: Request a specific Master Asset Model (mam) from this service. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: requestMasterAssetModel
+      tags:
+        - name: mam
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{model}/{productCode}/{model}/{serialNumber}/{serviceType}/pub/mam/{tag}:
+    description: A Master Asset Model (mam) represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      model:
+        description: Model information of the asset or service
+        schema:
+          type: string
+      productCode:
+        description: Containing a product code, often called order number, that the manufacturer can utilize to unambiguously identify the specific type information for an asset or service.
+        schema:
+          type: string
+      serialNumber:
+        description: Serial numberof the asset or service. A container, because it consists of software, has no serial number, but several instances could be deployed so that the container name is used.
+        schema:
+          type: string
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendMasterAssetModel2
+      tags:
+        - name: mam
+      message:
+        $ref: '#/components/messages/mam'
+
+#  #############################
+#  # Health                    #
+#  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/health:
+    description: Publishing topic for all 'health' information. 'health' represents the actual condition of a single asset (device, application, …). It is derived from IDeviceHealthType, described in OPC UA Part 100 (see Part 100-5.5.4), but extended by an additional key called healthScore.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    publish:
+      operationId: sendAllHealth
+      tags:
+        - name: health
+      message:
+        $ref: '#/components/messages/health'
+
+  oi4/{serviceType}/{oi4Identifier}/pub/health/{tag}:
+    description: Publishing topic for 'health' information. 'health' represents the actual condition of a single asset (device, application, …). It is derived from IDeviceHealthType, described in OPC UA Part 100 (see Part 100-5.5.4), but extended by an additional key called healthScore.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendHealth
+      tags:
+        - name: health
+      message:
+        $ref: '#/components/messages/health'
+
+  oi4/{serviceType}/{oi4Identifier}/get/health:
+    description: Request all 'health' information present at this service. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllHealth
+      tags:
+        - name: health
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{serviceType}/{oi4Identifier}/get/health/{oi4Identifier}:
+    description: Request a specific 'health' information from this service. A 'mam' represents the nameplate of a single asset (device, application, ...). It is derived from IVendorNameplateType, described in OPC UA Part 100 (see Part 100-5.5.2).
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestHealth
+      tags:
+        - name: health
+      message:
+        $ref: '#/components/messages/blank'
+
+  #############################
+  # Config                    #
+  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/config/{tag}:
+    description: Publishing topic for 'config' information. The config resource represents the actual configuration of an asset (device, application, …). Several configuration DataSetMessages may exist for an asset.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendConfig
+      tags:
+        - name: config
+      message:
+        $ref: '#/components/messages/config'
+
+  oi4/{serviceType}/{oi4Identifier}/get/config:
+    description: Request all 'config' information present at this service. The config resource represents the actual configuration of an asset (device, application, …). Several configuration DataSetMessages may exist for an asset.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllConfig
+      tags:
+        - name: config
+      message:
+        $ref: '#/components/messages/local'
+
+  oi4/{serviceType}/{oi4Identifier}/get/config/{tag}:
+    description: Request a specific 'config' information from this service. The config resource represents the actual configuration of an asset (device, application, …). Several configuration DataSetMessages may exist for an asset.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: requestConfig
+      tags:
+        - name: config
+      message:
+        $ref: '#/components/messages/local'
+
+  oi4/{serviceType}/{oi4Identifier}/set/config/{tag}:
+    description: Request a specific 'config' information from this service. The config resource represents the actual configuration of an asset (device, application, …). Several configuration DataSetMessages may exist for an asset.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: setConfig
+      tags:
+        - name: config
+      message:
+        $ref: '#/components/messages/config'
+
+  #############################
+  # License                   #
+  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/license:
+    description: Publishing topic for all 'license' information. The resource license represents the actual license information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    publish:
+      operationId: sendAllLicenses
+      tags:
+        - name: license
+      message:
+        $ref: '#/components/messages/license'
+
+  oi4/{serviceType}/{oi4Identifier}/pub/license/{tag}:
+    description: Publishing topic for 'license' information. The resource license represents the actual license information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendLicense
+      tags:
+        - name: license
+      message:
+        $ref: '#/components/messages/license'
+
+  oi4/{serviceType}/{oi4Identifier}/get/license:
+    description: Request all 'license' information present at this service. The resource license represents the actual license information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllLicenses
+      tags:
+        - name: license
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{serviceType}/{oi4Identifier}/get/license/{tag}:
+    description: Request a specific 'license' information from this service. The resource license represents the actual license information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: requestLicense
+      tags:
+        - name: license
+      message:
+        $ref: '#/components/messages/blank'
+
+  #############################
+  # License text              #
+  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/licenseText:
+    description: Publishing topic for all 'licenseText' information. The resource licenseText represents the actual license text for a specific licenseId information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    publish:
+      operationId: sendAllLicenseTexts
+      tags:
+        - name: licenseText
+      message:
+        $ref: '#/components/messages/licenseText'
+
+  oi4/{serviceType}/{oi4Identifier}/pub/licenseText/{tag}:
+    description: Publishing topic for 'licenseText' information. The resource licenseText represents the actual license text for a specific licenseId information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendLicenseText
+      tags:
+        - name: licenseText
+      message:
+        $ref: '#/components/messages/licenseText'
+
+  oi4/{serviceType}/{oi4Identifier}/get/licenseText:
+    description: Request all 'licenseText' information present at this service. The resource licenseText represents the actual license text for a specific licenseId information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllLicenseTexts
+      tags:
+        - name: license
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{serviceType}/{oi4Identifier}/get/licenseText/{tag}:
+    description: Request a specific 'licenseText' information from this service. The resource licenseText represents the actual license text for a specific licenseId information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: requestLicenseText
+      tags:
+        - name: licenseText
+      message:
+        $ref: '#/components/messages/blank'
+
+  #############################
+  # Runtime license           #
+  #############################
+  oi4/{serviceType}/{oi4Identifier}/pub/rtLicense:
+    description: Publishing topic for all runtime license information. The resource rtLicense represents the actual runtime license(s) information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    publish:
+      operationId: sendAllRtLicenseTexts
+      tags:
+        - name: rtLicense
+      message:
+        $ref: '#/components/messages/rtLicense'
+
+  oi4/{serviceType}/{oi4Identifier}/pub/rtLicense/{tag}:
+    description: Publishing topic for runtime license information. The resource rtLicense represents the actual runtime license(s) information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    publish:
+      operationId: sendRtLicenseText
+      tags:
+        - name: rtLicense
+      message:
+        $ref: '#/components/messages/rtLicense'
+
+  oi4/{serviceType}/{oi4Identifier}/get/rtLicense:
+    description: Request all runtime license information present at this service. The resource rtLicense represents the actual runtime license(s) information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+    subscribe:
+      operationId: requestAllRtLicenses
+      tags:
+        - name: rtLicense
+      message:
+        $ref: '#/components/messages/blank'
+
+  oi4/{serviceType}/{oi4Identifier}/get/rtLicense/{tag}:
+    description: Request a specific runtime license information from this service. The resource rtLicense represents the actual runtime license(s) information for a single application.
+    parameters:
+      oi4Identifier:
+        $ref: '#/components/parameters/oi4Identifier'
+      serviceType:
+        $ref: '#/components/parameters/serviceType'
+      tag:
+        $ref: '#/components/parameters/tag'
+    subscribe:
+      operationId: requestRtLicenseText
+      tags:
+        - name: rtLicense
+      message:
+        $ref: '#/components/messages/blank'
+
+components:
+  #############################
+  # AsyncAPI messages         #
+  #############################
+  messages:
+    mam:
+      name: mamMessage
+      title: MAM message
+      summary: Master Asset Model (mam) network message.
+      contentType: application/json
+      tags:
+        - name: mam
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/mam'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    health:
+      name: healthMessage
+      title: Health message
+      summary: Health network message.
+      contentType: application/json
+      tags:
+        - name: health
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/health'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    config:
+      name: configMessage
+      title: Config message
+      summary: Config network message.
+      contentType: application/json
+      tags:
+        - name: config
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/config'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    license:
+      name: licenseMessage
+      title: License message
+      summary: License network message.
+      contentType: application/json
+      tags:
+        - name: license
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/license'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    licenseText:
+      name: licenseTextMessage
+      title: License text message
+      summary: License text network message.
+      contentType: application/json
+      tags:
+        - name: licenseText
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/licenseText'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    rtLicense:
+      name: rtLicenseMessage
+      title: Runtime license text message
+      summary: Runtime license text network message.
+      contentType: application/json
+      tags:
+        - name: licenseText
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '#/components/schemas/rtLicense'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    local:
+      name: localMessage
+      title: Localized message
+      summary: Localized network message.
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/networkMessage'
+      payload:
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/LocalizedText.schema.json'
+      correlationId:
+        $ref: '#/components/correlationIds/default'
+    blank:
+      name: blankMessage
+      title: A blank message
+      summary: A blank message to transmit no data.
+      contentType: application/json
+      payload:
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/empty.schema.json'
+
+  #############################
+  # AsyncAPI correlationIds   #
+  #############################
+  correlationIds:
+    default:
+      description: Shows the flow between the causal event and its consequences.
+      location: '$message.header#/correlationId'
+
+  #############################
+  # AsyncAPI schemas          #
+  #############################
+  schemas:
+    mam:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of mam messages'
+          items:
+            - '$ref': '#/components/schemas/mamMessage'
+    mamMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/mam.schema.json'
+    health:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of health messages'
+          items:
+            - '$ref': '#/components/schemas/healthMessage'
+    healthMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/health.schema.json'
+    config:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of config messages'
+          items:
+            - '$ref': '#/components/schemas/configMessage'
+    configMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/config.schema.json'
+    license:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of license messages'
+          items:
+            - '$ref': '#/components/schemas/licenseMessage'
+    licenseMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/license.schema.json'
+    licenseText:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of license text messages'
+          items:
+            - '$ref': '#/components/schemas/licenseTextMessage'
+    licenseTextMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/licenseText.schema.json'
+    rtLicense:
+      type: object
+      properties:
+        Messages:
+          type: 'array'
+          description: 'Array of runtime license messages'
+          items:
+            - '$ref': '#/components/schemas/rtLicenseMessage'
+    rtLicenseMessage:
+      type: object
+      allOf:
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+      properties:
+        Payload:
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/rtLicense.schema.json'
+    tagString:
+      type: string
+      pattern: "[\\w\\d%\\.-]{1,255}"
+
+  #############################
+  # AsyncAPI securitySchemes  #
+  #############################
+  securitySchemes:
+    user-password:
+      type: userPassword
+      description: Username and password as provided
+    mutual-tls:
+      type: X509
+      description: Client certificate based authentication
+
+  #############################
+  # AsyncAPI parameters       #
+  #############################
+  parameters:
+    serviceType:
+      description: The serviceType element is used to roughly sort the applications.
+      schema:
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/constants/serviceType.schema.json'
+    manufacturerUri:
+      description: The URI of the manufacturer of an asset or service.
+      schema:
+        type: string
+    oi4Identifier:
+      description: The oi4Identifier, in the form of <ManufacturerUri/Model/ProductCode/SerialNumber>, represents a DIN SPEC 91406 conform URI and can be broken down into its components, resulting in further filtering options on topics (e.g. all applications from manufacturer A, or the assets of type B).
+      schema:
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json'
+    tag:
+      description: The tag defines the point of interest, which can be addressed through three different ways. The payload of a tag is always a previously defined DataSet, represented via tag, DataSetWriterId or the oi4Identifier of an asset.
+      schema:
+        oneOf:
+          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json'
+          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/dataTypes/uint16.schema.json'
+          - $ref: '#/components/schemas/tagString'
+
+  #############################
+  # AsyncAPI messageTraits    #
+  #############################
+  messageTraits:
+    networkMessage:
+      headers:
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/NetworkMessageBase.schema.json'
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          my-app-header:
+            type: integer
+            minimum: 0
+            maximum: 100
+
+#############################
+# AsyncAPI tags             #
+#############################
+tags:
+  - name: mam
+    description: Mam message
+  - name: health
+    description: Health message
+  - name: config
+    description: Config message
+  - name: license
+    description: License message
+  - name: licenseText
+    description: License text message
+  - name: rtLicense
+    description: Runtime license message

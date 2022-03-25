@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CallMethodRequest schema test invalid values: 0 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'methodId'
+    Path:     CallMethodRequest.schema.json#/required
+  should have required property 'inputArguments'
+    Path:     CallMethodRequest.schema.json#/required
+"
+`;
+
+exports[`CallMethodRequest schema test invalid values: 1 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'inputArguments'
+    Path:     CallMethodRequest.schema.json#/required
+"
+`;
+
+exports[`CallMethodRequest schema test invalid values: 2 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'methodId'
+    Path:     CallMethodRequest.schema.json#/required
+  .inputArguments should be array
+    Received: <empty string>
+    Path:     CallMethodRequest.schema.json#/properties/inputArguments/type
+"
+`;
+
+exports[`CallMethodRequest schema test invalid values: 3 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .methodId should NOT be shorter than 1 characters
+    Received: <empty string>
+    Path:     CallMethodRequest.schema.json#/properties/methodId/minLength
+"
+`;
+
+exports[`CallMethodRequest schema test invalid values: 4 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should NOT have additional properties, but found 'namespaceIndex'
+    Expected: <boolean> false
+    Path:     CallMethodRequest.schema.json#/additionalProperties
+  .methodId should be string
+    Received: <number> 1
+    Path:     CallMethodRequest.schema.json#/properties/methodId/type
+  should have required property 'inputArguments'
+    Path:     CallMethodRequest.schema.json#/required
+"
+`;

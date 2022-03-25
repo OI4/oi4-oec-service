@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`int8 schema test invalid values: -1.5 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should be integer
+    Path:     int8.schema.json#/type
+"
+`;
+
+exports[`int8 schema test invalid values: -129 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should be >= -128
+    Path:     int8.schema.json#/minimum
+"
+`;
+
+exports[`int8 schema test invalid values: 128 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should be <= 127
+    Path:     int8.schema.json#/maximum
+"
+`;

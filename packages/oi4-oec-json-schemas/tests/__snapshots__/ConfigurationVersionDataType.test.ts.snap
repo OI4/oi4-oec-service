@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConfigurationVersionDataType schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'majorVersion'
+    Path:     ConfigurationVersionDataType.schema.json#/required
+  should have required property 'minorVersion'
+    Path:     ConfigurationVersionDataType.schema.json#/required
+"
+`;
+
+exports[`ConfigurationVersionDataType schema (1) match fails for invalid config -> versions out of range: versions out of range 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .majorVersion should be <= 4294967295
+    Received: <number> 4294967296
+    Path:     ConfigurationVersionDataType.schema.jsonuint32.schema.json/maximum
+  .minorVersion should be >= 0
+    Received: <number> -4294967295
+    Path:     ConfigurationVersionDataType.schema.jsonuint32.schema.json/minimum
+"
+`;

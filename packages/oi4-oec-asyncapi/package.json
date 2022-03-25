@@ -1,0 +1,31 @@
+{
+  "name": "@oi4/oi4-oec-asyncapi",
+  "version": "0.12.3",
+  "description": "AsyncAPI description of the OI4 OEC topics and messages",
+  "license": "BSD-3-Clause",
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OI4/oi4-dev-tools.git"
+  },
+  "keywords": [
+    "OI4",
+    "AsynchAPI"
+  ],
+  "dependencies": {
+    "@oi4/oi4-oec-json-schemas": "^0.12.3"
+  },
+  "devDependencies": {
+    "@asyncapi/generator": "^1.9.0",
+    "@asyncapi/html-template": "^0.24.8",
+    "@asyncapi/markdown-template": "^1.0.1",
+    "@asyncapi/cli": "^0.17.0"
+  },
+  "scripts": {
+    "build": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
+    "validate": "asyncapi validate asyncapi.yaml"
+  }
+}

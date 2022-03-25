@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CallMethodResult schema test invalid values: 0 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'statusCode'
+    Path:     CallMethodResult.schema.json#/required
+"
+`;
+
+exports[`CallMethodResult schema test invalid values: 1 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  should have required property 'statusCode'
+    Path:     CallMethodResult.schema.json#/required
+"
+`;
+
+exports[`CallMethodResult schema test invalid values: 2 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .statusCode should be integer
+    Received: <string> a
+    Path:     CallMethodResult.schema.jsonuint32.schema.json/type
+"
+`;
+
+exports[`CallMethodResult schema test invalid values: 3 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .statusCode should be >= 0
+    Received: <number> -1
+    Path:     CallMethodResult.schema.jsonuint32.schema.json/minimum
+"
+`;
+
+exports[`CallMethodResult schema test invalid values: 4 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  .statusCode should be <= 4294967295
+    Received: <number> 4294967296
+    Path:     CallMethodResult.schema.jsonuint32.schema.json/maximum
+"
+`;
