@@ -1,0 +1,25 @@
+{
+  "$id": "SimpleTypeDescription.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The SimpleTypeDescription according to OPC UA Core DataTypes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "BaseDataType",
+    "BuiltInType"
+  ],
+  "definitions": {
+    "BaseDataType": {
+      "$ref": "NodeId.schema.json"
+    },
+    "BuiltInType": {
+      "$ref": "dataTypes/byte.schema.json"
+    },
+    "DataTypeId": {
+      "$ref": "NodeId.schema.json"
+    },
+    "Name": {
+      "$ref": "QualifiedName.schema.json"
+    }
+  }
+}

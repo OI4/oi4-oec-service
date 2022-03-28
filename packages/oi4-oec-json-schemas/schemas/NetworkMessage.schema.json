@@ -6,18 +6,18 @@
   "additionalProperties": false,
   "$comment": "TODO: oi4identifier needs to be updated and implemented here. NetworkMessageBase was removed, if necessary, we can patch it back in",
   "properties": {
-    "CorrelationId": {
+    "correlationId": {
       "type": "string",
       "description": "Correlation ID used for logging and as debug information"
     },
     "DataSetClassId": {
       "type": "string",
       "format": "uuid",
-      "description": "Dataset Class ID"
+      "description": "The dataSetClassId allows to refer to the DataSetClass describing the structure of the message. The dataSetClassId identifies a well defined DataSet specified by the Alliance or some other standards and refers to related metadata.\nFor some recurring use cases, such as MasterAssetModel, fixed GUIDs are specified from the Alliance and must be used (A2)."
     },
     "MessageId": {
       "type": "string",
-      "description": "Message ID",
+      "description": "The MessageId must be unique. The Open Industry 4.0 Alliance defiens the type as a combination of the current timestamp in ms precision with the PublisherId. ",
       "$comment": "TODO: find a way to include the oi4Identifier better here",
       "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
@@ -34,7 +34,7 @@
       "description": "Message Type: Only ua-data is valid in the context of the NetworkMessage"
     },
     "PublisherId": {
-      "description": "Publisher ID",
+      "description": "String consisting of serviceType (see 8.1.2) and oi4Identifier (see 3.1) - separated by a /.",
       "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     }
   },

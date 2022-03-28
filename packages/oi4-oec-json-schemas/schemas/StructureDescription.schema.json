@@ -1,0 +1,87 @@
+{
+  "$id": "StructureDescription.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "e StructureDescription according to OPCUA Part 14-A.1.3 Table A.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "structureDefinition"
+  ],
+  "definitions": {
+    "structureDefinition": {
+      "description": "StructureDefinition object (see 9.2.10)",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseDataType",
+        "defaultEncodingId",
+        "fields",
+        "structureType"
+      ],
+      "properties": {
+        "baseDataType": {
+          "$ref": "NodeId.schema.json",
+          "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+        },
+        "defaultEncodingId": {
+          "$ref": "NodeId.schema.json",
+          "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "arrayDimensions",
+              "datatype",
+              "description",
+              "isOptional",
+              "maxStringLength",
+              "name",
+              "valueRank"
+            ],
+            "properties": {
+              "arrayDimensions": {
+                "type": "array",
+                "items": {
+                  "$ref": "dataTypes/uint32.schema.json"
+                }
+              },
+              "datatype": {
+                "$ref": "NodeId.schema.json",
+                "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+              },
+              "description": {
+                "$ref": "LocalizedText.schema.json"
+              },
+              "isOptional": {
+                "type": "boolean"
+              },
+              "maxStringLength": {
+                "$ref": "dataTypes/uint32.schema.json"
+              },
+              "name": {
+                "type": "string",
+                "description": "Unique name for field in StructureDefinition"
+              },
+              "valueRank": {
+                "$ref": "dataTypes/int32.schema.json",
+                "description": "Scalar (-1) or fixed rank Array (>=1)"
+              }
+            }
+          }
+        },
+        "structureType": {
+          "type": "string",
+          "description": "Structure_0: Structure without optional fields, StructureWithOptionalFields_1: Structure with optional fields, Union_2: Only one of the fields defined for the data type is encoded into a value",
+          "enum": [
+            "Structure_0",
+            "StructureWithOptionalFields_1",
+            "Union_2"
+          ]
+        }
+      }
+    }
+  }
+}

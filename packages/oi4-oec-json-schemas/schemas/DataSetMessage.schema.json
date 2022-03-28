@@ -4,10 +4,18 @@
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
-  "required": ["DataSetWriterId", "Payload"],
+  "required": [
+    "DataSetWriterId",
+    "Payload",
+    "subResource"
+  ],
   "properties": {
     "DataSetWriterId": {
       "$ref": "uint16.schema.json"
+    },
+    "filter": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the filter, together with the subResource, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7)."
     },
     "MetaDataVersion": {
       "$ref": "ConfigurationVersionDataType.schema.json"
@@ -25,13 +33,13 @@
       "format": "date-time",
       "description": "Timestamp in format 2019-06-26T13:16:00.000+01:00"
     },
-    "POI": {
-      "type": "string",
-      "description": "It contains the readable reference to the DataSetWriterId and is identical to the tag in the topic. Can be DSWID, or Tag or OI4-Identifier"
-    },
     "Payload": {
       "type": "object",
       "description": "This object contains the name-value pairs specified by the PublishedDataSet."
+    },
+    "subResource": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the subResource, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the subResource in the topic (8.1.6) if present."
     }
   }
 }

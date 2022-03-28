@@ -7,18 +7,24 @@
   "$comment": "TODO: oi4identifier needs to be updated and implemented here",
   "required": [
     "DataSetWriterId",
+    "filter",
     "MessageId",
     "MessageType",
     "PublisherId",
-    "MetaData"
+    "MetaData",
+    "subResource"
   ],
   "properties": {
-    "CorrelationId": {
+    "correlationId": {
       "type": "string",
       "description": "Correlation ID used for logging and as debug information"
     },
     "DataSetWriterId": {
       "$ref": "dataTypes/uint16.schema.json"
+    },
+    "filter": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the filter, together with the subResource, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7)."
     },
     "MessageId": {
       "type": "string",
@@ -37,6 +43,10 @@
       "type": "string",
       "description": "Publisher ID",
       "pattern": "{oi4Identifier}"
+    },
+    "subResource": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the subResource, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the subResource in the topic (8.1.6) if present."
     }
   }
 }

@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "$comment": "TODO: oi4identifier needs to be updated and implemented here",
   "properties": {
-    "CorrelationId": {
+    "correlationId": {
       "type": "string",
       "description": "Correlation ID used for logging and as debug information"
     },

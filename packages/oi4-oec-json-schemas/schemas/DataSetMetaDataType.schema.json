@@ -5,33 +5,57 @@
   "type": "object",
   "additionalProperties": false,
   "$comment": "TODO: needs to be specified",
-  "required": ["name"],
+  "required": [
+    "name",
+    "namespaces",
+    "enumDataTypes",
+    "structuredDataTypes",
+    "simpleDataTypes"
+  ],
   "properties": {
-    "name": {
-      "type": "string",
-      "description": "Name of DataSet"
+    "configurationVersion": {
+      "$ref": "ConfigurationVersionDataType.schema.json"
     },
     "dataSetClassId": {
       "type": "string"
     },
     "description": {
-      "type": "string",
       "$ref": "LocalizedText.schema.json"
     },
     "fields": {
       "$ref": "FieldMetaData.schema.json"
     },
-    "namespaces": {
-      "description": "TODO"
+    "name": {
+      "type": "string",
+      "description": "Name of DataSet"
     },
-    "structuredDataTypes": {
-      "description": "TODO"
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "For details see OPC UA specification Annex A: Part 14-A1.1"
     },
     "enumDataTypes": {
-      "description": "TODO"
+      "type": "array",
+      "items": {
+        "$ref": "EnumDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.4"
+    },
+    "structuredDataTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "StructureDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.3"
     },
     "simpleDataTypes": {
-      "description": "TODO"
+      "type": "array",
+      "items": {
+        "$ref": "SimpleTypeDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.5"
     }
   }
 }
