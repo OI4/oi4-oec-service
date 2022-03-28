@@ -11,9 +11,6 @@
       "type": "string",
       "description": "Name of the field"
     },
-    "dataSetClassId": {
-      "type": "string"
-    },
     "description": {
       "type": "object",
       "$ref": "LocalizedText.schema.json"

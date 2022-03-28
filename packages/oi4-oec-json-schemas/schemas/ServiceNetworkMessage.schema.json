@@ -1,5 +1,5 @@
 {
-  "$id": "NetworkMessage.schema.json",
+  "$id": "ServiceNetworkMessage.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of an event",
   "type": "object",
@@ -11,12 +11,15 @@
     }
   ],
   "properties": {
-    "Messages": {
-      "type": "array",
-      "description": "Messages Array",
-      "items": {
-        "$ref": "DataSetMessage.schema.json"
-      }
+    "Message": {
+      "oneOf": [
+        {
+          "$ref": "ServiceParametersRequest.schema.json"
+        },
+        {
+          "$ref": "ServiceParametersResponse.schema.json"
+        }
+      ]
     }
   },
   "required": [
