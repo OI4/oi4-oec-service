@@ -115,7 +115,7 @@ export class OPCUABuilder {
     this.jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
     this.jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
     this.jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-    this.jsonValidator.addSchema(configSchemaJson, 'config.schema.json');
+    this.jsonValidator.addSchema(configSchemaJson, 'configPublish.schema.json');
     this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
     this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
     this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json')

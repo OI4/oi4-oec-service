@@ -8,7 +8,7 @@
   "properties": {
     "components": {
       "type": "array",
-      "description": "Components Object",
+      "description": "The components list contains all software components, which are licensed under the same license. Both, the DataSetWriterId and the Filter from the DataSetMessage header are related to that license",
       "items": {
         "$ref": "#/definitions/componentsObject"
       }
@@ -21,35 +21,18 @@
       "required": ["component"],
       "properties": {
         "component": {
-          "description": "Library using this license",
+          "description": "This is the name of the component, which uses the license names in the father object",
           "type": "string"
         },
         "licAuthors": {
-          "description": "License Authors",
+          "description": "This is a list of authors, which are providing this component",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "licAddText": {
-          "description": "Additional license text",
-          "type": "string"
-        }
-      }
-    },
-    "license": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["components", "licenseId"],
-      "properties": {
-        "components": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/componentsObject"
-          }
-        },
-        "licenseId": {
-          "description": "License Name",
+          "description": "Some components may have extended license information in addition to the license agreements defined for it. This additional information can be placed in licAddText as plain text",
           "type": "string"
         }
       }

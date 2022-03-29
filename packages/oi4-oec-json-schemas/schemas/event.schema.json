@@ -4,20 +4,158 @@
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
-  "required": ["number", "category"],
-  "properties": {
-    "number": {
-      "type": "number"
+  "oneOf": [
+    {
+      "$ref": "#/definitions/statusEvent"
     },
-    "description": {
-      "type": "string"
+    {
+      "$ref": "#/definitions/syslogEvent"
     },
-    "category": {
-      "type": "string",
-      "enum": ["CAT_SYSLOG_0", "CAT_OPCSC_1", "CAT_NE107", "CAT_UNDEF_99"]
+    {
+      "$ref": "#/definitions/ne107Event"
     },
-    "details": {
-      "$comment": "The type of this property depends on the category. TODO: Create all CAT_subschemas"
+    {
+      "$ref": "#/definitions/genericEvent"
+    }
+  ],
+  "definitions": {
+    "baseEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "number"
+      ],
+      "properties": {
+        "origin": {
+          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
+          "$ref": "oi4Identifier.schema.json"
+        },
+        "number": {
+          "description": "An number to hint to the reason of the event",
+          "$ref": "dataTypes/uint32.schema.json"
+        },
+        "description": {
+          "description": "Human readable description for the event number",
+          "type": "string"
+        }
+      }
+    },
+    "statusEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "number",
+        "category"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/baseEvent"
+        }
+      ],
+      "properties": {
+        "category": {
+          "const": "CAT_STATUS_1"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "symbolicId": {
+              "description": "A symbolic id, defined by the OPC Foundation, as short form of the description (e.g. “BadEncodingError” for 0x80060000)",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "syslogEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A syslog event provides information as described in RFC3164",
+      "required": [
+        "origin",
+        "number",
+        "category"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/baseEvent"
+        }
+      ],
+      "properties": {
+        "category": {
+          "const": "CAT_SYSLOG_0"
+        },
+        "details": {
+          "properties": {
+            "MSG": {
+              "description": "The MSG contains the MSG part of a syslog message",
+              "type": "string"
+            },
+            "HEADER": {
+              "description": "The HEADER contains the HEADER part of a syslog message, which consists of the name or ip address of the sender and timestamp",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "ne107Event": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Event according to NAMUR NE107",
+      "required": [
+        "origin",
+        "number",
+        "category"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/baseEvent"
+        }
+      ],
+      "properties": {
+        "category": {
+          "const": "CAT_NE107_2"
+        },
+        "details": {
+          "properties": {
+            "diagnosticCode": {
+              "description": "Manufacturer specific detail information about the the event. E.g. F-238",
+              "type": "string"
+            },
+            "location": {
+              "description": "Actual location of the raised event. E.g. if an asset has multiple sensor units build like temperature",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "genericEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A generic event provides information which are undefined out of the scope of the Open Industry 4.0 Alliance",
+      "required": [
+        "origin",
+        "number",
+        "category"
+      ],
+      "allOf": [
+        {
+          "$ref": "#/definitions/baseEvent"
+        }
+      ],
+      "properties": {
+        "category": {
+          "const": "CAT_GENERIC_99"
+        },
+        "details": {
+          "properties": {}
+        }
+      }
     }
   }
 }

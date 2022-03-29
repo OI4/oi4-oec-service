@@ -609,7 +609,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/config.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/configPublish.schema.json'
     license:
       type: object
       properties:

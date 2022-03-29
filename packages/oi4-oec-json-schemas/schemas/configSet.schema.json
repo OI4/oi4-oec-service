@@ -1,0 +1,56 @@
+{
+  "$id": "configSet.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a publish configuration message",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "configDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "value": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    },
+    "groupConfig": {
+      "type": "object",
+      "minProperties": 2,
+      "required": [
+        "name"
+      ],
+      "additionalProperties": {
+        "$ref": "LocalizedText.schema.json"
+      },
+      "patternProperties": {
+        "^(?!name|description)[A-z][A-z0-9-_]*$": {
+          "$ref": "#/definitions/configDefinition"
+        }
+      }
+    }
+  },
+  "minProperties": 1,
+  "patternProperties": {
+    "^(?!\bcontext\b)[A-z_][A-z0-9-_]*$": {
+      "$ref": "#/definitions/groupConfig"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "LocalizedText.schema.json"
+        },
+        "description": {
+          "$ref": "LocalizedText.schema.json"
+        }
+      }
+    }
+  }
+}

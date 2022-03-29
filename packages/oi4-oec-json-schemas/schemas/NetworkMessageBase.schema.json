@@ -22,8 +22,7 @@
       "pattern": "^.{1,}-{oi4Identifier}"
     },
     "MessageType": {
-      "type": "string",
-      "enum": ["ua-data"],
+      "const": "ua-data",
       "description": "Message Type"
     },
     "PublisherId": {
