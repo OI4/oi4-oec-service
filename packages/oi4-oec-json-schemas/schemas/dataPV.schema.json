@@ -1,8 +1,8 @@
 {
-  "$id": "mam.schema.json",
+  "$id": "dataPV.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
-  "description": "A representation of an Master Asset Model payload",
+  "description": "A representation of an Process Values (PV) data schema",
   "required": ["pv"],
   "properties": {
     "pv": {

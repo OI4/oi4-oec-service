@@ -20,7 +20,7 @@
       "$comment": "TODO: Finish this"
     },
     "builtInType": {
-      "$ref": "byte.schema.json",
+      "$ref": "dataTypes/byte.schema.json",
       "minimum": 0,
       "maximum": 25,
       "description": "See https://reference.opcfoundation.org/v104/Core/docs/Part6/5.1.2/"

@@ -3,6 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "string",
   "pattern": "^[A-z]{2}(-[A-z]{2,3})?$",
-  "description": "ISO639-1 concatenation",
-  "$comment": "This is more relaxed than IETF RFC 5646, because some variations are used."
+  "description": "The localeId, which looks linke en-US or de-DE (9.2) will be placed in locale as String",
+  "$comment": "This is more relaxed than IETF RFC 5646, because some variations are used.",
+  "readOnly": true
 }

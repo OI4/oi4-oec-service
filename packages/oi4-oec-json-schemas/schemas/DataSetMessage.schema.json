@@ -11,7 +11,7 @@
   ],
   "properties": {
     "DataSetWriterId": {
-      "$ref": "uint16.schema.json"
+      "$ref": "dataTypes/uint16.schema.json"
     },
     "filter": {
       "type": "string",

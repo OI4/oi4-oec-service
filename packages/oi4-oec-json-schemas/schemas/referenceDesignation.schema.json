@@ -7,46 +7,52 @@
   "required": [],
   "properties": {
     "function": {
-      "$ref": "#/definitions/functionObject"
+      "$ref": "#/definitions/referenceDesignationObject"
     },
     "product": {
-      "$ref": "#/definitions/functionObject"
+      "$ref": "#/definitions/referenceDesignationObject"
     },
     "location": {
-      "$ref": "#/definitions/functionObject"
+      "$ref": "#/definitions/referenceDesignationObject"
     }
   },
   "definitions": {
-    "functionObject": {
+    "referenceDesignationObject": {
       "type": "object",
       "required": ["value"],
       "additionalProperties": false,
       "properties": {
         "value": {
-          "type": "string"
+          "type": "string",
+          "readOnly": false
         },
         "local": {
-          "type": "string"
+          "type": "string",
+          "readOnly": false
         },
         "parent": {
           "type": "object",
-          "$ref": "#/definitions/functionParent"
+          "$ref": "#/definitions/referenceDesignationParent",
+          "readOnly": false
         }
       }
     },
-    "functionParent": {
+    "referenceDesignationParent": {
       "type": "object",
       "required": ["value"],
       "additionalProperties": false,
       "properties": {
         "value": {
-          "type": "string"
+          "type": "string",
+          "readOnly": false
         },
         "local": {
-          "type": "string"
+          "type": "string",
+          "readOnly": false
         },
         "oi4Identifier": {
-          "type": "string"
+          "type": "string",
+          "readOnly": false
         }
       }
     }

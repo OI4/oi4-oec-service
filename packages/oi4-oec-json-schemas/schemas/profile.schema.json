@@ -9,7 +9,7 @@
     "resource": {
       "type": "array",
       "items": {
-        "$ref": "resources.schema.json"
+        "$ref": "constants/resources.schema.json"
       }
     }
   }

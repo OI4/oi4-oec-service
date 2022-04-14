@@ -7,7 +7,7 @@
   "required": ["locale"],
   "properties": {
     "locale": {
-      "$ref": "locale.pattern.schema.json"
+      "$ref": "constants/locale.pattern.schema.json"
     }
   }
 }
