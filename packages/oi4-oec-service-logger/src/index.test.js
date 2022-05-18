@@ -1,5 +1,4 @@
-const Logger = require('./index');
-
+const { Logger } = require('./index');
 
 describe('Class: Device Manager', () => {
   const logger = new Logger();

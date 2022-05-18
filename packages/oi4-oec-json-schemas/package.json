@@ -4,7 +4,6 @@
   "description": "OI4 Open Edge Computing JSON schemas",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": false,
   "keywords": [
     "oi4",
     "oec",
@@ -30,6 +29,7 @@
   "scripts": {
     "build": "node builder/index.js",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-    "lint": "eslint ."
+    "test": "./../../node_modules/.bin/jest --config ./../../jest.config.js",
+    "lint": "eslint --fix"
   }
 }

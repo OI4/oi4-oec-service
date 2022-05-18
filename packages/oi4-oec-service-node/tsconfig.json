@@ -1,25 +1,18 @@
 {
+  "references": [
+    { "path": "./../oi4-oec-service-model"},
+    { "path": "./../oi4-oec-service-opcua-model"},
+    { "path": "./../oi4-oec-service-conformity-validator"},
+    { "path": "./../oi4-oec-service-logger"}
+  ],
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "moduleResolution": "node",
-    "outDir": "dist",
-    "types": [
-      "node",
-      "jest"
-    ],
-    "paths": {
-      "@oi4/oi4-oec-service-model": [
-        "packages/oi4-oec-service-model"
-      ]
-    }
+    "outDir": "dist"
   },
   "include": [
     "src/**/*",
-    "src/**/*.json",
-    "LICENSE",
-    "README.md",
-    "package.json"
+    "src/**/*.json"
   ],
   "exclude": [
     "dist",

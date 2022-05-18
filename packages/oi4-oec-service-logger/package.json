@@ -4,7 +4,6 @@
   "description": "OI4 Open Edge Computing Logger",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": false,
   "keywords": [
     "oi4",
     "oec",
@@ -21,8 +20,8 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-model": "^0.12.3",
-    "@oi4/oi4-oec-service-opcua-model": "^0.12.3",
+    "@oi4/oi4-oec-service-model": "workspace:^",
+    "@oi4/oi4-oec-service-opcua-model": "workspace:^",
     "async-mqtt": "^2.5.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
@@ -33,7 +32,7 @@
     "@types/winston-syslog": "^2.4.0"
   },
   "scripts": {
-    "build": "yarn run clean && tsc -b tsconfig.json",
+    "build": "tsc --build",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",

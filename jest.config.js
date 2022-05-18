@@ -1,12 +1,16 @@
 module.exports = {
   preset: 'ts-jest',
+  testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+  testPathIgnorePatterns: ["/dist/", "/node_modules/"],
   testEnvironment: 'node',
   clearMocks: true,
   collectCoverage: false,
   collectCoverageFrom: [
-    '**/src/**/*.{ts,tsx}',
-    '**/test/**/*.test.{ts,tsx}',
-    '!**/*.d.{ts,tsx}',
+    '<rootDir>/**/*.{ts,tsx}',
+    '!<rootDir>/__test__/**/*.{ts,tsx}',
+    '!<rootDir>/**/*.test.{ts,tsx}',
+    '!<rootDir>/**/*.spec.{ts,tsx}',
+    '!<rootDir>/src/*.d.{ts,tsx}',
     '!**/node_modules/**',
   ],
   coverageThreshold: {
@@ -20,5 +24,6 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text-summary', 'text', 'html', 'json'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'jsx', 'node'],
-  setupFiles: ['<rootDir>../../.jest/setEnvironment.js'],
+  setupFiles: ['<rootDir>/.jest/setEnvironment.js'],
+  reporters: ["default", "jest-junit"],
 };

@@ -1,5 +1,10 @@
 {
   "extends": "../../tsconfig.json",
+  "references": [ 
+    {"path": "./../oi4-oec-service-logger" },
+    {"path": "./../oi4-oec-service-model" },
+    {"path": "./../oi4-oec-service-opcua-model" }
+  ],
   "compilerOptions": {
     "rootDir": "src",
     "moduleResolution": "node",

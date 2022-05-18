@@ -4,7 +4,6 @@
   "description": "OI4 Open Edge Computing model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
-  "private": false,
   "keywords": [
     "oi4",
     "oec",
@@ -21,10 +20,10 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-opcua-model": "^0.12.3"
+    "@oi4/oi4-oec-service-opcua-model": "workspace:^"
   },
   "scripts": {
-    "build": "yarn run clean && tsc -b tsconfig.json",
+    "build": "tsc --build",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",
