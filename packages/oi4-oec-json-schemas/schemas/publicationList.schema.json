@@ -47,7 +47,7 @@
     "config": {
       "description": "Configuration as described in 9.3.11",
       "type": "string",
-      "enum": ["NONE_0", "STATUS_1", "INTERVAL_2", "STATUS_AND_INTERVAL_3"]
+      "enum": ["NONE_0", "MODE_1", "INTERVAL_2", "MODE_AND_INTERVAL_3"]
     }
   },
   "definitions": {
