@@ -11,24 +11,25 @@ import {
 import Ajv from 'ajv'; /*tslint:disable-line*/
 
 // Base
-import oi4IdentifierSchemaJson from '@oi4/json-schemas/schemas/oi4Identifier.schema.json';
+import oi4IdentifierSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json';
 // Constants
-import resourcesSchemaJson from '@oi4/json-schemas/schemas/constants/resources.schema.json';
-import topicPathSchemaJson from '@oi4/json-schemas/schemas/constants/topicPath.schema.json';
+import resourcesSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/constants/resources.schema.json';
+import topicPathSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/constants/topicPath.schema.json';
 // Payloads
-import healthSchemaJson from '@oi4/json-schemas/schemas/health.schema.json';
-import mamSchemaJson from '@oi4/json-schemas/schemas/mam.schema.json';
-import licenseSchemaJson from '@oi4/json-schemas/schemas/license.schema.json';
-import licenseTextSchemaJson from '@oi4/json-schemas/schemas/licenseText.schema.json';
-import profileSchemaJson from '@oi4/json-schemas/schemas/profile.schema.json';
-import eventSchemaJson from '@oi4/json-schemas/schemas/event.schema.json';
-import rtLicenseSchemaJson from '@oi4/json-schemas/schemas/rtLicense.schema.json';
-import configSchemaJson from '@oi4/json-schemas/schemas/config.schema.json';
-import publicationListSchemaJson from '@oi4/json-schemas/schemas/publicationList.schema.json';
-import subscriptionListSchemaJson from '@oi4/json-schemas/schemas/subscriptionList.schema.json';
-import referenceDesignationSchemaJson from '@oi4/json-schemas/schemas/referenceDesignation.schema.json';
-import localeSchemaJson from '@oi4/json-schemas/schemas/locale.schema.json';
-import paginationSchemaJson from '@oi4/json-schemas/schemas/pagination.schema.json';
+import healthSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/health.schema.json';
+import mamSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/mam.schema.json';
+import licenseSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/license.schema.json';
+import licenseTextSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/licenseText.schema.json';
+import profileSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/profile.schema.json';
+import eventSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/event.schema.json';
+import rtLicenseSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/rtLicense.schema.json';
+import configPublishSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/configPublish.schema.json';
+import configSetSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/configSet.schema.json';
+import publicationListSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/publicationList.schema.json';
+import subscriptionListSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/subscriptionList.schema.json';
+import referenceDesignationSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/referenceDesignation.schema.json';
+import localeSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/locale.schema.json';
+import paginationSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/pagination.schema.json';
 
 import {
   // Base
@@ -115,7 +116,8 @@ export class OPCUABuilder {
     this.jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
     this.jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
     this.jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-    this.jsonValidator.addSchema(configSchemaJson, 'configPublish.schema.json');
+    this.jsonValidator.addSchema(configPublishSchemaJson, 'configPublish.schema.json');
+    this.jsonValidator.addSchema(configSetSchemaJson, 'configSet.schema.json');
     this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
     this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
     this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json')
@@ -197,7 +199,7 @@ export class OPCUABuilder {
     }
     const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
-      MessageType: EOPCUAMessageType.uadata,
+      MessageType: EOPCUAMessageType.uaData,
       DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
       PublisherId: this.publisherId,
       Messages: opcUaDataPayload,
@@ -223,7 +225,7 @@ export class OPCUABuilder {
     const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
     const opcUaMetaDataMessage: IOPCUAMetaData = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
-      MessageType: EOPCUAMessageType.uametadata,
+      MessageType: EOPCUAMessageType.uaMetadata,
       PublisherId: this.publisherId,
       POI: 'somecompany.com/sensor/someid/someserial', // Currently hardcoded, originID
       MetaData: opcUaMetaDataPayload,

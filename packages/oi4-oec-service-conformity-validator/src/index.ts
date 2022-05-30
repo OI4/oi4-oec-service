@@ -5,7 +5,8 @@ import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Application, Device} from '@oi4/oi4-oec-service-model';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {
-    configSchemaJson,
+    configPublishSchemaJson,
+    configSetSchemaJson,
     eventSchemaJson,
     healthSchemaJson,
     licenseSchemaJson,
@@ -118,7 +119,8 @@ export class ConformityValidator extends EventEmitter {
         this.jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
         this.jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
         this.jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-        this.jsonValidator.addSchema(configSchemaJson, 'configPublish.schema.json');
+        this.jsonValidator.addSchema(configPublishSchemaJson, 'configPublish.schema.json');
+        this.jsonValidator.addSchema(configSetSchemaJson, 'configSet.schema.json');
         this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
         this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
         this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json');
