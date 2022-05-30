@@ -21,7 +21,7 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-logger": "^0.12.3",
+    "@oi4/oi4-oec-service-logger": "^1.0.0",
     "async-mqtt": "^2.5.0"
   },
   "scripts": {

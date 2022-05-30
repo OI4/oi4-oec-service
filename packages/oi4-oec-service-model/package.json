@@ -21,7 +21,7 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-opcua-model": "^0.12.3"
+    "@oi4/oi4-oec-service-opcua-model": "^1.0.0"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
