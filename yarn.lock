@@ -2484,11 +2484,6 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@oi4/json-schemas@^0.12.0":
-  version "0.12.2"
-  resolved "https://npm.pkg.github.com/download/@oi4/json-schemas/0.12.2/14480ba42b5bba95456692c061325125bce58b611dd05d013d4170622b9ae95c"
-  integrity sha512-Sj6gAdA62hFCbvMMOrBLeXU2Sb9jo4WJUQSK8eMnWV8Lq3NuisopMDlL1BFoIlnz+dN1poQjcmQSYhxSsTaC9w==
-
 "@openapi-contrib/openapi-schema-to-json-schema@^3.0.0":
   version "3.1.1"
   resolved "https://registry.npmjs.org/@openapi-contrib/openapi-schema-to-json-schema/-/openapi-schema-to-json-schema-3.1.1.tgz"

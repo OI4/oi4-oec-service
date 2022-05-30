@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@oi4/json-schemas": "^0.12.0"
+    "@oi4/oi4-oec-json-schemas": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
