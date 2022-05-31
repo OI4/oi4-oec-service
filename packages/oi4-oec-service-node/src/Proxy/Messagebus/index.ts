@@ -50,12 +50,9 @@ class OI4MessageBusProxy extends OI4Proxy {
         };
 
         if (!mqttSettings.useUnsecureBroker) { // This should be the normal case, we connect securely
-            const userCredentials: Credentials = this.mqttSettingsHelper.getUserCredentials();
+            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
             mqttOpts.username = userCredentials.username;
             mqttOpts.password = userCredentials.password;
-            //if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
-            //mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
-            //mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
             mqttOpts.protocol = 'mqtts';
             mqttOpts.rejectUnauthorized = false;
         }

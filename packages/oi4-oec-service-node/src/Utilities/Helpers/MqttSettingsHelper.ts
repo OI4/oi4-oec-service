@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {Credentials, ValidatedCredentials} from './Types';
+import {Credentials} from './Types';
 
 export class MqttSettingsHelper {
 
@@ -9,44 +9,45 @@ export class MqttSettingsHelper {
         this.fileLocation = location;
     }
 
-    isBase64EncodingInvalid(encodedString: string): boolean {
-        return btoa(atob(encodedString)) !== encodedString;
-    }
-
-    areEncodedCredentialsInvalid(encodedCredentials: string): ValidatedCredentials {
+    private validateAndDecodeCredentials(encodedCredentials: string): string {
         if(encodedCredentials === '') {
-            return {areInvalid: true, error: new Error('Credentials not found : empty file')};
+            throw new Error('Credentials not found : empty file');
         }
 
-        if(this.isBase64EncodingInvalid(encodedCredentials)) {
-            return {areInvalid: true, error: new Error('Credential file does not contain a valid base 64 string')};
+        //If the string contains an invalid character, atob will fail
+        const decodedCredentials = atob(encodedCredentials);
+        //Check if the string is base64 validly encoded
+        if(btoa(decodedCredentials) !== encodedCredentials) {
+            throw new Error('Credential file does not contain a valid base 64 string');
         }
 
-        return {areInvalid: false, error: undefined};
+        if( decodedCredentials.startsWith(':') ||
+            decodedCredentials.endsWith(':') ||
+            decodedCredentials.split(':').length != 2) {
+            throw new Error('Credential are does not respect the format "username:password"');
+        }
+
+        return decodedCredentials;
     }
 
-    cleanCredentials(encodedCredentials: string): string {
+    private cleanCredentials(encodedCredentials: string): string {
         return encodedCredentials.trim().replace(/(\r\n|\n|\r)/gm, '');
     }
 
-    fetchCredentials(): string {
-        if (fs.existsSync(this.fileLocation)) {
-            const encodedCredentials: string = fs.readFileSync(this.fileLocation,'utf8');
-            const cleanedEncodedCredentials: string = this.cleanCredentials(encodedCredentials);
-            const validationResult: ValidatedCredentials = this.areEncodedCredentialsInvalid(cleanedEncodedCredentials);
-
-            if(validationResult.areInvalid) {
-                throw validationResult.error;
-            }
-
-            return atob(cleanedEncodedCredentials);
-        } else {
+    private readAndDecodeCredentials(): string {
+        if (!fs.existsSync(this.fileLocation)) {
             throw new Error('Credentials file not found');
         }
+
+        const encodedCredentials: string = fs.readFileSync(this.fileLocation,'utf8');
+        const cleanedEncodedCredentials: string = this.cleanCredentials(encodedCredentials);
+
+        //If the credentials are invalid, then an error is thrown
+        return this.validateAndDecodeCredentials(cleanedEncodedCredentials);
     }
 
-    getUserCredentials(): Credentials {
-        const credentials = this.fetchCredentials();
+    loadUserCredentials(): Credentials {
+        const credentials = this.readAndDecodeCredentials();
         const splitCredentials = credentials.split(':', 2);
         return {username:splitCredentials[0], password:splitCredentials[1]}
     };
