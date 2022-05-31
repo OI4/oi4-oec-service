@@ -1,7 +1,7 @@
 import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
 
 describe('Unit test for MqttCredentialsHelper', () => {
-/*
+
     it('Credentials should be correctly read from file', async () => {
         const mqttSettingsHelper = new MqttSettingsHelper('./src/__fixtures__/correct_credentials.txt');
         const credentials = mqttSettingsHelper.getUserCredentials();
@@ -9,7 +9,7 @@ describe('Unit test for MqttCredentialsHelper', () => {
         expect(credentials.username).toBe('some_username');
         expect(credentials.password).toBe('some_password');
     });
-*/
+
     it('If the credential file is not found an error is thrown', async () => {
         const mqttSettingsHelper = new MqttSettingsHelper('./src/__fixtures__/credentials_fake.txt');
         try {
