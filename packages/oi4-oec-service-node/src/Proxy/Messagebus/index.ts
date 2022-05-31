@@ -1,7 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../../Container/index';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
