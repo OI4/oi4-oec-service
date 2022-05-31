@@ -45,7 +45,7 @@ class OI4MessageBusProxy extends OI4Proxy {
                 retain: false,
             },
         };
-        // TODO use the utility fnction for reading files
+
         if (this.hasRequiredCertCredentials()) {
             const ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
             const cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
