@@ -1,8 +1,8 @@
-export interface MqttSettings {
-    host: string,
-    port: number,
-    clientId: string,
-    useUnsecureBroker?: boolean,
-    username?: string,
-    password: string,
+import {IClientOptions} from 'async-mqtt';
+
+export interface MqttSettings extends IClientOptions{
+    host?: string;
+    port?: number;
+    useUnsecureBroker?: boolean;
+    passphrase?: string | Buffer;
 }

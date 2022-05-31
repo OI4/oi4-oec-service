@@ -1,6 +1,7 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {IClientOptions} from 'async-mqtt';
 import {IContainerState} from '../../Container/index';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
@@ -10,29 +11,28 @@ import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {MqttSettings} from "./MqttSettings";
+import {MqttSettings} from './MqttSettings';
+import {readFileSync, existsSync} from 'fs';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
 
-    constructor(container: IContainerState, mqttSettings: MqttSettings) {
+    constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
         super(container);
 
         // Add Server Object depending on configuration
         const serverObj = {
-            host: mqttSettings.host,
-            port: mqttSettings.port,
-            //host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
-            //port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
+            host: mqttPreSettings.host,
+            port: mqttPreSettings.port,
         };
         console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
 
         // Initialize MQTT Options
-        const mqttOpts: IClientOptions = {
-            clientId: mqttSettings.clientId,
-            //clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
+        const mqttOpts: MqttSettings = {
+            clientId: mqttPreSettings.clientId,
             servers: [serverObj],
+            protocol: 'mqtts',
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
@@ -46,14 +46,21 @@ class OI4MessageBusProxy extends OI4Proxy {
             },
         };
 
-        if (!mqttSettings.useUnsecureBroker) { // This should be the normal case, we connect securely
-            mqttOpts.username = mqttSettings.username;
-            mqttOpts.password = mqttSettings.password;
-            //if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
-            //mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
-            //mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
+        if (!mqttPreSettings.useUnsecureBroker || !this.hasRequiredCertCredentials()) { // This should be the normal case, we connect securely
+            mqttOpts.username = mqttPreSettings.username;
+            mqttOpts.password = mqttPreSettings.password;
             mqttOpts.protocol = 'mqtts';
             mqttOpts.rejectUnauthorized = false;
+        }
+        else {
+            const ca = readFileSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/ca-root-cert.crt');
+            const cert = readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/client.crt');
+            const key = readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/client.key');
+            const passphrase = existsSync('/Users/ricardo/Documents/netilion-project/testcerts/passphrase.txt') ? readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/passphrase.txt') : undefined;
+            mqttOpts.cert = cert;
+            mqttOpts.ca = ca;
+            mqttOpts.key = key;
+            mqttOpts.passphrase = passphrase;
         }
 
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
@@ -109,7 +116,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
     }
 
-    private async ownSubscribe(topic: string) {
+    private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
         this.containerState.subscriptionList.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
@@ -118,6 +125,11 @@ class OI4MessageBusProxy extends OI4Proxy {
         return await this.client.subscribe(topic);
     }
 
+    private hasRequiredCertCredentials(): boolean {
+        return existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/ca-root-cert.crt') &&
+            existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/client.crt') &&
+            existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/client.key')
+    }
     // private async ownUnsubscribe(topic: string) {
     //   // Remove from subscriptionList
     //   this.containerState.subscriptionList.subscriptionList = this.containerState.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
