@@ -45,7 +45,6 @@ import Ajv from 'ajv'; /*tslint:disable-line*/
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {EAssetType, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {IClientOptions} from 'async-mqtt';
 
 import {promiseTimeout} from './timeout';
 
@@ -65,25 +64,9 @@ export class ConformityValidator extends EventEmitter {
     private readonly logger: Logger;
     static completeProfileList: string[] = Application.full;
 
-    constructor(oi4Id: string) {
+    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient) {
         super();
-        const serverObj = {
-            host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
-            port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
-        };
-        const mqttOpts: IClientOptions = {
-            clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_Validator`,
-            servers: [serverObj],
-        };
-
-        if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
-            mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
-            mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
-            mqttOpts.protocol = 'mqtts';
-            mqttOpts.rejectUnauthorized = false;
-        }
-
-        this.conformityClient = mqtt.connect(mqttOpts);
+        this.conformityClient = mqttClient;
 
         this.logger = new Logger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
         this.builder = new OPCUABuilder(oi4Id, 'Registry'); // TODO: Set oi4Id to something useful
