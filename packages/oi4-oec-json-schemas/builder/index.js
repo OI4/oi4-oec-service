@@ -65,7 +65,7 @@ const topicPathRegEx = `^oi4\\/${serviceTypeRegEx.replace(
 console.log(`TopicPathRegEx:\n${topicPathRegEx}`)
 
 // Read Modify Write NetworkSchemaJson
-tempPath = `${rootDir}/schemas/NetworkMessage.schema.json`
+tempPath = `${rootDir}/schemas/NetworkMessageBase.schema.json`
 tempJson = readJSON(tempPath)
 tempJson.properties.PublisherId.pattern = publisherIdRegEx
 tempJson.properties.MessageId.pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`

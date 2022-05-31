@@ -19,7 +19,7 @@
       "type": "string",
       "description": "Message ID",
       "$comment": "TODO: find a way to include the oi4Identifier better here",
-      "pattern": "^[0-9]+-.+/[a-z0-9-.]+/.+/.+/.+$"
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
     "MessageType": {
       "const": "ua-data",
@@ -28,8 +28,13 @@
     "PublisherId": {
       "description": "Publisher ID",
       "$comment": "TODO: find a way to include the oi4Identifier better here",
-      "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$"
+      "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
+      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     }
   },
-  "required": [ "MessageId", "MessageType", "PublisherId" ]
+  "required": [
+    "MessageId",
+    "MessageType",
+    "PublisherId"
+  ]
 }

@@ -23,12 +23,12 @@ export interface IMasterAssetModel {
 }
 
 export interface IOPCUANetworkMessage {
-  MessageId: string; // TODO: Not yet defined
+  MessageId: MessageId;
   MessageType: EOPCUAMessageType;
-  DataSetClassId: GUID; // TODO: STRING for now, validators found below (thanks to node-opcua)
+  PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
+  DataSetClassId: GUID;
+  CorrelationId?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
-  PublisherId: string; // TODO: string in the OI4-format, need to add validators
-  CorrelationId: string;
 }
 
 // Data Message containing the values
@@ -106,8 +106,11 @@ export interface IOPCUAPayload {
   status?: EOPCUAStatusCode;
 }
 
+// TODO: STRING for now, validators found below (thanks to node-opcua)
 type GUID = string;
 
+// TODO: string in the format <unixTimestampInMs-PublisherId>, need to add validators
+type MessageId = string;
 // /***
 //  * @module node-opcua-guid
 //  */

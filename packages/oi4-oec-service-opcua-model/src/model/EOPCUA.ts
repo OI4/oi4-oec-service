@@ -3,8 +3,8 @@ export enum EOPCUALocale {
 }
 
 export enum EOPCUAMessageType {
-  uadata = 'ua-data',
-  uametadata = 'ua-metadata',
+  uaData = 'ua-data',
+  uaMetadata = 'ua-metadata',
 }
 
 export enum EOPCUAStatusCode {
