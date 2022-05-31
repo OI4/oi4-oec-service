@@ -1,8 +1,11 @@
 import mqtt = require('async-mqtt');
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
-import {readFileSync} from 'fs';
+import {MQTT_PATH_SETTINGS, MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
+import fs from 'fs';
+import {OI4MessageBusProxy} from '../dist';
+import {IContainerState} from '@oi4/oi4-oec-service-model';
+import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -14,49 +17,64 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
+const getContainerInfo = (): IContainerState => {
+    return {
+        oi4Id:'1',
+        mam: {
+            DeviceClass: 'oi4',
+            ManufacturerUri: 'test',
+            Model: {locale: EOPCUALocale.enUS, text: 'text'},
+            Description: { locale: EOPCUALocale.enUS, text: 'text'},
+            DeviceManual: '',
+            Manufacturer: {locale: EOPCUALocale.enUS, text: 'text'},
+            HardwareRevision: '1.0',
+            ProductCode: '213dq',
+            DeviceRevision: '1.0',
+            SerialNumber: '23kl41oßmß132',
+            SoftwareRevision: '1.0',
+            RevisionCounter: 1,
+            ProductInstanceUri: 'wo/'
+        }
+    } as IContainerState
+}
+
 describe('Connection to MQTT with TLS',  () => {
     it('test mqtt connection with only certificate auth and encrypted private key', async () => {
-
-        jest.spyOn(mqtt, 'connectAsync')
+        jest.spyOn(mqtt, 'connect')
             .mockImplementation()
-            .mockReturnValue(Promise.resolve({connected: true}) as Promise<mqtt.AsyncMqttClient>);
-
+            .mockReturnValue({connected: true, publish: jest.fn(), on: jest.fn()} as unknown as mqtt.AsyncMqttClient);
+        jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+        jest.spyOn(fs, 'readFileSync').mockImplementation((path: string) => path);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.rejectUnauthorized = true;
-
-         mqttOpts.ca = readFileSync(`${__dirname}/fixtures/ca-root-cert.crt`);
-         mqttOpts.cert = readFileSync(`${__dirname}/fixtures/encrypted-client-cert.crt`);
-         mqttOpts.key = readFileSync(`${__dirname}/fixtures/encrypted-client-key.key`);
-         mqttOpts.passphrase = readFileSync(`${__dirname}/fixtures/passphrase.txt`).toString().trimEnd();
-         await mqtt.connectAsync(mqttOpts).then(res => {
-             expect(res.connected).toBeTruthy()
-         });
-
-
+        const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        expect(oi4messagebus.mqttClient.connected).toBeTruthy();
     });
+
     it('test mqtt connection with only certificate auth and decrypted private key', async () => {
 
-        jest.spyOn(mqtt, 'connectAsync')
+        jest.spyOn(mqtt, 'connect')
             .mockImplementation()
-            .mockReturnValue(Promise.resolve({connected: true}) as Promise<mqtt.AsyncMqttClient>);
-
+            .mockReturnValue({connected: true, publish: jest.fn(), on: jest.fn()} as unknown as mqtt.AsyncMqttClient);
+        jest.spyOn(fs, 'existsSync').mockImplementation((path: string) => {
+            return MQTT_PATH_SETTINGS.PASSPHRASE !== path;
+        });
+        jest.spyOn(fs, 'readFileSync').mockImplementation((path: string) => path);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.rejectUnauthorized = true;
-        mqttOpts.ca = readFileSync(`${__dirname}/fixtures/ca-root-cert.crt`);
-        mqttOpts.cert = readFileSync(`${__dirname}/fixtures/decrypted-client-cert.crt`);
-        mqttOpts.key = readFileSync(`${__dirname}/fixtures/decrypted-client-key.key`);
-        await mqtt.connectAsync(mqttOpts).then(res => expect(res.connected).toBeTruthy());
+        const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        expect(oi4messagebus.mqttClient.connected).toBeTruthy();
     });
     it('test mqtt connection with username and password', async () => {
 
-        jest.spyOn(mqtt, 'connectAsync')
+        jest.spyOn(mqtt, 'connect')
             .mockImplementation()
-            .mockReturnValue(Promise.resolve({connected: true}) as Promise<mqtt.AsyncMqttClient>);
+            .mockReturnValue({connected: true, publish: jest.fn(), on: jest.fn()} as unknown as mqtt.AsyncMqttClient);
+        jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.rejectUnauthorized = false;
         mqttOpts.username = 'test-user';
         mqttOpts.password = '1234';
-        await mqtt.connectAsync(mqttOpts).then(res => expect(res.connected).toBeTruthy());
+        const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        expect(oi4messagebus.mqttClient.connected).toBeTruthy();
     });
+
 });

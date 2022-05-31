@@ -11,7 +11,7 @@ import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {MqttSettings} from './MqttSettings';
+import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
 
 class OI4MessageBusProxy extends OI4Proxy {
@@ -45,22 +45,21 @@ class OI4MessageBusProxy extends OI4Proxy {
                 retain: false,
             },
         };
-
-        if (!mqttPreSettings.useUnsecureBroker || !this.hasRequiredCertCredentials()) { // This should be the normal case, we connect securely
-            mqttOpts.username = mqttPreSettings.username;
-            mqttOpts.password = mqttPreSettings.password;
-            mqttOpts.protocol = 'mqtts';
-            mqttOpts.rejectUnauthorized = false;
-        }
-        else {
-            const ca = readFileSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/ca-root-cert.crt');
-            const cert = readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/client.crt');
-            const key = readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/client.key');
-            const passphrase = existsSync('/Users/ricardo/Documents/netilion-project/testcerts/passphrase.txt') ? readFileSync('/Users/ricardo/Documents/netilion-project/testcerts/passphrase.txt') : undefined;
+        // TODO use the utility fnction for reading files
+        if (this.hasRequiredCertCredentials()) {
+            const ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
+            const cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
+            const key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
+            const passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;
             mqttOpts.cert = cert;
             mqttOpts.ca = ca;
             mqttOpts.key = key;
             mqttOpts.passphrase = passphrase;
+        } else {
+            mqttOpts.username = mqttPreSettings.username;
+            mqttOpts.password = mqttPreSettings.password;
+            mqttOpts.protocol = 'mqtts';
+            mqttOpts.rejectUnauthorized = false;
         }
 
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
@@ -126,9 +125,9 @@ class OI4MessageBusProxy extends OI4Proxy {
     }
 
     private hasRequiredCertCredentials(): boolean {
-        return existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/ca-root-cert.crt') &&
-            existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/client.crt') &&
-            existsSync('/Users/ricardo/Documents/netilion-project/mosquitto/config/certs/client.key')
+        return existsSync(MQTT_PATH_SETTINGS.CA_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.CLIENT_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.PRIVATE_KEY)
     }
     // private async ownUnsubscribe(topic: string) {
     //   // Remove from subscriptionList
