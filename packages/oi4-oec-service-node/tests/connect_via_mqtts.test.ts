@@ -6,6 +6,7 @@ import fs from 'fs';
 import {OI4MessageBusProxy} from '../dist';
 import {IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
+import os from 'os';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -67,7 +68,7 @@ describe('Connection to MQTT with TLS',  () => {
 
         jest.spyOn(mqtt, 'connect')
             .mockImplementation()
-            .mockReturnValue({connected: true, publish: jest.fn(), on: jest.fn()} as unknown as mqtt.AsyncMqttClient);
+            .mockReturnValue({connected: true, options: {clientId: os.hostname()}, publish: jest.fn(), on: jest.fn()} as unknown as mqtt.AsyncMqttClient);
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -75,6 +76,7 @@ describe('Connection to MQTT with TLS',  () => {
         mqttOpts.password = '1234';
         const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
+        expect(oi4messagebus.mqttClient.options.clientId).toEqual(os.hostname())
     });
 
 });

@@ -11,6 +11,7 @@ import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
+import os from 'os';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
@@ -28,7 +29,7 @@ class OI4MessageBusProxy extends OI4Proxy {
 
         // Initialize MQTT Options
         const mqttOpts: MqttSettings = {
-            clientId: mqttPreSettings.clientId,
+            clientId: os.hostname(),
             servers: [serverObj],
             protocol: 'mqtts',
             will: {
