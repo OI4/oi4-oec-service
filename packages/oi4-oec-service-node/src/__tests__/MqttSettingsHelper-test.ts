@@ -26,7 +26,11 @@ describe('Unit test for MqttCredentialsHelper', () => {
     });
 
     it('If the credential file contains a string not in the format username:password an error is thrown', async () => {
-        testAgainstCredentialFile('./src/__fixtures__/credentials_withWrong_format_1.txt', 'Credential are does not respect the format "username:password"');
+        testAgainstCredentialFile('./src/__fixtures__/credentials_wrong_format.txt', 'Credentials are does not respect the format "username:password"');
+    });
+
+    it('If the credential file contains an invalid username an error is thrown', async () => {
+        testAgainstCredentialFile('./src/__fixtures__/credentials_invalid_username.txt', 'Invalid username');
     });
 
 });

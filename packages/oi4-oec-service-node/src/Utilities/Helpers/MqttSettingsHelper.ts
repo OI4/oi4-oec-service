@@ -15,19 +15,29 @@ export class MqttSettingsHelper {
         return buff.toString('utf-8');
     }
 
+    private static checkUsername(candidateUsername: string) {
+        //TODO fix the regex
+        const regex = RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?');
+        return candidateUsername.match(regex);
+    }
+
     private static validateAndDecodeCredentials(encodedCredentials: string): Credentials {
         if(encodedCredentials === '') {
             throw new Error('Credentials not found : empty file');
         }
 
         const decodedCredentials = this.decodeFromBase64(encodedCredentials);
-
-        if( decodedCredentials.startsWith(':')) {
-            throw new Error('Credential are does not respect the format "username:password"');
+        const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
+        if( decodedCredentials.startsWith(':') ||
+            usernamePasswordSeparatorPosition == -1) {
+            throw new Error('Credentials are does not respect the format "username:password"');
         }
 
-        const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
         const username = decodedCredentials.substring(0, usernamePasswordSeparatorPosition);
+        if(this.checkUsername(username)) {
+            throw new Error('Invalid username');
+        }
+
         const password = decodedCredentials.substring(usernamePasswordSeparatorPosition+1, decodedCredentials.length);
 
         return {username: username, password: password}
