@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import {Credentials} from './Types';
+import {indexOf} from 'lodash';
 
 export class MqttSettingsHelper {
 
@@ -9,32 +10,34 @@ export class MqttSettingsHelper {
         this.fileLocation = location;
     }
 
-    private static validateAndDecodeCredentials(encodedCredentials: string): string {
+    private static decodeFromBase64(string: string) {
+        const buff = Buffer.from(string, 'base64');
+        return buff.toString('utf-8');
+    }
+
+    private static validateAndDecodeCredentials(encodedCredentials: string): Credentials {
         if(encodedCredentials === '') {
             throw new Error('Credentials not found : empty file');
         }
 
-        //If the string contains an invalid character, atob will fail
-        const decodedCredentials = atob(encodedCredentials);
-        //Check if the string is base64 validly encoded
-        if(btoa(decodedCredentials) !== encodedCredentials) {
-            throw new Error('Credential file does not contain a valid base 64 string');
-        }
+        const decodedCredentials = this.decodeFromBase64(encodedCredentials);
 
-        if( decodedCredentials.startsWith(':') ||
-            decodedCredentials.endsWith(':') ||
-            decodedCredentials.split(':').length != 2) {
+        if( decodedCredentials.startsWith(':')) {
             throw new Error('Credential are does not respect the format "username:password"');
         }
 
-        return decodedCredentials;
+        const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
+        const username = decodedCredentials.substring(0, usernamePasswordSeparatorPosition);
+        const password = decodedCredentials.substring(usernamePasswordSeparatorPosition+1, decodedCredentials.length);
+
+        return {username: username, password: password}
     }
 
     private static cleanCredentials(encodedCredentials: string): string {
         return encodedCredentials.trim().replace(/(\r\n|\n|\r)/gm, '');
     }
 
-    private readAndDecodeCredentials(): string {
+    loadUserCredentials(): Credentials {
         if (!fs.existsSync(this.fileLocation)) {
             throw new Error('Credentials file not found');
         }
@@ -44,12 +47,6 @@ export class MqttSettingsHelper {
 
         //If the credentials are invalid, then an error is thrown
         return MqttSettingsHelper.validateAndDecodeCredentials(cleanedEncodedCredentials);
-    }
-
-    loadUserCredentials(): Credentials {
-        const credentials = this.readAndDecodeCredentials();
-        const splitCredentials = credentials.split(':', 2);
-        return {username:splitCredentials[0], password:splitCredentials[1]}
     };
 
 }
