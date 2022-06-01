@@ -5,16 +5,19 @@ import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-mo
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
+import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
 
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {MqttSettings} from "./MqttSettings";
+import {MqttSettings} from './MqttSettings';
+import {Credentials} from "../../Utilities/Helpers/Types";
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
+    private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
     constructor(container: IContainerState, mqttSettings: MqttSettings) {
         super(container);
@@ -47,11 +50,9 @@ class OI4MessageBusProxy extends OI4Proxy {
         };
 
         if (!mqttSettings.useUnsecureBroker) { // This should be the normal case, we connect securely
-            mqttOpts.username = mqttSettings.username;
-            mqttOpts.password = mqttSettings.password;
-            //if (process.env.USE_UNSECURE_BROKER as string !== 'true') { // This should be the normal case, we connect securely
-            //mqttOpts.username = process.env.OI4_EDGE_MQTT_USERNAME as string;
-            //mqttOpts.password = process.env.OI4_EDGE_MQTT_PASSWORD as string;
+            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
+            mqttOpts.username = userCredentials.username;
+            mqttOpts.password = userCredentials.password;
             mqttOpts.protocol = 'mqtts';
             mqttOpts.rejectUnauthorized = false;
         }
@@ -297,10 +298,10 @@ class OI4MessageBusProxy extends OI4Proxy {
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
      * @param [filter] - the tag of the resource
      */
-    async sendResource(resource: string, messageId: string, filter: string, page: number = 0, perPage: number = 0) {
+    async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
         let endTag = '';
         let payload: IOPCUAPayload[] = [];
-        let dswidFilter: number = -1; // Initialized with -1, so we know when to use string-based filters or not
+        let dswidFilter = -1; // Initialized with -1, so we know when to use string-based filters or not
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
