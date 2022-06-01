@@ -3,13 +3,13 @@ import {Credentials} from './Types';
 
 export class MqttSettingsHelper {
 
-    fileLocation: string = undefined;
+    private readonly fileLocation: string = undefined;
 
     constructor(location = 'run/secrets/mqtt_credentials') {
         this.fileLocation = location;
     }
 
-    private validateAndDecodeCredentials(encodedCredentials: string): string {
+    private static validateAndDecodeCredentials(encodedCredentials: string): string {
         if(encodedCredentials === '') {
             throw new Error('Credentials not found : empty file');
         }
@@ -30,7 +30,7 @@ export class MqttSettingsHelper {
         return decodedCredentials;
     }
 
-    private cleanCredentials(encodedCredentials: string): string {
+    private static cleanCredentials(encodedCredentials: string): string {
         return encodedCredentials.trim().replace(/(\r\n|\n|\r)/gm, '');
     }
 
@@ -40,10 +40,10 @@ export class MqttSettingsHelper {
         }
 
         const encodedCredentials: string = fs.readFileSync(this.fileLocation,'utf8');
-        const cleanedEncodedCredentials: string = this.cleanCredentials(encodedCredentials);
+        const cleanedEncodedCredentials: string = MqttSettingsHelper.cleanCredentials(encodedCredentials);
 
         //If the credentials are invalid, then an error is thrown
-        return this.validateAndDecodeCredentials(cleanedEncodedCredentials);
+        return MqttSettingsHelper.validateAndDecodeCredentials(cleanedEncodedCredentials);
     }
 
     loadUserCredentials(): Credentials {
