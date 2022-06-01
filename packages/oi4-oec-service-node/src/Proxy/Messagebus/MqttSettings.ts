@@ -4,7 +4,6 @@ import os from 'os';
 export interface MqttSettings extends IClientOptions{
     host?: string;
     port?: number;
-    useUnsecureBroker?: boolean;
     passphrase?: string | Buffer;
 }
 

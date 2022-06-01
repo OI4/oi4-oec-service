@@ -13,7 +13,7 @@ import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/o
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
 import os from 'os';
-import {Credentials} from "../../Utilities/Helpers/Types";
+import {Credentials} from '../../Utilities/Helpers/Types';
 
 
 class OI4MessageBusProxy extends OI4Proxy {
