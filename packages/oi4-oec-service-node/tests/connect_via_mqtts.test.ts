@@ -3,7 +3,7 @@ import mqtt = require('async-mqtt');
 // @ts-ignore
 import {MQTT_PATH_SETTINGS, MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
 import fs from 'fs';
-import {OI4MessageBusProxy} from '../dist';
+import {OI4MessageBusProxy} from '../src/Proxy/Messagebus/index';
 import {IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 

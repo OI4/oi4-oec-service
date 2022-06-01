@@ -1,7 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../../Container/index';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
@@ -37,10 +35,8 @@ class OI4MessageBusProxy extends OI4Proxy {
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: {
-                        health: EDeviceHealth.FAILURE_1,
-                        healthScore: 0,
-                    } as HealthState, dswid: CDataSetWriterIdLookup['health']
+                    payload: this.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
+                    dswid: CDataSetWriterIdLookup['health']
                 }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
                 retain: false,
@@ -48,14 +44,10 @@ class OI4MessageBusProxy extends OI4Proxy {
         };
 
         if (this.hasRequiredCertCredentials()) {
-            const ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
-            const cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
-            const key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
-            const passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;
-            mqttOpts.cert = cert;
-            mqttOpts.ca = ca;
-            mqttOpts.key = key;
-            mqttOpts.passphrase = passphrase;
+            mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
+            mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
+            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
+            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
         } else {
             mqttOpts.username = mqttPreSettings.username;
             mqttOpts.password = mqttPreSettings.password;
@@ -77,10 +69,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             await this.client.publish(
                 `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
                 JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: {
-                         health: EDeviceHealth.NORMAL_0,
-                         healthScore: 0,
-                        } as HealthState,
+                    payload: this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                     dswid: CDataSetWriterIdLookup['health']
                 }], new Date(), DataSetClassIds.mam)),
             );
@@ -118,6 +107,10 @@ class OI4MessageBusProxy extends OI4Proxy {
             }, 60000); // send our own health every 30 seconds!
             this.containerState.on('resourceChanged', this.handleResourceChanged.bind(this));
         });
+    }
+
+    private createHealthStatePayload(health: string, score: number): HealthState {
+        return {health: health, healthScore: score};
     }
 
     private handleResourceChanged(resource: string): void {
