@@ -64,6 +64,7 @@ describe('Connection to MQTT with TLS',  () => {
         const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
     });
+
     it('test mqtt connection with username and password', async () => {
 
         jest.spyOn(mqtt, 'connect')
