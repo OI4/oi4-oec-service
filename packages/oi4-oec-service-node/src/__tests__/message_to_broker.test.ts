@@ -1,11 +1,12 @@
 import mqtt = require('async-mqtt');
-import {MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
+import {MqttSettings} from '../Proxy/Messagebus/MqttSettings';
 import fs from 'fs';
-import {HealthState} from '../src/Proxy/Messagebus/HealthState';
-import {OI4MessageBusProxy} from '../src/Proxy/Messagebus/index';
+import {HealthState} from '../Proxy/Messagebus/HealthState';
+import {OI4MessageBusProxy} from '../Proxy/Messagebus/index';
 import {EDeviceHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
+import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
 const getStandardMqttConfig = (): MqttSettings => {
     return {
         host: 'localhost',
@@ -47,6 +48,10 @@ const getContainerInfo = (): IContainerState => {
 
 describe('Connection to MQTT with TLS',  () => {
 
+    beforeAll(() => {
+        jest.spyOn(MqttSettingsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
+    });
+
     it('should send birth message on connect', async () => {
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -54,7 +59,7 @@ describe('Connection to MQTT with TLS',  () => {
             return topic;
         });
 
-            jest.spyOn(mqtt, 'connect').mockImplementationOnce(
+            jest.spyOn(mqtt, 'connect').mockImplementation(
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
             () => {
@@ -72,15 +77,13 @@ describe('Connection to MQTT with TLS',  () => {
                     }),
                 }
             }
-        ).mockImplementation()
+        );
 
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.username = 'test-user';
-        mqttOpts.password = '1234';
             const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
             expect(oi4messagebus.mqttClient.connected).toBeTruthy();
             expect(publish).toHaveBeenCalledWith(
@@ -95,7 +98,7 @@ describe('Connection to MQTT with TLS',  () => {
             return topic;
         });
 
-        jest.spyOn(mqtt, 'connect').mockImplementationOnce(
+        jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             () => {
@@ -113,15 +116,13 @@ describe('Connection to MQTT with TLS',  () => {
                     }),
                 }
             }
-        ).mockImplementation()
+        );
 
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.username = 'test-user';
-        mqttOpts.password = '1234';
         const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
@@ -145,8 +146,6 @@ describe('Connection to MQTT with TLS',  () => {
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        mqttOpts.username = 'test-user';
-        mqttOpts.password = '1234';
         const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as HealthState));
