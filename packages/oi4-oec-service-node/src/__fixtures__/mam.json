@@ -1,0 +1,19 @@
+{
+  "Manufacturer":{"locale":"en-US","text":"Hilscher"},
+  "ManufacturerUri":"hilscher.com",
+  "Model":{"locale":"en-US","text":"OEC Registry"},
+  "ProductCode":"OEC-REG",
+  "HardwareRevision":"",
+  "SoftwareRevision":"0.12.1",
+  "DeviceRevision":"",
+  "DeviceManual":"",
+  "DeviceClass":"Registry",
+  "SerialNumber":"OEC-Registry",
+  "ProductInstanceUri":"",
+  "RevisionCounter":0,
+  "Description":
+  {
+    "locale":"en-US",
+    "text":"The OEC Registry, an Open Industry 4.0 Alliance application"
+  }
+}

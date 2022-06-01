@@ -16,11 +16,11 @@ import {
 } from '@oi4/oi4-oec-service-model';
 
 import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel } from '@oi4/oi4-oec-service-opcua-model';
-
-import {ServiceMasterAssetModel} from '../Config/ServiceMasterAssetModel';
-
+import os from 'os';
 import { EOPCUALocale } from '@oi4/oi4-oec-service-opcua-model';
 import { EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig } from '@oi4/oi4-oec-service-model';
+import {existsSync, readFileSync} from 'fs';
+import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
 
 class ContainerState extends ConfigParser implements IContainerState {
   public oi4Id: string; // TODO: doubling? Not needed here
@@ -41,9 +41,14 @@ class ContainerState extends ConfigParser implements IContainerState {
   constructor() {
     super();
 
-    this._mam = ServiceMasterAssetModel ; // Import MAM from JSON
+    this._mam = this.extractMamFile(`${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`); // Import MAM from JSON
+
+    if(this._mam === undefined) {
+      throw Error('MAM File not found');
+    }
+
     this._mam.Description.locale = EOPCUALocale.enUS; // Fill in container-specific values
-    this._mam.SerialNumber = process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string;
+    this._mam.SerialNumber = os.hostname();
     this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
 
     this.oi4Id = this._mam.ProductInstanceUri;
@@ -332,6 +337,14 @@ class ContainerState extends ConfigParser implements IContainerState {
     }
 
   }
+
+  private extractMamFile(path: string): IMasterAssetModel  {
+    if(existsSync(path)){
+      return JSON.parse(readFileSync(path).toString());
+    }
+    return undefined;
+  }
+
   // Property accessor section
   get brokerState() {
     return this._brokerState;
