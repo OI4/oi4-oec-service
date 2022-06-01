@@ -6,6 +6,7 @@ import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-mo
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
+import {HealthState} from './HealthState';
 
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
@@ -38,8 +39,8 @@ class OI4MessageBusProxy extends OI4Proxy {
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                     payload: {
                         health: EDeviceHealth.FAILURE_1,
-                        healthState: 0,
-                    }, dswid: CDataSetWriterIdLookup['health']
+                        healthScore: 0,
+                    } as HealthState, dswid: CDataSetWriterIdLookup['health']
                 }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
                 retain: false,
@@ -73,6 +74,16 @@ class OI4MessageBusProxy extends OI4Proxy {
         });
         this.client.on('close', async () => {
             this.containerState.brokerState = false;
+            await this.client.publish(
+                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
+                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                    payload: {
+                         health: EDeviceHealth.NORMAL_0,
+                         healthScore: 0,
+                        } as HealthState,
+                    dswid: CDataSetWriterIdLookup['health']
+                }], new Date(), DataSetClassIds.mam)),
+            );
             console.log('Connection to mqtt broker closed');
         });
         this.client.on('disconnect', async () => {
