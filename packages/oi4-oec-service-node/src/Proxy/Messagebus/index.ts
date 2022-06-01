@@ -3,9 +3,8 @@ import {IContainerState} from '../../Container/index';
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
+import {CDataSetWriterIdLookup, IContainerHealth} from '@oi4/oi4-oec-service-model';
 
-import {HealthState} from './HealthState';
 import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
@@ -114,7 +113,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         });
     }
 
-    private createHealthStatePayload(health: string, score: number): HealthState {
+    private createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
         return {health: health, healthScore: score};
     }
 

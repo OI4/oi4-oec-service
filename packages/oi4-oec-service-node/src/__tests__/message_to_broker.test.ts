@@ -1,9 +1,8 @@
 import mqtt = require('async-mqtt');
 import {MqttSettings} from '../Proxy/Messagebus/MqttSettings';
 import fs from 'fs';
-import {HealthState} from '../Proxy/Messagebus/HealthState';
 import {OI4MessageBusProxy} from '../Proxy/Messagebus/index';
-import {EDeviceHealth, IContainerState} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
@@ -127,7 +126,7 @@ describe('Connection to MQTT with TLS',  () => {
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
-            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0 } as HealthState)));
+            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0 } as IContainerHealth)));
     });
 
 
@@ -148,7 +147,7 @@ describe('Connection to MQTT with TLS',  () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.options.will?.payload)
-            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as HealthState));
+            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
     });
 
 });
