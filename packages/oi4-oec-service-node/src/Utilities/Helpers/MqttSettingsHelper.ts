@@ -15,10 +15,11 @@ export class MqttSettingsHelper {
         return buff.toString('utf-8');
     }
 
-    private static checkUsername(candidateUsername: string) {
-        //TODO fix the regex
-        const regex = RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?');
-        return candidateUsername.match(regex);
+    private static isUsernameValid(candidateUsername: string) {
+        // The username will match the regexp in case it contains and invalid char,
+        // therefore if the username match the regexp is invalid.
+        const regex = /[^a-zA-Z0-9-._~@]+/;
+        return !regex.test(candidateUsername);
     }
 
     private static validateAndDecodeCredentials(encodedCredentials: string): Credentials {
@@ -34,7 +35,7 @@ export class MqttSettingsHelper {
         }
 
         const username = decodedCredentials.substring(0, usernamePasswordSeparatorPosition);
-        if(this.checkUsername(username)) {
+        if(!this.isUsernameValid(username)) {
             throw new Error('Invalid username');
         }
 
