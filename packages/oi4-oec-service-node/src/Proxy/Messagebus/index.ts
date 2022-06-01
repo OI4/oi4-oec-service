@@ -4,6 +4,7 @@ import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-mo
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
+import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
 
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
@@ -12,10 +13,13 @@ import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/o
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
 import os from 'os';
+import {Credentials} from "../../Utilities/Helpers/Types";
+
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
+    private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
     constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
         super(container);
@@ -45,14 +49,16 @@ class OI4MessageBusProxy extends OI4Proxy {
             },
         };
 
+
         if (this.hasRequiredCertCredentials()) {
             mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
             mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
             mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
             mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
         } else {
-            mqttOpts.username = mqttPreSettings.username;
-            mqttOpts.password = mqttPreSettings.password;
+            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
+            mqttOpts.username = userCredentials.username;
+            mqttOpts.password = userCredentials.password;
             mqttOpts.protocol = 'mqtts';
             mqttOpts.rejectUnauthorized = false;
         }
@@ -303,10 +309,10 @@ class OI4MessageBusProxy extends OI4Proxy {
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
      * @param [filter] - the tag of the resource
      */
-    async sendResource(resource: string, messageId: string, filter: string, page: number = 0, perPage: number = 0) {
+    async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
         let endTag = '';
         let payload: IOPCUAPayload[] = [];
-        let dswidFilter: number = -1; // Initialized with -1, so we know when to use string-based filters or not
+        let dswidFilter = -1; // Initialized with -1, so we know when to use string-based filters or not
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
