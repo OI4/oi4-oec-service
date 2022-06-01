@@ -1,4 +1,5 @@
 // Base
+import NetworkMessageBaseSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/NetworkMessageBase.schema.json';
 import NetworkMessageSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/ConfigurationVersionDataType.schema.json';
 import DataSetMessageSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/DataSetMessage.schema.json';
@@ -17,6 +18,7 @@ import uint32SchemaJson from '@oi4/oi4-oec-json-schemas/schemas/dataTypes/uint32
 
 export {
     // Base
+    NetworkMessageBaseSchemaJson,
     NetworkMessageSchemaJson,
     ConfigurationVersionDataTypeSchemaJson,
     DataSetMessageSchemaJson,

@@ -12,9 +12,5 @@
   "include": [
     "src/**/*",
     "src/**/*.json"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules/**/*"
   ]
 }

@@ -37,7 +37,7 @@
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "package": "echo \"Package not specified\" && exit 0",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "linkIt": "yarn link"
   },
   "gitHead": "334eba63fdecdf5c522c3158a96932b4e7d237b5"
