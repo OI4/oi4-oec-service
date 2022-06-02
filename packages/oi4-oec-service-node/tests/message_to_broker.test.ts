@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt');
-import {MqttSettings} from '../Proxy/Messagebus/MqttSettings';
+import {MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
 import fs from 'fs';
-import {OI4MessageBusProxy} from '../Proxy/Messagebus/index';
+import {OI4MessageBusProxy} from '../src/Proxy/Messagebus/index';
 import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
+import {MqttSettingsHelper} from '../src/Utilities/Helpers/MqttSettingsHelper';
 const getStandardMqttConfig = (): MqttSettings => {
     return {
         host: 'localhost',
