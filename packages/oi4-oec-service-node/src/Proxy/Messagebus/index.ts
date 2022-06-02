@@ -3,24 +3,29 @@ import {IContainerState} from '../../Container/index';
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {CDataSetWriterIdLookup} from '@oi4/oi4-oec-service-model';
-import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
+import {CDataSetWriterIdLookup, IContainerHealth} from '@oi4/oi4-oec-service-model';
 
+import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
-import os from 'os';
 import {Credentials} from '../../Utilities/Helpers/Types';
-
+import os from 'os';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
+    /***
+     * @param container -> is the container state of the app. Contains mam settings oi4id, health and so on
+     * @param mqttPreSettings -> contains mqtt presettings for connection. for example host and port
+     * The constructor initializes the mqtt settings and establish a conection and listeners
+     * In Addition birth, will and close messages will be also created
+     */
     constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
         super(container);
 
@@ -39,16 +44,13 @@ class OI4MessageBusProxy extends OI4Proxy {
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: {
-                        health: EDeviceHealth.FAILURE_1,
-                        healthState: 0,
-                    }, dswid: CDataSetWriterIdLookup['health']
+                    payload: this.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
+                    dswid: CDataSetWriterIdLookup['health']
                 }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
                 retain: false,
             },
         };
-
 
         if (this.hasRequiredCertCredentials()) {
             mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
@@ -74,6 +76,13 @@ class OI4MessageBusProxy extends OI4Proxy {
         });
         this.client.on('close', async () => {
             this.containerState.brokerState = false;
+            await this.client.publish(
+                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
+                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                    payload: this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
+                    dswid: CDataSetWriterIdLookup['health']
+                }], new Date(), DataSetClassIds.mam)),
+            );
             console.log('Connection to mqtt broker closed');
         });
         this.client.on('disconnect', async () => {
@@ -108,6 +117,10 @@ class OI4MessageBusProxy extends OI4Proxy {
             }, 60000); // send our own health every 30 seconds!
             this.containerState.on('resourceChanged', this.handleResourceChanged.bind(this));
         });
+    }
+
+    private createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
+        return {health: health, healthScore: score};
     }
 
     private handleResourceChanged(resource: string): void {
