@@ -20,6 +20,12 @@ class OI4MessageBusProxy extends OI4Proxy {
     private logger: Logger;
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
+    /***
+     * @param container -> is the container state of the app. Contains mam settings oi4id, health and so on
+     * @param mqttPreSettings -> contains mqtt presettings for connection. for example host and port
+     * The constructor initializes the mqtt settings and establish a conection and listeners
+     * In Addition birth, will and close messages will be also created
+     */
     constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
         super(container);
 
