@@ -21,7 +21,10 @@ import { EOPCUALocale } from '@oi4/oi4-oec-service-opcua-model';
 import { EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig } from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
-
+/**
+ * class that initializes the container state
+ * Initializes the mam settings by a json file and build oi4id and Serialnumbers
+ * */
 class ContainerState extends ConfigParser implements IContainerState {
   public oi4Id: string; // TODO: doubling? Not needed here
   private readonly _profile: IContainerProfile;
@@ -37,7 +40,9 @@ class ContainerState extends ConfigParser implements IContainerState {
 
   public dataLookup: IContainerData;
   public metaDataLookup: IContainerMetaData;
-
+/**
+ * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
+ * */
   constructor() {
     super();
 
