@@ -1,5 +1,4 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {IClientOptions} from 'async-mqtt';
 import {IContainerState} from '../../Container/index';
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
@@ -11,31 +10,32 @@ import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {MqttSettings} from './MqttSettings';
-import {Credentials} from "../../Utilities/Helpers/Types";
+import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
+import {readFileSync, existsSync} from 'fs';
+import os from 'os';
+import {Credentials} from '../../Utilities/Helpers/Types';
+
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
-    constructor(container: IContainerState, mqttSettings: MqttSettings) {
+    constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
         super(container);
 
         // Add Server Object depending on configuration
         const serverObj = {
-            host: mqttSettings.host,
-            port: mqttSettings.port,
-            //host: process.env.OI4_EDGE_MQTT_BROKER_ADDRESS as string,
-            //port: parseInt(process.env.OI4_EDGE_MQTT_SECURE_PORT as string, 10),
+            host: mqttPreSettings.host,
+            port: mqttPreSettings.port,
         };
         console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
 
         // Initialize MQTT Options
-        const mqttOpts: IClientOptions = {
-            clientId: mqttSettings.clientId,
-            //clientId: `${process.env.OI4_EDGE_APPLICATION_INSTANCE_NAME as string}_OECRegistry`,
+        const mqttOpts: MqttSettings = {
+            clientId: os.hostname(),
             servers: [serverObj],
+            protocol: 'mqtts',
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
@@ -49,7 +49,13 @@ class OI4MessageBusProxy extends OI4Proxy {
             },
         };
 
-        if (!mqttSettings.useUnsecureBroker) { // This should be the normal case, we connect securely
+
+        if (this.hasRequiredCertCredentials()) {
+            mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
+            mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
+            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
+            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
+        } else {
             const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
             mqttOpts.username = userCredentials.username;
             mqttOpts.password = userCredentials.password;
@@ -110,7 +116,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
     }
 
-    private async ownSubscribe(topic: string) {
+    private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
         this.containerState.subscriptionList.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
@@ -119,6 +125,11 @@ class OI4MessageBusProxy extends OI4Proxy {
         return await this.client.subscribe(topic);
     }
 
+    private hasRequiredCertCredentials(): boolean {
+        return existsSync(MQTT_PATH_SETTINGS.CA_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.CLIENT_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.PRIVATE_KEY)
+    }
     // private async ownUnsubscribe(topic: string) {
     //   // Remove from subscriptionList
     //   this.containerState.subscriptionList.subscriptionList = this.containerState.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
