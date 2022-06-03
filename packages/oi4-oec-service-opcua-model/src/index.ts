@@ -10,44 +10,9 @@ import {
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
 
-// Base
-import oi4IdentifierSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json';
-// Constants
-import resourcesSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/constants/resources.schema.json';
 import topicPathSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/constants/topicPath.schema.json';
-// Payloads
-import healthSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/health.schema.json';
-import mamSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/mam.schema.json';
-import licenseSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/license.schema.json';
-import licenseTextSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/licenseText.schema.json';
-import profileSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/profile.schema.json';
-import eventSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/event.schema.json';
-import rtLicenseSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/rtLicense.schema.json';
-import configPublishSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/configPublish.schema.json';
-import configSetSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/configSet.schema.json';
-import publicationListSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/publicationList.schema.json';
-import subscriptionListSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/subscriptionList.schema.json';
-import referenceDesignationSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/referenceDesignation.schema.json';
-import localeSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/locale.schema.json';
-import paginationSchemaJson from '@oi4/oi4-oec-json-schemas/schemas/pagination.schema.json';
 
-import {
-  // Base
-  NetworkMessageBaseSchemaJson,
-  NetworkMessageSchemaJson,
-  ConfigurationVersionDataTypeSchemaJson,
-  DataSetMessageSchemaJson,
-  // Constants
-  LocalizedTextSchemaJson,
-  localePatternSchemaJson,
-  //DataTypes
-  byteSchemaJson,
-  int8SchemaJson,
-  int16SchemaJson,
-  int32SchemaJson,
-  uint16SchemaJson,
-  uint32SchemaJson,
-} from './OpcUaSchemaProvider';
+import { buildOpcUaJsonValidator } from './OpcUaSchemaProvider';
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from './model/EOPCUA';
@@ -68,50 +33,6 @@ interface IOPCUABuilderProps {
   max: number;
 }
 
-export const jsonSchemaBuilder = () => {
-  const jsonValidator = new Ajv();
-
-  // Add Validation Schemas
-  // First common Schemas
-  jsonValidator.addSchema(NetworkMessageBaseSchemaJson, 'NetworkMessageBase.schema.json');
-  jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
-  jsonValidator.addSchema(ConfigurationVersionDataTypeSchemaJson, 'ConfigurationVersionDataType.schema.json');
-  jsonValidator.addSchema(oi4IdentifierSchemaJson, 'oi4Identifier.schema.json');
-  jsonValidator.addSchema(DataSetMessageSchemaJson, 'DataSetMessage.schema.json');
-
-  // Then constants
-  jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
-  jsonValidator.addSchema(resourcesSchemaJson, 'resources.schema.json');
-  jsonValidator.addSchema(topicPathSchemaJson, 'topicPath.schema.json');
-  jsonValidator.addSchema(localePatternSchemaJson, 'locale.pattern.schema.json');
-
-  // Then dataTypes
-  jsonValidator.addSchema(byteSchemaJson, 'byte.schema.json');
-  jsonValidator.addSchema(int8SchemaJson, 'int8.schema.json');
-  jsonValidator.addSchema(int16SchemaJson, 'int16.schema.json');
-  jsonValidator.addSchema(int32SchemaJson, 'int32.schema.json');
-  jsonValidator.addSchema(uint16SchemaJson, 'uint16.schema.json');
-  jsonValidator.addSchema(uint32SchemaJson, 'uint32.schema.json');
-
-  // Then payload Schemas
-  jsonValidator.addSchema(healthSchemaJson, 'health.schema.json');
-  jsonValidator.addSchema(mamSchemaJson, 'mam.schema.json');
-  jsonValidator.addSchema(licenseSchemaJson, 'license.schema.json');
-  jsonValidator.addSchema(licenseTextSchemaJson, 'licenseText.schema.json');
-  jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
-  jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
-  jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-  jsonValidator.addSchema(configPublishSchemaJson, 'configPublish.schema.json');
-  jsonValidator.addSchema(configSetSchemaJson, 'configSet.schema.json');
-  jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
-  jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
-  jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json')
-  jsonValidator.addSchema(localeSchemaJson, 'locale.schema.json');
-  jsonValidator.addSchema(paginationSchemaJson, 'pagination.schema.json');
-
-  return jsonValidator;
-}
-
 export class OPCUABuilder {
   oi4Id: string;
   serviceType: string;
@@ -119,13 +40,13 @@ export class OPCUABuilder {
   jsonValidator: Ajv.Ajv;
   lastMessageId: string;
   private topicRex: RegExp;
-  private msgSizeOffset: number;
+  private readonly msgSizeOffset: number;
 
-  constructor(oi4Id: string, serviceType: string, jsonValidator = jsonSchemaBuilder()) {
+  constructor(oi4Id: string, serviceType: string, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
     this.serviceType = serviceType;
     this.publisherId = `${serviceType}/${oi4Id}`;
-    this.jsonValidator = jsonValidator;
+    this.jsonValidator = uaJsonValidator;
     this.lastMessageId = '';
     this.msgSizeOffset = 1000;
 

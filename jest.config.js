@@ -20,5 +20,4 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text-summary', 'text', 'html', 'json'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'jsx', 'node'],
-  setupFiles: ['<rootDir>../../.jest/setEnvironment.js'],
 };
