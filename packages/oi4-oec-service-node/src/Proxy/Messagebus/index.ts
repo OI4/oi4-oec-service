@@ -1,33 +1,36 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../../Container/index';
-import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {CDataSetWriterIdLookup, IContainerHealth} from '@oi4/oi4-oec-service-model';
+// DataSetClassIds
+import {
+    CDataSetWriterIdLookup,
+    DataSetClassIds,
+    EDeviceHealth,
+    ESubscriptionListConfig,
+    ESyslogEventFilter
+} from '@oi4/oi4-oec-service-model';
 
 import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
-// DataSetClassIds
-import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
-import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
-import {readFileSync, existsSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import {
-    Credentials, SendResourceCreatePayloadResult,
+    Credentials,
+    SendResourceCreatePayloadResult,
     ServerObject,
     ValidatedFilter
 } from '../../Utilities/Helpers/Types';
 import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from "../../Utilities/Helpers/ClientCallbacksHelper";
-import {emit} from "cluster";
 import {MqttMessageProcessor} from "../../Utilities/Helpers/MqttMessageProcessor";
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly clientHealthHeartbeatInterval: number = 60000;
 
-    private clientCallbacksHelper: ClientCallbacksHelper = new ClientCallbacksHelper();
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
+    private clientCallbacksHelper: ClientCallbacksHelper;
     private clientPayloadHelper: ClientPayloadHelper;
     private mqttMessageProcessor;
 
@@ -74,6 +77,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
+        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
         //FIXME is this correct? Or it is just "emit"?
         this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.containerState, this.sendMetaData, this.sendResource, this.emit);
 
@@ -268,7 +272,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             case 'health':
             case 'profile':
             case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
-                payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.containerState, resource, messageId, filter, page, perPage, dswidFilter);
+                payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.containerState, resource, filter, dswidFilter);
                 break;
             }
             case 'licenseText': {

@@ -28,7 +28,7 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, messageId: string, filter: string, page: number, perPage: number, dswidFilter: number) : SendResourceCreatePayloadResult {
+    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: any, filter: string, dswidFilter: number) : SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
@@ -47,7 +47,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: string) {
+    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: any) {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
         if (typeof containerState.licenseText[filter] === 'undefined') {
@@ -58,7 +58,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    private manageInvalidDSWIDFilter(resource: string) {
+    private manageInvalidDSWIDFilter(resource: any) {
         // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
         // Whether there's a DSWID filter, or not we always send all licenses
         // We only need a check here, if the DSWID even fits. If not, we just abort sending
@@ -66,7 +66,7 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string) {
+    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with licenseId
@@ -101,7 +101,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string) {
+    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
@@ -134,7 +134,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string) {
+    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
@@ -169,7 +169,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string) {
+    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
         const actualPayload: ISpecificContainerConfig = containerState[resource];
         const payload: IOPCUAPayload[] = [];
 
