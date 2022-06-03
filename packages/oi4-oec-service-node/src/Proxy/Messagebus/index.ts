@@ -1,6 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../../Container/index';
-import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
@@ -23,8 +22,8 @@ import {
 } from '../../Utilities/Helpers/Types';
 import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
-import {ClientCallbacksHelper} from "../../Utilities/Helpers/ClientCallbacksHelper";
-import {MqttMessageProcessor} from "../../Utilities/Helpers/MqttMessageProcessor";
+import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
+import {MqttMessageProcessor} from '../../Utilities/Helpers/MqttMessageProcessor';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly clientHealthHeartbeatInterval: number = 60000;
@@ -265,7 +264,6 @@ class OI4MessageBusProxy extends OI4Proxy {
 
         const dswidFilter: number = validatedFilter.dswidFilter;
         let payloadResult: SendResourceCreatePayloadResult;
-        let payload: IOPCUAPayload[] = [];
 
         switch (resource) {
             case 'mam':
@@ -305,13 +303,11 @@ class OI4MessageBusProxy extends OI4Proxy {
             return;
         }
 
-        payload = payloadResult.payload;
-
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
 
         try {
-            const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
+            const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payloadResult.payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
                 this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
             }

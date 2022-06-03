@@ -3,11 +3,14 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IContainerHealth,
-    IContainerState, ISpecificContainerConfig
-} from "@oi4/oi4-oec-service-model";
-import {IOPCUAPayload} from "@oi4/oi4-oec-service-opcua-model";
-import {Logger} from "@oi4/oi4-oec-service-logger";
+    IContainerHealth, IContainerState,
+    ILicenseObject,
+    IPublicationListObject,
+    ISpecificContainerConfig,
+    ISubscriptionListObject
+} from '@oi4/oi4-oec-service-model';
+import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {Logger} from '@oi4/oi4-oec-service-logger';
 
 export class ClientPayloadHelper {
 
@@ -28,16 +31,16 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: any, filter: string, dswidFilter: number) : SendResourceCreatePayloadResult {
+    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, filter: string, dswidFilter: number): SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
-            payload.push(this.createPayload(containerState[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
         } else if (Number.isNaN(dswidFilter)) {
             // If the filter is not an oi4Id and not a number, we don't know how to handle it
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
-            payload.push(this.createPayload(containerState[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
             // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
             //break;
             // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the payload won't be used
@@ -47,7 +50,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: any) {
+    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: string): SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
         if (typeof containerState.licenseText[filter] === 'undefined') {
@@ -58,7 +61,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    private manageInvalidDSWIDFilter(resource: any) {
+    private manageInvalidDSWIDFilter(resource: string): SendResourceCreatePayloadResult {
         // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
         // Whether there's a DSWID filter, or not we always send all licenses
         // We only need a check here, if the DSWID even fits. If not, we just abort sending
@@ -66,12 +69,12 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
+    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with licenseId
-            if (containerState['license'].licenses.some((elem) => elem.licenseId === filter)) { // Does it even make sense to filter?
-                const filteredLicenseArr = containerState['license'].licenses.filter((elem) => {
+            if (containerState['license'].licenses.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
+                const filteredLicenseArr = containerState['license'].licenses.filter((elem: ILicenseObject) => {
                     if (elem.licenseId === filter) return elem;
                 });
 
@@ -101,12 +104,12 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
+    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
-            if (containerState['publicationList'].publicationList.some((elem) => elem.resource === filter)) { // Does it even make sense to filter?
-                const filteredPubsArr = containerState['publicationList'].publicationList.filter((elem) => {
+            if (containerState['publicationList'].publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
+                const filteredPubsArr = containerState['publicationList'].publicationList.filter((elem: IPublicationListObject) => {
                     if (elem.resource === filter) return elem;
                 });
                 for (const filteredPubs of filteredPubsArr) {
@@ -134,13 +137,13 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
+    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
             // 7 is resource
-            if (containerState['subscriptionList'].subscriptionList.some((elem) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
-                const filteredSubsArr = containerState['subscriptionList'].subscriptionList.filter((elem) => {
+            if (containerState['subscriptionList'].subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
+                const filteredSubsArr = containerState['subscriptionList'].subscriptionList.filter((elem: ISubscriptionListObject) => {
                     if (elem.topicPath.split('/')[7] === filter) return elem;
                 });
                 for (const filteredSubs of filteredSubsArr) {
@@ -169,8 +172,8 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: any) {
-        const actualPayload: ISpecificContainerConfig = containerState[resource];
+    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
+        const actualPayload: ISpecificContainerConfig = (containerState as any)[resource];
         const payload: IOPCUAPayload[] = [];
 
         // Send all configs out
@@ -203,7 +206,7 @@ export class ClientPayloadHelper {
         } else if (dswidFilter === 8) {
 
             // Filtered by dswid
-            const actualPayload: ISpecificContainerConfig = containerState[resource];
+            const actualPayload: ISpecificContainerConfig = (containerState as any)[resource];
             payload.push({
                 poi: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 payload: actualPayload,
