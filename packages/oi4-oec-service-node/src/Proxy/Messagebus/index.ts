@@ -21,6 +21,7 @@ import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from "../../Utilities/Helpers/ClientCallbacksHelper";
 import {emit} from "cluster";
+import {MqttMessageProcessor} from "../../Utilities/Helpers/MqttMessageProcessor";
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly clientHealthHeartbeatInterval: number = 60000;
@@ -28,6 +29,7 @@ class OI4MessageBusProxy extends OI4Proxy {
     private clientCallbacksHelper: ClientCallbacksHelper = new ClientCallbacksHelper();
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
     private clientPayloadHelper: ClientPayloadHelper;
+    private mqttMessageProcessor;
 
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
@@ -72,6 +74,8 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
+        //FIXME is this correct? Or it is just "emit"?
+        this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.containerState, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
     }
@@ -163,7 +167,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             this.ownSubscribe(`${this.topicPreamble}/set/#`);
             this.ownSubscribe(`${this.topicPreamble}/del/#`);
 
-            this.client.on('message', this.processMqttMessage);
+            this.client.on('message', this.mqttMessageProcessor.processMqttMessage);
 
             this.initClientHealthHeartBeat();
 
@@ -203,135 +207,6 @@ class OI4MessageBusProxy extends OI4Proxy {
     //   return await this.client.unsubscribe(topic);
     // }
 
-    /**
-     * Processes the incoming mqtt message by parsing the different elements of the topic and reacting to it
-     * @param topic - the incoming topic from the messagebus
-     * @param message - the entire binary message from the messagebus
-     */
-    private processMqttMessage = async (topic: string, message: Buffer) => {
-        // Convert message to JSON, TODO: if this fails, we return an Error
-        let parsedMessage: IOPCUANetworkMessage;
-        try {
-            parsedMessage = JSON.parse(message.toString());
-        } catch (e) {
-            this.logger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
-            return;
-        }
-        let schemaResult = false;
-        try {
-            schemaResult = await this.builder.checkOPCUAJSONValidity(parsedMessage);
-        } catch (e) {
-            this.logger.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
-        }
-
-        if (parsedMessage.Messages.length === 0) {
-            this.logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
-        }
-
-        if (!schemaResult) {
-            this.logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
-            return;
-        }
-
-        if (!this.builder.checkTopicPath(topic)) {
-            this.logger.log('Error in pre-check topic Path, please correct topic Path', ESyslogEventFilter.warning);
-            return;
-        }
-
-        // Split the topic into its different elements
-        const topicArray = topic.split('/');
-        //const topicServiceType = topicArray[1];
-        const topicAppId = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-        const topicMethod = topicArray[6];
-        const topicResource = topicArray[7];
-        const topicFilter = topicArray.splice(8).join('/');
-
-        // Safety-Check: DataSetClassId
-        if (parsedMessage.DataSetClassId !== DataSetClassIds[topicResource]) {
-            this.logger.log(`Error in pre-check, dataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicResource]}`, ESyslogEventFilter.warning);
-            return;
-        }
-
-        // The following switch/case reacts depending on the different topic elements
-        // The message is directed directly at us
-        if (topicAppId === this.oi4Id) {
-            switch (topicMethod) {
-                case 'get': {
-                    if (topicResource === 'data') {
-                        //FIXME is this correct? Or it is just "emit"?
-                        this.emit('getData', {topic, message: parsedMessage});
-                        break;
-                    }
-                    if (topicResource === 'metadata') {
-                        await this.sendMetaData(topicFilter);
-                        break;
-                    }
-
-                    let payloadType = 'empty';
-                    let page = 0;
-                    let perPage = 0;
-
-                    if (parsedMessage.Messages.length !== 0) {
-                        for (const messages of parsedMessage.Messages) {
-                            payloadType = await this.builder.checkPayloadType(messages.Payload);
-                            if (payloadType === 'locale') {
-                                this.logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
-                            }
-                            if (payloadType === 'pagination') {
-                                page = messages.Payload.page;
-                                perPage = messages.Payload.perPage;
-                                if (page === 0 || perPage === 0) {
-                                    this.logger.log('Pagination requested either page or perPage 0, aborting send...');
-                                    return;
-                                }
-                            }
-                            if (payloadType === 'none') { // Not empty, locale or pagination
-                                this.logger.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
-                                return;
-                            }
-                        }
-                    }
-
-                    this.sendResource(topicResource, parsedMessage.MessageId, topicFilter, page, perPage)
-                    break;
-                }
-                case 'pub': {
-                    break; // Only break here, because we should not react to our own publication messages
-                }
-                case 'set': {
-                    switch (topicResource) {
-                        case 'data': {
-                            this.setData(topicFilter, parsedMessage);
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case 'del': {
-                    switch (topicResource) {
-                        case 'data': {
-                            this.deleteData(topicFilter);
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-            // External Request (External device put this on the message bus, we need this for birth messages)
-        } else {
-            this.logger.log(`Detected Message from: ${topicAppId}`)
-        }
-    }
-
     // GET SECTION ----------------//
     /**
      * Sends all available metadata of the containerState to the bus
@@ -352,6 +227,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
     }
 
+    //FIXME is this sendData even used somewhere?
     /**
      * Sends all available data of the containerState to the bus
      * @param cutTopic - the cuttopic, containing only the tag-element
@@ -369,24 +245,6 @@ class OI4MessageBusProxy extends OI4Proxy {
             await this.client.publish(`${this.topicPreamble}/pub/data/${tagName}`, JSON.stringify(this.containerState.dataLookup[tagName]));
             this.logger.log(`Published available Data on ${this.topicPreamble}/pub/data/${tagName}`);
         }
-    }
-
-    private validateFilter(filter: string): ValidatedFilter {
-        // Initialized with -1, so we know when to use string-based filters or not
-        let dswidFilter = -1;
-
-        try {
-            dswidFilter = parseInt(filter, 10);
-            if (dswidFilter === 0) {
-                this.logger.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
-                return {isValid: false, dswidFilter: undefined };
-            }
-        } catch (err) {
-            this.logger.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
-            return {isValid: false, dswidFilter: undefined };
-        }
-
-        return {isValid: true, dswidFilter: dswidFilter };
     }
 
     /**
@@ -464,6 +322,25 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
     }
 
+    private validateFilter(filter: string): ValidatedFilter {
+        // Initialized with -1, so we know when to use string-based filters or not
+        let dswidFilter = -1;
+
+        try {
+            dswidFilter = parseInt(filter, 10);
+            if (dswidFilter === 0) {
+                this.logger.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
+                return {isValid: false, dswidFilter: undefined };
+            }
+        } catch (err) {
+            this.logger.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
+            return {isValid: false, dswidFilter: undefined };
+        }
+
+        return {isValid: true, dswidFilter: dswidFilter };
+    }
+
+    //FIXME is this sendEvent even used somewhere?
     /**
      * Sends an event/event with a specified level to the message bus
      * @param eventStr - The string that is to be sent as the 'event'
@@ -486,44 +363,6 @@ class OI4MessageBusProxy extends OI4Proxy {
     // Basic Error Functions
     async sendError(error: string) {
         this.logger.log(`Error: ${error}`, ESyslogEventFilter.error);
-    }
-
-    // SET Function section ------//
-    setData(cutTopic: string, data: IOPCUANetworkMessage) {
-        const tagName = cutTopic;
-        // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
-        if (tagName === '') {
-            return;
-        }
-        if (!(tagName in dataLookup)) {
-            this.containerState.dataLookup[tagName] = data;
-            this.logger.log(`Added ${tagName} to dataLookup`);
-        } else {
-            this.containerState.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
-            this.logger.log(`${tagName} already exists in dataLookup`);
-        }
-    }
-
-    // DELETE Function section
-    /**
-     * Legacy: TODO: This is not specified by the specification yet
-     * @param cutTopic - todo
-     */
-    deleteData(cutTopic: string) {
-        // ONLY SPECIFIC DATA CAN BE DELETED. WILDCARD DOES NOT DELETE EVERYTHING
-        const tagName = cutTopic;
-        // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
-        if (tagName === '') {
-            return;
-        }
-        if ((tagName in dataLookup)) {
-            delete this.containerState.dataLookup[tagName];
-            this.logger.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
-        } else {
-            this.logger.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);
-        }
     }
 
     /**
