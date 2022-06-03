@@ -37,19 +37,21 @@ export interface IOPCUADataSetMessage {
   SequenceNumber?: number;
   MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
-  Status?: number;
-  POI?: string;
+  Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
+  filter?: string;
+  subResource: string;
   Payload: any; // TODO: arbitrary object?
 }
 
 interface IOPCUADataSetMetaData {
-  MessageId: string; // TODO: Not yet defined
+  MessageId: string; // TODO: Not yet defined <unixTimestampInMs-PublisherId>
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
-  CorrelationId: string;
+  filter: string;
+  subResource: string;
+  correlationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
-  POI: string;
 }
 
 // MetaData Message containing information about units etc.

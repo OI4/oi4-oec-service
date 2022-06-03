@@ -1,4 +1,4 @@
-export * from './Oi4SchemaProvider';
+export * from './OecSchemaProvider';
 export * from './model/EContainer';
 export * from './model/DatatSetClassIds';
 export * from './model/Resource';

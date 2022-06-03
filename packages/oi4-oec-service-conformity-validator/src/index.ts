@@ -2,43 +2,9 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Application, Device} from '@oi4/oi4-oec-service-model';
+import {Application, buildOecJsonValidator, Device} from '@oi4/oi4-oec-service-model';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {
-    configPublishSchemaJson,
-    configSetSchemaJson,
-    eventSchemaJson,
-    healthSchemaJson,
-    licenseSchemaJson,
-    licenseTextSchemaJson,
-    localeSchemaJson,
-    mamSchemaJson,
-    oi4IdentifierSchemaJson,
-    paginationSchemaJson,
-    profileSchemaJson,
-    publicationListSchemaJson,
-    referenceDesignationSchemaJson,
-    resourcesSchemaJson,
-    rtLicenseSchemaJson,
-    subscriptionListSchemaJson,
-    topicPathSchemaJson,
-    serviceTypeSchemaJson,
-    DeviceHealthEnumerationSchemaJson,
-} from '@oi4/oi4-oec-service-model'
-
-import {
-    byteSchemaJson,
-    ConfigurationVersionDataTypeSchemaJson,
-    DataSetMessageSchemaJson,
-    int16SchemaJson,
-    int32SchemaJson,
-    int8SchemaJson,
-    localePatternSchemaJson,
-    LocalizedTextSchemaJson,
-    NetworkMessageSchemaJson,
-    uint16SchemaJson,
-    uint32SchemaJson
-} from '@oi4/oi4-oec-service-opcua-model'
+import {serviceTypeSchemaJson} from '@oi4/oi4-oec-service-model'
 
 // Resource imports
 import Ajv from 'ajv'; /*tslint:disable-line*/
@@ -64,51 +30,13 @@ export class ConformityValidator extends EventEmitter {
     private readonly logger: Logger;
     static completeProfileList: string[] = Application.full;
 
-    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient) {
+    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, oecJsonValidator = buildOecJsonValidator()) {
         super();
+        this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
 
         this.logger = new Logger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
         this.builder = new OPCUABuilder(oi4Id, 'Registry'); // TODO: Set oi4Id to something useful
-
-        this.jsonValidator = new Ajv();
-        // Add Validation Schemas
-        // First common Schemas
-        this.jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
-        this.jsonValidator.addSchema(ConfigurationVersionDataTypeSchemaJson, 'ConfigurationVersionDataType.schema.json');
-        this.jsonValidator.addSchema(oi4IdentifierSchemaJson, 'oi4Identifier.schema.json');
-        this.jsonValidator.addSchema(DataSetMessageSchemaJson, 'DataSetMessage.schema.json');
-
-        // Then constants
-        this.jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
-        this.jsonValidator.addSchema(resourcesSchemaJson, 'resources.schema.json');
-        this.jsonValidator.addSchema(DeviceHealthEnumerationSchemaJson, 'DeviceHealthEnumeration.json');
-        this.jsonValidator.addSchema(topicPathSchemaJson, 'topicPath.schema.json');
-        this.jsonValidator.addSchema(localePatternSchemaJson, 'locale.pattern.schema.json');
-
-        // Then dataTypes
-        this.jsonValidator.addSchema(byteSchemaJson, 'byte.schema.json');
-        this.jsonValidator.addSchema(int8SchemaJson, 'int8.schema.json');
-        this.jsonValidator.addSchema(int16SchemaJson, 'int16.schema.json');
-        this.jsonValidator.addSchema(int32SchemaJson, 'int32.schema.json');
-        this.jsonValidator.addSchema(uint16SchemaJson, 'uint16.schema.json');
-        this.jsonValidator.addSchema(uint32SchemaJson, 'uint32.schema.json');
-
-        // Then payload Schemas
-        this.jsonValidator.addSchema(healthSchemaJson, 'health.schema.json');
-        this.jsonValidator.addSchema(mamSchemaJson, 'mam.schema.json');
-        this.jsonValidator.addSchema(licenseSchemaJson, 'license.schema.json');
-        this.jsonValidator.addSchema(licenseTextSchemaJson, 'licenseText.schema.json');
-        this.jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
-        this.jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
-        this.jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-        this.jsonValidator.addSchema(configPublishSchemaJson, 'configPublish.schema.json');
-        this.jsonValidator.addSchema(configSetSchemaJson, 'configSet.schema.json');
-        this.jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
-        this.jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
-        this.jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json');
-        this.jsonValidator.addSchema(localeSchemaJson, 'locale.schema.json');
-        this.jsonValidator.addSchema(paginationSchemaJson, 'pagination.schema.json');
     }
 
     /**
