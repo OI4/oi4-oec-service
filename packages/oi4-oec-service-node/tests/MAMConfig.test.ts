@@ -5,11 +5,18 @@ import os from 'os';
 
 describe('Unit test for MAMStorage reading', () => {
 
+    afterAll(()=>{
+        jest.clearAllMocks();
+        jest.resetAllMocks();
+        jest.restoreAllMocks();
+    })
     it('Should read mam correctly from file', async () => {
+        const mam = fs.readFileSync(`${__dirname}/__fixtures__/mam.json`);
         jest.spyOn(fs, 'existsSync').mockReturnValue(true);
-        jest.spyOn(fs, 'readFileSync').mockReturnValue(fs.readFileSync('./tests/__fixtures__/mam.json'));
-
-        const expectedMAM = JSON.parse(fs.readFileSync('./tests/__fixtures__/mam.json').toString()) as IMasterAssetModel;
+        jest.spyOn(fs, 'readFileSync')
+            .mockReturnValueOnce(mam)
+            .mockReturnValueOnce(mam);
+        const expectedMAM = JSON.parse(mam.toString()) as IMasterAssetModel;
         const containerState = new ContainerState();
         expect(containerState.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
         expect(containerState.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
