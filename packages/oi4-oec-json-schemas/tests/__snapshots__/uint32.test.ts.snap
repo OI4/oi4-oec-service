@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`uint32 schema test invalid values: -1 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should be >= 0
-    Path:     uint32.schema.json#/minimum
-"
+[31m  must be >= 0[39m
+[31m    Path:     dataTypes/uint32.schema.json#/minimum[39m
+[31m[39m"
 `;
 
 exports[`uint32 schema test invalid values: 1.5 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should be integer
-    Path:     uint32.schema.json#/type
-"
+[31m  must be integer[39m
+[31m    Path:     dataTypes/uint32.schema.json#/type[39m
+[31m[39m"
 `;
 
 exports[`uint32 schema test invalid values: 4294967296 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should be <= 4294967295
-    Path:     uint32.schema.json#/maximum
-"
+[31m  must be <= 4294967295[39m
+[31m    Path:     dataTypes/uint32.schema.json#/maximum[39m
+[31m[39m"
 `;
