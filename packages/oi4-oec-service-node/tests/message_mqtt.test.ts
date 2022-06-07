@@ -1,8 +1,8 @@
-import mqtt from 'async-mqtt';
+import mqtt = require('async-mqtt');
 import {MqttSettings} from '../src/messageBus/MqttSettings';
 import fs from 'fs';
 import {OI4MessageBusProxy} from '../src/messageBus/index';
-import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttSettingsHelper} from '../src/Utilities/Helpers/MqttSettingsHelper';
