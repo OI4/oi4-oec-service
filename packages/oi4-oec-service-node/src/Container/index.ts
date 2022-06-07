@@ -345,7 +345,7 @@ class ContainerState extends ConfigParser implements IContainerState {
 
   private extractMamFile(path: string): IMasterAssetModel  {
     if(existsSync(path)){
-      return JSON.parse(readFileSync(path).toString());
+        return JSON.parse(readFileSync(path).toString());
     }
     return undefined;
   }

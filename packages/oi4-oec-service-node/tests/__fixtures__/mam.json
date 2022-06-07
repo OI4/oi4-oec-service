@@ -1,7 +1,7 @@
 {
   "Manufacturer":{"locale":"en-US","text":"Hilscher"},
   "ManufacturerUri":"hilscher.com",
-  "Model":{"locale":"en-US","text":"OEC Registry"},
+  "Model": {"locale":"en-US","text":"OEC Registry"},
   "ProductCode":"OEC-REG",
   "HardwareRevision":"",
   "SoftwareRevision":"0.12.1",

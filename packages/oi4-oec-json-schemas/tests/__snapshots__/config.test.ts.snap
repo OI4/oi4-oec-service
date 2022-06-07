@@ -1,672 +1,672 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`config schema (0) match fails for invalid config -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should NOT have fewer than 1 properties
-    Path:     config.schema.json#/minProperties
-"
+[31m  must NOT have fewer than 1 properties[39m
+[31m    Path:     configPublish.schema.json#/minProperties[39m
+[31m[39m"
 `;
 
 exports[`config schema (1) match fails for invalid config -> name missing in network1, group name missing for password: name missing in network1, group name missing for password 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  ['network1'] should have required property 'name'
-    Received: <object> {\\"ip\\":{\\"type\\":\\"string\\"},\\"snm\\":{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['ip'].type should be equal to one of the allowed values
-    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"]
-    Received: <string> string
-    Path:     config.schema.json#/properties/type/enum
-  ['network1']['ip'] should have required property 'value'
-    Received: <object> {\\"type\\":\\"string\\"}
-    Path:     config.schema.json#/required
-  ['network1']['ip'] should have required property 'name'
-    Received: <object> {\\"type\\":\\"string\\"}
-    Path:     config.schema.json#/required
-  ['network1']['snm'].type should be equal to one of the allowed values
-    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"]
-    Received: <string> string
-    Path:     config.schema.json#/properties/type/enum
-  ['network1']['snm'] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}
-    Path:     config.schema.json#/required
-  ['network2']['ip'].type should be equal to one of the allowed values
-    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"]
-    Received: <string> string
-    Path:     config.schema.json#/properties/type/enum
-  ['network2']['ip'] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"IP Adresse\\"},\\"type\\":\\"string\\"}
-    Path:     config.schema.json#/required
-  ['network2']['snm'].type should be equal to one of the allowed values
-    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"]
-    Received: <string> string
-    Path:     config.schema.json#/properties/type/enum
-  ['network2']['snm'] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}
-    Path:     config.schema.json#/required
-  ['password']['type'] should be object
-    Received: <string> string
-    Path:     config.schema.json#/type
-"
+[31m  /network1 must have required property 'name'[39m
+[31m    Received: [33m<object> [39m[31m{\\"ip\\":{\\"type\\":\\"string\\"},\\"snm\\":{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/ip must have required property 'name'[39m
+[31m    Received: [33m<object> [39m[31m{\\"type\\":\\"string\\"}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/ip must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"type\\":\\"string\\"}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/ip/type must be equal to one of the allowed values[39m
+[31m    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"][39m
+[31m    Received: [33m<string>[39m[31m string[39m
+[31m    Path:     configPublish.schema.json#/properties/type/enum[39m
+[31m[39m[31m  /network1/snm must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/snm/type must be equal to one of the allowed values[39m
+[31m    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"][39m
+[31m    Received: [33m<string>[39m[31m string[39m
+[31m    Path:     configPublish.schema.json#/properties/type/enum[39m
+[31m[39m[31m  /network2/ip must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"IP Adresse\\"},\\"type\\":\\"string\\"}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network2/ip/type must be equal to one of the allowed values[39m
+[31m    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"][39m
+[31m    Received: [33m<string>[39m[31m string[39m
+[31m    Path:     configPublish.schema.json#/properties/type/enum[39m
+[31m[39m[31m  /network2/snm must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"type\\":\\"string\\"}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network2/snm/type must be equal to one of the allowed values[39m
+[31m    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"][39m
+[31m    Received: [33m<string>[39m[31m string[39m
+[31m    Path:     configPublish.schema.json#/properties/type/enum[39m
+[31m[39m[31m  /password/type must be object[39m
+[31m    Received: [33m<string>[39m[31m string[39m
+[31m    Path:     configPublish.schema.json#/type[39m
+[31m[39m"
 `;
 
 exports[`config schema (2) match fails for invalid config -> only name provided: only name provided 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  ['network1'] should NOT have fewer than 2 properties
-    Received: <object> {\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/minProperties
-"
+[31m  /network1 must NOT have fewer than 2 properties[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/minProperties[39m
+[31m[39m"
 `;
 
 exports[`config schema (3) match fails for invalid config -> only description provided: only description provided 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  ['network1'] should NOT have fewer than 2 properties
-    Received: <object> {\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/minProperties
-  ['network1'] should have required property 'name'
-    Received: <object> {\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-"
+[31m  /network1 must NOT have fewer than 2 properties[39m
+[31m    Received: [33m<object> [39m[31m{\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/minProperties[39m
+[31m[39m[31m  /network1 must have required property 'name'[39m
+[31m    Received: [33m<object> [39m[31m{\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`config schema (4) match fails for invalid config -> group name starts with invalid character: group name starts with invalid character 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should NOT have additional properties, but found '.network1'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found '-network1'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found '#network1'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found '%network1'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found '$network1'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-"
+[31m  must NOT have additional properties, but found '.network1'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found '-network1'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found '#network1'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found '%network1'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found '$network1'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m"
 `;
 
 exports[`config schema (5) match fails for invalid config -> config name starts with invalid character: config name starts with invalid character 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['-ip'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['-ip'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['#snm'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['#snm'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['%foo'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['%foo'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['$bar'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['$bar'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-"
+[31m  /network1/-ip must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/-ip must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/#snm must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/#snm must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/%foo must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/%foo must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/$bar must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/$bar must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m"
 `;
 
 exports[`config schema (6) match fails for invalid config -> group name contains with invalid character: group name contains with invalid character 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should NOT have additional properties, but found 'ip#'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'snm%'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'foo$'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar&'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar:'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar§'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar!'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar?'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar='
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar('
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar)'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar<'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar>'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar{'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar}'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar/'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar\\"'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar''
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar+'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar*'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar@'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'bar°'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'barß'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'barü'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'barä'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'barö'
-    Expected: <boolean> false
-    Path:     config.schema.json#/additionalProperties
-"
+[31m  must NOT have additional properties, but found 'ip#'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'snm%'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo$'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar&'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar:'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar§'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar!'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar?'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar='[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar('[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar)'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar<'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar>'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar{'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar}'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar/'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar\\"'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar''[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar+'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar*'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar@'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'bar°'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'barß'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'barü'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'barä'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'barö'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m"
 `;
 
 exports[`config schema (7) match fails for invalid config -> config name contains with invalid character: config name contains with invalid character 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['ip#'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['ip#'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['snm%'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['snm%'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['foo$'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['foo$'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar&'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar&'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar:'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar:'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar§'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar§'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar!'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar!'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar?'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar?'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar='] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar='] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar('] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar('] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar)'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar)'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar<'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar<'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar>'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar>'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar{'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar{'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar}'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar}'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar/'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar/'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar\\"'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar\\"'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar''] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar''] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar+'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar+'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar*'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar*'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar@'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar@'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['bar°'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar°'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['barß'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['barß'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['barü'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['barü'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['barä'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['barä'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  should NOT have additional properties, but found 'name'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  should NOT have additional properties, but found 'description'
-    Expected: <boolean> false
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/additionalProperties
-  ['network1']['barö'] should have required property 'locale'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['barö'] should have required property 'text'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar['] should have required property 'type'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar['] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar]'] should have required property 'type'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar]'] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar\\\\'] should have required property 'type'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-  ['network1']['bar\\\\'] should have required property 'value'
-    Received: <object> {\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}
-    Path:     config.schema.json#/required
-"
+[31m  /network1/ip# must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/ip# must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/snm% must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/snm% must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/foo$ must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/foo$ must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar& must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar& must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar: must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar: must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar§ must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar§ must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar! must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar! must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar? must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar? must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar= must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar= must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar( must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar( must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar) must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar) must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar< must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar< must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar> must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar> must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar{ must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar{ must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar} must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar} must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar~1 must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar~1 must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar\\" must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar\\" must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar' must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar' must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar+ must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar+ must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar* must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar* must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar@ must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar@ must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar° must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar° must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/barß must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/barß must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/barü must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/barü must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/barä must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/barä must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/barö must have required property 'locale'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/barö must have required property 'text'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'description'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/additionalProperties[39m
+[31m[39m[31m  /network1/bar[ must have required property 'type'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar[ must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar] must have required property 'type'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar] must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar\\\\ must have required property 'type'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m[31m  /network1/bar\\\\ must have required property 'value'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name\\":{\\"locale\\":\\"en-UK\\",\\"text\\":\\"test\\"},\\"description\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`config schema (8) match fails for invalid config -> name and description with suffix: name and description with suffix 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  ['network1'] should have required property 'name'
-    Received: <object> {\\"name-1\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"description-1\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Mein toller Text\\"}}
-    Path:     config.schema.json#/required
-"
+[31m  /network1 must have required property 'name'[39m
+[31m    Received: [33m<object> [39m[31m{\\"name-1\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Subnetzmaske\\"},\\"description-1\\":{\\"locale\\":\\"de-DE\\",\\"text\\":\\"Mein toller Text\\"}}[39m
+[31m    Path:     configPublish.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`config schema (9) match fails for invalid config -> complex example with different errors: complex example with different errors 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  ['device1']['protocol'].validation.min should be number
-    Received: <empty string>
-    Path:     config.schema.json#/properties/validation/properties/min/type
-  ['device1']['protocol'].validation.max should be number
-    Received: <empty string>
-    Path:     config.schema.json#/properties/validation/properties/max/type
-  ['device1']['unit'].validation.values[5] should be string
-    Received: <object> {\\"a\\":\\"b\\"}
-    Path:     config.schema.json#/properties/validation/properties/values/items/type
-  ['device1']['unit'].validation.values[6] should be string
-    Received: <number> 2
-    Path:     config.schema.json#/properties/validation/properties/values/items/type
-  ['device1']['unit'].validation.values[7] should be string
-    Received: <number> 1
-    Path:     config.schema.json#/properties/validation/properties/values/items/type
-  ['general']['date-time'].type should be equal to one of the allowed values
-    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"]
-    Received: <string> Datetime
-    Path:     config.schema.json#/properties/type/enum
-"
+[31m  /device1/protocol/validation/min must be number[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     configPublish.schema.json#/properties/validation/properties/min/type[39m
+[31m[39m[31m  /device1/protocol/validation/max must be number[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     configPublish.schema.json#/properties/validation/properties/max/type[39m
+[31m[39m[31m  /device1/unit/validation/values/5 must be string[39m
+[31m    Received: [33m<object> [39m[31m{\\"a\\":\\"b\\"}[39m
+[31m    Path:     configPublish.schema.json#/properties/validation/properties/values/items/type[39m
+[31m[39m[31m  /device1/unit/validation/values/6 must be string[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     configPublish.schema.json#/properties/validation/properties/values/items/type[39m
+[31m[39m[31m  /device1/unit/validation/values/7 must be string[39m
+[31m    Received: [33m<number>[39m[31m 1[39m
+[31m    Path:     configPublish.schema.json#/properties/validation/properties/values/items/type[39m
+[31m[39m[31m  /general/date-time/type must be equal to one of the allowed values[39m
+[31m    Expected: [\\"Boolean\\",\\"ByteString\\",\\"DateTime\\",\\"Number\\",\\"String\\"][39m
+[31m    Received: [33m<string>[39m[31m Datetime[39m
+[31m    Path:     configPublish.schema.json#/properties/type/enum[39m
+[31m[39m"
 `;
