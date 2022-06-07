@@ -1,21 +1,28 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {IContainerState} from '../../Container/index';
+import {IContainerState} from '../Container/index';
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
-import {OI4Proxy} from '../index';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {CDataSetWriterIdLookup, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {EventEmitter} from 'events';
+import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 
-import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
+import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
 // DataSetClassIds
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 import {ISpecificContainerConfig} from '@oi4/oi4-oec-service-model';
 import {EDeviceHealth, ESubscriptionListConfig, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
-import {Credentials} from '../../Utilities/Helpers/Types';
+import {Credentials} from '../Utilities/Helpers/Types';
 import os from 'os';
 
-class OI4MessageBusProxy extends OI4Proxy {
+class OI4MessageBusProxy extends EventEmitter {
+    public oi4Id: string;
+    public serviceType: string;
+    public containerState: IContainerState;
+    public topicPreamble: string;
+    public builder: OPCUABuilder;
+
     private readonly client: mqtt.AsyncClient;
     private logger: Logger;
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
@@ -27,7 +34,12 @@ class OI4MessageBusProxy extends OI4Proxy {
      * In Addition birth, will and close messages will be also created
      */
     constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
-        super(container);
+        super();
+        this.oi4Id = container.oi4Id;
+        this.serviceType = container.mam.DeviceClass;
+        this.builder = new OPCUABuilder(this.oi4Id, this.serviceType);
+        this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
+        this.containerState = container;
 
         // Add Server Object depending on configuration
         const serverObj = {
