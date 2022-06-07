@@ -3,8 +3,7 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IContainerHealth, IContainerState,
-    ILicenseObject,
+    IContainerHealth, IContainerState, ILicenseObject,
     IPublicationListObject,
     ISpecificContainerConfig,
     ISubscriptionListObject
@@ -26,6 +25,13 @@ export class ClientPayloadHelper {
             dswid: dswid,
         };
     };
+
+    getDefaultHealthStatePayload(): ValidatedPayload {
+        const payload: IOPCUAPayload[] = [];
+        const healthState: IContainerHealth = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
+        payload.push(this.createPayload(healthState, CDataSetWriterIdLookup[ResourceType.HEALTH]));
+        return {abortSending: false, payload: payload};
+    }
 
     createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
         return {health: health, healthScore: score};

@@ -8,16 +8,17 @@ enum AsyncClientEvents {
     MESSAGE = 'message',
 }
 
+//FIXME is the name of this enum ok? Or is better something more related to CDataSetWriterIdLookup
 enum ResourceType {
-    HEALTH = 'health',
     MAM = 'mam',
-    PROFILE = 'profile',
-    RT_LICENSE = 'rtLicense',
-    LICENSE_TEXT = 'licenseText',
+    HEALTH = 'health',
     LICENCE = 'license',
+    LICENSE_TEXT = 'licenseText',
+    RT_LICENSE = 'rtLicense',
+    PROFILE = 'profile',
+    CONFIG = 'config',
     PUBLICATION_LIST = 'publicationList',
     SUBSCRIPTION_LIST = 'subscriptionList',
-    CONFIG = 'config',
 }
 
 enum TopicMethods {

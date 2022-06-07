@@ -241,11 +241,14 @@ class OI4MessageBusProxy extends OI4Proxy {
 
         switch (resource) {
             case ResourceType.MAM:
-            case ResourceType.HEALTH:
             case ResourceType.PROFILE:
             case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.containerState, resource, filter, dswidFilter);
                 break;
+            }
+            //FIXME This is the sending of the default health state, but not 100% is it right to implement it like this. Maybe double check is better.
+            case ResourceType.HEALTH: {
+                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload();
             }
             case ResourceType.LICENSE_TEXT: {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.containerState, filter, resource);
