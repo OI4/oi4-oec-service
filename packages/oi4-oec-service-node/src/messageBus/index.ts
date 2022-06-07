@@ -1,5 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {IContainerState} from '../../Container/index';
+import {IContainerState} from '../Container/index';
 import {EventEmitter} from 'events';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
@@ -11,7 +11,7 @@ import {
     ESyslogEventFilter
 } from '@oi4/oi4-oec-service-model';
 
-import {MqttSettingsHelper} from '../../Utilities/Helpers/MqttSettingsHelper';
+import {MqttSettingsHelper} from '../Utilities/Helpers/MqttSettingsHelper';
 import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {existsSync, readFileSync} from 'fs';
 import {
@@ -21,9 +21,9 @@ import {
     ValidatedFilter
 } from '../Utilities/Helpers/Types';
 import os from 'os';
-import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
-import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
-import {MqttMessageProcessor} from '../../Utilities/Helpers/MqttMessageProcessor';
+import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
+import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
+import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 
 class OI4MessageBusProxy extends EventEmitter {
