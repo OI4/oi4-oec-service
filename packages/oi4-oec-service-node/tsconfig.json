@@ -18,7 +18,6 @@
     "src/**/*",
     "src/**/*.json",
     "LICENSE",
-    "README.md",
-    "package.json"
+    "README.md"
   ]
 }
