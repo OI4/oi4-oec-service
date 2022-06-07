@@ -19,5 +19,9 @@
     "src/**/*.json",
     "LICENSE",
     "README.md"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules/**/*"
   ]
 }
