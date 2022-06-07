@@ -1,7 +1,6 @@
+import {EventEmitter} from 'events';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../Container/index';
-import {EventEmitter} from 'events';
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
 import {
@@ -25,7 +24,7 @@ import os from 'os';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 
 class OI4MessageBusProxy extends EventEmitter {
     public oi4Id: string;
@@ -33,6 +32,12 @@ class OI4MessageBusProxy extends EventEmitter {
     public containerState: IContainerState;
     public topicPreamble: string;
     public builder: OPCUABuilder;
+
+    private readonly clientHealthHeartbeatInterval: number = 60000;
+    private readonly clientPayloadHelper: ClientPayloadHelper;
+    private readonly client: mqtt.AsyncClient;
+    private readonly MQTTS = 'mqtts';
+    private readonly logger: Logger;
 
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
     private clientCallbacksHelper: ClientCallbacksHelper;
