@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "rootDir": "../",
+    "sourceMap": true
+  },
+  "include": ["**/*", "**/__fixtures__/*.json"],
+  "references": [
+    {
+      "path": ".."
+    }
+  ]
+}
