@@ -163,7 +163,7 @@ export interface IContainerState {
   addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }
 
-interface IDataSetWriterIdLookup { // TODO: need better types here, EResources or so
+export interface IDataSetWriterIdLookup { // TODO: need better types here, EResources or so
   [key: string]: number;
 }
 
