@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {IContainerState} from '../../Container/index';
-import {OI4Proxy} from '../index';
+import {EventEmitter} from 'events';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
 import {
@@ -24,9 +24,15 @@ import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 
-class OI4MessageBusProxy extends OI4Proxy {
+class OI4MessageBusProxy extends EventEmitter {
+    public oi4Id: string;
+    public serviceType: string;
+    public containerState: IContainerState;
+    public topicPreamble: string;
+    public builder: OPCUABuilder;
+
     private readonly clientHealthHeartbeatInterval: number = 60000;
     private readonly clientPayloadHelper: ClientPayloadHelper;
     private readonly client: mqtt.AsyncClient;
@@ -44,7 +50,12 @@ class OI4MessageBusProxy extends OI4Proxy {
      * In Addition birth, will and close messages will be also created
      */
     constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
-        super(container);
+        super();
+        this.oi4Id = container.oi4Id;
+        this.serviceType = container.mam.DeviceClass;
+        this.builder = new OPCUABuilder(this.oi4Id, this.serviceType);
+        this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
+        this.containerState = container;
 
         // Add Server Object depending on configuration
         const serverObj: ServerObject = {

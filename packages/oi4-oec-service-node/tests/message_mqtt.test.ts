@@ -1,7 +1,7 @@
 import mqtt from 'async-mqtt';
-import {MqttSettings} from '../src/Proxy/Messagebus/MqttSettings';
+import {MqttSettings} from '../src/messageBus/MqttSettings';
 import fs from 'fs';
-import {OI4MessageBusProxy} from '../src/Proxy/Messagebus/index';
+import {OI4MessageBusProxy} from '../src/messageBus/index';
 import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
