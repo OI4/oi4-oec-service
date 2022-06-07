@@ -19,7 +19,7 @@ import {
     ValidatedPayload,
     ServerObject,
     ValidatedFilter
-} from '../../Utilities/Helpers/Types';
+} from '../Utilities/Helpers/Types';
 import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
