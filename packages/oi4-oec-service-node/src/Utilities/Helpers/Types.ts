@@ -1,4 +1,4 @@
-import {IOPCUAPayload} from "@oi4/oi4-oec-service-opcua-model";
+import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 
 export type Credentials = {
     username: string;
@@ -15,8 +15,14 @@ export type ValidatedFilter = {
     dswidFilter: number;
 }
 
-//FIXME find a better name
-export type SendResourceCreatePayloadResult = {
+export type ValidatedPayload = {
     abortSending: boolean;
     payload: IOPCUAPayload[];
+}
+
+export type TopicInfo = {
+    appId: string;
+    method: string;
+    resource: string;
+    filter: string;
 }

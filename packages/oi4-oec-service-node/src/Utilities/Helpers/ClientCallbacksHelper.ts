@@ -1,21 +1,30 @@
-import {CDataSetWriterIdLookup, DataSetClassIds, EDeviceHealth, IContainerState} from "@oi4/oi4-oec-service-model";
-import {OPCUABuilder} from "@oi4/oi4-oec-service-opcua-model";
-import {ClientPayloadHelper} from "./ClientPayloadHelper";
+import {
+    CDataSetWriterIdLookup,
+    DataSetClassIds,
+    EDeviceHealth,
+    ESyslogEventFilter,
+    IContainerState
+} from '@oi4/oi4-oec-service-model';
+import mqtt = require('async-mqtt'); /*tslint:disable-line*/
+import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {ClientPayloadHelper} from './ClientPayloadHelper';
+import {Logger} from '@oi4/oi4-oec-service-logger';
 
 export class ClientCallbacksHelper {
 
     private clientPayloadHelper: ClientPayloadHelper;
+    private componentLogger: Logger;
 
-    constructor(clientPayloadHelper: ClientPayloadHelper) {
+    constructor(clientPayloadHelper: ClientPayloadHelper, logger: Logger) {
         this.clientPayloadHelper = clientPayloadHelper;
+        this.componentLogger = logger;
     }
 
     public async onErrorCallback(err: Error) {
         console.log(`Error in mqtt client: ${err}`);
     };
 
-    //FIXME client is mqtt.AsyncClient type, must be pplied
-    public async onCloseCallback(containerState: IContainerState, client: any, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
+    public async onCloseCallback(containerState: IContainerState, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
         containerState.brokerState = false;
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
@@ -26,5 +35,30 @@ export class ClientCallbacksHelper {
         );
         console.log('Connection to mqtt broker closed');
     };
+
+    public async onDisconnectCallback(containerState: IContainerState) {
+        containerState.brokerState = false;
+        console.log('Disconnected from mqtt broker');
+    };
+
+    public async onReconnectCallback(containerState: IContainerState) {
+        containerState.brokerState = false;
+        console.log('Reconnecting to mqtt broker');
+    };
+
+    public async onClientConnectCallback(containerState: IContainerState, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
+        this.componentLogger.log('Connected successfully', ESyslogEventFilter.warning);
+        containerState.brokerState = true;
+
+        await client.publish(
+            `${topicPreamble}/pub/mam/${oi4Id}`,
+            JSON.stringify(builder.buildOPCUANetworkMessage([{
+                payload: containerState.mam,
+                dswid: CDataSetWriterIdLookup['mam']
+            }], new Date(), DataSetClassIds.mam)),
+        );
+        this.componentLogger.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
+    };
+
 
 }

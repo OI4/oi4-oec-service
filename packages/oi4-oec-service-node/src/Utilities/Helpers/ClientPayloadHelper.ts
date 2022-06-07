@@ -1,4 +1,4 @@
-import {SendResourceCreatePayloadResult} from './Types';
+import {ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
@@ -11,7 +11,7 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-
+//FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
 
     private componentLogger: Logger;
@@ -20,7 +20,7 @@ export class ClientPayloadHelper {
         this.componentLogger = logger;
     }
 
-    private createPayload(payload?: any, dswid?: number): IOPCUAPayload {
+    private createPayload(payload: any, dswid: number): IOPCUAPayload {
         return {
             payload: payload,
             dswid: dswid,
@@ -31,7 +31,7 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, filter: string, dswidFilter: number): SendResourceCreatePayloadResult {
+    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, filter: string, dswidFilter: number): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
@@ -41,8 +41,6 @@ export class ClientPayloadHelper {
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dswidFilter - 1]) { // Fallback to DSWID based resource
             payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
-            // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
-            //break;
             // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the payload won't be used
             //return;
         }
@@ -50,7 +48,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: string): SendResourceCreatePayloadResult {
+    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
         if (typeof containerState.licenseText[filter] === 'undefined') {
@@ -61,15 +59,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    private manageInvalidDSWIDFilter(resource: string): SendResourceCreatePayloadResult {
-        // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
-        // Whether there's a DSWID filter, or not we always send all licenses
-        // We only need a check here, if the DSWID even fits. If not, we just abort sending
-        this.componentLogger.log(`DSWID does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
-        return {abortSending: true, payload: undefined};
-    }
-
-    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
+    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with licenseId
@@ -85,8 +75,7 @@ export class ClientPayloadHelper {
                         dswid: CDataSetWriterIdLookup['license'],
                     });
                 }
-                // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
-                //break;
+
                 return {abortSending: false, payload: payload};
             }
         } else if (dswidFilter !== CDataSetWriterIdLookup[resource]) {
@@ -104,7 +93,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
+    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
@@ -137,7 +126,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
+    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dswidFilter)) { // Try to filter with resource
@@ -172,7 +161,15 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): SendResourceCreatePayloadResult {
+    private manageInvalidDSWIDFilter(resource: string): ValidatedPayload {
+        // We don't need to fill the payloads in the "else" case. Since there's only one DSWID in the license Resource, we send all licenses
+        // Whether there's a DSWID filter, or not we always send all licenses
+        // We only need a check here, if the DSWID even fits. If not, we just abort sending
+        this.componentLogger.log(`DSWID does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+        return {abortSending: true, payload: undefined};
+    }
+
+    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dswidFilter: number, resource: string): ValidatedPayload {
         const actualPayload: ISpecificContainerConfig = (containerState as any)[resource];
         const payload: IOPCUAPayload[] = [];
 

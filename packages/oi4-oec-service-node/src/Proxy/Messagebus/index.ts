@@ -16,7 +16,7 @@ import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {existsSync, readFileSync} from 'fs';
 import {
     Credentials,
-    SendResourceCreatePayloadResult,
+    ValidatedPayload,
     ServerObject,
     ValidatedFilter
 } from '../../Utilities/Helpers/Types';
@@ -24,17 +24,18 @@ import os from 'os';
 import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../../Utilities/Helpers/MqttMessageProcessor';
+import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly clientHealthHeartbeatInterval: number = 60000;
+    private readonly clientPayloadHelper: ClientPayloadHelper;
+    private readonly client: mqtt.AsyncClient;
+    private readonly MQTTS = 'mqtts';
+    private readonly logger: Logger;
 
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
     private clientCallbacksHelper: ClientCallbacksHelper;
-    private clientPayloadHelper: ClientPayloadHelper;
-    private mqttMessageProcessor;
-
-    private readonly client: mqtt.AsyncClient;
-    private logger: Logger;
+    private mqttMessageProcessor: MqttMessageProcessor;
 
     /***
      * @param container -> is the container state of the app. Contains mam settings oi4id, health and so on
@@ -54,30 +55,15 @@ class OI4MessageBusProxy extends OI4Proxy {
 
         // Initialize MQTT Options
         const mqttOpts: MqttSettings = this.createMqttOptions(serverObj);
-
-        if (this.hasRequiredCertCredentials()) {
-            mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
-            mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
-            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
-            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
-        } else {
-            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
-            mqttOpts.username = userCredentials.username;
-            mqttOpts.password = userCredentials.password;
-            mqttOpts.protocol = 'mqtts';
-            mqttOpts.rejectUnauthorized = false;
-        }
-
+        this.initMqttOptionsConnectionCredentials(mqttOpts);
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
 
         this.client = mqtt.connect(mqttOpts);
-
         this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
-        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
-        //FIXME is this correct? Or it is just "emit"?
+        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper, this.logger);
         this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.containerState, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
@@ -87,17 +73,38 @@ class OI4MessageBusProxy extends OI4Proxy {
         return {
             clientId: os.hostname(),
             servers: [serverObj],
-            protocol: 'mqtts',
+            protocol: this.MQTTS,
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                     payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
-                    dswid: CDataSetWriterIdLookup['health']
+                    dswid: CDataSetWriterIdLookup[ResourceType.HEALTH]
                 }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
                 retain: false,
             },
         };
+    }
+
+    private initMqttOptionsConnectionCredentials(mqttOpts: MqttSettings) {
+        if (this.hasRequiredCertCredentials()) {
+            mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
+            mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
+            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
+            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
+        } else {
+            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
+            mqttOpts.username = userCredentials.username;
+            mqttOpts.password = userCredentials.password;
+            mqttOpts.protocol = this.MQTTS;
+            mqttOpts.rejectUnauthorized = false;
+        }
+    }
+
+    private hasRequiredCertCredentials(): boolean {
+        return existsSync(MQTT_PATH_SETTINGS.CA_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.CLIENT_CERT) &&
+            existsSync(MQTT_PATH_SETTINGS.PRIVATE_KEY)
     }
 
     private initClientCallbacks() {
@@ -109,73 +116,37 @@ class OI4MessageBusProxy extends OI4Proxy {
     }
 
     private setOnClientErrorCallback() {
-        //FIXME This is a proposal refactoring using an helper, must be evaluated and therefore the code must be adjusted accordingly
-        this.client.on('error', async(err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
-        /*
-        this.client.on('error', async (err: Error) => {
-            console.log(`Error in mqtt client: ${err}`);
-        });
-        */
+        this.client.on(AsyncClientEvents.ERROR, async(err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
     }
 
     private setOnClientCloseCallback() {
-        //FIXME This is a proposal refactoring using an helper, must be evaluated and therefore the code must be adjusted accordingly
-        this.client.on('close', async() => this.clientCallbacksHelper.onCloseCallback(this.containerState, this.client, this.topicPreamble, this. oi4Id, this.builder));
-        /*
-        this.client.on('close', async () => {
-            this.containerState.brokerState = false;
-            await this.client.publish(
-                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                    dswid: CDataSetWriterIdLookup['health']
-                }], new Date(), DataSetClassIds.mam)),
-            );
-            console.log('Connection to mqtt broker closed');
-        });
-        */
+        this.client.on(AsyncClientEvents.CLOSE, async() => this.clientCallbacksHelper.onCloseCallback(this.containerState, this.client, this.topicPreamble, this. oi4Id, this.builder));
     }
 
     private setOnClientDisconnectCallback() {
-        this.client.on('disconnect', async () => {
-            this.containerState.brokerState = false;
-            console.log('Disconnected from mqtt broker');
-        });
+        this.client.on(AsyncClientEvents.DISCONNECT, async() => this.clientCallbacksHelper.onDisconnectCallback(this.containerState));
     }
 
     private setOnClientReconnectCallback() {
-        this.client.on('reconnect', async () => {
-            this.containerState.brokerState = false;
-            console.log('Reconnecting to mqtt broker');
-        });
+        this.client.on(AsyncClientEvents.RECONNECT, async() => this.clientCallbacksHelper.onReconnectCallback(this.containerState));
     }
 
     private setOnClientConnectCallback() {
         // Publish Birth Message and start listening to topics
-        this.client.on('connect', async () => {//connack: mqtt.IConnackPacket) => {
-            this.logger.log('Connected successfully', ESyslogEventFilter.warning);
-            this.containerState.brokerState = true;
-
-            await this.client.publish(
-                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
-                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: this.containerState.mam,
-                    dswid: CDataSetWriterIdLookup['mam']
-                }], new Date(), DataSetClassIds.mam)),
-            );
-            this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESyslogEventFilter.warning);
-
-            // Listen to own routes
-            this.ownSubscribe(`${this.topicPreamble}/get/#`);
-            this.ownSubscribe(`${this.topicPreamble}/set/#`);
-            this.ownSubscribe(`${this.topicPreamble}/del/#`);
-
-            this.client.on('message', this.mqttMessageProcessor.processMqttMessage);
-
+        this.client.on(AsyncClientEvents.CONNECT, async() => {
+            await this.clientCallbacksHelper.onClientConnectCallback(this.containerState, this.client, this.topicPreamble, this.oi4Id, this.builder);
+            await this.initIncomingMessageListeners();
             this.initClientHealthHeartBeat();
-
-            this.containerState.on('resourceChanged', this.resourceChangeCallback.bind(this));
+            this.containerState.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
         });
+    }
+
+    private async initIncomingMessageListeners() {
+        // Listen to own routes
+        await this.ownSubscribe(`${this.topicPreamble}/get/#`);
+        await this.ownSubscribe(`${this.topicPreamble}/set/#`);
+        await this.ownSubscribe(`${this.topicPreamble}/del/#`);
+        this.client.on(AsyncClientEvents.MESSAGE, this.mqttMessageProcessor.processMqttMessage);
     }
 
     private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
@@ -189,21 +160,20 @@ class OI4MessageBusProxy extends OI4Proxy {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource('health', '', this.oi4Id);
-        }, this.clientHealthHeartbeatInterval); // send our own health every 30 seconds!
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(response => {
+                //No actual actions are needed here
+                console.log(`Received response from health heartbeat: ${response}`)
+            });
+        }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
     }
 
-    private resourceChangeCallback(resource: string): void {
-        if (resource === 'health') {
-            this.sendResource('health', '', this.oi4Id);
+    private resourceChangeCallback(resource: string) {
+        if (resource === ResourceType.HEALTH) {
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id);
         }
     }
 
-    private hasRequiredCertCredentials(): boolean {
-        return existsSync(MQTT_PATH_SETTINGS.CA_CERT) &&
-            existsSync(MQTT_PATH_SETTINGS.CLIENT_CERT) &&
-            existsSync(MQTT_PATH_SETTINGS.PRIVATE_KEY)
-    }
+    // FIXME: Shall we remove this commented code?
     // private async ownUnsubscribe(topic: string) {
     //   // Remove from subscriptionList
     //   this.containerState.subscriptionList.subscriptionList = this.containerState.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
@@ -216,18 +186,7 @@ class OI4MessageBusProxy extends OI4Proxy {
      * @param cutTopic - the cutTopic, containing only the tag-element
      */
     async sendMetaData(cutTopic: string) {
-        const tagName = cutTopic; // Remove the leading /
-        if (tagName === '') { // If there is no tag specified, we should send all available metadata
-            await this.client.publish(`${this.topicPreamble}/pub/metadata`, JSON.stringify(this.containerState.metaDataLookup));
-            this.logger.log(`Published ALL available MetaData on ${this.topicPreamble}/pub/metadata`);
-            return;
-        }
-        // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
-        if (tagName in dataLookup) {
-            await this.client.publish(`${this.topicPreamble}/pub/metadata/${tagName}`, JSON.stringify(this.containerState.metaDataLookup[tagName]));
-            this.logger.log(`Published available MetaData on ${this.topicPreamble}/pub/metadata/${tagName}`);
-        }
+        await this.send(cutTopic, 'metadata', this.containerState.metaDataLookup);
     }
 
     //FIXME is this sendData even used somewhere?
@@ -236,17 +195,21 @@ class OI4MessageBusProxy extends OI4Proxy {
      * @param cutTopic - the cuttopic, containing only the tag-element
      */
     async sendData(cutTopic: string) {
-        const tagName = cutTopic;
-        if (tagName === '') { // If there is no tag specified, we shuld send all available data
-            await this.client.publish(`${this.topicPreamble}/pub/data`, JSON.stringify(this.containerState.dataLookup));
-            this.logger.log(`Published ALL available Data on ${this.topicPreamble}/pub/data`);
+        await this.send(cutTopic, 'data', this.containerState.dataLookup);
+    }
+
+    //FIXME add a better type for the information send (Either data or metadata)
+    private async send(tagName: string, type: string, information: any) {
+        if (tagName === '') { // If there is no tag specified, we should send all available metadata
+            await this.client.publish(`${this.topicPreamble}/pub/${type}`, JSON.stringify(information));
+            this.logger.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}`);
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.containerState.dataLookup;
         if (tagName in dataLookup) {
-            await this.client.publish(`${this.topicPreamble}/pub/data/${tagName}`, JSON.stringify(this.containerState.dataLookup[tagName]));
-            this.logger.log(`Published available Data on ${this.topicPreamble}/pub/data/${tagName}`);
+            await this.client.publish(`${this.topicPreamble}/pub/${type}/${tagName}`, JSON.stringify(information[tagName]));
+            this.logger.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
         }
     }
 
@@ -257,39 +220,50 @@ class OI4MessageBusProxy extends OI4Proxy {
      * @param [filter] - the tag of the resource
      */
     async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
-        const validatedFilter = this.validateFilter(filter);
-        if(!validatedFilter.isValid) {
+        const payloadResult: ValidatedPayload = await this.preparePayload(resource, filter);
+
+        if(payloadResult.abortSending) {
             return;
         }
 
+        await this.sendPayload(payloadResult.payload, resource, messageId, page, perPage, filter);
+    }
+
+    async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
+        const validatedFilter: ValidatedFilter = this.validateFilter(filter);
+        if(!validatedFilter.isValid) {
+            this.logger.log('Invalid filter, abort sending...');
+            return {payload: undefined, abortSending: true};
+        }
+
         const dswidFilter: number = validatedFilter.dswidFilter;
-        let payloadResult: SendResourceCreatePayloadResult;
+        let payloadResult: ValidatedPayload;
 
         switch (resource) {
-            case 'mam':
-            case 'health':
-            case 'profile':
-            case 'rtLicense': { // This is the default case, just send the resource if the tag is ok
+            case ResourceType.MAM:
+            case ResourceType.HEALTH:
+            case ResourceType.PROFILE:
+            case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.containerState, resource, filter, dswidFilter);
                 break;
             }
-            case 'licenseText': {
+            case ResourceType.LICENSE_TEXT: {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.containerState, filter, resource);
                 break;
             }
-            case 'license': {
+            case ResourceType.LICENCE: {
                 payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.containerState, filter, dswidFilter, resource);
                 break;
             }
-            case 'publicationList': {
+            case ResourceType.PUBLICATION_LIST: {
                 payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.containerState, filter, dswidFilter, resource);
                 break;
             }
-            case 'subscriptionList': {
+            case ResourceType.SUBSCRIPTION_LIST: {
                 payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.containerState, filter, dswidFilter, resource);
                 break;
             }
-            case 'config': {
+            case ResourceType.CONFIG: {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.containerState, filter, dswidFilter, resource);
                 break;
             }
@@ -299,27 +273,12 @@ class OI4MessageBusProxy extends OI4Proxy {
             }
         }
 
-        if(payloadResult.abortSending) {
-            return;
-        }
+        return payloadResult;
+    }
 
-        // Don't forget the slash
-        const endTag: string = filter === '' ? filter : `/${filter}`;
-
-        try {
-            const networkMessageArray = this.builder.buildPaginatedOPCUANetworkMessageArray(payloadResult.payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
-            if (typeof networkMessageArray[0] === 'undefined') {
-                this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
-            }
-            for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
-                await this.client.publish(
-                    `${this.topicPreamble}/pub/${resource}${endTag}`,
-                    JSON.stringify(networkMessages));
-                this.logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
-            }
-        } catch {
-            console.log('Error in building paginated NMA');
-        }
+    // Basic Error Functions
+    async sendError(error: string) {
+        this.logger.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
     private validateFilter(filter: string): ValidatedFilter {
@@ -338,6 +297,26 @@ class OI4MessageBusProxy extends OI4Proxy {
         }
 
         return {isValid: true, dswidFilter: dswidFilter };
+    }
+
+    private async sendPayload(payload: IOPCUAPayload[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
+        // Don't forget the slash
+        const endTag: string = filter === '' ? filter : `/${filter}`;
+
+        try {
+            const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
+            if (typeof networkMessageArray[0] === 'undefined') {
+                this.logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
+            }
+            for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
+                await this.client.publish(
+                    `${this.topicPreamble}/pub/${resource}${endTag}`,
+                    JSON.stringify(networkMessages));
+                this.logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+            }
+        } catch {
+            console.log('Error in building paginated NMA');
+        }
     }
 
     //FIXME is this sendEvent even used somewhere?
@@ -360,15 +339,10 @@ class OI4MessageBusProxy extends OI4Proxy {
         this.logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
     }
 
-    // Basic Error Functions
-    async sendError(error: string) {
-        this.logger.log(`Error: ${error}`, ESyslogEventFilter.error);
-    }
-
     /**
      * Makes the MQTT Client available to be used by other applications
      */
-    get mqttClient() {
+    get mqttClient(): mqtt.AsyncClient {
         return this.client;
     }
 }
