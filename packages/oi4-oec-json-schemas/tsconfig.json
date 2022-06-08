@@ -9,6 +9,5 @@
     "types": ["node", "jest"],
     "lib": ["es2019", "DOM"]
   },
-  "include": ["schemas/**/*"],
-  "exclude": ["dist", "node_modules/**/*", ".vscode/**/*"]
+  "include": ["schemas/**/*"]
 }

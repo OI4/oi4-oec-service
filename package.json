@@ -36,7 +36,7 @@
     "clean": "lerna clean",
     "clean:build": "lerna run clean",
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prePublish": "lerna publish prepatch --no-git-tag-version --preid alpha --loglevel silly --yes --force-publish",
     "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes",
     "linkIt": "lerna run linkIt"
