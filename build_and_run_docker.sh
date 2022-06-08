@@ -4,7 +4,7 @@ yarn build || {
                exit 1;
            }
 
-if [-d ./packages/oi4-oec-service-demo/node_modules ]; then
+if [ -d ./packages/oi4-oec-service-demo/node_modules ]; then
   rm -r ./packages/oi4-oec-service-demo/node_modules
 fi
 
