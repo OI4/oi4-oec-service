@@ -1,7 +1,7 @@
 import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {TopicInfo} from './Types';
+import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -27,62 +27,47 @@ export class MqttMessageProcessor {
      * @param message - the entire binary message from the messagebus
      */
     public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder, oi4Id: string) => {
-        // Convert message to JSON, TODO: if this fails, we return an Error
-        let parsedMessage: IOPCUANetworkMessage;
-        try {
-            parsedMessage = JSON.parse(message.toString());
-        } catch (e) {
-            this.componentLogger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
+        const validatedData: ValidatedIncomingMessageData = this.validateData(topic, message, builder);
+        if(!validatedData.areValid) {
             return;
         }
 
-        const schemaResult = this.getSchemaResult(builder, parsedMessage);
+        await this.processMessage(validatedData.topicInfo, validatedData.parsedMessage, builder, oi4Id);
+    }
 
-        //FIXME maybe this can be moved up just after the parsedMessage initialization?
-        if (parsedMessage.Messages.length === 0) {
+    private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
+        const validateMessage: ValidatedMessage = this.validateIncomingMessage(message);
+        if(!validateMessage.isValid) {
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
+        } else if (validateMessage.parsedMessage.Messages.length === 0) {
             this.componentLogger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
         }
 
+        const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
         if(!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)){
-            return;
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
         }
 
         // Split the topic into its different elements
         const topicInfo: TopicInfo = this.extractTopicInfo(topic);
 
         // Safety-Check: DataSetClassId
-        if (parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
-            this.componentLogger.log(`Error in pre-check, dataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
-            return;
+        if (validateMessage.parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
+            this.componentLogger.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
         }
 
-        // The following switch/case reacts depending on the different topic elements
-        // The message is directed directly at us
-        if (topicInfo.appId === oi4Id) {
-            switch (topicInfo.method) {
-                case TopicMethods.GET: {
-                    await this.executeGetActions(topic, topicInfo, parsedMessage, builder)
-                    break;
-                }
-                case TopicMethods.PUB: {
-                    break; // Only break here, because we should not react to our own publication messages
-                }
-                case TopicMethods.SET: {
-                    await this.executeSetActions(topicInfo, parsedMessage);
-                    break;
-                }
-                case TopicMethods.DEL: {
-                    await this.executeDelActions(topicInfo);
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-            // External Request (External device put this on the message bus, we need this for birth messages)
-        } else {
-            this.componentLogger.log(`Detected Message from: ${topicInfo.appId}`)
+        return {areValid: true, parsedMessage: validateMessage.parsedMessage, topicInfo: topicInfo};
+    }
+
+    private validateIncomingMessage(message: Buffer): ValidatedMessage {
+        // Convert message to JSON, TODO: if this fails, an error is written in the logger
+        try {
+            return {isValid: true, parsedMessage: JSON.parse(message.toString())};
+        } catch (e) {
+            this.componentLogger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
         }
+        return {isValid: false, parsedMessage: undefined};
     }
 
     //FIXME add a return type
@@ -120,10 +105,42 @@ export class MqttMessageProcessor {
         const topicResource = topicArray[7];
         const topicFilter = topicArray.splice(8).join('/');
 
-        return {appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter};
+        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter};
     }
 
-    private async executeGetActions(topic: string, topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Id: string) {
+        // The following switch/case reacts depending on the different topic elements
+        // The message is directed directly at us
+        if (topicInfo.appId === oi4Id) {
+            switch (topicInfo.method) {
+                case TopicMethods.GET: {
+                    await this.executeGetActions(topicInfo, parsedMessage, builder)
+                    break;
+                }
+                case TopicMethods.PUB: {
+                    break; // Only break here, because we should not react to our own publication messages
+                }
+                case TopicMethods.SET: {
+                    await this.executeSetActions(topicInfo, parsedMessage);
+                    break;
+                }
+                case TopicMethods.DEL: {
+                    await this.executeDelActions(topicInfo);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            // External Request (External device put this on the message bus, we need this for birth messages)
+        } else {
+            this.componentLogger.log(`Detected Message from: ${topicInfo.appId}`)
+        }
+    }
+
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+        //FIXME this assignemtn is pretty useless but if I put topicInfo.topic directly in the object I got an error notified by esLint. Would be nce to find a way to solve this.
+        const topic = topicInfo.topic;
         if (topicInfo.resource === this.DATA) {
             this.emit('getData', {topic, message: parsedMessage});
             return;
@@ -174,19 +191,6 @@ export class MqttMessageProcessor {
         }
     }
 
-    private async executeDelActions(topicInfo: TopicInfo){
-        switch (topicInfo.resource) {
-            case this.DATA: {
-                this.deleteData(topicInfo.filter);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
-
-    // SET Function section ------//
     private setData(cutTopic: string, data: IOPCUANetworkMessage) {
         const tagName = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
@@ -203,7 +207,18 @@ export class MqttMessageProcessor {
         }
     }
 
-    // DELETE Function section
+    private async executeDelActions(topicInfo: TopicInfo){
+        switch (topicInfo.resource) {
+            case this.DATA: {
+                this.deleteData(topicInfo.filter);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
     /**
      * Legacy: TODO: This is not specified by the specification yet
      * @param cutTopic - todo
