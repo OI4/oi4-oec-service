@@ -7,6 +7,7 @@ export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
     private readonly METADATA = 'metadata';
+    private readonly REGISTRY = 'Registry';
     private readonly emit: Function;
     private readonly DATA = 'data';
 
@@ -114,7 +115,7 @@ export class MqttMessageProcessor {
         if (topicInfo.appId === oi4Id) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
-                    await this.executeGetActions(topicInfo, parsedMessage, builder)
+                    await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Id)
                     break;
                 }
                 case TopicMethods.PUB: {
@@ -138,17 +139,20 @@ export class MqttMessageProcessor {
         }
     }
 
-    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Id: string) {
+
         //FIXME this assignemtn is pretty useless but if I put topicInfo.topic directly in the object I got an error notified by esLint. Would be nce to find a way to solve this.
         const topic = topicInfo.topic;
         if (topicInfo.resource === this.DATA) {
             this.emit('getData', {topic, message: parsedMessage});
             return;
-        }
-
-        if (topicInfo.resource === this.METADATA) {
+        } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);
             return;
+        }
+
+        if(this.isServiceTypeRegistry(parsedMessage)) {
+            this.saveOi4Id(oi4Id);
         }
 
         let payloadType: string = PayloadTypes.EMPTY;
@@ -177,6 +181,21 @@ export class MqttMessageProcessor {
         }
 
         this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.filter, page, perPage)
+    }
+
+    private isServiceTypeRegistry(parsedMessage: IOPCUANetworkMessage) {
+        if(parsedMessage.PublisherId.indexOf('/') == -1) {
+            this.componentLogger.log('PublisherId does not respect the structure serviceType/appId')
+            return false;
+        }
+
+        const serviceType: string = parsedMessage.PublisherId.split('/')[0];
+        return serviceType === this.REGISTRY;
+    }
+
+    private saveOi4Id(oi4Id: string) {
+        this.componentLogger.log(`Saving the oi4Id ${oi4Id}`);
+        //FIXME The oi4Id must be actually saved somewhere
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){
