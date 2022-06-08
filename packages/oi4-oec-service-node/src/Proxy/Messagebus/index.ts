@@ -249,6 +249,7 @@ class OI4MessageBusProxy extends OI4Proxy {
             //FIXME This is the sending of the default health state, but not 100% is it right to implement it like this. Maybe double check is better.
             case ResourceType.HEALTH: {
                 payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload();
+                break;
             }
             case ResourceType.LICENSE_TEXT: {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.containerState, filter, resource);
