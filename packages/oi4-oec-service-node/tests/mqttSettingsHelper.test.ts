@@ -1,3 +1,4 @@
+// @ts-ignore
 import {MqttSettingsHelper} from '../src/Utilities/Helpers/MqttSettingsHelper';
 
 describe('Unit test for MqttCredentialsHelper', () => {
