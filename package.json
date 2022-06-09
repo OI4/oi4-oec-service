@@ -31,7 +31,11 @@
     "lodash": "^4.17.21"
   },
   "scripts": {
-    "dockerize": "/bin/bash build_and_run_docker.sh",
+    "docker:build": "/bin/bash build_docker.sh",
+    "docker:run": "docker run -d --name oi4-service -it oi4-oec-service-demo",
+    "docker:stop": "docker stop oi4-service",
+    "docker:start": "docker start oi4-service",
+    "docker:rm": "docker rm oi4-service",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "clean": "lerna clean",
