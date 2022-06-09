@@ -1,14 +1,22 @@
 import {
     EOPCUABaseDataType,
     EOPCUALocale,
+    EOPCUAMessageType,
+    IMasterAssetModel,
     IOPCUALocalizedText,
     IOPCUAMetaData,
     IOPCUANetworkMessage
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
     EDeviceHealth,
+    EPublicationListConfig,
+    EPublicationListExplicit,
     ESubscriptionListConfig,
     IContainerConfigConfigName,
+    IContainerMetaData,
+    IContainerProfile,
+    IContainerPublicationList,
+    IContainerState,
     IContainerSubscriptionList,
     IPublicationListObject,
     ISubscriptionListObject
@@ -16,25 +24,23 @@ import {
 
 export class MockedIContainerStateFactory {
 
-    public static getMockedContainerStateInstance(): {
-        publicationList: undefined; removeSubscriptionByTopic(_: string): void; addProfile(_: string): void; licenseText: { text: string; key: string }; subscriptionList: IContainerSubscriptionList; removePublicationByTag(_: string): void; dataLookup: {}; profile: undefined; brokerState: boolean; addSubscription(_: ISubscriptionListObject): void; health: { health: EDeviceHealth; healthScore: number }; addPublication(_: IPublicationListObject): void; setHealthState(_: number): void; license: { licenses: { components: { component: string; licAuthors: string[]; licAddText: string }[]; licenseId: string }[] }; metaDataLookup: undefined; rtLicense: { fakeRTLicense: string }; addDataSet(_: string, __: IOPCUANetworkMessage, ___: IOPCUAMetaData): void; mam: undefined; oi4Id: string; config: { registry: { name: IOPCUALocalizedText; description: IOPCUALocalizedText; developmentMode: IContainerConfigConfigName; showRegistry: IContainerConfigConfigName }; context: { name: IOPCUALocalizedText }; logging: { logType: IContainerConfigConfigName; auditLevel: IContainerConfigConfigName; name: IOPCUALocalizedText; logFileSize: IContainerConfigConfigName } }; addLicenseText(_: string, __: string): void; on(_: string, __: Function): void; setHealth(_: EDeviceHealth): void;
-    } {
+    public static getMockedContainerStateInstance= (): IContainerState => {
         return {
             brokerState: false,
             config: {
-                context: {name: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeContext')},
+                context: {name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeContext')},
                 logging: {
-                    auditLevel: MockedIContainerStateFactory.getDefaultStandardIContainerConfig(),
-                    logFileSize: MockedIContainerStateFactory.getDefaultStandardIContainerConfig(),
-                    logType: MockedIContainerStateFactory.getDefaultStandardIContainerConfig(),
-                    name: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeName')
+                    auditLevel: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
+                    logFileSize: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
+                    logType: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
+                    name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeName')
                 },
                 registry:
                     {
-                        name: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeName'),
-                        description: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeDescription'),
-                        developmentMode: MockedIContainerStateFactory.getDefaultStandardIContainerConfig(),
-                        showRegistry: MockedIContainerStateFactory.getDefaultStandardIContainerConfig()
+                        name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeName'),
+                        description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription'),
+                        developmentMode: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
+                        showRegistry: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig()
                     }
             },
             dataLookup: {},
@@ -53,13 +59,13 @@ export class MockedIContainerStateFactory {
                     ]
                 },
             licenseText: MockedIContainerStateFactory.getDefaultKeyValueItem(),
-            mam: undefined,
-            metaDataLookup: undefined,
+            mam: MockedIContainerStateFactory.getMockedDefaultIMasterAssetModel(),
+            metaDataLookup: MockedIContainerStateFactory.getMockedDefaultIContainerMetaData(),
             oi4Id: 'fakeOi4ID',
-            profile: undefined,
-            publicationList: undefined,
+            profile: MockedIContainerStateFactory.getMockedDefaultIContainerProfile(),
+            publicationList: MockedIContainerStateFactory.getMockedDefaultIPublicationListObject(),
             rtLicense: {fakeRTLicense: 'fakeRTLicense'},
-            subscriptionList: MockedIContainerStateFactory.getDefaultIContainerSubscriptionList(),
+            subscriptionList: MockedIContainerStateFactory.getMockedDefaultIContainerSubscriptionList(),
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             addDataSet(_: string, __: IOPCUANetworkMessage, ___: IOPCUAMetaData): void {
@@ -81,10 +87,6 @@ export class MockedIContainerStateFactory {
             addSubscription(_: ISubscriptionListObject): void {
                 console.log('Called mocked addSubscription. Do nothing....');
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/explicit-function-return-type
-            on(_: string, __: Function) {
-                console.log('Called mocked on. Do nothing....');
-            },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             removePublicationByTag(_: string): void {
                 console.log('Called mocked removePublicationByTag. Do nothing....');
@@ -100,36 +102,86 @@ export class MockedIContainerStateFactory {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             setHealthState(_: number): void {
                 console.log('Called mocked setHealthState. Do nothing....');
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            on(_: string, __: Function): IContainerState {
+                console.log('Called mocked on. Do nothing....');
+                return undefined;
             }
         };
     }
 
-    private static getIOPCUALocalizedText(text: string): IOPCUALocalizedText {
-        return {locale: EOPCUALocale.enUS, text: text};
-    }
-
-    private static getDefaultIContainerConfigValidation() {
-        return {length: 0, min: 0, max: 0, pattern: 'fakePattern', values: ['fakeValue']}
-    }
-
-    private static getDefaultStandardIContainerConfig(): IContainerConfigConfigName {
+    private static getMockedDefaultStandardIContainerConfig(): IContainerConfigConfigName {
         return {
-            name: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeConfig'),
+            name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeConfig'),
             defaultValue: 'fakeValue',
             mandatory: false,
-            validation: MockedIContainerStateFactory.getDefaultIContainerConfigValidation(),
-            description: MockedIContainerStateFactory.getIOPCUALocalizedText('fakeDescription'),
+            validation: MockedIContainerStateFactory.getMockedDefaultIContainerConfigValidation(),
+            description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription'),
             value: 'fakeValue',
             type: EOPCUABaseDataType.String
         };
     };
 
-    private static getDefaultIContainerSubscriptionList(): IContainerSubscriptionList {
-        return {subscriptionList: [{topicPath: 'fakeTopicPath', interval: -1, config: ESubscriptionListConfig.NONE_0}]};
+    private static getMockedDefaultIContainerConfigValidation() {
+        return {length: 0, min: 0, max: 0, pattern: 'fakePattern', values: ['fakeValue']}
     }
 
     private static getDefaultKeyValueItem() {
         return {key: 'fakeKey', text: 'fakeText'};
+    }
+
+    private static getMockedDefaultIMasterAssetModel(): IMasterAssetModel{
+        return {
+            ManufacturerUri: 'fakeManufacturerUri',
+            Model: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeModel' ),
+            ProductCode: 'fakeProductCode',
+            HardwareRevision: 'fakeHardwareRevision',
+            SoftwareRevision: 'fakeSoftwareRevision',
+            DeviceRevision: 'fakeDeviceRevision',
+            DeviceManual: 'fakeDeviceManual',
+            DeviceClass: 'fakeDeviceClass',
+            SerialNumber: 'fakeSerialNumber',
+            ProductInstanceUri: 'fakeProductInstanceURI',
+            RevisionCounter: -1,
+            Description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
+            Manufacturer: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeManufacturer' )
+        };
+    };
+
+    private static getMockedDefaultIContainerMetaData(): IContainerMetaData {
+        return {fakeKey: {
+                MessageId: 'fakeMessageId',
+                MessageType: EOPCUAMessageType.uaData,
+                PublisherId: 'fakePublisherId',
+                DataSetWriterId: -1,
+                filter: 'fakeFilter',
+                subResource: 'fakeSubResource',
+                correlationId: 'fakeCorrelationId',
+                MetaData: {
+                    name: 'fakeName',
+                    description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
+                    fields: [],
+                    dataSetClassId: 'fakeDataSetClassId',
+                    configurationVersion: {majorVersion: -1, minorVersion: -1},
+                }
+            }};
+    }
+
+    private static getMockedDefaultIPublicationListObject(): IContainerPublicationList {
+        return {publicationList: [{resource: 'fakeResource', tag: 'fakeTag', DataSetWriterId: -1, oi4Identifier: 'fakeOi4Identifier', active: false, explicit: EPublicationListExplicit.EXPL_OFF_0, interval: -1, precisions: -1, config: EPublicationListConfig.NONE_0}]};
+    }
+
+    private static getMockedDefaultIContainerProfile(): IContainerProfile {
+        return {resource: ['fakeProfile']};
+    }
+
+    private static getMockedDefaultIContainerSubscriptionList(): IContainerSubscriptionList {
+        return {subscriptionList: [{topicPath: 'fakeTopicPath', interval: -1, config: ESubscriptionListConfig.NONE_0}]};
+    }
+
+    private static getMockedIOPCUALocalizedText(text: string): IOPCUALocalizedText {
+        return {locale: EOPCUALocale.enUS, text: text};
     }
 
 }
