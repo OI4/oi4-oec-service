@@ -29,8 +29,8 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
-                payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                dswid: CDataSetWriterIdLookup['health']
+                Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
+                DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
         console.log('Connection to mqtt broker closed');
@@ -53,8 +53,8 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
-                payload: containerState.mam,
-                dswid: CDataSetWriterIdLookup['mam']
+                Payload: containerState.mam,
+                DataSetWriterId: CDataSetWriterIdLookup['mam']
             }], new Date(), DataSetClassIds.mam)),
         );
         this.componentLogger.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);

@@ -1,4 +1,5 @@
-export {OI4MessageBusProxy} from './messageBus';
-export {MqttSettings} from './messageBus/MqttSettings';
+export {OI4MessageBus} from './messageBus';
+export * from './messageBus/MqttSettings';
+export * from './messageBus/OI4MessageBusFactory';
 export {ContainerState} from './Container';
 export {FileLogger} from './Utilities/FileLogger';

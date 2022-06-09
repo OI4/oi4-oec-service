@@ -61,7 +61,7 @@ export class OPCUABuilder {
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
       if (wholeMsgLengthBytes + this.msgSizeOffset < parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10) && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
-        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.payload, timestamp, remainingPayloads.dswid, remainingPayloads.subResource, remainingPayloads.status, filter, metadataVersion));
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.subResource, remainingPayloads.Status, filter, metadataVersion));
       } else {
         // This is the paginationObject
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
@@ -70,7 +70,7 @@ export class OPCUABuilder {
             perPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
             page: currentNetworkMessageIndex + 1,
             hasNext: true,
-          }, timestamp, parseInt(`${remainingPayloads.dswid}${currentNetworkMessageIndex}`, 10)
+          }, timestamp, parseInt(`${remainingPayloads.DataSetWriterId}${currentNetworkMessageIndex}`, 10)
         ));
         if (page !== 0 && currentNetworkMessageIndex >= page) {
           if (payloadIndex === dataSetPayloads.length) {
@@ -123,7 +123,7 @@ export class OPCUABuilder {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
     for (const payloads of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.payload, timestamp, payloads.dswid, payloads.poi, payloads.status, filter, metaDataVersion));
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.Payload, timestamp, payloads.DataSetWriterId, payloads.subResource, payloads.Status, filter, metaDataVersion));
     }
     const opcUaDataMessage: IOPCUANetworkMessage = {
       MessageId: `${Date.now().toString()}-${this.publisherId}`,
@@ -177,9 +177,9 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dswid: number, subResource: string = this.oi4Id, status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, subResource: string = this.oi4Id, status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
-      DataSetWriterId: dswid,
+      DataSetWriterId: dataSetWriterId,
       Timestamp: timestamp.toISOString(),
       filter: filter,
       subResource: subResource,

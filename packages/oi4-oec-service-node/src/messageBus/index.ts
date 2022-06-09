@@ -15,8 +15,18 @@ import {MQTT_PATH_SETTINGS, MqttSettings} from './MqttSettings';
 import {readFileSync, existsSync} from 'fs';
 import {Credentials} from '../Utilities/Helpers/Types';
 import os from 'os';
+import {
+    ValidatedPayload,
+    ValidatedFilter
+} from '../Utilities/Helpers/Types';
+import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
+import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
+import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
+import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import { MqttSettings } from './MqttSettings';
+import {AsyncClientEvents, ResourceType} from "../Utilities/Helpers/Enums";
 
-class OI4MessageBusProxy extends EventEmitter {
+class OI4MessageBus extends EventEmitter {
     public oi4Id: string;
     public serviceType: string;
     public containerState: IContainerState;
@@ -24,6 +34,10 @@ class OI4MessageBusProxy extends EventEmitter {
     public builder: OPCUABuilder;
 
     private readonly client: mqtt.AsyncClient;
+    private readonly logger: Logger;
+
+    private clientCallbacksHelper: ClientCallbacksHelper;
+    private mqttMessageProcessor: MqttMessageProcessor;
     private logger: Logger;
     private mqttSettingsHelper: MqttSettingsHelper = new MqttSettingsHelper();
 
@@ -33,7 +47,7 @@ class OI4MessageBusProxy extends EventEmitter {
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      */
-    constructor(container: IContainerState, mqttPreSettings: MqttSettings) {
+    constructor(container: IContainerState, mqttSettings: MqttSettings) {
         super();
         this.oi4Id = container.oi4Id;
         this.serviceType = container.mam.DeviceClass;
@@ -41,41 +55,80 @@ class OI4MessageBusProxy extends EventEmitter {
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.containerState = container;
 
-        // Add Server Object depending on configuration
-        const serverObj = {
-            host: mqttPreSettings.host,
-            port: mqttPreSettings.port,
-        };
-        console.log(`MQTT: Trying to connect with ${serverObj.host}:${serverObj.port}`);
+        mqttSettings.will = {
+            topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
+            payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
+                DataSetWriterId: CDataSetWriterIdLookup[ResourceType.HEALTH]
+            }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
+            qos: 0,
+            retain: false,
+        },
 
-        // Initialize MQTT Options
-        const mqttOpts: MqttSettings = {
-            clientId: os.hostname(),
-            servers: [serverObj],
-            protocol: 'mqtts',
-            will: {
-                topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
-                payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: this.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
+            console.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
+        this.client = mqtt.connect(mqttSettings);
+        this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
+        this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
+
+        this.client.on('error', async (err: Error) => {
+            console.log(`Error in mqtt client: ${err}`);
+        });
+        this.client.on('close', async () => {
+            this.containerState.brokerState = false;
+            await this.client.publish(
+                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
+                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                    payload: this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                     dswid: CDataSetWriterIdLookup['health']
-                }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
-                qos: 0,
-                retain: false,
-            },
-        };
+                }], new Date(), DataSetClassIds.mam)),
+            );
+            console.log('Connection to mqtt broker closed');
+        });
+        this.client.on('disconnect', async () => {
+            this.containerState.brokerState = false;
+            console.log('Disconnected from mqtt broker');
+        });
+        this.client.on('reconnect', async () => {
+            this.containerState.brokerState = false;
+            console.log('Reconnecting to mqtt broker');
+        })
+        // Publish Birth Message and start listening to topics
+        this.client.on('connect', async () => {//connack: mqtt.IConnackPacket) => {
+            this.logger.log('Connected successfully', ESyslogEventFilter.warning);
+            this.containerState.brokerState = true;
+            await this.client.publish(
+                `${this.topicPreamble}/pub/mam/${this.oi4Id}`,
+                JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                    payload: this.containerState.mam,
+                    dswid: CDataSetWriterIdLookup['mam']
+                }], new Date(), DataSetClassIds.mam)),
+            );
+            this.logger.log(`Published Birthmessage on ${this.topicPreamble}/pub/mam/${this.oi4Id}`, ESyslogEventFilter.warning);
 
-        if (this.hasRequiredCertCredentials()) {
-            mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
-            mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
-            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
-            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
-        } else {
-            const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
-            mqttOpts.username = userCredentials.username;
-            mqttOpts.password = userCredentials.password;
-            mqttOpts.protocol = 'mqtts';
-            mqttOpts.rejectUnauthorized = false;
-        }
+            // Listen to own routes
+            this.ownSubscribe(`${this.topicPreamble}/get/#`);
+            this.ownSubscribe(`${this.topicPreamble}/set/#`);
+            this.ownSubscribe(`${this.topicPreamble}/del/#`);
+
+            this.client.on('message', this.processMqttMessage);
+            setInterval(() => {
+                this.sendResource('health', '', this.oi4Id);
+            }, 60000); // send our own health every 30 seconds!
+            this.containerState.on('resourceChanged', this.handleResourceChanged.bind(this));
+        });
+    }
+
+    private initClientCallbacks() {
+        this.setOnClientErrorCallback();
+        this.setOnClientCloseCallback();
+        this.setOnClientDisconnectCallback();
+        this.setOnClientReconnectCallback();
+        this.setOnClientConnectCallback();
+    }
+
+    private setOnClientErrorCallback() {
+        this.client.on(AsyncClientEvents.ERROR, async(err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
+    }
 
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
         this.client = mqtt.connect(mqttOpts);
@@ -549,11 +602,11 @@ class OI4MessageBusProxy extends EventEmitter {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
             number: 1,
             description: 'Registry sendEvent',
-            payload: {
+            Payload: {
                 logLevel: level,
                 logString: eventStr,
             },
-            dswid: CDataSetWriterIdLookup['event'],
+            DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
         await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
         this.logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
@@ -610,4 +663,4 @@ class OI4MessageBusProxy extends EventEmitter {
     }
 }
 
-export {OI4MessageBusProxy};
+export {OI4MessageBus};
