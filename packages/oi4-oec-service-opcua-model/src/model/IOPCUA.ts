@@ -102,10 +102,11 @@ export interface IOPCUAConfigurationVersionDataType{
 }
 
 export interface IOPCUAPayload {
-  poi?: string;
-  payload: any;
-  dswid: number;
-  status?: EOPCUAStatusCode;
+  subResource?: string;
+  filter?: string;
+  Payload: any;
+  DataSetWriterId: number;
+  Status?: EOPCUAStatusCode;
 }
 
 // TODO: STRING for now, validators found below (thanks to node-opcua)

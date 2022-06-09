@@ -1,9 +1,22 @@
-import {MqttSettingsHelper} from '../src/Utilities/Helpers/MqttSettingsHelper';
+import {MqttCredentialsHelper} from '../src/messageBus/OI4MessageBusFactory';
+import {IMqttSettingsPaths} from "../src/messageBus/MqttSettings";
+
+const newSettingsPaths = (credentials: string): IMqttSettingsPaths => {
+    return {
+        brokerConfig: '',
+        caCertificate: '',
+        privateKey: '',
+        clientCertificate: '',
+        passphrase: '',
+        credentials: credentials
+    }
+};
 
 describe('Unit test for MqttCredentialsHelper', () => {
 
     it('Credentials should be correctly read from file', async () => {
-        const mqttSettingsHelper = new MqttSettingsHelper(`${__dirname}/__fixtures__/correct_credentials.txt`);
+        const paths = newSettingsPaths(`${__dirname}/__fixtures__/correct_credentials.txt`);
+        const mqttSettingsHelper = new MqttCredentialsHelper(paths);
         const credentials = mqttSettingsHelper.loadUserCredentials();
         expect(credentials).toBeDefined();
         expect(credentials.username).toBe('goofy@supergoof.com');
@@ -11,7 +24,8 @@ describe('Unit test for MqttCredentialsHelper', () => {
     });
 
     const testAgainstCredentialFile = (location: string, message: string) => {
-        const mqttSettingsHelper = new MqttSettingsHelper(location);
+        const paths = newSettingsPaths(location);
+        const mqttSettingsHelper = new MqttCredentialsHelper(paths);
         expect(() => {
             mqttSettingsHelper.loadUserCredentials();
         }).toThrowError(new Error(message));
