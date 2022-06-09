@@ -6,12 +6,16 @@ export class MockedOPCUABuilderFactory {
         return jest
             .spyOn(OPCUABuilder.prototype, methodName)
             .mockImplementation((args: any) => {
-                return mockedImplementation.call(args);
+                return mockedImplementation(args);
             });
     }
 
     public static getMockedOPCUABuilder(fakeOi4Id: string, fakeServiceType: string): OPCUABuilder {
         return new OPCUABuilder(fakeOi4Id, fakeServiceType);
+    }
+
+    public static resetAllMocks() {
+        jest.resetAllMocks();
     }
 
 }
