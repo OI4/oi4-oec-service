@@ -8,7 +8,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         MockedOPCUABuilderFactory.resetAllMocks();
     });
 
-    it('The factory works', async () => {
+    it('The factory works, a method is properly mocked', async () => {
         const checkOPCUAJSONValidityMock = MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {return Promise.resolve('WTF')});
 
         const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
@@ -17,7 +17,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         expect(valid).toBe('WTF');
     });
 
-    it('The factory works 22', async () => {
+    it('The factory works, when a method is not mocked when called false is retuned', async () => {
         const mockedBuilder2 = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
         const valid2 = await mockedBuilder2.checkOPCUAJSONValidity({payload: 'payload'});
         expect(valid2).not.toBe('WTF');
