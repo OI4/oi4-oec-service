@@ -10,6 +10,7 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
+import {ResourceType} from './Enums';
 //FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
 

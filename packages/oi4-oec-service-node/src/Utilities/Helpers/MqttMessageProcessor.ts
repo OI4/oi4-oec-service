@@ -10,6 +10,7 @@ import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-mod
 // @ts-ignore
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
+import {PayloadTypes, TopicMethods} from './Enums';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;

@@ -1,4 +1,4 @@
-enum AsyncClientEvents {
+export enum AsyncClientEvents {
     ERROR = 'error',
     CLOSE = 'close',
     DISCONNECT = 'disconnect',
@@ -9,7 +9,7 @@ enum AsyncClientEvents {
 }
 
 //FIXME is the name of this enum ok? Or is better something more related to CDataSetWriterIdLookup
-enum ResourceType {
+export enum ResourceType {
     MAM = 'mam',
     HEALTH = 'health',
     LICENCE = 'license',
@@ -21,14 +21,14 @@ enum ResourceType {
     SUBSCRIPTION_LIST = 'subscriptionList',
 }
 
-enum TopicMethods {
+export enum TopicMethods {
     GET = 'get',
     PUB = 'pub',
     SET = 'set',
     DEL = 'del',
 }
 
-enum PayloadTypes {
+export enum PayloadTypes {
     EMPTY = 'empty',
     LOCALE = 'locale',
     PAGINATION= 'pagination',

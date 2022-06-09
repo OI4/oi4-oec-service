@@ -25,6 +25,7 @@ import {ClientPayloadHelper} from '../../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {AsyncClientEvents, ResourceType} from '../../Utilities/Helpers/Enums';
 
 class OI4MessageBusProxy extends OI4Proxy {
     private readonly clientHealthHeartbeatInterval: number = 60000;
@@ -59,6 +60,7 @@ class OI4MessageBusProxy extends OI4Proxy {
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
 
         this.client = mqtt.connect(mqttOpts);
+
         this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
