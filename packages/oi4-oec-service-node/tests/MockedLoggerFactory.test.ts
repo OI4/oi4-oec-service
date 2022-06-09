@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {LoggerItems, MockedLoggerFactory} from './MockedLoggerFactory';
+import {LoggerItems, MockedLoggerFactory} from './utils/MockedLoggerFactory';
 
 describe('Unit test for MockedLoggerFactory ', () => {
 
