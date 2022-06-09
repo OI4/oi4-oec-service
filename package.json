@@ -8,7 +8,7 @@
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
-    "packages/!(*demo)"
+    "packages/*"
   ],
   "dependencies": {
     "@oi4/oi4-oec-json-schemas": "^1.0.0"

@@ -5,11 +5,11 @@
   "ProductCode":"OEC-REG",
   "HardwareRevision":"",
   "SoftwareRevision":"0.12.1",
-  "DeviceRevision":"",
-  "DeviceManual":"",
+  "DeviceRevision":"1.0.0",
+  "DeviceManual":"1.0",
   "DeviceClass":"Registry",
   "SerialNumber":"OEC-Registry",
-  "ProductInstanceUri":"",
+  "ProductInstanceUri":"oi4/appid/service",
   "RevisionCounter":0,
   "Description":
   {

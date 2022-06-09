@@ -31,7 +31,8 @@
     "swagger-ui-express": "^4.3.0",
     "uuid": "^8.3.2",
     "winston": "^3.6.0",
-    "winston-syslog": "^2.5.0"
+    "winston-syslog": "^2.5.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
@@ -39,7 +40,7 @@
     "js-yaml": "^3.14.0"
   },
   "scripts": {
-    "build": "exit 0",
+    "build": "yarn run clean && tsc -b tsconfig.json",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",

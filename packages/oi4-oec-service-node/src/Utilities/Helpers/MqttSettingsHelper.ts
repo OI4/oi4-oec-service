@@ -6,7 +6,7 @@ export class MqttSettingsHelper {
 
     private readonly fileLocation: string = undefined;
 
-    constructor(location = 'run/secrets/mqtt_credentials') {
+    constructor(location = '/run/secrets/mqtt_credentials') {
         this.fileLocation = location;
     }
 
