@@ -1,4 +1,9 @@
+
 import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
+//FIXME find a way to get rid of this eslint ignore
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
