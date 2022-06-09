@@ -34,6 +34,7 @@ RUN set -x \
 RUN mkdir -p logs
 
 COPY ./packages/oi4-oec-service-demo/node_modules/@oi4 ./node_modules/@oi4
+COPY packages/oi4-oec-service-demo/dist/index.js ./
 
 EXPOSE 5800 5800
 
