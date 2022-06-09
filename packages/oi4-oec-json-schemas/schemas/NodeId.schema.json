@@ -46,7 +46,7 @@
           "description": "Represents a String Identifier encoded as a JSON string."
         },
         "Id": {
-          "type": "string",
+          "type": "string"
         },
         "Namespace": {
           "$ref": "dataTypes/uint16.schema.json"

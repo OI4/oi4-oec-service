@@ -8,7 +8,7 @@
     "BaseDataType",
     "BuiltInType"
   ],
-  "definitions": {
+  "properties": {
     "BaseDataType": {
       "$ref": "NodeId.schema.json"
     },

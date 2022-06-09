@@ -8,8 +8,8 @@
     "builtInType",
     "enumDefinition"
   ],
-  "definitions": {
-    "builtInType": {
+  "properties": {
+    "enumDefinition": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -34,7 +34,7 @@
         }
       }
     },
-    "enumDefinition": {
+    "builtInType": {
       "$ref": "dataTypes/byte.schema.json",
       "description": "Indicates whether the DataType is an Enumeration or an OptionSet 6 = Int32 => Enumeration, 22 = ExtensionObject => OptionSet, 28 = UInt => OptionSet"
     }
