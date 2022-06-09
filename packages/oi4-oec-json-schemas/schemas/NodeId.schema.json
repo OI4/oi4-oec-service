@@ -3,21 +3,96 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a metadata message",
   "type": "object",
-  "additionalProperties": false,
-  "required": ["Id", "Namespace"],
-  "properties": {
-    "IdType": {
-      "type": "number",
-      "enum": [0, 1, 2, 3],
-      "description": "The IdentifierType encoded as a JSON number.\n Allowed values are:\n0 - UInt32 Identifier encoded as a JSON number.\n1 - A String Identifier encoded as a JSON string.\n2 - A Guid Identifier encoded as described in 5.4.2.7.\n3 - A ByteString Identifier encoded as described in 5.4.2.8.\nThis field is omitted for UInt32 identifiers."
+  "oneOf": [{
+      "$ref": "#/definitions/numberType"
+    }, {
+      "$ref": "#/definitions/stringType"
+    }, {
+      "$ref": "#/definitions/guidType"
+    }, {
+      "$ref": "#/definitions/opaqueType"
+    }
+  ],
+
+  "definitions": {
+    "numberType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Id"],
+      "properties": {
+        "IdType": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0,
+          "description": "Represents an UInt32 Identifier encoded as a JSON number."
+        },
+        "Id": {
+          "$ref": "dataTypes/uint32.schema.json"
+        },
+        "Namespace": {
+          "$ref": "dataTypes/uint16.schema.json"
+        }
+      }
     },
-    "Id": {
-      "type": "string",
-      "$comment": "TODO: This is weird and should be done by someone with more OPC knowledge",
-      "description": "The Id is defined as several types, depending on the IdType property. A string gives us the most flexibility here"
+    "stringType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Id"],
+      "properties": {
+        "IdType": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1,
+          "description": "Represents a String Identifier encoded as a JSON string."
+        },
+        "Id": {
+          "type": "string",
+        },
+        "Namespace": {
+          "$ref": "dataTypes/uint16.schema.json"
+        }
+      }
     },
-    "Namespace": {
-      "type": "number"
+    "guidType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Id"],
+      "properties": {
+        "IdType": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 2,
+          "description": "Represents a Guid Identifier encoded as a JSON string."
+        },
+        "Id": {
+          "type": "string",
+          "format": "uuid"
+
+        },
+        "Namespace": {
+          "$ref": "dataTypes/uint16.schema.json"
+        }
+      }
+    },
+    "opaqueType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Id"],
+      "properties": {
+        "IdType": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 3,
+          "description": "Represents a ByteString Identifier encoded encoded as JSON string."
+        },
+        "Id": {
+          "type": "string",
+          "pattern": "^[-A-Za-z0-9+/]*={0,3}$"
+        },
+        "Namespace": {
+          "$ref": "dataTypes/uint16.schema.json"
+        }
+      }
     }
   }
 }
