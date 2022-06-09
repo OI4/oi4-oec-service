@@ -75,7 +75,7 @@ describe('Connection to MQTT with TLS', () => {
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-             () => {
+            () => {
                 return {
                     connected: true,
                     reconnecting: false,
