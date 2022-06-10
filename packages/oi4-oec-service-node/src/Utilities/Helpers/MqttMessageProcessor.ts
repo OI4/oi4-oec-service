@@ -7,6 +7,7 @@ import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {PayloadTypes, TopicMethods} from './Enums';
+import {Oi4IdManager} from "../../Proxy/Messagebus/Oi4IdManager";
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -200,7 +201,7 @@ export class MqttMessageProcessor {
 
     private saveOi4Id(oi4Id: string) {
         this.componentLogger.log(`Saving the oi4Id ${oi4Id}`);
-        //FIXME The oi4Id must be actually saved somewhere
+        Oi4IdManager.saveCurrentOi4Id(oi4Id);
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){
