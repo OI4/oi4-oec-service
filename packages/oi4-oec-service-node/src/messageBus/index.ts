@@ -70,6 +70,7 @@ class OI4MessageBusProxy extends EventEmitter {
         console.log(`Connecting to MQTT broker with client ID: ${mqttOpts.clientId}`);
 
         this.client = mqtt.connect(mqttOpts);
+
         this.logger = new Logger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
@@ -88,7 +89,7 @@ class OI4MessageBusProxy extends EventEmitter {
             will: {
                 topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
                 payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                    payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
+                    payload: ClientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                     dswid: CDataSetWriterIdLookup[ResourceType.HEALTH]
                 }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
