@@ -5,7 +5,7 @@ export class MockedOPCUABuilderFactory {
     public static mockOPCUABuilderMethod(methodName: any, mockedImplementation: Function) {
         return jest
             .spyOn(OPCUABuilder.prototype, methodName)
-            .mockImplementation((args: any) => {
+            .mockImplementation((... args: any) => {
                 return mockedImplementation.call(args);
             });
     }
