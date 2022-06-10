@@ -20,6 +20,10 @@ export class ClientPayloadHelper {
         this.componentLogger = logger;
     }
 
+    static createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
+        return {health: health, healthScore: score};
+    }
+
     private createPayload(payload: any, dswid: number): IOPCUAPayload {
         return {
             payload: payload,
@@ -29,13 +33,9 @@ export class ClientPayloadHelper {
 
     getDefaultHealthStatePayload(): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
-        const healthState: IContainerHealth = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
+        const healthState: IContainerHealth = ClientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
         payload.push(this.createPayload(healthState, CDataSetWriterIdLookup[ResourceType.HEALTH]));
         return {abortSending: false, payload: payload};
-    }
-
-    createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
-        return {health: health, healthScore: score};
     }
 
     createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, filter: string, dswidFilter: number): ValidatedPayload {
