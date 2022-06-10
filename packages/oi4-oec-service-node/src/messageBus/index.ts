@@ -75,7 +75,7 @@ class OI4MessageBusProxy extends EventEmitter {
         this.logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
-        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper, this.logger);
+        this.clientCallbacksHelper = new ClientCallbacksHelper(this.logger);
         this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.containerState, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();

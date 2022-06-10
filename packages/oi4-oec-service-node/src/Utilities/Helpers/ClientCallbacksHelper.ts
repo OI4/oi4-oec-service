@@ -12,11 +12,9 @@ import {Logger} from '@oi4/oi4-oec-service-logger';
 
 export class ClientCallbacksHelper {
 
-    private clientPayloadHelper: ClientPayloadHelper;
     private componentLogger: Logger;
 
-    constructor(clientPayloadHelper: ClientPayloadHelper, logger: Logger) {
-        this.clientPayloadHelper = clientPayloadHelper;
+    constructor(logger: Logger) {
         this.componentLogger = logger;
     }
 
@@ -29,7 +27,7 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
-                payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
+                payload: ClientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                 dswid: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
