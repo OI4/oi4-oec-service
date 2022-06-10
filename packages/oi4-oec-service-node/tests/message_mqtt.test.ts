@@ -1,7 +1,7 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {MqttSettings} from '../src/messageBus/MqttSettings';
 import fs = require('fs'); /*tslint:disable-line*/
-import {OI4MessageBus} from '../src/messageBus/index';
+import {OI4MessageBus} from '../src/messageBus/OI4MessageBus';
 import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';

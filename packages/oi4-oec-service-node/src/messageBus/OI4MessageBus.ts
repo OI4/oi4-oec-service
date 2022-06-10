@@ -61,7 +61,7 @@ class OI4MessageBus extends EventEmitter {
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
                 qos: 0,
                 retain: false,
-        },
+        }
 
         console.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);

@@ -7,7 +7,7 @@ import {
 import os from "os";
 import {ESyslogEventFilter, IContainerState} from "@oi4/oi4-oec-service-model";
 import {existsSync, readFileSync} from "fs";
-import {OI4MessageBus} from "./index";
+import {OI4MessageBus} from "./OI4MessageBus";
 import {indexOf} from "lodash";
 import {Logger} from "@oi4/oi4-oec-service-logger";
 
@@ -32,13 +32,18 @@ export class OI4MessageBusFactory implements IOI4MessageBusFactory {
     }
 
     newOI4MessageBus() {
-        const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.clientCertificate, 'utf8'));
+        // TODO handle missing files
+        const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
             host: brokerConfiguration.address,
             port: brokerConfiguration.secure_port,
             protocol: MQTTS,
+            properties: {
+                maximumPacketSize: OI4MessageBusFactory.getMaxPacketSize(brokerConfiguration)
+            }
         }
+        // TODO handle missing files
         mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
         this.initCredentials(mqttSettings);
         return new OI4MessageBus(this.container, mqttSettings);
@@ -49,7 +54,7 @@ export class OI4MessageBusFactory implements IOI4MessageBusFactory {
             this.logger.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
             mqttSettings.cert = readFileSync(this.settingsPaths.clientCertificate);
             mqttSettings.key = readFileSync(this.settingsPaths.privateKey);
-            mqttSettings.passphrase = existsSync(this.settingsPaths.passphrase) ? readFileSync(this.settingsPaths.passphrase) : undefined;
+            mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
         } else {
             this.logger.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
             const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
@@ -64,14 +69,24 @@ export class OI4MessageBusFactory implements IOI4MessageBusFactory {
             existsSync(this.settingsPaths.privateKey)
     }
 
+    /**
+     * Return the maximum packet size for sending
+     * @param brokerConfiguration
+     * @private
+     */
+    private static getMaxPacketSize(brokerConfiguration: BrokerConfiguration): number {
+            const maxPacketSize = brokerConfiguration.max_packet_size | 256;
+            return maxPacketSize >= 256 ? maxPacketSize : 256;
+    }
+
 }
 
 export class MqttCredentialsHelper {
 
-    private readonly credentialsFile: string;
+    private readonly settingsPaths: IMqttSettingsPaths;
 
     constructor(settingsPaths: IMqttSettingsPaths) {
-        this.credentialsFile = settingsPaths.credentials;
+        this.settingsPaths = settingsPaths;
     }
 
     private static decodeFromBase64(string: string) {
@@ -79,19 +94,17 @@ export class MqttCredentialsHelper {
         return buff.toString('utf-8');
     }
 
-    private static isUsernameValid(candidateUsername: string) {
-        // The username will match the regexp in case it contains and invalid char,
-        // therefore if the username match the regexp is invalid.
-        const regex = /[^a-zA-Z0-9-._~@]+/;
-        return !regex.test(candidateUsername);
+
+    private static loadAndDecodeSecret(secretFile: string): string {
+        const encodedSecret: string = readFileSync(secretFile,'utf8');
+        if(encodedSecret === '') {
+            throw new Error('Empty secret');
+        }
+        const cleanedSecret = encodedSecret.trim().replace(/(\r\n|\n|\r)/gm, '')
+        return this.decodeFromBase64(cleanedSecret);
     }
 
-    private static validateAndDecodeCredentials(encodedCredentials: string): Credentials {
-        if(encodedCredentials === '') {
-            throw new Error('Credentials not found : empty file');
-        }
-
-        const decodedCredentials = this.decodeFromBase64(encodedCredentials);
+    private static validateAndParseCredentials(decodedCredentials: string): Credentials {
         const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
         if( decodedCredentials.startsWith(':') ||
             usernamePasswordSeparatorPosition == -1) {
@@ -108,20 +121,31 @@ export class MqttCredentialsHelper {
         return {username: username, password: password}
     }
 
-    private static cleanCredentials(encodedCredentials: string): string {
-        return encodedCredentials.trim().replace(/(\r\n|\n|\r)/gm, '');
+    private static isUsernameValid(candidateUsername: string) {
+        // The username will match the regexp in case it contains and invalid char,
+        // therefore if the username match the regexp is invalid.
+        const regex = /[^a-zA-Z0-9-._~@]+/;
+        return !regex.test(candidateUsername);
+    }
+
+    loadPassphrase(): string | undefined {
+        const passphrase = this.settingsPaths.passphrase;
+        if (!existsSync(passphrase)) {
+            return undefined;
+        }
+        return MqttCredentialsHelper.loadAndDecodeSecret(passphrase);
     }
 
     loadUserCredentials(): Credentials {
-        if (!existsSync(this.credentialsFile)) {
+        const credentials = this.settingsPaths.credentials;
+        if (!existsSync(credentials)) {
             throw new Error('Credentials file not found');
         }
 
-        const encodedCredentials: string = readFileSync(this.credentialsFile,'utf8');
-        const cleanedEncodedCredentials: string = MqttCredentialsHelper.cleanCredentials(encodedCredentials);
+        const cleanedEncodedCredentials: string = MqttCredentialsHelper.loadAndDecodeSecret(credentials);
 
         //If the credentials are invalid, then an error is thrown
-        return MqttCredentialsHelper.validateAndDecodeCredentials(cleanedEncodedCredentials);
+        return MqttCredentialsHelper.validateAndParseCredentials(cleanedEncodedCredentials);
     };
 
 }
