@@ -11,8 +11,9 @@ RUN mkdir /etc/oi4/mqtt
 RUN mkdir /etc/oi4/config
 RUN mkdir -p /run/secrets/
 
-COPY packages/oi4-oec-service-demo/configs/mam.json /etc/oi4/config/
-COPY packages/oi4-oec-service-demo/configs/mqtt_credentials /run/secrets/
+COPY packages/oi4-oec-service-demo/docker_configs/config /etc/oi4/config/
+COPY packages/oi4-oec-service-demo/docker_configs/secrets /run/secrets/
+COPY packages/oi4-oec-service-demo/docker_configs/certs /etc/oi4/certs/
 
 WORKDIR /usr/oi4-oec-service-demo
 

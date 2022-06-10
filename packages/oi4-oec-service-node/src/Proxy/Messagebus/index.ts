@@ -55,8 +55,8 @@ class OI4MessageBusProxy extends OI4Proxy {
         if (this.hasRequiredCertCredentials()) {
             mqttOpts.cert = readFileSync(MQTT_PATH_SETTINGS.CLIENT_CERT);
             mqttOpts.ca = readFileSync(MQTT_PATH_SETTINGS.CA_CERT);
-            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY);
-            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE) : undefined;;
+            mqttOpts.key = readFileSync(MQTT_PATH_SETTINGS.PRIVATE_KEY).toString();
+            mqttOpts.passphrase = existsSync(MQTT_PATH_SETTINGS.PASSPHRASE) ? readFileSync(MQTT_PATH_SETTINGS.PASSPHRASE).toString().trimEnd() : undefined;
         } else {
             const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
             mqttOpts.username = userCredentials.username;
