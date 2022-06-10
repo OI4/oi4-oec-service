@@ -5,7 +5,7 @@ const containerState = new ContainerState();
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 const oi4MessageBus = new OI4MessageBusProxy(containerState, {
-    host: '172.17.0.4',
+    host: 'broker',
     port: 8883,
     keepalive: 60,
     reconnectPeriod: 1000,
