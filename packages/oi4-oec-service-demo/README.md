@@ -12,6 +12,6 @@ STEP 3:
 
 -the client certificate MUST be named as the hostname of the docker container
 STEP 4:
--run “yarn docker:build” in order to build the image containing your fakeservice
+-run “yarn docker:build” from the oi4-service main directory in order to build the image containing your fakeservice
 STEP 5:
 -run “yarn docker:run” in order to start the container
