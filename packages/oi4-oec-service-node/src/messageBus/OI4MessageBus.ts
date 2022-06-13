@@ -18,8 +18,8 @@ import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {MqttSettings} from "./MqttSettings";
-import {AsyncClientEvents, ResourceType} from "../Utilities/Helpers/Enums";
+import {MqttSettings} from './MqttSettings';
+import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
 class OI4MessageBus extends EventEmitter {
     public oi4Id: string;

@@ -1,5 +1,5 @@
 import {MqttCredentialsHelper} from '../../src/messageBus/OI4MessageBusFactory';
-import {IMqttSettingsPaths} from "../../src/messageBus/MqttSettings";
+import {IMqttSettingsPaths} from '../../src/messageBus/MqttSettings';
 
 const newSettingsPaths = (credentials: string, passphrase = ''): IMqttSettingsPaths => {
     return {

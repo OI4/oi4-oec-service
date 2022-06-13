@@ -3,18 +3,19 @@ import {
     MqttSettings,
     Credentials,
     DefaultMqttSettingsPaths, IMqttSettingsPaths
-} from "./MqttSettings";
-import os from "os";
-import {ESyslogEventFilter, IContainerState} from "@oi4/oi4-oec-service-model";
-import {existsSync, readFileSync} from "fs";
-import {OI4MessageBus} from "./OI4MessageBus";
-import {indexOf} from "lodash";
-import {Logger} from "@oi4/oi4-oec-service-logger";
+} from './MqttSettings';
+import os from 'os';
+import {ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
+import {existsSync, readFileSync} from 'fs';
+import {OI4MessageBus} from './OI4MessageBus';
+import {indexOf} from 'lodash';
+import {Logger} from '@oi4/oi4-oec-service-logger';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
 
 export interface IOI4MessageBusFactory {
-    newOI4MessageBus: () => OI4MessageBus
+    newOI4MessageBus: () => OI4MessageBus;
 }
 
 export class OI4MessageBusFactory implements IOI4MessageBusFactory {
@@ -27,6 +28,7 @@ export class OI4MessageBusFactory implements IOI4MessageBusFactory {
     constructor(container: IContainerState, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
         this.container = container;
         this.settingsPaths = settingsPaths;
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         this.logger = new Logger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
     }
