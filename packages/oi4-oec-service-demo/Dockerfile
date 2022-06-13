@@ -14,6 +14,7 @@ RUN mkdir -p /run/secrets/
 COPY packages/oi4-oec-service-demo/docker_configs/config /etc/oi4/config/
 COPY packages/oi4-oec-service-demo/docker_configs/secrets /run/secrets/
 COPY packages/oi4-oec-service-demo/docker_configs/certs /etc/oi4/certs/
+COPY packages/oi4-oec-service-demo/docker_configs/mqtt /etc/oi4/mqtt/
 
 WORKDIR /usr/oi4-oec-service-demo
 
