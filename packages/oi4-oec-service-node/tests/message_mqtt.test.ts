@@ -1,11 +1,11 @@
-import mqtt from 'async-mqtt';
+import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {MqttSettings} from '../src/messageBus/MqttSettings';
-import fs from 'fs';
-import {OI4MessageBusProxy} from '../src/messageBus/index';
+import fs = require('fs'); /*tslint:disable-line*/
+import {OI4MessageBus} from '../src/messageBus/OI4MessageBus';
 import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttSettingsHelper} from '../src/Utilities/Helpers/MqttSettingsHelper';
+import {MqttCredentialsHelper} from '../src/messageBus/OI4MessageBusFactory';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -62,7 +62,7 @@ describe('Connection to MQTT with TLS', () => {
     beforeAll(() => {
         jest.useFakeTimers();
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-        jest.spyOn(MqttSettingsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
+        jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
         mockLogger = jest.spyOn(Logger.prototype, 'log').mockImplementation();
     });
     afterAll(() => {
@@ -88,7 +88,7 @@ describe('Connection to MQTT with TLS', () => {
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -112,7 +112,7 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -131,7 +131,7 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4MessageBusProxy = new OI4MessageBusProxy(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
     });

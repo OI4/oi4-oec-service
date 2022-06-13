@@ -2,6 +2,7 @@ import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo} from './Types';
+import {TopicMethods, PayloadTypes} from './Enums';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
