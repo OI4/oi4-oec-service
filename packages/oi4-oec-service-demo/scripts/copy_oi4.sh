@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -L -R ../../node_modules/@oi4/ ./packages/oi4-oec-service-demo/node_modules/
+cp -L -R ../../node_modules/@oi4/ ../node_modules/
