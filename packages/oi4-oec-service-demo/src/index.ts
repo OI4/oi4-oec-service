@@ -11,4 +11,4 @@ const oi4MessageBus = new OI4MessageBusProxy(containerState, {
     reconnectPeriod: 1000,
     protocol: 'mqtts',
 });
-console.log('===========FINISHED============');
+console.log('|===========FINISHED============|');
