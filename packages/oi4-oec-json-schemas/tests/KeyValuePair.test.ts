@@ -1,8 +1,8 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../schemas/KeyValuePair.schema.json'
-import uint16 from '../schemas/dataTypes/uint16.schema.json'
-import QualifiedName from '../schemas/QualifiedName.schema.json'
-import BaseDataType from '../schemas/BaseDataType.schema.json'
+import schema from '../src/schemas/KeyValuePair.schema.json'
+import uint16 from '../src/schemas/dataTypes/uint16.schema.json'
+import QualifiedName from '../src/schemas/QualifiedName.schema.json'
+import BaseDataType from '../src/schemas/BaseDataType.schema.json'
 
 import validObjs from './__fixtures__/KeyValuePair_valid.json'
 import invalidObjs from './__fixtures__/KeyValuePair_invalid.json'

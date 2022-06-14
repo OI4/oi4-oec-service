@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {ContainerState, IMqttSettingsPaths} from '../../src';
+import {ApplicationResources, IMqttSettingsPaths} from '../../src';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import os = require('os');
@@ -47,7 +47,7 @@ describe('Test OI4MessageBusFactory', () => {
             privateKey: ''
         };
 
-        const containerState: ContainerState = new ContainerState(`${__dirname}/../__fixtures__/mam.json`);
+        const containerState: ApplicationResources = new ApplicationResources(`${__dirname}/../__fixtures__/mam.json`);
         const factory: OI4MessageBusFactory = new OI4MessageBusFactory(containerState, settingsPaths);
         const oi4MessageBus = factory.newOI4MessageBus();
         expect(oi4MessageBus).toBeDefined();
