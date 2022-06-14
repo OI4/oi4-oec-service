@@ -1,6 +1,6 @@
+import {DataSetClassIds, ESyslogEventFilter, IApplicationResources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
 import {Oi4IdManager} from '../../messageBus/Oi4IdManager';
@@ -13,12 +13,12 @@ export class MqttMessageProcessor {
     private readonly emit: Function;
     private readonly DATA = 'data';
 
-    private containerState: IContainerState;
+    private applicationResources: IApplicationResources;
     private componentLogger: Logger;
 
-    constructor(logger: Logger, containerState: IContainerState, sendMetaData: Function, sendResource: Function, emit: Function) {
+    constructor(logger: Logger, applicationResources: IApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
         this.componentLogger = logger;
-        this.containerState = containerState;
+        this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;
         this.emit = emit;
@@ -216,15 +216,15 @@ export class MqttMessageProcessor {
     private setData(cutTopic: string, data: IOPCUANetworkMessage) {
         const tagName = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
+        const dataLookup = this.applicationResources.dataLookup;
         if (tagName === '') {
             return;
         }
         if (!(tagName in dataLookup)) {
-            this.containerState.dataLookup[tagName] = data;
+            this.applicationResources.dataLookup[tagName] = data;
             this.componentLogger.log(`Added ${tagName} to dataLookup`);
         } else {
-            this.containerState.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
+            this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
             this.componentLogger.log(`${tagName} already exists in dataLookup`);
         }
     }
@@ -249,12 +249,12 @@ export class MqttMessageProcessor {
         // ONLY SPECIFIC DATA CAN BE DELETED. WILDCARD DOES NOT DELETE EVERYTHING
         const tagName = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
+        const dataLookup = this.applicationResources.dataLookup;
         if (tagName === '') {
             return;
         }
         if ((tagName in dataLookup)) {
-            delete this.containerState.dataLookup[tagName];
+            delete this.applicationResources.dataLookup[tagName];
             this.componentLogger.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
         } else {
             this.componentLogger.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);

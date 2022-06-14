@@ -1,4 +1,4 @@
-import { IContainerConfig, IContainerConfigConfigName, IContainerConfigGroupName } from "./IContainer";
+import { IContainerConfig, IContainerConfigConfigName, IContainerConfigGroupName } from './IContainer';
 
 // Specific Container Config interfaces
 export interface ISpecificContainerConfig extends IContainerConfig {

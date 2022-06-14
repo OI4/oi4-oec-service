@@ -1,18 +1,21 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Application, buildOecJsonValidator, Device} from '@oi4/oi4-oec-service-model';
-import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {serviceTypeSchemaJson} from '@oi4/oi4-oec-service-model'
+import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    Application,
+    buildOecJsonValidator,
+    DataSetClassIds,
+    Device,
+    EAssetType,
+    ESyslogEventFilter
+} from '@oi4/oi4-oec-service-model';
 
 // Resource imports
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {EAssetType, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-
-import {promiseTimeout} from './timeout';
+import {promiseTimeout} from './timeout/Timeout';
+import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 
 export * from './model/IConformityValidator';
 

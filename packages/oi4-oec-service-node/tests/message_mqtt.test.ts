@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {MqttSettings} from '../src/messageBus/MqttSettings';
 import fs = require('fs'); /*tslint:disable-line*/
-import {OI4MessageBus} from '../src/messageBus/OI4MessageBus';
+import {OI4Application} from '../src/messageBus/OI4Application';
 import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../src/messageBus/OI4MessageBusFactory';
+import {MqttCredentialsHelper} from '../src/messageBus/OI4ApplicationFactory';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -88,7 +88,7 @@ describe('Connection to MQTT with TLS', () => {
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        let oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -112,7 +112,7 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        let oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -131,7 +131,7 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
     });
