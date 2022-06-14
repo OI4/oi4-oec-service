@@ -49,8 +49,6 @@ export class ClientPayloadHelper {
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
             payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
-            // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
-            //return;
         }
 
         return {abortSending: false, payload: payload};
