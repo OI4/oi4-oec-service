@@ -5,7 +5,7 @@ import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-ser
 import {MockedIContainerStateFactory} from '../../Test-utils/Factories/MockedIContainerStateFactory';
 
 
-describe('Unit test for MqttMessageProcessor', () => {
+describe('Unit test for ClientPayloadHelper', () => {
 
     const default_payload = [{
         DataSetWriterId: 2,
@@ -61,16 +61,42 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(validatedPayload.payload).toBe(undefined);
     });
 
+    function createMockedPayload(dataSetWriterId: number, payload: any) {
+        return [{
+            DataSetWriterId: dataSetWriterId,
+            Payload: payload
+        }];
+    };
+
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedIContainerState, 'key', 'health');
         expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload).toStrictEqual([{
-            DataSetWriterId: 2,
-            Payload: {licenseText: 'fakeKey'}
-        }]);
-
-
+        expect(validatedPayload.payload).toStrictEqual(createMockedPayload(2, {licenseText: 'fakeKey'}));
     });
 
+    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any) {
+        return [{
+            subResource: subResource,
+            Payload: payload,
+            DataSetWriterId: dataSetWriterId
+        }];
+    }
+
+    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
+        expect(validatedPayload.abortSending).toBe(false);
+        const expectedInnerPayload = {components: [{licAddText: 'fakeLicence', component: 'fakeComponent', licAuthors: ['John Doe, Mary Poppins, Bilbo Baggins, John Rambo, Homer Simpson']}]};
+        const expectedPayload = createMockedPayloadWithSubresource('1',2, expectedInnerPayload);
+        expect(validatedPayload.payload).toStrictEqual(expectedPayload);
+    });
+
+    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'licence');
+        expect(validatedPayload.abortSending).toBe(true);
+        expect(validatedPayload.payload).toBe(undefined);
+        expect(fakeLogFile.length).toBe(1);
+        expect(fakeLogFile[0]).toBe('DataSetWriterId does not fit to licence Resource');
+
+    });
 
 });
