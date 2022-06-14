@@ -2,18 +2,20 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {LoggerItems, MockedLoggerFactory} from './utils/MockedLoggerFactory';
+import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MqttMessageProcessor} from '../src/Utilities/Helpers/MqttMessageProcessor';
+import {MqttMessageProcessor} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MockedIContainerStateFactory} from './utils/MockedIContainerStateFactory';
+import {MockedIContainerStateFactory} from '../../Test-utils/Factories/MockedIContainerStateFactory';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MockedOPCUABuilderFactory} from './utils/MockedOPCUABuilderFactory';
-import {TopicMethods} from '../src/Utilities/Helpers/Enums';
+import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
+import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 import {Oi4IdManager} from '../src/Proxy/Messagebus/Oi4IdManager';
 
 describe('Unit test for MqttMessageProcessor', () => {
