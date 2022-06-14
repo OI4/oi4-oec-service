@@ -7,7 +7,12 @@
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "paths": {
+      "@oi4/oi4-oec-service-model": [
+        "packages/oi4-oec-service-model"
+      ]
+    }
   },
   "include": [
     "src/**/*",
