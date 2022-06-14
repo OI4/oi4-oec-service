@@ -29,8 +29,8 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
-                payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                dswid: CDataSetWriterIdLookup['health']
+                Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
+                DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
         console.log('Connection to mqtt broker closed');
