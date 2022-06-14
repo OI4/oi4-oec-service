@@ -1,9 +1,9 @@
-import {Oi4IdManager} from '../../Proxy/Messagebus/Oi4IdManager';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
-import {TopicInfo} from './Types';
+import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
+import {Oi4IdManager} from '../../messageBus/Oi4IdManager';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
