@@ -39,11 +39,11 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, containerState: IContainerState, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+    createDefaultSendResourcePayload(oi4Id: string, containerState: any, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
-            payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload(containerState[resource], CDataSetWriterIdLookup[resource]));
         } else if (Number.isNaN(dataSetWriterIdFilter)) {
             // If the filter is not an oi4Id and not a number, we don't know how to handle it
             return {abortSending: true, payload: undefined};
