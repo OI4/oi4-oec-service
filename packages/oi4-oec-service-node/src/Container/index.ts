@@ -43,10 +43,10 @@ class ContainerState extends ConfigParser implements IContainerState {
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
  * */
-  constructor() {
+  constructor(mamFile: string = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
     super();
 
-    this._mam = this.extractMamFile(`${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`); // Import MAM from JSON
+    this._mam = this.extractMamFile(mamFile); // Import MAM from JSON
 
     if(this._mam === undefined) {
       throw Error('MAM File not found');

@@ -1,16 +1,9 @@
-//FIXME find a way to get rid of this eslint ignore
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignorey
 import {Oi4IdManager} from '../../Proxy/Messagebus/Oi4IdManager';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {PayloadTypes, TopicMethods} from './Enums';
-
+import {DataSetClassIds, ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
+import {TopicInfo} from './Types';
+import {TopicMethods, PayloadTypes} from './Enums';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -219,6 +212,7 @@ export class MqttMessageProcessor {
         }
     }
 
+    // SET Function section ------//
     private setData(cutTopic: string, data: IOPCUANetworkMessage) {
         const tagName = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!

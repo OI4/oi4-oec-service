@@ -1,14 +1,10 @@
-const Logger = require('./index');
+import {ESyslogEventFilter} from "@oi4/oi4-oec-service-model";
 
+import {Logger} from "@oi4/oi4-oec-service-logger";
 
 describe('Class: Device Manager', () => {
-  const logger = new Logger();
+  const logger = new Logger(true, 'TestIt', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
   describe('Method: log', () => {
-    test('Setter', () => {
-      expect(() => {
-        logger.enabled = 'kappa';
-      }).toThrow();
-    });
     test('Getter', () => {
       logger.enabled = true;
       expect(logger.enabled).toEqual(true);
