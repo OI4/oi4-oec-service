@@ -70,7 +70,9 @@ export class ClientPayloadHelper {
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
             if (containerState['license'].licenses.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
+
                 const filteredLicenseArr = containerState['license'].licenses.filter((elem: ILicenseObject) => {
+                    //FIXME is this return even correct?
                     if (elem.licenseId === filter) return elem;
                 });
 
