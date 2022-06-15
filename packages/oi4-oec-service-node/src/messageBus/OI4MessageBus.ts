@@ -256,7 +256,8 @@ class OI4MessageBus extends EventEmitter {
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
-
+        console.log('================')
+        console.log(filter)
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {

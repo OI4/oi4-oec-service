@@ -87,6 +87,11 @@ describe('Connection to MQTT with TLS', () => {
                 }
             }
         );
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function,ms: number)=>{
+            cb();
+        });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
