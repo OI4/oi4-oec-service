@@ -243,4 +243,14 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getContainerInfo().health)))
     });
 
+    it('should not send resource if page is out of range',   async () => {
+
+        const filter = '1'
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        await oi4MessageBus.sendResource('health', '', filter, 20,20);
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getContainerInfo().health)))
+    });
+
 });

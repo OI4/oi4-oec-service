@@ -45,8 +45,6 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
                 maximumPacketSize: OI4ApplicationFactory.getMaxPacketSize(brokerConfiguration)
             }
         }
-        // TODO handle missing files
-        mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
         this.initCredentials(mqttSettings);
         return new OI4Application(this.resources, mqttSettings);
     }
@@ -54,6 +52,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     private initCredentials(mqttSettings: MqttSettings) {
         if (this.hasRequiredCertCredentials()) {
             this.logger.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
+            mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
             mqttSettings.cert = readFileSync(this.settingsPaths.clientCertificate);
             mqttSettings.key = readFileSync(this.settingsPaths.privateKey);
             mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
@@ -68,6 +67,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
     private hasRequiredCertCredentials(): boolean {
         return existsSync(this.settingsPaths.clientCertificate) &&
+            existsSync(this.settingsPaths.caCertificate) &&
             existsSync(this.settingsPaths.privateKey)
     }
 

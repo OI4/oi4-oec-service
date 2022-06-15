@@ -3,7 +3,7 @@ import {OPCUABuilder} from '../src';
 // @ts-ignore
 import {NetworkMessageBaseSchemaJson, NetworkMessageSchemaJson} from '../../oi4-oec-json-schemas/src/index';
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import mam  from './__fixtures__/mam_network_message.json';
+import mam from './__fixtures__/mam_network_message.json';
 import invalidMam from './__fixtures__/invalid_mam_network_message.json';
 
 test('checks OPC UA JSON validity', () => {
