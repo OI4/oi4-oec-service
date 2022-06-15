@@ -2,12 +2,17 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
 import {MqttSettings} from '../../src/messageBus/MqttSettings';
 import {OI4Application} from '../../src/messageBus/OI4Application';
-import {EDeviceHealth, IApplicationResources} from '@oi4/oi4-oec-service-model';
-import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    CDataSetWriterIdLookup,
+    EDeviceHealth,
+    EPublicationListConfig,
+    ESubscriptionListConfig,
+    IApplicationResources
+} from '@oi4/oi4-oec-service-model';
+import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src/messageBus/OI4ApplicationFactory';
-import {AsyncClientEvents} from '../../src/Utilities/Helpers/Enums';
-import {ResourceType} from '../../src/Utilities/Helpers/Enums';
+import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -37,6 +42,45 @@ const getContainerInfo = (): IApplicationResources => {
     // @ts-ignore
     return {
         oi4Id: '1',
+        config: {
+            registry: {
+                name: {locale: EOPCUALocale.enUS, text: 'reg-01'},
+                showRegistry: { value: 'val-showreg-01', type: EOPCUABaseDataType.DateTime ,name: {locale: EOPCUALocale.enUS, text: 'showreg-01'}},
+                developmentMode: {value:'val-dev-01',type: EOPCUABaseDataType.Number,name: {locale: EOPCUALocale.enUS, text: 'dev-01'}}
+            },
+            logging: {
+                auditLevel: {
+                    name: {locale: EOPCUALocale.enUS, text: 'audit-01'},
+                    value:'val-01',
+                    type: EOPCUABaseDataType.Boolean
+                },
+                name: {locale: EOPCUALocale.enUS, text: 'login-01'},
+                logType: {value: 'val-type-01', type: EOPCUABaseDataType.String, name: {locale: EOPCUALocale.enUS, text: 'type-01'} },
+                logFileSize: {value:'val-log-01', type: EOPCUABaseDataType.ByteString,name: {locale: EOPCUALocale.enUS, text: 'log-01'} }
+            },
+            context: { name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}},
+        publicationList: {
+            publicationList:[
+                {active:true, resource:'health', config: EPublicationListConfig.INTERVAL_2, DataSetWriterId:1, oi4Identifier:'1'},
+                {active:false, resource:'mam', config: EPublicationListConfig.NONE_0, DataSetWriterId:2, oi4Identifier:'2'},
+                {active:true, resource:'license', config: EPublicationListConfig.STATUS_1, DataSetWriterId:3, oi4Identifier:'3'}
+            ]},
+        profile: {resource:['profile', 'b']},
+        licenseText: {'a': '1', 'b':'2'},
+        license: {licenses:[
+            {licenseId: '1', components: [
+                {licAuthors:['a-01', 'a-02'], component: 'comp-01' , licAddText: 'text-a'},
+                    {licAuthors:['b-01', 'b-01'], component: 'comp-02' , licAddText: 'text-b'},
+                    {licAuthors:['c-01', 'c-01'], component: 'comp-03' , licAddText: 'text-c'},
+                ],
+            },
+                {licenseId: '2', components: [
+                        {licAuthors:['aa-01', 'aa-02'], component: 'comp-001' , licAddText: 'text-aa'},
+                        {licAuthors:['bb-01', 'bb-01'], component: 'comp-002' , licAddText: 'text-bb'},
+                        {licAuthors:['cc-01', 'cc-01'], component: 'comp-003' , licAddText: 'text-cc'},
+                    ],
+                }
+        ]},
         health: {health: EDeviceHealth.NORMAL_0, healthScore: 100},
         mam: {
             DeviceClass: 'oi4',
@@ -60,7 +104,11 @@ const getContainerInfo = (): IApplicationResources => {
         // @ts-ignore
         metaDataLookup: {'tag-01': {MessageId: 'meta-01'}, 'tag-02': {MessageId: 'meta-02'}},
         subscriptionList: {
-            subscriptionList: []
+            subscriptionList: [
+                {topicPath:'path-01', config: ESubscriptionListConfig.CONF_1},
+                {topicPath:'path-02', config: ESubscriptionListConfig.NONE_0},
+                {topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0}
+            ]
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -221,7 +269,7 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getContainerInfo().dataLookup)));
     });
 
-    it('should  send resource with valid filter',   async () => {
+    it('should send resource with valid filter',   async () => {
 
         const filter = '1'
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -242,5 +290,155 @@ describe('OI4MessageBus test', () => {
         await oi4MessageBus.sendResource('health', '', filter);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getContainerInfo().health)))
     });
+
+    it('should not send resource if page is out of range',   async () => {
+
+        const filter = '1'
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        await oi4MessageBus.sendResource('health', '', filter, 20,20);
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getContainerInfo().health)))
+    });
+
+    it('should prepare mam payload',   async () => {
+        const filter = CDataSetWriterIdLookup.mam.toString();
+        const resource = 'mam';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getContainerInfo().mam));
+    });
+
+    it('should prepare profile payload',   async () => {
+        const filter = CDataSetWriterIdLookup.profile.toString();
+        const resource = 'profile';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getContainerInfo().profile));
+    });
+
+    it('should prepare rt license payload',   async () => {
+        const filter = CDataSetWriterIdLookup.rtLicense.toString();
+        const resource = 'rtLicense';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getContainerInfo().rtLicense));
+    });
+
+    it('should prepare health payload',   async () => {
+        const filter = CDataSetWriterIdLookup.health.toString();
+        const resource = 'health';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getContainerInfo().health));
+    });
+
+    it('should prepare license text payload',   async () => {
+        const filter = 'a';
+        const resource = 'licenseText';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload))
+            .toBe(JSON.stringify({licenseText:getContainerInfo().licenseText[filter]}));
+    });
+
+    it('should prepare license payload',   async () => {
+        const filter = CDataSetWriterIdLookup.license.toString();
+        const resource = 'license';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        for(let i = 0; i < result.payload.length; i++){
+            expect(JSON.stringify(result.payload[i].Payload))
+                .toBe(JSON.stringify({components:getContainerInfo().license.licenses[i].components}));
+        }
+    });
+
+    it('should prepare publicationList  payload',   async () => {
+        const filter = CDataSetWriterIdLookup.publicationList.toString();
+        const resource = 'publicationList';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        for(let i = 0; i < result.payload.length; i++) {
+            expect(JSON.stringify(result.payload[i].Payload))
+                .toBe(JSON.stringify(getContainerInfo().publicationList.publicationList[i]));
+        }
+    });
+
+    it('should prepare subscriptionList  payload',   async () => {
+        const filter = CDataSetWriterIdLookup.subscriptionList.toString();
+        const resource = 'subscriptionList';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        for(let i = 0; i < result.payload.length; i++) {
+            expect(JSON.stringify(result.payload[i].Payload))
+                .toBe(JSON.stringify(getContainerInfo().subscriptionList.subscriptionList[i]));
+        }
+    });
+
+    it('should  prepare config payload',   async () => {
+        const filter = CDataSetWriterIdLookup.config.toString();
+        const resource = 'config';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(JSON.stringify(result.payload[0].Payload))
+            .toBe(JSON.stringify(getContainerInfo().config));
+    });
+
+    it('should not prepare anything if resource not found',   async () => {
+        const filter = CDataSetWriterIdLookup.config.toString();
+        const resource = 'invalid resource';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        const result = await oi4MessageBus.preparePayload(resource, filter);
+        expect(result).toBeUndefined();
+    });
+
+    it('should not send resource if error occured in pagination',   async () => {
+
+        const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
+        const filter = '1'
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        jest.clearAllMocks();
+        await oi4MessageBus.sendResource('health', '', filter, 1,20);
+        expect(publish).toBeCalledTimes(0);
+        mockOPCUABuilder.mockRestore();
+    });
+
+    it('should send event',   async () => {
+
+        const logString = 'a logging string a b c';
+        const logLevel = '1';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getContainerInfo();
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
+        jest.clearAllMocks();
+        await oi4MessageBus.sendEvent(logString, '1');
+        expect(publish).toHaveBeenCalledWith(
+            expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/event/${logLevel}/${getContainerInfo().oi4Id}`),
+            expect.stringContaining(JSON.stringify({logLevel:logLevel,logString:logString})));
+    });
+
+
 
 });
