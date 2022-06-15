@@ -2,12 +2,12 @@ import {IMasterAssetModel, IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-
 import {ISpecificContainerConfig} from './IContainerConfig';
 import {EDeviceHealth} from './EContainer';
 import {
-    IContainerData,
     IContainerHealth,
-    IContainerLicense,
-    IContainerLicenseText, IContainerMetaData,
-    IContainerProfile, IContainerPublicationList,
-    IContainerRTLicense, IContainerSubscriptionList, IPublicationListObject, ISubscriptionListObject
+    IContainerProfile,
+    IContainerRTLicense,
+    ILicenseObject,
+    IPublicationListObject,
+    ISubscriptionListObject
 } from './IContainer';
 
 export interface IApplicationResources {
@@ -15,16 +15,16 @@ export interface IApplicationResources {
     health: IContainerHealth;
     profile: IContainerProfile;
     mam: IMasterAssetModel;
-    license: IContainerLicense;
-    licenseText: IContainerLicenseText;
+    license: ILicenseObject[];
+    licenseText: Record<string, string>;
     rtLicense: IContainerRTLicense;
     config: ISpecificContainerConfig;
-    publicationList: IContainerPublicationList;
-    subscriptionList: IContainerSubscriptionList;
+    publicationList: IPublicationListObject[];
+    subscriptionList: ISubscriptionListObject[];
     brokerState: boolean;
 
-    dataLookup: IContainerData;
-    metaDataLookup: IContainerMetaData;
+    dataLookup: Record<string, IOPCUANetworkMessage>;
+    metaDataLookup: Record<string, IOPCUAMetaData>;
 
     setHealthState(healthState: number): void;
     setHealth(health: EDeviceHealth): void;
@@ -32,7 +32,7 @@ export interface IApplicationResources {
     addProfile(entry: string): void;
     addLicenseText(licenseName: string, licenseText: string): void;
     addPublication(publicationObj: IPublicationListObject): void;
-    addSubscription(subbscriptionObj: ISubscriptionListObject): void;
+    addSubscription(subscriptionObj: ISubscriptionListObject): void;
 
     removePublicationByTag(tag: string): void;
     removeSubscriptionByTopic(topic: string): void;
