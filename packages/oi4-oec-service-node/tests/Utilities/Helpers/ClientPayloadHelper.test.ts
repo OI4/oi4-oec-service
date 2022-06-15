@@ -159,17 +159,27 @@ describe('Unit test for ClientPayloadHelper', () => {
         }
     }
 
+    function checkAgainstSubscriptionPayload(validatedPayload: ValidatedPayload, topicPath: string, subresource: string) {
+        expect(validatedPayload.abortSending).toBe(false);
+        const expectedInnerPayload = createSubscriptionMockedPayload(topicPath,-1, 'NONE_0');
+        const expectedPayload = createMockedPayloadWithSubresource(subresource,2, expectedInnerPayload);
+        expect(validatedPayload.payload).toStrictEqual(expectedPayload);
+    }
+
     it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
-        expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = createSubscriptionMockedPayload('fakeTopicPath',-1, 'NONE_0');
-        const expectedPayload = createMockedPayloadWithSubresource(undefined,2, expectedInnerPayload);
-        expect(validatedPayload.payload).toStrictEqual(expectedPayload);
+        checkAgainstSubscriptionPayload(validatedPayload, 'fakeTopicPath', undefined);
     });
 
-    it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is NaN', async () => {
+    it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN and dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'license');
         checkForUnfittingDataSetId(validatedPayload);
+    });
+
+    it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is NaN and ', async () => {
+        mockedIContainerState['subscriptionList'].subscriptionList[0].topicPath='///////fakeTopicPath';
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'fakeTopicPath',NaN, 'health');
+        checkAgainstSubscriptionPayload(validatedPayload, '///////fakeTopicPath', 'fakeTopicPath');
     });
 
 });
