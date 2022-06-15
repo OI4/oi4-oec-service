@@ -1,10 +1,13 @@
-import {ApplicationResources} from '../src/Container';
+import {ApplicationResources} from '../src/Container/ApplicationResources';
 import fs from 'fs';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
 import os from 'os';
 
 describe('Unit test for MAMStorage reading', () => {
 
+    beforeEach(()=>{
+        jest.resetAllMocks();
+    })
     afterAll(()=>{
         jest.clearAllMocks();
         jest.resetAllMocks();

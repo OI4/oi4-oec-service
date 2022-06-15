@@ -2,7 +2,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {Oi4IdManager} from '../src/Proxy/Messagebus/Oi4IdManager';
+import {Oi4IdManager} from '../src/messagebus/Oi4IdManager';
 
 describe('Unit test for Oi4IdManager.test', () => {
 
