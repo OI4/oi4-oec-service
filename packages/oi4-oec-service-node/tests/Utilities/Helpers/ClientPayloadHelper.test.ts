@@ -176,10 +176,49 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkForUnfittingDataSetId(validatedPayload);
     });
 
-    it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is NaN and ', async () => {
-        mockedIContainerState['subscriptionList'].subscriptionList[0].topicPath='///////fakeTopicPath';
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'fakeTopicPath',NaN, 'health');
-        checkAgainstSubscriptionPayload(validatedPayload, '///////fakeTopicPath', 'fakeTopicPath');
+    function checkAgainstConfigPayload(validatedPayload: ValidatedPayload) {
+        expect(validatedPayload.abortSending).toBe(false);
+        const receivedPayload = validatedPayload.payload[0];
+        expect(receivedPayload.subResource).toStrictEqual('fakecontext');
+        expect(receivedPayload.DataSetWriterId).toStrictEqual(8);
+        expect(receivedPayload.Payload).not.toBe(null);
+
+        expect(receivedPayload.Payload.context.name).not.toBe(null);
+
+        expect(receivedPayload.Payload.logging.auditLevel).not.toBe(null);
+        expect(receivedPayload.Payload.logging.logFileSize).not.toBe(null);
+        expect(receivedPayload.Payload.logging.logType).not.toBe(null);
+        expect(receivedPayload.Payload.logging.name).not.toBe(null);
+
+        expect(receivedPayload.Payload.registry.name).not.toBe(null);
+        expect(receivedPayload.Payload.registry.description).not.toBe(null);
+        expect(receivedPayload.Payload.registry.developmentMode).not.toBe(null);
+        expect(receivedPayload.Payload.registry.showRegistry).not.toBe(null);
+    }
+
+    it('createConfigSendResourcePayload works when filter is empty ', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, '', NaN, 'config');
+        checkAgainstConfigPayload(validatedPayload);
+    });
+
+    it('createConfigSendResourcePayload works when filter is equal to Payload.context.name', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'fakecontext', 42, 'config');
+        checkAgainstConfigPayload(validatedPayload);
+    });
+
+    it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is NaN', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', NaN, 'config');
+        checkForUndefinedPayload(validatedPayload);
+    });
+
+    it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is 8', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 8, 'config');
+        checkAgainstConfigPayload(validatedPayload);
+    });
+
+    it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is invalid', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 9, 'config');
+        checkForUndefinedPayload(validatedPayload);
     });
 
 });

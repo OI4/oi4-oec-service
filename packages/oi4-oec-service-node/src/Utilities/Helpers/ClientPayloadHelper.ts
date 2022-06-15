@@ -220,7 +220,6 @@ export class ClientPayloadHelper {
 
         }
 
-        //FIXME is this needed? I do not fully understand how this method is supposed to behave
         return {abortSending: true, payload: undefined};
     }
 
