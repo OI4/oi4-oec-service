@@ -1,6 +1,6 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../schemas/CallMethodRequest.schema.json'
-import BaseDataType from '../schemas/BaseDataType.schema.json'
+import schema from '../src/schemas/CallMethodRequest.schema.json'
+import BaseDataType from '../src/schemas/BaseDataType.schema.json'
 
 expect.extend(
   matchersWithOptions({

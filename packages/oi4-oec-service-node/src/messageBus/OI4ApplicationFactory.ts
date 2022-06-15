@@ -5,9 +5,9 @@ import {
     DefaultMqttSettingsPaths, IMqttSettingsPaths
 } from './MqttSettings';
 import os from 'os';
-import {ESyslogEventFilter, IContainerState} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, IApplicationResources} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
-import {OI4MessageBus} from './OI4MessageBus';
+import {OI4Application} from './OI4Application';
 import {indexOf} from 'lodash';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 
@@ -15,25 +15,25 @@ import {Logger} from '@oi4/oi4-oec-service-logger';
 const MQTTS = 'mqtts';
 
 export interface IOI4MessageBusFactory {
-    newOI4MessageBus: () => OI4MessageBus;
+    createOI4Application: () => OI4Application;
 }
 
-export class OI4MessageBusFactory implements IOI4MessageBusFactory {
+export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
-    private readonly container: IContainerState;
+    private readonly resources: IApplicationResources;
     private readonly settingsPaths: IMqttSettingsPaths;
     private readonly mqttSettingsHelper: MqttCredentialsHelper;
     private readonly logger: Logger;
 
-    constructor(container: IContainerState, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
-        this.container = container;
+    constructor(resources: IApplicationResources, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
+        this.resources = resources;
         this.settingsPaths = settingsPaths;
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         this.logger = new Logger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
     }
 
-    newOI4MessageBus() {
+    createOI4Application(): OI4Application {
         // TODO handle missing files
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
@@ -42,13 +42,13 @@ export class OI4MessageBusFactory implements IOI4MessageBusFactory {
             port: brokerConfiguration.secure_port,
             protocol: MQTTS,
             properties: {
-                maximumPacketSize: OI4MessageBusFactory.getMaxPacketSize(brokerConfiguration)
+                maximumPacketSize: OI4ApplicationFactory.getMaxPacketSize(brokerConfiguration)
             }
         }
         // TODO handle missing files
         mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
         this.initCredentials(mqttSettings);
-        return new OI4MessageBus(this.container, mqttSettings);
+        return new OI4Application(this.resources, mqttSettings);
     }
 
     private initCredentials(mqttSettings: MqttSettings) {

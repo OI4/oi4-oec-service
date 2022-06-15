@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import fs = require('fs'); /*tslint:disable-line*/
 import {MqttSettings} from '../src/messageBus/MqttSettings';
-import {OI4MessageBus} from '../src/messageBus/OI4MessageBus';
-import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
+import fs = require('fs'); /*tslint:disable-line*/
+import {OI4Application} from '../src/messageBus/OI4Application';
+import {EDeviceHealth, IContainerHealth, IApplicationResources} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../src/messageBus/OI4MessageBusFactory';
+import {MqttCredentialsHelper} from '../src/messageBus/OI4ApplicationFactory';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -17,7 +17,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getContainerInfo = (): IContainerState => {
+const getContainerInfo = (): IApplicationResources => {
     return {
         oi4Id: '1',
         mam: {
@@ -43,17 +43,13 @@ const getContainerInfo = (): IContainerState => {
         on(event: string, listener: Function) {
             return this;
         }
-    } as IContainerState
+    } as IApplicationResources
 }
 
-
 describe('Connection to MQTT with TLS', () => {
-
-    const onEvent = () => {
-        return jest.fn(async (event, cb) => {
-            await cb(event);
-        });
-    }
+    const onEvent = () => jest.fn(  async (event, cb) => {
+        await cb(event);
+    });
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const publish = jest.fn((topic, _) => {
@@ -93,9 +89,9 @@ describe('Connection to MQTT with TLS', () => {
             cb();
         });
 
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
 
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -113,9 +109,7 @@ describe('Connection to MQTT with TLS', () => {
                     reconnecting: false,
                     publish: publish,
                     subscribe: jest.fn(),
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                    // @ts-ignore
-                    on:  onEvent()
+                    on: onEvent(),
                 }
             }
         );
@@ -126,7 +120,7 @@ describe('Connection to MQTT with TLS', () => {
         });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
@@ -145,7 +139,7 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
     });

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@oi4/oi4-oec-service-logger": "^1.0.0",
+    "@oi4/oi4-oec-json-schemas": "^1.0.0",
     "async-mqtt": "^2.5.0"
   },
   "scripts": {

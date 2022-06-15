@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
 import {MqttSettings} from '../../src/messageBus/MqttSettings';
-import {OI4MessageBus} from '../../src/messageBus/OI4MessageBus';
-import {EDeviceHealth, IContainerState} from '@oi4/oi4-oec-service-model';
+import {OI4Application} from '../../src/messageBus/OI4Application';
+import {EDeviceHealth, IApplicationResources} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../../src/messageBus/OI4MessageBusFactory';
+import {MqttCredentialsHelper} from '../../src/messageBus/OI4ApplicationFactory';
 import {AsyncClientEvents} from '../../src/Utilities/Helpers/Enums';
 import {ResourceType} from '../../src/Utilities/Helpers/Enums';
 
@@ -32,7 +32,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getContainerInfo = (): IContainerState => {
+const getContainerInfo = (): IApplicationResources => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     return {
@@ -129,7 +129,7 @@ describe('OI4MessageBus test', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        new OI4MessageBus(getContainerInfo(), mqttOpts);
+        new OI4Application(getContainerInfo(), mqttOpts);
         const events = onMock.mock.calls.map(keyPair => keyPair[0]);
         const setOfEvents = new Set<string>(Object.values(AsyncClientEvents)
             .filter(event => event !== AsyncClientEvents.MESSAGE && event !== AsyncClientEvents.RESOURCE_CHANGED));
@@ -153,12 +153,12 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         container.on = onResourceMock;
-        new OI4MessageBus(container, mqttOpts);
+        new OI4Application(container, mqttOpts);
     });
 
     it('should trigger health from resourceChangedCallback',   (done) => {
 
-        const mockSendResource = jest.spyOn(OI4MessageBus.prototype, 'sendResource').mockResolvedValue();
+        const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
         const onResourceMock = jest.fn( (_, cb) => {
@@ -170,7 +170,7 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         container.on = onResourceMock;
-        new OI4MessageBus(container, mqttOpts);
+        new OI4Application(container, mqttOpts);
     });
 
     it('should send specific metadata by tagname',   async () => {
@@ -178,7 +178,7 @@ describe('OI4MessageBus test', () => {
         const tagName = 'tag-01'
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/metadata/${tagName}`),
@@ -190,7 +190,7 @@ describe('OI4MessageBus test', () => {
         const tagName = ''
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/metadata`),
@@ -202,7 +202,7 @@ describe('OI4MessageBus test', () => {
         const tagName = 'tag-01'
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/data/${tagName}`),
@@ -214,7 +214,7 @@ describe('OI4MessageBus test', () => {
         const tagName = ''
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/data`),
@@ -226,7 +226,7 @@ describe('OI4MessageBus test', () => {
         const filter = '1'
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendResource('health', '', filter);
         expect(publish).toHaveBeenCalledWith(
             expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`),
@@ -238,7 +238,7 @@ describe('OI4MessageBus test', () => {
         const filter = '0'
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const container = getContainerInfo();
-        const oi4MessageBus = new OI4MessageBus(container, mqttOpts);
+        const oi4MessageBus = new OI4Application(container, mqttOpts);
         await oi4MessageBus.sendResource('health', '', filter);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getContainerInfo().health)))
     });
