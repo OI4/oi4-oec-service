@@ -1,0 +1,134 @@
+{
+  "$id": "config.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a config message",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "configDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "description": "",
+          "type": "string",
+          "readOnly": true,
+          "enum": [
+            "Boolean",
+            "ByteString",
+            "DateTime",
+            "Number",
+            "String"
+          ]
+        },
+        "value": {
+          "description": "",
+          "type": "string"
+        },
+        "unit": {
+          "description": "",
+          "type": "string",
+          "readOnly": true
+        },
+        "validation": {
+          "type": "object",
+          "description": "",
+          "minProperties": 1,
+          "readOnly": true,
+          "properties": {
+            "length": {
+              "type": "number",
+              "readOnly": true
+            },
+            "min": {
+              "type": "number",
+              "readOnly": true
+            },
+            "max": {
+              "type": "number",
+              "readOnly": true
+            },
+            "pattern": {
+              "type": "string",
+              "readOnly": true
+            },
+            "values": {
+              "type": "array",
+              "additionalItems": false,
+              "uniqueItems": true,
+              "readOnly": true,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "defaultValue": {
+          "description": "",
+          "readOnly": true,
+          "type": "string"
+        },
+        "mandatory": {
+          "description": "",
+          "readOnly": true,
+          "default": false,
+          "type": "boolean"
+        },
+        "sensitive": {
+          "description": "",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "name": {
+          "description": "",
+          "$ref": "LocalizedText.schema.json",
+          "readOnly": true
+        },
+        "description": {
+          "description": "",
+          "$ref": "LocalizedText.schema.json",
+          "readOnly": true
+        }
+      }
+    },
+    "groupConfig": {
+      "type": "object",
+      "minProperties": 2,
+      "required": [
+        "name"
+      ],
+      "additionalProperties": {
+        "$ref": "LocalizedText.schema.json"
+      },
+      "patternProperties": {
+        "^(?!name|description)[A-z][A-z0-9-_]*$": {
+          "$ref": "#/definitions/configDefinition"
+        }
+      }
+    }
+  },
+  "minProperties": 1,
+  "patternProperties": {
+    "^(?!\bcontext\b)[A-z_][A-z0-9-_]*$": {
+      "$ref": "#/definitions/groupConfig"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "LocalizedText.schema.json"
+        },
+        "description": {
+          "$ref": "LocalizedText.schema.json"
+        }
+      }
+    }
+  }
+}

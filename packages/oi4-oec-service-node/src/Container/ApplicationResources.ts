@@ -1,6 +1,5 @@
-import { ConfigParser } from '../Utilities/ConfigParser';
+import { ConfigParser } from '../Utilities/ConfigParser/ConfigParser';
 import {
-  IContainerState,
   IContainerConfig,
   IContainerHealth,
   IContainerLicense,
@@ -12,7 +11,7 @@ import {
   IContainerPublicationList,
   IContainerSubscriptionList,
   ISubscriptionListObject,
-  IPublicationListObject, Application, Resource,
+  IPublicationListObject, Application, Resource, IApplicationResources,
 } from '@oi4/oi4-oec-service-model';
 
 import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel } from '@oi4/oi4-oec-service-opcua-model';
@@ -25,7 +24,7 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
-class ContainerState extends ConfigParser implements IContainerState {
+class ApplicationResources extends ConfigParser implements IApplicationResources {
   public oi4Id: string; // TODO: doubling? Not needed here
   private readonly _profile: IContainerProfile;
   private readonly _mam: IMasterAssetModel;
@@ -465,4 +464,4 @@ class ContainerState extends ConfigParser implements IContainerState {
   }
 }
 
-export { ContainerState, IContainerState, IContainerConfig, IContainerRTLicense };
+export { ApplicationResources, IContainerConfig, IContainerRTLicense };

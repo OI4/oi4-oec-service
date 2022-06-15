@@ -542,7 +542,7 @@ components:
       traits:
         - $ref: '#/components/messageTraits/networkMessage'
       payload:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/LocalizedText.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/LocalizedText.schema.json'
       correlationId:
         $ref: '#/components/correlationIds/default'
     blank:
@@ -551,7 +551,7 @@ components:
       summary: A blank message to transmit no data.
       contentType: application/json
       payload:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/empty.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/empty.schema.json'
 
   #############################
   # AsyncAPI correlationIds   #
@@ -576,10 +576,10 @@ components:
     mamMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/mam.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/mam.schema.json'
     health:
       type: object
       properties:
@@ -591,10 +591,10 @@ components:
     healthMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/health.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/health.schema.json'
     config:
       type: object
       properties:
@@ -606,10 +606,10 @@ components:
     configMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/configPublish.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/configPublish.schema.json'
     license:
       type: object
       properties:
@@ -621,10 +621,10 @@ components:
     licenseMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/license.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/license.schema.json'
     licenseText:
       type: object
       properties:
@@ -636,10 +636,10 @@ components:
     licenseTextMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/licenseText.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/licenseText.schema.json'
     rtLicense:
       type: object
       properties:
@@ -651,10 +651,10 @@ components:
     rtLicenseMessage:
       type: object
       allOf:
-        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/DataSetMessageBase.schema.json'
+        - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/rtLicense.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/rtLicense.schema.json'
     tagString:
       type: string
       pattern: "[\\w\\d%\\.-]{1,255}"
@@ -677,7 +677,7 @@ components:
     serviceType:
       description: The serviceType element is used to roughly sort the applications.
       schema:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/constants/serviceType.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/constants/serviceType.schema.json'
     manufacturerUri:
       description: The URI of the manufacturer of an asset or service.
       schema:
@@ -685,13 +685,13 @@ components:
     oi4Identifier:
       description: The oi4Identifier, in the form of <ManufacturerUri/Model/ProductCode/SerialNumber>, represents a DIN SPEC 91406 conform URI and can be broken down into its components, resulting in further filtering options on topics (e.g. all applications from manufacturer A, or the assets of type B).
       schema:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/oi4Identifier.schema.json'
     tag:
       description: The tag defines the point of interest, which can be addressed through three different ways. The payload of a tag is always a previously defined DataSet, represented via tag, DataSetWriterId or the oi4Identifier of an asset.
       schema:
         oneOf:
-          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/oi4Identifier.schema.json'
-          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/dataTypes/uint16.schema.json'
+          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/oi4Identifier.schema.json'
+          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/dataTypes/uint16.schema.json'
           - $ref: '#/components/schemas/tagString'
 
   #############################
@@ -700,7 +700,7 @@ components:
   messageTraits:
     networkMessage:
       headers:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/schemas/NetworkMessageBase.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/NetworkMessageBase.schema.json'
     commonHeaders:
       headers:
         type: object
