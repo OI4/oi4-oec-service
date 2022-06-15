@@ -1,8 +1,8 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {MqttSettings} from '../src/messageBus/MqttSettings';
 import fs = require('fs'); /*tslint:disable-line*/
+import {MqttSettings} from '../src/messageBus/MqttSettings';
 import {OI4MessageBus} from '../src/messageBus/OI4MessageBus';
-import {EDeviceHealth, ESyslogEventFilter, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../src/messageBus/OI4MessageBusFactory';
@@ -46,13 +46,14 @@ const getContainerInfo = (): IContainerState => {
     } as IContainerState
 }
 
+
 describe('Connection to MQTT with TLS', () => {
 
-    let mockLogger: jest.SpyInstance<string, [logstring: string, level?: ESyslogEventFilter]> = undefined;
-
-    const onEvent = jest.fn(  async (event, cb) => {
-        await cb(event);
-    });
+    const onEvent = () => {
+        return jest.fn(async (event, cb) => {
+            await cb(event);
+        });
+    }
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const publish = jest.fn((topic, _) => {
@@ -61,14 +62,15 @@ describe('Connection to MQTT with TLS', () => {
 
     beforeAll(() => {
         jest.useFakeTimers();
+        jest.resetAllMocks();
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
         jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
-        mockLogger = jest.spyOn(Logger.prototype, 'log').mockImplementation();
+        jest.spyOn(Logger.prototype, 'log').mockImplementation();
     });
     afterAll(() => {
-        mockLogger.mockReset();
         jest.clearAllTimers();
         jest.resetModules();
+        jest.resetAllMocks();
     });
     it('should send birth message on connect',  () => {
 
@@ -81,21 +83,21 @@ describe('Connection to MQTT with TLS', () => {
                     reconnecting: false,
                     publish: publish,
                     subscribe: jest.fn(),
-                    on: onEvent,
+                    on: onEvent(),
                 }
             }
         );
 
-
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify(getContainerInfo().mam)));
     });
 
-    it('should send close message on close',  () => {
+    it('should send close message on close',  async () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -106,13 +108,20 @@ describe('Connection to MQTT with TLS', () => {
                     reconnecting: false,
                     publish: publish,
                     subscribe: jest.fn(),
-                    on: onEvent,
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                    // @ts-ignore
+                    on:  onEvent()
                 }
             }
         );
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function,ms: number)=>{
+            cb();
+        });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        let oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
+        const oi4messagebus: OI4MessageBus = new OI4MessageBus(getContainerInfo(), mqttOpts);
         expect(oi4messagebus.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
