@@ -1,9 +1,9 @@
-import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from "./EOPCUA";
+import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from './EOPCUA';
 
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
 
 export interface IOPCUAPayload {
-  [key:string]: any;
+  [key: string]: any;
 }
 
 export interface IMasterAssetModel {
@@ -43,7 +43,7 @@ export interface IOPCUADataSetMessage {
   Payload: any; // TODO: arbitrary object?
 }
 
-interface IOPCUADataSetMetaData {
+export interface IOPCUADataSetMetaData {
   MessageId: string; // TODO: Not yet defined <unixTimestampInMs-PublisherId>
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!

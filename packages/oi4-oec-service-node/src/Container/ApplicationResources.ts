@@ -1,21 +1,18 @@
-import { ConfigParser } from '../Utilities/ConfigParser';
+import { ConfigParser } from '../Utilities/ConfigParser/ConfigParser';
 import {
-  IContainerState,
   IContainerConfig,
   IContainerHealth,
-  IContainerLicense,
-  IContainerLicenseText,
   IContainerRTLicense,
-  IContainerData,
-  IContainerMetaData,
-  IContainerProfile,
-  IContainerPublicationList,
-  IContainerSubscriptionList,
   ISubscriptionListObject,
-  IPublicationListObject, Application, Resource,
+  IPublicationListObject, Application, Resource, IApplicationResources, IContainerProfile, ILicenseObject,
 } from '@oi4/oi4-oec-service-model';
 
-import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel } from '@oi4/oi4-oec-service-opcua-model';
+import {
+  IOPCUANetworkMessage,
+  IOPCUAMetaData,
+  IMasterAssetModel,
+  IOPCUADataSetMetaData
+} from '@oi4/oi4-oec-service-opcua-model';
 import os from 'os';
 import { EOPCUALocale } from '@oi4/oi4-oec-service-opcua-model';
 import { EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig } from '@oi4/oi4-oec-service-model';
@@ -25,42 +22,29 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
-class ContainerState extends ConfigParser implements IContainerState {
+class ApplicationResources extends ConfigParser implements IApplicationResources {
   public oi4Id: string; // TODO: doubling? Not needed here
-  private readonly _profile: IContainerProfile;
-  private readonly _mam: IMasterAssetModel;
-  private _health: IContainerHealth;
-  private _brokerState: boolean;
-  public _license: IContainerLicense;
-  public _licenseText: IContainerLicenseText;
-  public _rtLicense: IContainerRTLicense;
-
-  public _publicationList: IContainerPublicationList;
-  public _subscriptionList: IContainerSubscriptionList;
-
-  public dataLookup: IContainerData;
-  public metaDataLookup: IContainerMetaData;
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
  * */
   constructor(mamFile: string = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
     super();
 
-    this._mam = this.extractMamFile(mamFile); // Import MAM from JSON
+    this.mam = this.extractMamFile(mamFile); // Import MAM from JSON
 
-    if(this._mam === undefined) {
+    if(this.mam === undefined) {
       throw Error('MAM File not found');
     }
 
-    this._mam.Description.locale = EOPCUALocale.enUS; // Fill in container-specific values
-    this._mam.SerialNumber = os.hostname();
-    this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
+    this.mam.Description.locale = EOPCUALocale.enUS; // Fill in container-specific values
+    this.mam.SerialNumber = os.hostname();
+    this.mam.ProductInstanceUri = `${this.mam.ManufacturerUri}/${encodeURIComponent(this.mam.Model.text)}/${encodeURIComponent(this.mam.ProductCode)}/${encodeURIComponent(this.mam.SerialNumber)}`;
 
-    this.oi4Id = this._mam.ProductInstanceUri;
+    this.oi4Id = this.mam.ProductInstanceUri;
 
-    this._brokerState = false;
+    this.brokerState = false;
 
-    this._profile = {
+    this.profile = {
       resource: [
         'health',
         'license',
@@ -75,13 +59,12 @@ class ContainerState extends ConfigParser implements IContainerState {
       ],
     };
 
-    this._health = {
+    this.health = {
       health: EDeviceHealth.NORMAL_0,
       healthScore: 100,
     };
 
-    this._license = {
-      licenses: [
+    this.license =[
         {
           licenseId: 'MIT',
           components: [
@@ -253,10 +236,9 @@ class ContainerState extends ConfigParser implements IContainerState {
             },
           ],
         }
-      ],
-    };
+      ];
 
-    this._licenseText = {};
+    this.licenseText = {};
     this.addLicenseText('MIT', `(The MIT License)
     Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>
     Copyright (c) 2013-2014 Roman Shtylman <shtylman+expressjs@gmail.com>
@@ -304,18 +286,14 @@ class ContainerState extends ConfigParser implements IContainerState {
     OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`);
 
-    this._rtLicense = {};
+    this.rtLicense = {};
 
     this.dataLookup = {};
     this.metaDataLookup = {};
 
-    this._publicationList = {
-      publicationList: [],
-    };
+    this.publicationList = []
 
-    this._subscriptionList = {
-      subscriptionList: [],
-    };
+    this.subscriptionList = []
 
     // Fill both pubList and subList
     for (const resources of this.profile.resource) {
@@ -343,6 +321,9 @@ class ContainerState extends ConfigParser implements IContainerState {
 
   }
 
+  dataLookup: Record<string, IOPCUANetworkMessage>;
+  metaDataLookup: Record<string, IOPCUADataSetMetaData>;
+
   private extractMamFile(path: string): IMasterAssetModel  {
     if(existsSync(path)){
         return JSON.parse(readFileSync(path).toString());
@@ -352,102 +333,130 @@ class ContainerState extends ConfigParser implements IContainerState {
 
   // Property accessor section
   get brokerState() {
-    return this._brokerState;
+    return this.brokerState;
   }
 
   set brokerState(brokerState: boolean) {
-    this._brokerState = brokerState;
+    this.brokerState = brokerState;
   }
   // Resource accesor section
   // --- HEALTH ---
 
   get health() {
-    return this._health;
+    return this.health;
   }
 
   set health(health: IContainerHealth) {
     if (health.healthScore >= 100 && health.healthScore <= 0) throw new RangeError('healthState out of range');
-    this._health = health;
+    this.health = health;
     this.emit('resourceChanged', 'health');
   }
 
   setHealthState(healthState: number) {
     if (healthState >= 100 && healthState <= 0) throw new RangeError('healthState out of range');
-    this._health.healthScore = healthState;
+    this.health.healthScore = healthState;
     this.emit('resourceChanged', 'health');
   }
 
   setHealth(health: EDeviceHealth) {
-    this._health.health = health;
+    this.health.health = health;
     this.emit('resourceChanged', 'health');
   }
 
   // --- MAM ---
 
-  get mam() {
-    return this._mam;
+  get mam(): IMasterAssetModel {
+    return this.mam;
+  }
+
+  private set mam(mam) {
+    this.mam = mam
   }
 
   // --- Profile ---
-  get profile() {
-    return this._profile;
+  get profile(): IContainerProfile {
+    return this.profile;
+  }
+
+  private set profile(profile) {
+    this.profile = profile;
   }
 
   addProfile(entry: string): void {
     if (!(Application.full.includes(Resource[entry]))) console.log('Attention! Adding non-conform profile entry, proceed at own risk');
-    this._profile.resource.push(entry);
+    this.profile.resource.push(entry);
     this.emit('resourceChanged', 'profile');
   }
 
   // --- License ---
 
-  get license() {
-    return this._license;
+  get license(): ILicenseObject[] {
+    return this.license;
+  }
+
+  private set license(license) {
+    this.license = license
   }
 
   // --- LicenseText ---
-  get licenseText() {
-    return this._licenseText;
+  get licenseText(): Record<string, string> {
+    return this.licenseText;
+  }
+
+  private set licenseText(licenseText) {
+    this.licenseText = licenseText;
   }
 
   // TODO: Add dynamic ENUM containing all spdx licenseIds
   addLicenseText(licenseName: string, licenseText: string) {
-    this._licenseText[licenseName] = licenseText;
+    this.licenseText[licenseName] = licenseText;
     this.emit('resourceChanged', 'licenseText');
   }
 
   // --- rtLicense ---
-  get rtLicense() {
-    return this._rtLicense;
+  get rtLicense(): IContainerRTLicense {
+    return this.rtLicense;
+  }
+
+  private set rtLicense(rtLicense) {
+    this.rtLicense = rtLicense;
   }
 
   // --- publicationList ---
-  get publicationList() {
-    return this._publicationList;
+  get publicationList(): IPublicationListObject[] {
+    return this.publicationList;
+  }
+
+  private set publicationList(publicationList) {
+    this.publicationList = publicationList;
   }
 
   addPublication(publicationObj: IPublicationListObject): void {
-    this._publicationList.publicationList.push(publicationObj);
+    this.publicationList.push(publicationObj);
     this.emit('resourceChanged', 'publicationList');
   }
 
   removePublicationByTag(tag: string): void {
-    this._publicationList.publicationList = this._publicationList.publicationList.filter(value => value.tag !== tag);
+    this.publicationList = this.publicationList.filter(value => value.tag !== tag);
     this.emit('resourceChanged', 'publicationList');
   }
 
   // --- subscriptionList ---
-  get subscriptionList() {
-    return this._subscriptionList;
+  get subscriptionList(): ISubscriptionListObject[] {
+    return this.subscriptionList;
+  }
+
+  private set subscriptionList(subscriptionList) {
+    this.subscriptionList = subscriptionList;
   }
 
   addSubscription(subscriptionObj: ISubscriptionListObject): void {
-    this._subscriptionList.subscriptionList.push(subscriptionObj);
+    this.subscriptionList.push(subscriptionObj);
     this.emit('resourceChanged', 'subscriptionList');
   }
 
   removeSubscriptionByTopic(topic: string): void {
-    this._subscriptionList.subscriptionList = this._subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
+    this.subscriptionList = this.subscriptionList.filter(value => value.topicPath !== topic);
     this.emit('resourceChanged', 'subscriptionList');
   }
 
@@ -465,4 +474,4 @@ class ContainerState extends ConfigParser implements IContainerState {
   }
 }
 
-export { ContainerState, IContainerState, IContainerConfig, IContainerRTLicense };
+export { ApplicationResources, IContainerConfig, IContainerRTLicense };

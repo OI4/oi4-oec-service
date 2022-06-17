@@ -32,5 +32,5 @@ export const DefaultMqttSettingsPaths: IMqttSettingsPaths = {
     privateKey: '/run/secrets/mqtt_private_key.pem',
     clientCertificate: `/etc/oi4/certs/${os.hostname()}.pem`,
     passphrase: '/run/secrets/mqtt_passphrase',
-    credentials: 'run/secrets/mqtt_credentials'
+    credentials: '/run/secrets/mqtt_credentials'
 }

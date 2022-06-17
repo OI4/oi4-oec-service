@@ -1,5 +1,4 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {IContainerState} from '../Container/index';
 import {EventEmitter} from 'events';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
@@ -8,7 +7,8 @@ import {
     DataSetClassIds,
     EDeviceHealth,
     ESubscriptionListConfig,
-    ESyslogEventFilter
+    ESyslogEventFilter,
+    IApplicationResources
 } from '@oi4/oi4-oec-service-model';
 import {
     ValidatedPayload,
@@ -21,10 +21,12 @@ import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-se
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
-class OI4MessageBus extends EventEmitter {
+
+class OI4Application extends EventEmitter {
+
     public oi4Id: string;
     public serviceType: string;
-    public containerState: IContainerState;
+    public applicationResources: IApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
 
@@ -37,18 +39,20 @@ class OI4MessageBus extends EventEmitter {
     private mqttMessageProcessor: MqttMessageProcessor;
 
     /***
-     * @param container -> is the container state of the app. Contains mam settings oi4id, health and so on
+     * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
      * @param mqttPreSettings -> contains mqtt presettings for connection. for example host and port
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      */
-    constructor(container: IContainerState, mqttSettings: MqttSettings) {
+
+    constructor(applicationResources: IApplicationResources, mqttSettings: MqttSettings) {
+
         super();
-        this.oi4Id = container.oi4Id;
-        this.serviceType = container.mam.DeviceClass;
+        this.oi4Id = applicationResources.oi4Id;
+        this.serviceType = applicationResources.mam.DeviceClass;
         this.builder = new OPCUABuilder(this.oi4Id, this.serviceType);
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
-        this.containerState = container;
+        this.applicationResources = applicationResources;
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
 
@@ -70,7 +74,8 @@ class OI4MessageBus extends EventEmitter {
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper, this.logger);
-        this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.containerState, this.sendMetaData, this.sendResource, this.emit);
+
+        this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
     }
@@ -88,24 +93,24 @@ class OI4MessageBus extends EventEmitter {
     }
 
     private setOnClientCloseCallback() {
-        this.client.on(AsyncClientEvents.CLOSE, async() => this.clientCallbacksHelper.onCloseCallback(this.containerState, this.client, this.topicPreamble, this. oi4Id, this.builder));
+        this.client.on(AsyncClientEvents.CLOSE, async() => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this. oi4Id, this.builder));
     }
 
     private setOnClientDisconnectCallback() {
-        this.client.on(AsyncClientEvents.DISCONNECT, async() => this.clientCallbacksHelper.onDisconnectCallback(this.containerState));
+        this.client.on(AsyncClientEvents.DISCONNECT, async() => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
     }
 
     private setOnClientReconnectCallback() {
-        this.client.on(AsyncClientEvents.RECONNECT, async() => this.clientCallbacksHelper.onReconnectCallback(this.containerState));
+        this.client.on(AsyncClientEvents.RECONNECT, async() => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
     }
 
     private setOnClientConnectCallback() {
         // Publish Birth Message and start listening to topics
         this.client.on(AsyncClientEvents.CONNECT, async() => {
-            await this.clientCallbacksHelper.onClientConnectCallback(this.containerState, this.client, this.topicPreamble, this.oi4Id, this.builder);
+            await this.clientCallbacksHelper.onClientConnectCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder);
             await this.initIncomingMessageListeners();
             this.initClientHealthHeartBeat();
-            this.containerState.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
+            this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
         });
     }
 
@@ -118,7 +123,7 @@ class OI4MessageBus extends EventEmitter {
     }
 
     private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
-        this.containerState.subscriptionList.subscriptionList.push({
+        this.applicationResources.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
             interval: 0,
@@ -144,26 +149,26 @@ class OI4MessageBus extends EventEmitter {
     // FIXME: Shall we remove this commented code?
     // private async ownUnsubscribe(topic: string) {
     //   // Remove from subscriptionList
-    //   this.containerState.subscriptionList.subscriptionList = this.containerState.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
+    //   this.applicationResources.subscriptionList.subscriptionList = this.applicationResources.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
     //   return await this.client.unsubscribe(topic);
     // }
 
     // GET SECTION ----------------//
     /**
-     * Sends all available metadata of the containerState to the bus
+     * Sends all available metadata of the applicationResources to the bus
      * @param cutTopic - the cutTopic, containing only the tag-element
      */
     async sendMetaData(cutTopic: string) {
-        await this.send(cutTopic, 'metadata', this.containerState.metaDataLookup);
+        await this.send(cutTopic, 'metadata', this.applicationResources.metaDataLookup);
     }
 
     //FIXME is this sendData even used somewhere?
     /**
-     * Sends all available data of the containerState to the bus
+     * Sends all available data of the applicationResources to the bus
      * @param cutTopic - the cuttopic, containing only the tag-element
      */
     async sendData(cutTopic: string) {
-        await this.send(cutTopic, 'data', this.containerState.dataLookup);
+        await this.send(cutTopic, 'data', this.applicationResources.dataLookup);
     }
 
     //FIXME add a better type for the information send (Either data or metadata)
@@ -174,7 +179,7 @@ class OI4MessageBus extends EventEmitter {
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.containerState.dataLookup;
+        const dataLookup = this.applicationResources.dataLookup;
         if (tagName in dataLookup) {
             await this.client.publish(`${this.topicPreamble}/pub/${type}/${tagName}`, JSON.stringify(information[tagName]));
             this.logger.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
@@ -182,7 +187,7 @@ class OI4MessageBus extends EventEmitter {
     }
 
     /**
-     * Sends the saved Resource from containerState to the message bus
+     * Sends the saved Resource from applicationResources to the message bus
      * @param resource - the resource that is to be sent to the bus (health, license etc.)
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
      * @param [filter] - the tag of the resource
@@ -211,7 +216,7 @@ class OI4MessageBus extends EventEmitter {
             case ResourceType.MAM:
             case ResourceType.PROFILE:
             case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
-                payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.containerState, resource, filter, dswidFilter);
+                payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
                 break;
             }
             //FIXME This is the sending of the default health state, but not 100% is it right to implement it like this. Maybe double check is better.
@@ -220,23 +225,23 @@ class OI4MessageBus extends EventEmitter {
                 break;
             }
             case ResourceType.LICENSE_TEXT: {
-                payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.containerState, filter, resource);
+                payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter, resource);
                 break;
             }
             case ResourceType.LICENCE: {
-                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.containerState, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
             case ResourceType.PUBLICATION_LIST: {
-                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.containerState, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
             case ResourceType.SUBSCRIPTION_LIST: {
-                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.containerState, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
             case ResourceType.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.containerState, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
             default: {
@@ -256,7 +261,8 @@ class OI4MessageBus extends EventEmitter {
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
-
+        console.log('================')
+        console.log(filter)
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
@@ -319,4 +325,5 @@ class OI4MessageBus extends EventEmitter {
     }
 }
 
-export {OI4MessageBus};
+export {OI4Application};
+

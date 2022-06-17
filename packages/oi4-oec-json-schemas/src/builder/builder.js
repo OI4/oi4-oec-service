@@ -4,7 +4,7 @@ const fs = require('fs')
 let tempJson
 let tempPath
 // Get lookup for serviceTypes, resources and methods
-tempPath = `${rootDir}/schemas/constants/serviceType.schema.json`
+tempPath = `${rootDir}/src/schemas/constants/serviceType.schema.json`
 tempJson = readJSON(tempPath)
 const serviceTypeArr = tempJson.enum
 console.log('ServiceType Array:')
@@ -14,7 +14,7 @@ let serviceTypeRegEx = createRegExFromArr(serviceTypeArr)
 console.log('ServiceType RegEx:')
 console.log(serviceTypeRegEx)
 
-tempPath = `${rootDir}/schemas/constants/resources.schema.json`
+tempPath = `${rootDir}/src/schemas/constants/resources.schema.json`
 tempJson = readJSON(tempPath)
 const resourceArr = tempJson.enum
 console.log('Resource Array:')
@@ -24,7 +24,7 @@ let resourceRegEx = createRegExFromArr(resourceArr)
 console.log('Resource RegEx:');
 console.log(resourceRegEx)
 
-tempPath = `${rootDir}/schemas/constants/method.schema.json`
+tempPath = `${rootDir}/src/schemas/constants/method.schema.json`
 tempJson = readJSON(tempPath)
 const methodArr = tempJson.enum
 console.log('Method Array:')
@@ -34,7 +34,7 @@ let methodRegEx = createRegExFromArr(methodArr)
 console.log('Method RegEx:');
 console.log(methodRegEx);
 
-tempPath = `${rootDir}/schemas/oi4Identifier.schema.json`
+tempPath = `${rootDir}/src/schemas/oi4Identifier.schema.json`
 tempJson = readJSON(tempPath)
 
 console.log('OI4Identifier Orig Pattern: ');
@@ -65,14 +65,14 @@ const topicPathRegEx = `^oi4\\/${serviceTypeRegEx.replace(
 console.log(`TopicPathRegEx:\n${topicPathRegEx}`)
 
 // Read Modify Write NetworkSchemaJson
-tempPath = `${rootDir}/schemas/NetworkMessageBase.schema.json`
+tempPath = `${rootDir}/src/schemas/NetworkMessageBase.schema.json`
 tempJson = readJSON(tempPath)
 tempJson.properties.PublisherId.pattern = publisherIdRegEx
 tempJson.properties.MessageId.pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`
 writeJSON(tempPath, tempJson)
 
 // Read Modify Write topicPathSchemaJson
-tempPath = `${rootDir}/schemas/constants/topicPath.schema.json`
+tempPath = `${rootDir}/src/schemas/constants/topicPath.schema.json`
 tempJson = readJSON(tempPath)
 tempJson.pattern = topicPathRegEx
 writeJSON(tempPath, tempJson)

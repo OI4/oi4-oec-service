@@ -1,6 +1,6 @@
 export interface IConformity {
   oi4Id: EValidity;
-  resource: IValidityLookup;
+  resource: Record<string, any>;
   checkedResourceList: string[];
   profileResourceList: string[];
   nonProfileResourceList: string[];
@@ -16,10 +16,6 @@ export interface ISchemaConformity {
 interface ISchemaResult {
   schemaResult: boolean;
   resultMsgArr: string[];
-}
-
-interface IValidityLookup {
-  [key: string]: IValidityDetails;
 }
 
 export interface IValidityDetails {

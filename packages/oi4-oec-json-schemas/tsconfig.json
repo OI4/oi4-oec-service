@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "schemas",
+    "rootDir": "src",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "preserveSymlinks": true,
@@ -9,5 +9,12 @@
     "types": ["node", "jest"],
     "lib": ["es2019", "DOM"]
   },
-  "include": ["schemas/**/*"]
+  "include": [
+    "src/**/*",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules/**/*"
+  ]
 }

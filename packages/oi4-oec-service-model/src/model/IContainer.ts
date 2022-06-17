@@ -1,7 +1,6 @@
-import { ISpecificContainerConfig } from './IContainerConfig';
 import { EDeviceHealth, EPublicationListConfig, EPublicationListExplicit, ESubscriptionListConfig } from './EContainer';
 import { EOPCUABaseDataType } from '@oi4/oi4-oec-service-opcua-model';
-import { IOPCUANetworkMessage, IOPCUAMetaData, IMasterAssetModel, IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
+import { IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
 
 export interface IEventObject {
   number: number;
@@ -13,17 +12,8 @@ export interface IEventObject {
   tag: string; // Oi4Id of log originator
 }
 
-export interface IContainerData {
-  [key: string]: IOPCUANetworkMessage; // TODO: should this really be an object? Maybe an array is better suited here.
-}
-
-export interface IContainerMetaData {
-  [key: string]: IOPCUAMetaData;
-}
-
 // Common Container config interfaces
-export interface IContainerConfig {
-  [key:string]: IContainerConfigGroupName | IContainerConfigContext;
+export interface IContainerConfig extends Record<string, IContainerConfigGroupName | IContainerConfigContext> {
   context: IContainerConfigContext;
 }
 
@@ -32,8 +22,7 @@ export interface IContainerConfigContext {
   description?: IOPCUALocalizedText;
 }
 
-export interface IContainerConfigGroupName {
-  [key: string]: IContainerConfigConfigName | IOPCUALocalizedText | undefined; // TODO: Better to use intersected types here, this solution is a hotfix.
+export interface IContainerConfigGroupName extends Record<string, IContainerConfigConfigName | IOPCUALocalizedText | undefined>{
   name: IOPCUALocalizedText;
   description?: IOPCUALocalizedText;
 }
@@ -96,22 +85,6 @@ export interface ILicenseObject {
   components: IComponentObject[];
 }
 
-export interface IContainerLicense {
-  licenses: ILicenseObject[];
-}
-
-export interface IContainerLicenseText {
-  [key: string]: string;
-}
-
-export interface IContainerPublicationList {
-  publicationList: IPublicationListObject[];
-}
-
-export interface IContainerSubscriptionList {
-  subscriptionList: ISubscriptionListObject[];
-}
-
 export interface ISubscriptionListObject {
   topicPath: string;
   interval?: number;
@@ -130,44 +103,7 @@ export interface IPublicationListObject {
   config?: EPublicationListConfig;
 }
 
-export interface IContainerState {
-  oi4Id: string;
-  health: IContainerHealth;
-  profile: IContainerProfile;
-  mam: IMasterAssetModel;
-  license: IContainerLicense;
-  licenseText: IContainerLicenseText;
-  rtLicense: IContainerRTLicense;
-  config: ISpecificContainerConfig;
-  publicationList: IContainerPublicationList;
-  subscriptionList: IContainerSubscriptionList;
-  brokerState: boolean;
-
-  dataLookup: IContainerData;
-  metaDataLookup: IContainerMetaData;
-
-  setHealthState(healthState: number): void;
-  setHealth(health: EDeviceHealth): void;
-
-  addProfile(entry: string): void;
-  addLicenseText(licenseName: string, licenseText: string): void;
-  addPublication(publicationObj: IPublicationListObject): void;
-  addSubscription(subbscriptionObj: ISubscriptionListObject): void;
-
-  removePublicationByTag(tag: string): void;
-  removeSubscriptionByTopic(topic: string): void;
-
-  on(event: string, listener: Function): this;
-
-  // Methods
-  addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
-}
-
-export interface IDataSetWriterIdLookup { // TODO: need better types here, EResources or so
-  [key: string]: number;
-}
-
-export const CDataSetWriterIdLookup: IDataSetWriterIdLookup = {
+export const CDataSetWriterIdLookup: Record<string, number> = {
   mam: 1,
   health: 2,
   license: 3,

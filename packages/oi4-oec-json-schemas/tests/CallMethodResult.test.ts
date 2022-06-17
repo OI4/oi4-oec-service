@@ -1,7 +1,7 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../schemas/CallMethodResult.schema.json'
-import BaseDataType from '../schemas/BaseDataType.schema.json'
-import uint32 from '../schemas/dataTypes/uint32.schema.json'
+import schema from '../src/schemas/CallMethodResult.schema.json'
+import BaseDataType from '../src/schemas/BaseDataType.schema.json'
+import uint32 from '../src/schemas/dataTypes/uint32.schema.json'
 
 expect.extend(
   matchersWithOptions({

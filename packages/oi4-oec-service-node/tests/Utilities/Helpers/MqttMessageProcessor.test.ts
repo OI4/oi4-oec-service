@@ -14,9 +14,7 @@ import {MockedIContainerStateFactory} from '../../Test-utils/Factories/MockedICo
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import {Oi4IdManager} from '../src/Proxy/Messagebus/Oi4IdManager';
+import {Oi4IdManager} from '../src/messagebus/Oi4IdManager';
 
 describe('Unit test for MqttMessageProcessor', () => {
 

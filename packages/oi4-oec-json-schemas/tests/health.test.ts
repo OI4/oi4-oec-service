@@ -1,6 +1,6 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../schemas/health.schema.json'
-import deviceHealthEnumerationSchema from '../schemas/constants/DeviceHealthEnumeration.schema.json'
+import schema from '../src/schemas/health.schema.json'
+import deviceHealthEnumerationSchema from '../src/schemas/constants/DeviceHealthEnumeration.schema.json'
 
 import validHealthObjs from './__fixtures__/healths_valid.json'
 import invalidHealthObjs from './__fixtures__/healths_invalid.json'

@@ -16,7 +16,7 @@ import {
     IContainerMetaData,
     IContainerProfile,
     IContainerPublicationList,
-    IContainerState,
+    IApplicationResources,
     IContainerSubscriptionList,
     IPublicationListObject,
     ISubscriptionListObject
@@ -24,7 +24,7 @@ import {
 
 export class MockedIContainerStateFactory {
 
-    public static getMockedContainerStateInstance= (): IContainerState => {
+    public static getMockedContainerStateInstance= (): IApplicationResources => {
         return {
             brokerState: false,
             config: {
@@ -104,7 +104,7 @@ export class MockedIContainerStateFactory {
                 console.log('Called mocked setHealthState. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            on(_: string, __: Function): IContainerState {
+            on(_: string, __: Function): IApplicationResources {
                 console.log('Called mocked on. Do nothing....');
                 return undefined;
             }

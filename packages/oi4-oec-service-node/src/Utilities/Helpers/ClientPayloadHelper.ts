@@ -3,7 +3,9 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IContainerHealth, IContainerState, ILicenseObject,
+    IApplicationResources,
+    IContainerHealth,
+    ILicenseObject,
     IPublicationListObject,
     ISpecificContainerConfig,
     ISubscriptionListObject
@@ -39,39 +41,40 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, containerState: any, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
-            payload.push(this.createPayload(containerState[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource]));
         } else if (Number.isNaN(dataSetWriterIdFilter)) {
             // If the filter is not an oi4Id and not a number, we don't know how to handle it
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
-            payload.push(this.createPayload((containerState as any)[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource]));
+            // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
+            //return;
         }
 
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(containerState: IContainerState, filter: string, resource: string): ValidatedPayload {
+    createLicenseTextSendResourcePayload(applicationResources: IApplicationResources, filter: string, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
-        if (typeof containerState.licenseText[filter] === 'undefined') {
+        if (typeof applicationResources.licenseText[filter] === 'undefined') {
             return {abortSending: true, payload: undefined};
         }
         // licenseText is special...
-        payload.push(this.createPayload({licenseText: containerState.licenseText[filter]}, CDataSetWriterIdLookup[resource]));
+        payload.push(this.createPayload({licenseText: applicationResources.licenseText[filter]}, CDataSetWriterIdLookup[resource]));
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(containerState: IContainerState, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if (containerState['license'].licenses.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
-
-                const filteredLicenseArr = containerState['license'].licenses.filter((elem: ILicenseObject) => {
+            if (applicationResources.license.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
+                const filteredLicenseArr = applicationResources.license.filter((elem: ILicenseObject) => {
                     if (elem.licenseId === filter) return elem;
                 });
 
@@ -89,7 +92,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const license of containerState['license'].licenses) {
+        for (const license of applicationResources.license) {
             payload.push({
                 subResource: license.licenseId,
                 Payload: { components: license.components },
@@ -100,12 +103,12 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(containerState: IContainerState, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createPublicationListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
-            if (containerState['publicationList'].publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
-                const filteredPubsArr = containerState['publicationList'].publicationList.filter((elem: IPublicationListObject) => {
+            if (applicationResources.publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
+                const filteredPubsArr = applicationResources.publicationList.filter((elem: IPublicationListObject) => {
                     if (elem.resource === filter) return elem;
                 });
                 for (const filteredPubs of filteredPubsArr) {
@@ -123,7 +126,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const pubs of containerState['publicationList'].publicationList) {
+        for (const pubs of applicationResources.publicationList) {
             payload.push({
                 subResource: pubs.resource,
                 Payload: pubs,
@@ -133,13 +136,13 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(containerState: IContainerState, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createSubscriptionListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
             // 7 is resource
-            if (containerState['subscriptionList'].subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
-                const filteredSubsArr = containerState['subscriptionList'].subscriptionList.filter((elem: ISubscriptionListObject) => {
+            if (applicationResources.subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
+                const filteredSubsArr = applicationResources.subscriptionList.filter((elem: ISubscriptionListObject) => {
                     if (elem.topicPath.split('/')[7] === filter) return elem;
                 });
                 for (const filteredSubs of filteredSubsArr) {
@@ -157,7 +160,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const subs of containerState['subscriptionList'].subscriptionList) {
+        for (const subs of applicationResources.subscriptionList) {
             payload.push({ // TODO: subResource out of topicPath property
                 subResource: subs.topicPath.split('/')[7],
                 Payload: subs,
@@ -176,8 +179,8 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createConfigSendResourcePayload(containerState: IContainerState, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: ISpecificContainerConfig = (containerState as any)[resource];
+    createConfigSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+        const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUAPayload[] = [];
 
         // Send all configs out
@@ -194,7 +197,7 @@ export class ClientPayloadHelper {
         } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
 
             // Filtered by subResource
-            actualPayload[filter] = containerState['config'][filter];
+            actualPayload[filter] = applicationResources['config'][filter];
             payload.push({
                 subResource: filter,
                 Payload: actualPayload,
@@ -210,7 +213,7 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: ISpecificContainerConfig = (containerState as any)[resource];
+            const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,
@@ -220,6 +223,7 @@ export class ClientPayloadHelper {
 
         }
 
+        //FIXME is this needed? I do not fully understand how this method is supposed to behave
         return {abortSending: true, payload: undefined};
     }
 
