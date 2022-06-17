@@ -21,7 +21,7 @@ export class ClientCallbacksHelper {
     }
 
     public async onErrorCallback(err: Error) {
-        console.log(`Error in mqtt client: ${err}`);
+        this.componentLogger.log(`Error in mqtt client: ${err}`);
     };
 
     public async onCloseCallback(containerState: IContainerState, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
@@ -33,17 +33,17 @@ export class ClientCallbacksHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
-        console.log('Connection to mqtt broker closed');
+        this.componentLogger.log('Connection to mqtt broker closed');
     };
 
     public async onDisconnectCallback(containerState: IContainerState) {
         containerState.brokerState = false;
-        console.log('Disconnected from mqtt broker');
+        this.componentLogger.log('Disconnected from mqtt broker');
     };
 
     public async onReconnectCallback(containerState: IContainerState) {
         containerState.brokerState = false;
-        console.log('Reconnecting to mqtt broker');
+        this.componentLogger.log('Reconnecting to mqtt broker');
     };
 
     public async onClientConnectCallback(containerState: IContainerState, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
