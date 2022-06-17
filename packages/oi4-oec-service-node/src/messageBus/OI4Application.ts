@@ -123,7 +123,7 @@ class OI4Application extends EventEmitter {
     }
 
     private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
-        this.applicationResources.subscriptionList.subscriptionList.push({
+        this.applicationResources.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
             interval: 0,

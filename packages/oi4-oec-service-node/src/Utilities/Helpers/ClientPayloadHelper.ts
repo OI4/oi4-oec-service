@@ -2,8 +2,10 @@ import {ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
-    ESyslogEventFilter, IApplicationResources,
-    IContainerHealth, ILicenseObject,
+    ESyslogEventFilter,
+    IApplicationResources,
+    IContainerHealth,
+    ILicenseObject,
     IPublicationListObject,
     ISpecificContainerConfig,
     ISubscriptionListObject
@@ -71,8 +73,8 @@ export class ClientPayloadHelper {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if (applicationResources['license'].licenses.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
-                const filteredLicenseArr = applicationResources['license'].licenses.filter((elem: ILicenseObject) => {
+            if (applicationResources.license.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
+                const filteredLicenseArr = applicationResources.license.filter((elem: ILicenseObject) => {
                     if (elem.licenseId === filter) return elem;
                 });
 
@@ -90,7 +92,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const license of applicationResources['license'].licenses) {
+        for (const license of applicationResources.license) {
             payload.push({
                 subResource: license.licenseId,
                 Payload: { components: license.components },
@@ -105,8 +107,8 @@ export class ClientPayloadHelper {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
-            if (applicationResources['publicationList'].publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
-                const filteredPubsArr = applicationResources['publicationList'].publicationList.filter((elem: IPublicationListObject) => {
+            if (applicationResources.publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
+                const filteredPubsArr = applicationResources.publicationList.filter((elem: IPublicationListObject) => {
                     if (elem.resource === filter) return elem;
                 });
                 for (const filteredPubs of filteredPubsArr) {
@@ -124,7 +126,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const pubs of applicationResources['publicationList'].publicationList) {
+        for (const pubs of applicationResources.publicationList) {
             payload.push({
                 subResource: pubs.resource,
                 Payload: pubs,
@@ -139,8 +141,8 @@ export class ClientPayloadHelper {
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
             // 7 is resource
-            if (applicationResources['subscriptionList'].subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
-                const filteredSubsArr = applicationResources['subscriptionList'].subscriptionList.filter((elem: ISubscriptionListObject) => {
+            if (applicationResources.subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
+                const filteredSubsArr = applicationResources.subscriptionList.filter((elem: ISubscriptionListObject) => {
                     if (elem.topicPath.split('/')[7] === filter) return elem;
                 });
                 for (const filteredSubs of filteredSubsArr) {
@@ -158,7 +160,7 @@ export class ClientPayloadHelper {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const subs of applicationResources['subscriptionList'].subscriptionList) {
+        for (const subs of applicationResources.subscriptionList) {
             payload.push({ // TODO: subResource out of topicPath property
                 subResource: subs.topicPath.split('/')[7],
                 Payload: subs,

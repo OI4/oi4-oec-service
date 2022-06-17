@@ -1,5 +1,4 @@
-export interface IDataSetClassIds {
-    [key: string]: string;
+export interface IDataSetClassIds extends Record<string, string> {
     mam: string;
     health: string;
     license: string;
