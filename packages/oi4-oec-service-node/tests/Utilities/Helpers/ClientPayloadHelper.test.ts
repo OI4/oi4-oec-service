@@ -1,4 +1,4 @@
-import {ClientPayloadHelper} from '../../../dist/Utilities/Helpers/ClientPayloadHelper';
+import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {EDeviceHealth, EPublicationListExplicit, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
