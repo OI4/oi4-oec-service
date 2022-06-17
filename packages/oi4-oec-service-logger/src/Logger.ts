@@ -6,6 +6,7 @@ import winston from 'winston';
 import { Syslog, SyslogTransportInstance } from 'winston-syslog';
 import { ESyslogEventFilter } from '@oi4/oi4-oec-service-model';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
 const glossyParser = require('glossy').Parse;
 /**

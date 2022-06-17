@@ -21,7 +21,9 @@ import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-se
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
+
 class OI4Application extends EventEmitter {
+
     public oi4Id: string;
     public serviceType: string;
     public applicationResources: IApplicationResources;
@@ -42,7 +44,9 @@ class OI4Application extends EventEmitter {
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      */
+
     constructor(applicationResources: IApplicationResources, mqttSettings: MqttSettings) {
+
         super();
         this.oi4Id = applicationResources.oi4Id;
         this.serviceType = applicationResources.mam.DeviceClass;
@@ -70,6 +74,7 @@ class OI4Application extends EventEmitter {
 
         this.clientPayloadHelper = new ClientPayloadHelper(this.logger);
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper, this.logger);
+
         this.mqttMessageProcessor = new MqttMessageProcessor(this.logger, this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
@@ -321,3 +326,4 @@ class OI4Application extends EventEmitter {
 }
 
 export {OI4Application};
+

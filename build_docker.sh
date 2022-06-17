@@ -1,3 +1,4 @@
+bin/ash
 
 yarn build || {
   exit 1

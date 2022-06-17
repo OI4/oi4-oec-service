@@ -26,6 +26,11 @@ RUN mkdir -p logs
 
 COPY ./packages/oi4-oec-service-demo/node_modules/@oi4 ./node_modules/@oi4
 COPY packages/oi4-oec-service-demo/dist/index.js ./
-CMD ["node", "index.js"]
+
+COPY packages/oi4-oec-service-demo/scripts/entrypoint.sh ./scripts/
+
 EXPOSE 5800 5800
+
+RUN chmod +x "./scripts/entrypoint.sh"
+ENTRYPOINT ["./scripts/entrypoint.sh"]
 
