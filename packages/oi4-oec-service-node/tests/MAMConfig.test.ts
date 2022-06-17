@@ -20,12 +20,12 @@ describe('Unit test for MAMStorage reading', () => {
             .mockReturnValueOnce(mam)
             .mockReturnValueOnce(mam);
         const expectedMAM = JSON.parse(mam.toString()) as IMasterAssetModel;
-        const containerState = new ApplicationResources();
-        expect(containerState.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
-        expect(containerState.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
-        expect(containerState.mam.Model).toEqual(expectedMAM.Model);
-        expect(containerState.mam.HardwareRevision).toEqual(expectedMAM.HardwareRevision);
-        expect(containerState.mam.SerialNumber).toEqual(os.hostname());
+        const resources = new ApplicationResources();
+        expect(resources.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
+        expect(resources.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
+        expect(resources.mam.Model).toEqual(expectedMAM.Model);
+        expect(resources.mam.HardwareRevision).toEqual(expectedMAM.HardwareRevision);
+        expect(resources.mam.SerialNumber).toEqual(os.hostname());
 
     });
 

@@ -17,7 +17,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getContainerInfo = (): IApplicationResources => {
+const getResourceInfo = (): IApplicationResources => {
     return {
         oi4Id: '1',
         mam: {
@@ -91,11 +91,11 @@ describe('Connection to MQTT with TLS', () => {
 
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
-        expect(oi4messagebus.mqttClient.connected).toBeTruthy();
+        const oi4Application: OI4Application = new OI4Application(getResourceInfo(), mqttOpts);
+        expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
-            expect.stringContaining(JSON.stringify(getContainerInfo().mam)));
+            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should send close message on close',  async () => {
@@ -120,10 +120,10 @@ describe('Connection to MQTT with TLS', () => {
         });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
-        expect(oi4messagebus.mqttClient.connected).toBeTruthy();
+        const oi4Application: OI4Application = new OI4Application(getResourceInfo(), mqttOpts);
+        expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getContainerInfo().mam.DeviceClass}/${getContainerInfo().oi4Id}/pub/mam/${getContainerInfo().oi4Id}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0 } as IContainerHealth)));
     });
 
@@ -139,8 +139,8 @@ describe('Connection to MQTT with TLS', () => {
         );
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const oi4messagebus: OI4Application = new OI4Application(getContainerInfo(), mqttOpts);
-        expect(oi4messagebus.mqttClient.options.will?.payload)
+        const oi4Application: OI4Application = new OI4Application(getResourceInfo(), mqttOpts);
+        expect(oi4Application.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
     });
 

@@ -47,13 +47,13 @@ describe('Test OI4MessageBusFactory', () => {
             privateKey: ''
         };
 
-        const containerState: ApplicationResources = new ApplicationResources(`${__dirname}/../__fixtures__/mam.json`);
-        const factory: OI4ApplicationFactory = new OI4ApplicationFactory(containerState, settingsPaths);
-        const oi4MessageBus = factory.createOI4Application();
-        expect(oi4MessageBus).toBeDefined();
-        expect(oi4MessageBus.mqttClient).toBeDefined();
-        expect(oi4MessageBus.mqttClient.connected).toBeTruthy();
-        const options = oi4MessageBus.mqttClient.options;
+        const resources: ApplicationResources = new ApplicationResources(`${__dirname}/../__fixtures__/mam.json`);
+        const factory: OI4ApplicationFactory = new OI4ApplicationFactory(resources, settingsPaths);
+        const oi4Application = factory.createOI4Application();
+        expect(oi4Application).toBeDefined();
+        expect(oi4Application.mqttClient).toBeDefined();
+        expect(oi4Application.mqttClient.connected).toBeTruthy();
+        const options = oi4Application.mqttClient.options;
         expect(options).toBeDefined();
         expect(options.clientId).toBe(os.hostname());
     });
