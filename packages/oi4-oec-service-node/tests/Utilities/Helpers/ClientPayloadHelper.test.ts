@@ -1,8 +1,8 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
-import {EDeviceHealth, EPublicationListExplicit, IContainerHealth, IContainerState} from '@oi4/oi4-oec-service-model';
-import {MockedIContainerStateFactory} from '../../Test-utils/Factories/MockedIContainerStateFactory';
+import {EDeviceHealth, IApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 
 
 describe('Unit test for ClientPayloadHelper', () => {
@@ -16,13 +16,13 @@ describe('Unit test for ClientPayloadHelper', () => {
     const fakeLogFile = loggerItems.fakeLogFile;
 
     let clientPayloadHelper: ClientPayloadHelper;
-    let mockedIContainerState: IContainerState;
+    let mockedIContainerState: IApplicationResources;
 
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         clientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
-        mockedIContainerState = MockedIContainerStateFactory.getMockedContainerStateInstance()
+        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance()
     });
 
     function checkAgainstDefaultPayload(payload: ValidatedPayload) {
@@ -89,7 +89,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function checkAgainstLicensePayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = {components: [{licAddText: 'fakeLicence', component: 'fakeComponent', licAuthors: ['John Doe, Mary Poppins, Bilbo Baggins, John Rambo, Homer Simpson']}]};
+        const expectedInnerPayload = {components: [{licAddText: 'fakeLicence', component: 'fakeComponent', licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson']}]};
         const expectedPayload = createMockedPayloadWithSubresource('1',dataSetWriterId, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
@@ -115,23 +115,17 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkAgainstLicensePayload(validatedPayload, 3);
     });
 
-    function createPublicationMockedPayload (resource: string, tag: string, datasetWriterId: number, oi4Id: string, active: boolean, explicit: string, interval: number, precisions: number, config: string) {
+    function createPublicationMockedPayload (resource: string, datasetWriterId: number, oi4Id: string) {
         return {
-            resource: resource,
-            tag: tag,
             DataSetWriterId: datasetWriterId,
             oi4Identifier: oi4Id,
-            active: active,
-            explicit: explicit,
-            interval: interval,
-            precisions: precisions,
-            config: config,
+            resource: resource,
         }
     }
 
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = createPublicationMockedPayload('fakeResource', 'fakeTag', -1, 'fakeOi4Identifier', false, EPublicationListExplicit.EXPL_OFF_0, -1, -1, 'NONE_0');
+        const expectedInnerPayload = createPublicationMockedPayload('fakeResource', 42, 'fakeOi4Id');
         const expectedPayload = createMockedPayloadWithSubresource('fakeResource',dataSetWriterId, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
@@ -151,24 +145,22 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkAgainstPublicationPayload(validatedPayload, 2);
     });
 
-    function createSubscriptionMockedPayload (topicPath: string, interval: number, config: string) {
+    function createSubscriptionMockedPayload (topicPath: string) {
         return {
             topicPath: topicPath,
-            interval: interval,
-            config: config,
         }
     }
 
     function checkAgainstSubscriptionPayload(validatedPayload: ValidatedPayload, topicPath: string, subresource: string) {
         expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = createSubscriptionMockedPayload(topicPath,-1, 'NONE_0');
+        const expectedInnerPayload = createSubscriptionMockedPayload(topicPath);
         const expectedPayload = createMockedPayloadWithSubresource(subresource,2, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
-        checkAgainstSubscriptionPayload(validatedPayload, 'fakeTopicPath', undefined);
+        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', undefined);
     });
 
     it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN and dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {

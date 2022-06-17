@@ -1,11 +1,11 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../../src/Utilities/Helpers/ClientCallbacksHelper';
-import {IContainerState} from '@oi4/oi4-oec-service-model';
-import {MockedIContainerStateFactory} from '../../Test-utils/Factories/MockedIContainerStateFactory';
+import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import mqtt from 'async-mqtt';
 import {MockedMqttClientFactory} from '../../Test-utils/Factories/MockedMqttClientFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
+import {IApplicationResources} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -17,13 +17,13 @@ describe('Unit test for ClientCallbackHelper', () => {
     const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
 
     let clientCallbackHelper: ClientCallbacksHelper;
-    let mockedClient: IContainerState;
+    let mockedClient: IApplicationResources;
 
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         clientCallbackHelper = new ClientCallbacksHelper(clientPayloadHelper, loggerItems.fakeLogger);
-        mockedClient = MockedIContainerStateFactory.getMockedContainerStateInstance()
+        mockedClient = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance()
     });
 
     function checkLogEntries(size: number, messages: string[]) {

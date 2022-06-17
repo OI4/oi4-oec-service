@@ -9,63 +9,50 @@ import {
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
     EDeviceHealth,
-    EPublicationListConfig,
-    EPublicationListExplicit,
-    ESubscriptionListConfig,
-    IContainerConfigConfigName,
-    IContainerMetaData,
-    IContainerProfile,
-    IContainerPublicationList,
     IApplicationResources,
-    IContainerSubscriptionList,
+    IContainerConfigConfigName,
+    IContainerProfile,
     IPublicationListObject,
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
 
-export class MockedIContainerStateFactory {
+export class MockedIApplicationResourceFactory {
 
-    public static getMockedContainerStateInstance= (): IApplicationResources => {
+    public static getMockedIApplicationResourceInstance= (): IApplicationResources => {
         return {
             brokerState: false,
             config: {
-                context: {name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeContext')},
+                context: {name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeContext')},
                 logging: {
-                    auditLevel: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
-                    logFileSize: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
-                    logType: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
-                    name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeName')
+                    auditLevel: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    logFileSize: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    logType: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName')
                 },
                 registry:
                     {
-                        name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeName'),
-                        description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription'),
-                        developmentMode: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig(),
-                        showRegistry: MockedIContainerStateFactory.getMockedDefaultStandardIContainerConfig()
+                        name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                        description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
+                        developmentMode: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                        showRegistry: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
                     }
             },
-            dataLookup: {},
+            dataLookup: MockedIApplicationResourceFactory.getMockedDataLookup(),
             health: {health: EDeviceHealth.NORMAL_0, healthScore: 100},
-            license:
-                { licenses: [
-                        {   licenseId: '1' ,
-                            components: [
-                                {
-                                    licAddText:'fakeLicence',
-                                    component:'fakeComponent',
-                                    licAuthors: ['John Doe, Mary Poppins, Bilbo Baggins, John Rambo, Homer Simpson']
-                                }
-                            ]
-                        }
-                    ]
-                },
-            licenseText: MockedIContainerStateFactory.getDefaultKeyValueItem(),
-            mam: MockedIContainerStateFactory.getMockedDefaultIMasterAssetModel(),
-            metaDataLookup: MockedIContainerStateFactory.getMockedDefaultIContainerMetaData(),
+            license: [
+                {
+                    licenseId: '1',
+                    components: [{licAuthors:['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson'], component: 'fakeComponent' , licAddText: 'fakeLicence'}],
+                }
+            ],
+            licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
+            mam: MockedIApplicationResourceFactory.getMockedDefaultIMasterAssetModel(),
+            metaDataLookup: MockedIApplicationResourceFactory.getMockedDefaultIContainerMetaData(),
             oi4Id: 'fakeOi4ID',
-            profile: MockedIContainerStateFactory.getMockedDefaultIContainerProfile(),
-            publicationList: MockedIContainerStateFactory.getMockedDefaultIPublicationListObject(),
+            profile: MockedIApplicationResourceFactory.getMockedDefaultIContainerProfile(),
+            publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: {fakeRTLicense: 'fakeRTLicense'},
-            subscriptionList: MockedIContainerStateFactory.getMockedDefaultIContainerSubscriptionList(),
+            subscriptionList: [{topicPath: 'fakePath'}],
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             addDataSet(_: string, __: IOPCUANetworkMessage, ___: IOPCUAMetaData): void {
@@ -113,11 +100,11 @@ export class MockedIContainerStateFactory {
 
     private static getMockedDefaultStandardIContainerConfig(): IContainerConfigConfigName {
         return {
-            name: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeConfig'),
+            name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeConfig'),
             defaultValue: 'fakeValue',
             mandatory: false,
-            validation: MockedIContainerStateFactory.getMockedDefaultIContainerConfigValidation(),
-            description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription'),
+            validation: MockedIApplicationResourceFactory.getMockedDefaultIContainerConfigValidation(),
+            description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
             value: 'fakeValue',
             type: EOPCUABaseDataType.String
         };
@@ -134,7 +121,7 @@ export class MockedIContainerStateFactory {
     private static getMockedDefaultIMasterAssetModel(): IMasterAssetModel{
         return {
             ManufacturerUri: 'fakeManufacturerUri',
-            Model: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeModel' ),
+            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel' ),
             ProductCode: 'fakeProductCode',
             HardwareRevision: 'fakeHardwareRevision',
             SoftwareRevision: 'fakeSoftwareRevision',
@@ -144,44 +131,67 @@ export class MockedIContainerStateFactory {
             SerialNumber: 'fakeSerialNumber',
             ProductInstanceUri: 'fakeProductInstanceURI',
             RevisionCounter: -1,
-            Description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
-            Manufacturer: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeManufacturer' )
+            Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
+            Manufacturer: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeManufacturer' )
         };
     };
 
-    private static getMockedDefaultIContainerMetaData(): IContainerMetaData {
-        return {fakeKey: {
-                MessageId: 'fakeMessageId',
+    private static getMockedDefaultIContainerMetaData(): Record<string, IOPCUAMetaData> {
+        return {
+            'tag-01': {
+                MessageId: 'fakeMessageId', // TODO: Not yet defined <unixTimestampInMs-PublisherId>
                 MessageType: EOPCUAMessageType.uaData,
                 PublisherId: 'fakePublisherId',
-                DataSetWriterId: -1,
+                DataSetWriterId: 42,
                 filter: 'fakeFilter',
                 subResource: 'fakeSubResource',
-                correlationId: 'fakeCorrelationId',
+                correlationId: '42',
                 MetaData: {
                     name: 'fakeName',
-                    description: MockedIContainerStateFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
+                    description: this.getMockedIOPCUALocalizedText('fakeText'),
                     fields: [],
-                    dataSetClassId: 'fakeDataSetClassId',
-                    configurationVersion: {majorVersion: -1, minorVersion: -1},
+                    dataSetClassId: 'fakeDatasetId',
+                    configurationVersion: {
+                        majorVersion: 12,
+                        minorVersion: 1,
+                    },
                 }
-            }};
-    }
-
-    private static getMockedDefaultIPublicationListObject(): IContainerPublicationList {
-        return {publicationList: [{resource: 'fakeResource', tag: 'fakeTag', DataSetWriterId: -1, oi4Identifier: 'fakeOi4Identifier', active: false, explicit: EPublicationListExplicit.EXPL_OFF_0, interval: -1, precisions: -1, config: EPublicationListConfig.NONE_0}]};
+            }
+        };
     }
 
     private static getMockedDefaultIContainerProfile(): IContainerProfile {
         return {resource: ['fakeProfile']};
     }
 
-    private static getMockedDefaultIContainerSubscriptionList(): IContainerSubscriptionList {
-        return {subscriptionList: [{topicPath: 'fakeTopicPath', interval: -1, config: ESubscriptionListConfig.NONE_0}]};
-    }
-
     private static getMockedIOPCUALocalizedText(text: string): IOPCUALocalizedText {
         return {locale: EOPCUALocale.enUS, text: text};
     }
+
+    private static getMockedPublicationList() : IPublicationListObject[] {
+        return [{
+            resource: 'fakeResource',
+            DataSetWriterId: 42,
+            oi4Identifier: 'fakeOi4Id',
+        }]
+    }
+
+    private static getMockedDataLookup(): Record<string, IOPCUANetworkMessage> {
+        return {
+            'fakeKey': {
+                MessageId: 'fakeMessageId',
+                MessageType: EOPCUAMessageType.uaData,
+                PublisherId: 'fakePublisherId',
+                DataSetClassId: 'fakeDataSetId',
+                Messages: [{
+                    DataSetWriterId: 42,
+                    subResource: 'fakeSubResource',
+                    Payload: {
+                        fakeContent: 'fakeContent',
+                    }
+                }],
+            }
+        }
+    };
 
 }
