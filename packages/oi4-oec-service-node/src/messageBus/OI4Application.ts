@@ -133,16 +133,15 @@ class OI4Application extends EventEmitter {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(response => {
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(() => {
                 //No actual actions are needed here
-                console.log(`Received response from health heartbeat: ${response}`)
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
     }
 
     private resourceChangeCallback(resource: string) {
         if (resource === ResourceType.HEALTH) {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id);
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then();
         }
     }
 
@@ -219,7 +218,6 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
                 break;
             }
-            //FIXME This is the sending of the default health state, but not 100% is it right to implement it like this. Maybe double check is better.
             case ResourceType.HEALTH: {
                 payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload();
                 break;
@@ -261,8 +259,6 @@ class OI4Application extends EventEmitter {
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
-        console.log('================')
-        console.log(filter)
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
