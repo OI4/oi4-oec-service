@@ -13,7 +13,7 @@ import {
 
 // Resource imports
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
 import {promiseTimeout} from './timeout/Timeout';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 
@@ -30,7 +30,7 @@ export class ConformityValidator extends EventEmitter {
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
     private builder: OPCUABuilder;
     private readonly jsonValidator: Ajv.Ajv;
-    private readonly logger: Logger;
+    // private readonly logger: Logger.logger;
     static completeProfileList: string[] = Application.full;
 
     constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, oecJsonValidator = buildOecJsonValidator()) {
@@ -38,7 +38,7 @@ export class ConformityValidator extends EventEmitter {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
 
-        this.logger = new Logger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
+        initializeLogger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
         this.builder = new OPCUABuilder(oi4Id, 'Registry'); // TODO: Set oi4Id to something useful
     }
 
@@ -75,7 +75,7 @@ export class ConformityValidator extends EventEmitter {
         }
 
         const mandatoryResourceList = this.getMandatoryResources(assetType);
-        this.logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
+        logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
@@ -86,12 +86,12 @@ export class ConformityValidator extends EventEmitter {
         try {
             oi4Result = await ConformityValidator.checkOI4IDConformity(oi4Id);
         } catch (err) {
-            this.logger.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
+            logger.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
             return conformityObject;
         }
 
         if (!oi4Result) {
-            this.logger.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
+            logger.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
             return conformityObject;
         }
 
@@ -155,14 +155,14 @@ export class ConformityValidator extends EventEmitter {
 
         // Actually start checking the resources
         for (const resource of checkedList) {
-            this.logger.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
+            logger.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
             try {
                 if (resource === 'profile') continue; // We already checked profile
                 if (resource === 'license') { // License is a different case. We actually need to parse the return value here
                     resObj = await this.checkResourceConformity(fullTopic, '', resource) as IValidityDetails;
                     for (const payload of resObj.dataSetMessages) {
                         if (typeof payload.Payload.page !== 'undefined') {
-                            this.logger.log('Careful, weve got pagination in license!');
+                            logger.log('Careful, weve got pagination in license!');
                         } else {
                             licenseList.push(payload.POI) // With the obtained licenses, we can check the licenseText resource per TC-T6
                         }
@@ -179,7 +179,7 @@ export class ConformityValidator extends EventEmitter {
                     }
                 }
             } catch (err) {
-                this.logger.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
+                logger.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
                 resObj = {
                     validity: EValidity.nok,
                     validityErrors: [err],
@@ -222,7 +222,7 @@ export class ConformityValidator extends EventEmitter {
             conformityObject.validity = EValidity.ok;
         }
 
-        this.logger.log(`Final conformity object: ${JSON.stringify(conformityObject)}`, ESyslogEventFilter.debug);
+        logger.log(`Final conformity object: ${JSON.stringify(conformityObject)}`, ESyslogEventFilter.debug);
 
         // Convert to old style:
         return conformityObject;
@@ -246,7 +246,7 @@ export class ConformityValidator extends EventEmitter {
         try {
             resObj = await this.checkResourceConformity(fullTopic, oi4Id, 'profile');
         } catch (e) {
-            this.logger.log(`Error in checkProfileConformity: ${e}`);
+            logger.log(`Error in checkProfileConformity: ${e}`);
             throw e;
         }
 
@@ -296,7 +296,7 @@ export class ConformityValidator extends EventEmitter {
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
         this.conformityClient.once('message', async (topic, rawMsg) => {
             await this.conformityClient.unsubscribe(`${fullTopic}/pub/${resource}${endTag}`);
-            this.logger.log(`Received conformity message on ${resource} from ${tag}`, ESyslogEventFilter.warning);
+            logger.log(`Received conformity message on ${resource} from ${tag}`, ESyslogEventFilter.warning);
             const errorMsgArr = [];
             if (topic === `${fullTopic}/pub/${resource}${endTag}`) {
                 const parsedMessage = JSON.parse(rawMsg.toString()) as IOPCUANetworkMessage;
@@ -308,17 +308,17 @@ export class ConformityValidator extends EventEmitter {
                     } else {
                         eRes = EValidity.partial;
                         errorMsgArr.push(`CorrelationId did not pass for ${tag} with resource ${resource}`);
-                        this.logger.log(`CorrelationId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
+                        logger.log(`CorrelationId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
                     }
                 } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
-                    this.logger.log(`Some errors with schema validation with tag: ${tag}`, ESyslogEventFilter.error);
+                    logger.log(`Some errors with schema validation with tag: ${tag}`, ESyslogEventFilter.error);
                     errorMsgArr.push('Some issue with schema validation, read further array messages');
                     if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
-                        this.logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                        logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
                         errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
                     }
                     if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
-                        this.logger.log('Payload wrong', ESyslogEventFilter.warning);
+                        logger.log('Payload wrong', ESyslogEventFilter.warning);
                         errorMsgArr.push(...schemaResult.payload.resultMsgArr);
                     }
 
@@ -326,7 +326,7 @@ export class ConformityValidator extends EventEmitter {
                 }
 
                 if (!(parsedMessage.DataSetClassId === DataSetClassIds[resource])) { // Check if the dataSetClassId matches our development guideline
-                    this.logger.log(`DataSetClassId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
+                    logger.log(`DataSetClassId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
                     errorMsgArr.push(`DataSetClassId did not pass for ${tag} with resource ${resource}`);
                     eRes = EValidity.partial;
                 }
@@ -349,7 +349,7 @@ export class ConformityValidator extends EventEmitter {
         });
         await this.conformityClient.subscribe(`${fullTopic}/pub/${resource}${endTag}`);
         await this.conformityClient.publish(`${fullTopic}/get/${resource}${endTag}`, JSON.stringify(conformityPayload));
-        this.logger.log(`Trying to validate resource ${resource} on ${fullTopic}/get/${resource}${endTag} (Low-Level)`, ESyslogEventFilter.warning);
+        logger.log(`Trying to validate resource ${resource} on ${fullTopic}/get/${resource}${endTag} (Low-Level)`, ESyslogEventFilter.warning);
         return await promiseTimeout(new Promise((resolve) => {
                 this.once(`${resource}${fullTopic}Success`, (res) => {
                     resolve(res);
@@ -369,7 +369,7 @@ export class ConformityValidator extends EventEmitter {
      */
     async checkSchemaConformity(resource: string, payload: any): Promise<ISchemaConformity> {
         let networkMessageValidationResult;
-        let payloadValidationResult: boolean = false;
+        let payloadValidationResult = false;
 
         const networkMessageResultMsgArr: string[] = [];
         const payloadResultMsgArr: string[] = [];
@@ -377,14 +377,14 @@ export class ConformityValidator extends EventEmitter {
         try {
             networkMessageValidationResult = await this.jsonValidator.validate('NetworkMessage.schema.json', payload);
         } catch (networkMessageValidationErr) {
-            this.logger.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
+            logger.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(JSON.stringify(networkMessageValidationErr));
             networkMessageValidationResult = false;
         }
 
         if (!networkMessageValidationResult) {
             const errText = JSON.stringify(this.jsonValidator.errors);
-            this.logger.log(`AJV: NetworkMessage invalid (${resource}): ${JSON.stringify(errText)}`, ESyslogEventFilter.error);
+            logger.log(`AJV: NetworkMessage invalid (${resource}): ${JSON.stringify(errText)}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(errText);
         }
 
@@ -402,13 +402,13 @@ export class ConformityValidator extends EventEmitter {
                         }
                     }
                 } catch (payloadValidationErr) {
-                    this.logger.log(`AJV (Catch Payload): (${resource}):${payloadValidationErr}`, ESyslogEventFilter.error);
+                    logger.log(`AJV (Catch Payload): (${resource}):${payloadValidationErr}`, ESyslogEventFilter.error);
                     payloadResultMsgArr.push(JSON.stringify(payloadValidationErr));
                     payloadValidationResult = false;
                 }
                 if (!payloadValidationResult) {
                     const errText = JSON.stringify(this.jsonValidator.errors);
-                    this.logger.log(`AJV: Payload invalid (${resource}): ${errText}`, ESyslogEventFilter.error);
+                    logger.log(`AJV: Payload invalid (${resource}): ${errText}`, ESyslogEventFilter.error);
                     payloadResultMsgArr.push(errText);
                 }
             }
@@ -429,7 +429,7 @@ export class ConformityValidator extends EventEmitter {
         if (networkMessageValidationResult && payloadValidationResult) {
             schemaConformity.schemaResult = true;
         } else {
-            this.logger.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
+            logger.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
             console.log(schemaConformity);
         }
 
