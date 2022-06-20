@@ -242,6 +242,22 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
+            case ResourceType.OPC_UA_STATUS: {
+                payloadResult = this.clientPayloadHelper.createOPCUAPayload();
+                break;
+            }
+            case ResourceType.SYSLOG: {
+                payloadResult = this.clientPayloadHelper.createSyslogPayload();
+                break;
+            }
+            case ResourceType.NAMUR_NE107: {
+                payloadResult = this.clientPayloadHelper.createNamurNe107Payload();
+                break;
+            }
+            case ResourceType.GENERIC: {
+                payloadResult = this.clientPayloadHelper.createGenericPayload();
+                break;
+            }
             default: {
                 await this.sendError(`Unknown Resource: ${resource}`);
                 return;

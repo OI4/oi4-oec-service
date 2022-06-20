@@ -19,6 +19,11 @@ export enum ResourceType {
     CONFIG = 'config',
     PUBLICATION_LIST = 'publicationList',
     SUBSCRIPTION_LIST = 'subscriptionList',
+    //FIXME Are the following correct?
+    OPC_UA_STATUS = 'status',
+    SYSLOG = 'syslog',
+    NAMUR_NE107 = 'ne107',
+    GENERIC = 'generic',
 }
 
 export enum TopicMethods {

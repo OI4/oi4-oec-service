@@ -227,4 +227,19 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
+    createOPCUAPayload(): ValidatedPayload {
+        return {abortSending: true, payload: undefined};
+    }
+
+    createSyslogPayload(): ValidatedPayload {
+        return {abortSending: true, payload: undefined};
+    }
+
+    createNamurNe107Payload(): ValidatedPayload {
+        return {abortSending: true, payload: undefined};
+    }
+
+    createGenericPayload(): ValidatedPayload {
+        return {abortSending: true, payload: undefined};
+    }
 }
