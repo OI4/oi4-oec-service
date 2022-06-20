@@ -1,6 +1,6 @@
 import {DataSetClassIds, ESyslogEventFilter, IApplicationResources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
 import {Oi4IdManager} from '../../messageBus/Oi4IdManager';
@@ -14,10 +14,8 @@ export class MqttMessageProcessor {
     private readonly DATA = 'data';
 
     private applicationResources: IApplicationResources;
-    private componentLogger: Logger;
 
-    constructor(logger: Logger, applicationResources: IApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
-        this.componentLogger = logger;
+    constructor(applicationResources: IApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
         this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;
@@ -43,7 +41,7 @@ export class MqttMessageProcessor {
         if(!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         } else if (validateMessage.parsedMessage.Messages.length === 0) {
-            this.componentLogger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
+            logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
         }
 
         const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
@@ -56,7 +54,7 @@ export class MqttMessageProcessor {
 
         // Safety-Check: DataSetClassId
         if (validateMessage.parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
-            this.componentLogger.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
+            logger.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
         }
 
@@ -68,7 +66,7 @@ export class MqttMessageProcessor {
         try {
             return {isValid: true, parsedMessage: JSON.parse(message.toString())};
         } catch (e) {
-            this.componentLogger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
+            logger.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
         }
         return {isValid: false, parsedMessage: undefined};
     }
@@ -78,7 +76,7 @@ export class MqttMessageProcessor {
         try {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
-            this.componentLogger.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
+            logger.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
             return false;
         }
     }
@@ -86,12 +84,12 @@ export class MqttMessageProcessor {
     //FIXME add the type of schema result
     private areSchemaResultAndBuildValid(schemaResult: any, builder: OPCUABuilder, topic: string): boolean {
         if (!schemaResult) {
-            this.componentLogger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
+            logger.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
             return false;
         }
 
         if (!builder.checkTopicPath(topic)) {
-            this.componentLogger.log('Error in pre-check topic Path, please correct topic Path', ESyslogEventFilter.warning);
+            logger.log('Error in pre-check topic Path, please correct topic Path', ESyslogEventFilter.warning);
             return false;
         }
 
@@ -137,7 +135,7 @@ export class MqttMessageProcessor {
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
-            this.componentLogger.log(`Detected Message from: ${topicInfo.appId}`)
+            logger.log(`Detected Message from: ${topicInfo.appId}`)
         }
     }
 
@@ -165,18 +163,18 @@ export class MqttMessageProcessor {
             for (const messages of parsedMessage.Messages) {
                 payloadType = await builder.checkPayloadType(messages.Payload);
                 if (payloadType === PayloadTypes.LOCALE) {
-                    this.componentLogger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
+                    logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
                 }
                 if (payloadType === PayloadTypes.PAGINATION) {
                     page = messages.Payload.page;
                     perPage = messages.Payload.perPage;
                     if (page === 0 || perPage === 0) {
-                        this.componentLogger.log('Pagination requested either page or perPage 0, aborting send...');
+                        logger.log('Pagination requested either page or perPage 0, aborting send...');
                         return;
                     }
                 }
                 if (payloadType === PayloadTypes.NONE) { // Not empty, locale or pagination
-                    this.componentLogger.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
+                    logger.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
                     return;
                 }
             }
@@ -187,7 +185,7 @@ export class MqttMessageProcessor {
 
     private isServiceTypeRegistry(parsedMessage: IOPCUANetworkMessage) {
         if(parsedMessage.PublisherId.indexOf('/') == -1) {
-            this.componentLogger.log('PublisherId does not respect the structure serviceType/appId')
+            logger.log('PublisherId does not respect the structure serviceType/appId')
             return false;
         }
 
@@ -196,7 +194,7 @@ export class MqttMessageProcessor {
     }
 
     private saveOi4Id(oi4Id: string) {
-        this.componentLogger.log(`Saving the oi4Id ${oi4Id}`);
+        logger.log(`Saving the oi4Id ${oi4Id}`);
         Oi4IdManager.saveCurrentOi4Id(oi4Id);
     }
 
@@ -222,10 +220,10 @@ export class MqttMessageProcessor {
         }
         if (!(tagName in dataLookup)) {
             this.applicationResources.dataLookup[tagName] = data;
-            this.componentLogger.log(`Added ${tagName} to dataLookup`);
+            logger.log(`Added ${tagName} to dataLookup`);
         } else {
             this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
-            this.componentLogger.log(`${tagName} already exists in dataLookup`);
+            logger.log(`${tagName} already exists in dataLookup`);
         }
     }
 
@@ -255,9 +253,9 @@ export class MqttMessageProcessor {
         }
         if ((tagName in dataLookup)) {
             delete this.applicationResources.dataLookup[tagName];
-            this.componentLogger.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
+            logger.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
         } else {
-            this.componentLogger.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);
+            logger.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);
         }
     }
 

@@ -11,17 +11,11 @@ import {
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
 //FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
-
-    private componentLogger: Logger;
-
-    constructor(logger: Logger) {
-        this.componentLogger = logger;
-    }
 
     private createPayload(payload: any, dataSetWriterId: number): IOPCUAPayload {
         return {
@@ -175,7 +169,7 @@ export class ClientPayloadHelper {
         // We don't need to fill the Payloads in the "else" case. Since there's only one DataSetWriterId in the license Resource, we send all licenses
         // Whether there's a DataSetWriterId filter, or not we always send all licenses
         // We only need a check here, if the DataSetWriterId even fits. If not, we just abort sending
-        this.componentLogger.log(`DataSetWriterId does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+        logger.log(`DataSetWriterId does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
         return {abortSending: true, payload: undefined};
     }
 
