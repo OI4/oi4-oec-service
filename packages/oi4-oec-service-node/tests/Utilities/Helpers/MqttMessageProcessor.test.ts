@@ -2,19 +2,19 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {LoggerItems, MockedLoggerFactory} from './utils/MockedLoggerFactory';
+import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MqttMessageProcessor} from '../src/Utilities/Helpers/MqttMessageProcessor';
+import {MqttMessageProcessor} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MockedIContainerStateFactory} from './utils/MockedIContainerStateFactory';
+import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MockedOPCUABuilderFactory} from './utils/MockedOPCUABuilderFactory';
-import {TopicMethods} from '../src/Utilities/Helpers/Enums';
+import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
+import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Oi4IdManager} from '../src/messagebus/Oi4IdManager';
+import {Oi4IdManager} from '../../../src/messageBus/Oi4IdManager';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -52,7 +52,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: 'Registry/Fake'
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIContainerStateFactory.getMockedContainerStateInstance(), jest.fn(),jest.fn(),jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
         await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData), mockedData.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(1);
@@ -68,7 +68,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: 'Mocked/Fake'
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIContainerStateFactory.getMockedContainerStateInstance(), jest.fn(),jest.fn(),jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
         await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info), info.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(0);

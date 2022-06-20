@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {MockedOPCUABuilderFactory} from './utils/MockedOPCUABuilderFactory';
+import {MockedOPCUABuilderFactory} from '../MockedOPCUABuilderFactory';
 import {EOPCUAMessageType} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for MockedOPCUABuilderFactory.test', () => {
