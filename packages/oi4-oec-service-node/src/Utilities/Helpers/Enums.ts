@@ -33,6 +33,13 @@ export enum TopicMethods {
     DEL = 'del',
 }
 
+export enum PublishEventCategories {
+    CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
+    CAT_STATUS_1 = 'CAT_STATUS_1',
+    CAT_NE107_2 = 'CAT_NE107_2',
+    CAT_GENERIC_99 = 'CAT_GENERIC_99',
+}
+
 export enum PayloadTypes {
     EMPTY = 'empty',
     LOCALE = 'locale',

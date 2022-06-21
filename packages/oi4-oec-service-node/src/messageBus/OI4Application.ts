@@ -19,7 +19,7 @@ import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper'
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
+import {AsyncClientEvents, PublishEventCategories, ResourceType} from '../Utilities/Helpers/Enums';
 
 
 class OI4Application extends EventEmitter {
@@ -243,18 +243,23 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.OPC_UA_STATUS: {
-                payloadResult = this.clientPayloadHelper.createOPCUAPayload();
+                //FIXME fix the filter accordingly with what defined in the Jira issue https://eh-digitalsolutions.atlassian.net/browse/OI4-273
+                const publishEventPayload = this.clientPayloadHelper.createOPCUAMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_STATUS_1);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, 'status', new Date(), publishEventPayload);
                 break;
             }
             case ResourceType.SYSLOG: {
+                const payloadDetails = this.clientPayloadHelper.createSyslogPayloadDetails();
                 payloadResult = this.clientPayloadHelper.createSyslogPayload();
                 break;
             }
             case ResourceType.NAMUR_NE107: {
+                const payloadDetails = this.clientPayloadHelper.createNamurNe107PayloadDetails();
                 payloadResult = this.clientPayloadHelper.createNamurNe107Payload();
                 break;
             }
             case ResourceType.GENERIC: {
+                const payloadDetails = this.clientPayloadHelper.createGenericPayloadDetails();
                 payloadResult = this.clientPayloadHelper.createGenericPayload();
                 break;
             }

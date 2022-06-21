@@ -1,4 +1,4 @@
-import {ValidatedPayload} from './Types';
+import {PublishEventPayload, ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
@@ -227,19 +227,41 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createOPCUAPayload(): ValidatedPayload {
+    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, timestamp: Date, publishEventPayload: PublishEventPayload): ValidatedPayload {
+        const messages: IOPCUAPayload[] = [];
+
+        messages.push({
+            DataSetWriterId: dataSetWriterId,
+            filter: filter,
+            subResource: subResource,
+            Timestamp: timestamp,
+            Payload: publishEventPayload,
+        });
+
+        return {abortSending: false, payload: messages};
+    }
+
+    createOPCUAMessagePayload(origin: string, payloadNumber: number, description: string, category: string): PublishEventPayload {
+        return {
+            payload: {
+                origin: origin,
+                number: payloadNumber,
+                description: description,
+                category: category,
+                details: undefined,
+            }
+        };
+    }
+
+    createSyslogPayloadDetails(): ValidatedPayload {
         return {abortSending: true, payload: undefined};
     }
 
-    createSyslogPayload(): ValidatedPayload {
+    createNamurNe107PayloadDetails(): ValidatedPayload {
         return {abortSending: true, payload: undefined};
     }
 
-    createNamurNe107Payload(): ValidatedPayload {
-        return {abortSending: true, payload: undefined};
-    }
-
-    createGenericPayload(): ValidatedPayload {
+    createGenericPayloadDetails(): ValidatedPayload {
         return {abortSending: true, payload: undefined};
     }
 }

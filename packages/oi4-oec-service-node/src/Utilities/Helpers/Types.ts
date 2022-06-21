@@ -1,5 +1,23 @@
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 
+export type PublishEventMessage = {
+    'DataSetWriterId': number;
+    'filter': number;
+    'subResource': string;
+    'Timestamp': Date;
+    'Payload': PublishEventPayload;
+}
+
+export type PublishEventPayload = {
+    'payload': {
+        'origin': string;
+        'number': number;
+        'description': string;
+        'category': string;
+        'details': any;
+    };
+}
+
 export type ValidatedFilter = {
     isValid: boolean;
     dswidFilter: number;
