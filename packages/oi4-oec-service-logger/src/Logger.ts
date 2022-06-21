@@ -210,4 +210,4 @@ function initializeLogger(enabled = true, name: string, level: ESyslogEventFilte
     log = new Logger(enabled, name, level, mqttClient, oi4Id, serviceType);
 }
 
-export {logger, initializeLogger}
+export {logger, Logger, initializeLogger}

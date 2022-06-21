@@ -1,4 +1,4 @@
-import {ApplicationResources} from '../src/Container/ApplicationResources';
+import {OI4ApplicationResources} from '../src/application/OI4ApplicationResources';
 import fs from 'fs';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
 import os from 'os';
@@ -20,7 +20,7 @@ describe('Unit test for MAMStorage reading', () => {
             .mockReturnValueOnce(mam)
             .mockReturnValueOnce(mam);
         const expectedMAM = JSON.parse(mam.toString()) as IMasterAssetModel;
-        const resources = new ApplicationResources();
+        const resources = new OI4ApplicationResources();
         expect(resources.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
         expect(resources.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
         expect(resources.mam.Model).toEqual(expectedMAM.Model);
@@ -31,7 +31,7 @@ describe('Unit test for MAMStorage reading', () => {
 
     it('Should throw error if file not found', async () => {
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-        expect(()=>new ApplicationResources()).toThrowError();
+        expect(()=>new OI4ApplicationResources()).toThrowError();
 
     });
 });

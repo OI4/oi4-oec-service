@@ -8,7 +8,7 @@ import {
     EDeviceHealth,
     ESubscriptionListConfig,
     ESyslogEventFilter,
-    IApplicationResources
+    IOI4ApplicationResources
 } from '@oi4/oi4-oec-service-model';
 import {
     ValidatedPayload,
@@ -26,7 +26,7 @@ class OI4Application extends EventEmitter {
 
     public oi4Id: string;
     public serviceType: string;
-    public applicationResources: IApplicationResources;
+    public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
 
@@ -44,7 +44,7 @@ class OI4Application extends EventEmitter {
      * In Addition birth, will and close messages will be also created
      */
 
-    constructor(applicationResources: IApplicationResources, mqttSettings: MqttSettings) {
+    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings) {
 
         super();
         this.oi4Id = applicationResources.oi4Id;

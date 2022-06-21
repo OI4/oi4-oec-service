@@ -1,17 +1,17 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttSettings} from '../../src/messageBus/MqttSettings';
-import {OI4Application} from '../../src/messageBus/OI4Application';
+import {MqttSettings} from '../../src/application/MqttSettings';
+import {OI4Application} from '../../src/application/OI4Application';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    IApplicationResources
+    IOI4ApplicationResources
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../../src/messageBus/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../../src/application/OI4ApplicationFactory';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
 
 
@@ -37,7 +37,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getResourceInfo = (): IApplicationResources => {
+const getResourceInfo = (): IOI4ApplicationResources => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     return {

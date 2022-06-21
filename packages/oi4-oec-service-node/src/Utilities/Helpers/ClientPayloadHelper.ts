@@ -3,7 +3,7 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IApplicationResources,
+    IOI4ApplicationResources,
     IContainerHealth,
     ILicenseObject,
     IPublicationListObject,
@@ -35,7 +35,7 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
@@ -52,7 +52,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(applicationResources: IApplicationResources, filter: string, resource: string): ValidatedPayload {
+    createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
         if (typeof applicationResources.licenseText[filter] === 'undefined') {
@@ -63,7 +63,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
@@ -97,7 +97,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -130,7 +130,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -173,7 +173,7 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createConfigSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUAPayload[] = [];
 

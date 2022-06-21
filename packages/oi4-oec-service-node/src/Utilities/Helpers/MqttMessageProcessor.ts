@@ -1,9 +1,9 @@
-import {DataSetClassIds, ESyslogEventFilter, IApplicationResources} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
-import {Oi4IdManager} from '../../messageBus/Oi4IdManager';
+import {Oi4IdManager} from '../../application/Oi4IdManager';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -13,9 +13,9 @@ export class MqttMessageProcessor {
     private readonly emit: Function;
     private readonly DATA = 'data';
 
-    private applicationResources: IApplicationResources;
+    private applicationResources: IOI4ApplicationResources;
 
-    constructor(applicationResources: IApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
+    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
         this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;

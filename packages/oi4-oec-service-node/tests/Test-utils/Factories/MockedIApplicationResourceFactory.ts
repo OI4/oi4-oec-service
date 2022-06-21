@@ -9,7 +9,7 @@ import {
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
     EDeviceHealth,
-    IApplicationResources,
+    IOI4ApplicationResources,
     IContainerConfigConfigName,
     IContainerProfile,
     IPublicationListObject,
@@ -18,7 +18,7 @@ import {
 
 export class MockedIApplicationResourceFactory {
 
-    public static getMockedIApplicationResourceInstance= (): IApplicationResources => {
+    public static getMockedIApplicationResourceInstance= (): IOI4ApplicationResources => {
         return {
             brokerState: false,
             config: {
@@ -91,7 +91,7 @@ export class MockedIApplicationResourceFactory {
                 console.log('Called mocked setHealthState. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            on(_: string, __: Function): IApplicationResources {
+            on(_: string, __: Function): IOI4ApplicationResources {
                 console.log('Called mocked on. Do nothing....');
                 return undefined;
             }

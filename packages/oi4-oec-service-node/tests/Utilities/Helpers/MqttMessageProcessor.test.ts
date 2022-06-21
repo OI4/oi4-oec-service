@@ -14,7 +14,7 @@ import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/Mock
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Oi4IdManager} from '../../../src/messageBus/Oi4IdManager';
+import {Oi4IdManager} from '../../../src/application/Oi4IdManager';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
