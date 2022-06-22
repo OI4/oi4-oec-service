@@ -272,9 +272,6 @@ export class ClientPayloadHelper {
             case EDeviceHealth.MAINTENANCE_REQUIRED_4: {
                 return {value: 4, description: ENamurEventFilter.maintenanceRequired};
             }
-            default: {
-                throw new Error(`No Namur Ne107 available state for the entry ${key}`);
-            }
         }
     }
 }

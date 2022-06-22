@@ -1,8 +1,9 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
-import {EDeviceHealth, IApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {NamurNe107State, PublishEventMessagePayload, ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
+import {EDeviceHealth, ENamurEventFilter, IApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {IOPCUAPayload} from "@oi4/oi4-oec-service-opcua-model";
 
 
 describe('Unit test for ClientPayloadHelper', () => {
@@ -211,6 +212,40 @@ describe('Unit test for ClientPayloadHelper', () => {
     it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is invalid', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 9, 'config');
         checkForUndefinedPayload(validatedPayload);
+    });
+
+    function checkAgainstEDeviceHealthCase(key: EDeviceHealth, value: number, description: string) {
+        const state: NamurNe107State = clientPayloadHelper.getNamurNeStateDetails(key);
+        expect(state.value).toBe(value);
+        expect(state.description).toBe(description);
+    }
+
+    it('getNamurNeStateDetails works', async () => {
+        checkAgainstEDeviceHealthCase(EDeviceHealth.NORMAL_0, 0, ENamurEventFilter.normal);
+        checkAgainstEDeviceHealthCase(EDeviceHealth.FAILURE_1, 1, ENamurEventFilter.failure);
+        checkAgainstEDeviceHealthCase(EDeviceHealth.CHECK_FUNCTION_2, 2, ENamurEventFilter.checkFunction);
+        checkAgainstEDeviceHealthCase(EDeviceHealth.OFF_SPEC_3, 3, ENamurEventFilter.outOfSpecification);
+        checkAgainstEDeviceHealthCase(EDeviceHealth.MAINTENANCE_REQUIRED_4, 4, ENamurEventFilter.maintenanceRequired);
+    });
+
+    it('createPublishEventMessage works', async() => {
+        const message: ValidatedPayload = clientPayloadHelper.createPublishEventMessage(42, 'fakeFilter', 'fakeSubResource', undefined);
+        expect(message.abortSending).toBe(false);
+        const payload: IOPCUAPayload = message.payload[0];
+        expect(payload.DataSetWriterId).toBe(42);
+        expect(payload.filter).toBe('fakeFilter');
+        expect(payload.subResource).toBe('fakeSubResource');
+        expect(payload.Payload).toBe(undefined);
+    });
+
+    it('createPublishEventMessagePayload works', async() => {
+        const messagePayload: PublishEventMessagePayload = clientPayloadHelper.createPublishEventMessagePayload('fakeOrigin', 42, 'fakeDescription', 'fakeCategory', {});
+        const payload = messagePayload.payload;
+        expect(payload.origin).toBe('fakeOrigin');
+        expect(payload.number).toBe(42);
+        expect(payload.description).toBe('fakeDescription');
+        expect(payload.category).toBe('fakeCategory');
+        expect(payload.details).toStrictEqual({});
     });
 
 });
