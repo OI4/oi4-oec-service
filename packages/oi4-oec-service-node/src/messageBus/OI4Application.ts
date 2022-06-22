@@ -304,6 +304,7 @@ class OI4Application extends EventEmitter {
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
 
+        //FIXME is this method ok for sending the messages defined in the scope of OI4.273?
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
