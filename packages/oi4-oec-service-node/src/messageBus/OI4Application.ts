@@ -16,12 +16,7 @@ import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper'
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {
-    AsyncClientEvents,
-    PublishEventCategories,
-    PublishEventSubResource,
-    ResourceType
-} from '../Utilities/Helpers/Enums';
+import {AsyncClientEvents, PublishEventCategories, ResourceType} from '../Utilities/Helpers/Enums';
 
 
 class OI4Application extends EventEmitter {
@@ -247,26 +242,26 @@ class OI4Application extends EventEmitter {
             case ResourceType.OPC_UA_STATUS: {
                 //FIXME Provide meaningful data to the methods called below
                 const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_STATUS_1, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.OPC_UA_STATUS, publishEventMessagePayload);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.OPC_UA_STATUS, publishEventMessagePayload);
                 break;
             }
             case ResourceType.SYSLOG: {
                 //FIXME Provide meaningful data to the methods called below
                 const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, undefined, PublishEventCategories.CAT_SYSLOG_0, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.SYSLOG, publishEventMessagePayload);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.SYSLOG, publishEventMessagePayload);
                 break;
             }
             case ResourceType.NAMUR_NE107: {
                 //FIXME Provide meaningful data to the methods called below
                 const currentState = this.clientPayloadHelper.getNamurNeStateDetails(EDeviceHealth.NORMAL_0);
                 const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, currentState.value, currentState.description, PublishEventCategories.CAT_NE107_2, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.NAMUR_NE107, publishEventMessagePayload);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.NAMUR_NE107, publishEventMessagePayload);
                 break;
             }
             case ResourceType.GENERIC: {
                 //FIXME Provide meaningful data to the methods called below
                 const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_GENERIC_99, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.GENERIC, publishEventMessagePayload);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.GENERIC, publishEventMessagePayload);
                 break;
             }
             default: {

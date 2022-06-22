@@ -40,13 +40,6 @@ export enum PublishEventCategories {
     CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
-export enum PublishEventSubResource {
-    OPC_UA_STATUS = 'status',
-    SYSLOG = 'syslog',
-    NAMUR_NE107 = 'ne107',
-    GENERIC = 'generic',
-}
-
 export enum PayloadTypes {
     EMPTY = 'empty',
     LOCALE = 'locale',
