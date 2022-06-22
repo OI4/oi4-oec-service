@@ -10,16 +10,18 @@ import {
     ESyslogEventFilter,
     IApplicationResources
 } from '@oi4/oi4-oec-service-model';
-import {
-    ValidatedPayload,
-    ValidatedFilter
-} from '../Utilities/Helpers/Types';
+import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents, PublishEventCategories, ResourceType} from '../Utilities/Helpers/Enums';
+import {
+    AsyncClientEvents,
+    PublishEventCategories,
+    PublishEventSubResource,
+    ResourceType
+} from '../Utilities/Helpers/Enums';
 
 
 class OI4Application extends EventEmitter {
@@ -243,24 +245,28 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.OPC_UA_STATUS: {
-                //FIXME fix the filter accordingly with what defined in the Jira issue https://eh-digitalsolutions.atlassian.net/browse/OI4-273
-                const publishEventPayload = this.clientPayloadHelper.createOPCUAMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_STATUS_1);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, 'status', new Date(), publishEventPayload);
+                //FIXME Provide meaningful data to the methods called below
+                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_STATUS_1, undefined);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.OPC_UA_STATUS, publishEventMessagePayload);
                 break;
             }
             case ResourceType.SYSLOG: {
-                const payloadDetails = this.clientPayloadHelper.createSyslogPayloadDetails();
-                payloadResult = this.clientPayloadHelper.createSyslogPayload();
+                //FIXME Provide meaningful data to the methods called below
+                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, undefined, PublishEventCategories.CAT_SYSLOG_0, undefined);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.SYSLOG, publishEventMessagePayload);
                 break;
             }
             case ResourceType.NAMUR_NE107: {
-                const payloadDetails = this.clientPayloadHelper.createNamurNe107PayloadDetails();
-                payloadResult = this.clientPayloadHelper.createNamurNe107Payload();
+                //FIXME Provide meaningful data to the methods called below
+                const currentState = this.clientPayloadHelper.getNamurNeStateDetails(EDeviceHealth.NORMAL_0);
+                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, currentState.value, currentState.description, PublishEventCategories.CAT_NE107_2, undefined);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.NAMUR_NE107, publishEventMessagePayload);
                 break;
             }
             case ResourceType.GENERIC: {
-                const payloadDetails = this.clientPayloadHelper.createGenericPayloadDetails();
-                payloadResult = this.clientPayloadHelper.createGenericPayload();
+                //FIXME Provide meaningful data to the methods called below
+                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_GENERIC_99, undefined);
+                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, PublishEventSubResource.GENERIC, publishEventMessagePayload);
                 break;
             }
             default: {

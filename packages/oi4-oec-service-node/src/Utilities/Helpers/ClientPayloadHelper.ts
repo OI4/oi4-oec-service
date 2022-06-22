@@ -1,7 +1,7 @@
-import {PublishEventPayload, ValidatedPayload} from './Types';
+import {NamurNe107State, PublishEventMessagePayload, ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
-    EDeviceHealth,
+    EDeviceHealth, ENamurEventFilter,
     ESyslogEventFilter,
     IApplicationResources,
     IContainerHealth,
@@ -227,41 +227,50 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, timestamp: Date, publishEventPayload: PublishEventPayload): ValidatedPayload {
+    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, publishEventPayload: PublishEventMessagePayload): ValidatedPayload {
+        //FIXME is it correct to return an array of IOPCUAPayload?
         const messages: IOPCUAPayload[] = [];
 
         messages.push({
             DataSetWriterId: dataSetWriterId,
             filter: filter,
             subResource: subResource,
-            Timestamp: timestamp,
+            Timestamp: new Date(),
             Payload: publishEventPayload,
         });
 
         return {abortSending: false, payload: messages};
     }
 
-    createOPCUAMessagePayload(origin: string, payloadNumber: number, description: string, category: string): PublishEventPayload {
+    createPublishEventMessagePayload(origin: string, payloadNumber: number, description: string, category: string, details: any): PublishEventMessagePayload {
         return {
             payload: {
                 origin: origin,
                 number: payloadNumber,
                 description: description,
                 category: category,
-                details: undefined,
+                details: details,
             }
         };
-    }
-
-    createSyslogPayloadDetails(): ValidatedPayload {
-        return {abortSending: true, payload: undefined};
     }
 
     createNamurNe107PayloadDetails(): ValidatedPayload {
         return {abortSending: true, payload: undefined};
     }
 
-    createGenericPayloadDetails(): ValidatedPayload {
-        return {abortSending: true, payload: undefined};
+    getNamurNeStateDetails(key: EDeviceHealth): NamurNe107State {
+        if (key === EDeviceHealth.NORMAL_0) {
+            return {value: 0, description: ENamurEventFilter.normal};
+        } else if (key === EDeviceHealth.FAILURE_1) {
+            return {value: 1, description: ENamurEventFilter.failure};
+        } else if (key === EDeviceHealth.CHECK_FUNCTION_2) {
+            return {value: 2, description: ENamurEventFilter.checkFunction};
+        } else if (key === EDeviceHealth.OFF_SPEC_3) {
+            return {value: 3, description: ENamurEventFilter.outOfSpecification};
+        } else if (key === EDeviceHealth.MAINTENANCE_REQUIRED_4) {
+            return {value: 4, description: ENamurEventFilter.maintenanceRequired};
+        } else {
+            throw new Error(`No Namur Ne107 available state for the entry ${key}`);
+        }
     }
 }

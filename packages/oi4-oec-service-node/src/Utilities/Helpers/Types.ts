@@ -1,14 +1,7 @@
 import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {ENamurEventFilter} from '@oi4/oi4-oec-service-model';
 
-export type PublishEventMessage = {
-    'DataSetWriterId': number;
-    'filter': number;
-    'subResource': string;
-    'Timestamp': Date;
-    'Payload': PublishEventPayload;
-}
-
-export type PublishEventPayload = {
+export type SyslogMessagePayloadDetails = {
     'payload': {
         'origin': string;
         'number': number;
@@ -16,6 +9,21 @@ export type PublishEventPayload = {
         'category': string;
         'details': any;
     };
+}
+
+export type PublishEventMessagePayload = {
+    'payload': {
+        'origin': string;
+        'number': number;
+        'description': string;
+        'category': string;
+        'details': any;
+    };
+}
+
+export type NamurNe107State = {
+    value: number;
+    description: ENamurEventFilter;
 }
 
 export type ValidatedFilter = {
