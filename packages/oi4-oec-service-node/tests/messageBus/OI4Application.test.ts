@@ -296,64 +296,42 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    it('should prepare mam payload',   async () => {
-        const filter = CDataSetWriterIdLookup.mam.toString();
-        const resource = 'mam';
+    async function getPayload(filter: string, resource: string) {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        return await oi4Application.preparePayload(resource, filter);
+    }
+
+    it('should prepare mam payload',   async () => {
+        const result = await getPayload(CDataSetWriterIdLookup.mam.toString(), 'mam');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
     it('should prepare profile payload',   async () => {
-        const filter = CDataSetWriterIdLookup.profile.toString();
-        const resource = 'profile';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), 'profile');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().profile));
     });
 
     it('should prepare rt license payload',   async () => {
-        const filter = CDataSetWriterIdLookup.rtLicense.toString();
-        const resource = 'rtLicense';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.rtLicense.toString(), 'rtLicense');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
     });
 
     it('should prepare health payload',   async () => {
-        const filter = CDataSetWriterIdLookup.health.toString();
-        const resource = 'health';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), 'health');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
     it('should prepare license text payload',   async () => {
         const filter = 'a';
-        const resource = 'licenseText';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(filter, 'licenseText');
         expect(JSON.stringify(result.payload[0].Payload))
             .toBe(JSON.stringify({licenseText:getResourceInfo().licenseText[filter]}));
     });
 
     it('should prepare license payload',   async () => {
-        const filter = CDataSetWriterIdLookup.license.toString();
-        const resource = 'license';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.license.toString(), 'license');
         for(let i = 0; i < result.payload.length; i++){
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({components:getResourceInfo().license[i].components}));
@@ -361,12 +339,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare publicationList  payload',   async () => {
-        const filter = CDataSetWriterIdLookup.publicationList.toString();
-        const resource = 'publicationList';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.publicationList.toString(), 'publicationList');
         for(let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
@@ -374,12 +347,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare subscriptionList  payload',   async () => {
-        const filter = CDataSetWriterIdLookup.subscriptionList.toString();
-        const resource = 'subscriptionList';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.subscriptionList.toString(), 'subscriptionList');
         for(let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().subscriptionList[i]));
@@ -387,14 +355,31 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should  prepare config payload',   async () => {
-        const filter = CDataSetWriterIdLookup.config.toString();
-        const resource = 'config';
-        const mqttOpts: MqttSettings = getStandardMqttConfig();
-        const resources = getResourceInfo();
-        const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), 'config');
         expect(JSON.stringify(result.payload[0].Payload))
             .toBe(JSON.stringify(getResourceInfo().config));
+    });
+
+    async function testPayload(resource: string, filter: string) {
+        const result = await getPayload(resource, filter);
+        expect(result.abortSending).toBe(false);
+        expect(result.payload[0].filter).toBe(filter);
+    }
+
+    it('should  prepare status payload',   async () => {
+        await testPayload(ResourceType.OPC_UA_STATUS,'status');
+    });
+
+    it('should  prepare syslog payload',   async () => {
+        await testPayload(ResourceType.SYSLOG,'syslog');
+    });
+
+    it('should  prepare ne107 payload',   async () => {
+        await testPayload(ResourceType.NAMUR_NE107, 'ne107');
+    });
+
+    it('should  prepare generic payload',   async () => {
+        await testPayload(ResourceType.GENERIC, 'generic');
     });
 
     it('should not prepare anything if resource not found',   async () => {
