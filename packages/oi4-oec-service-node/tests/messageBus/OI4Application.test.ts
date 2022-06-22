@@ -14,7 +14,6 @@ import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src/messageBus/OI4ApplicationFactory';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
 
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 const onEvent = () => jest.fn(async (event, cb) => {
@@ -59,28 +58,27 @@ const getResourceInfo = (): IApplicationResources => {
                 logFileSize: {value:'val-log-01', type: EOPCUABaseDataType.ByteString,name: {locale: EOPCUALocale.enUS, text: 'log-01'} }
             },
             context: { name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}},
-        publicationList: {
-            publicationList:[
-                {active:true, resource:'health', config: EPublicationListConfig.INTERVAL_2, DataSetWriterId:1, oi4Identifier:'1'},
-                {active:false, resource:'mam', config: EPublicationListConfig.NONE_0, DataSetWriterId:2, oi4Identifier:'2'},
-                {active:true, resource:'license', config: EPublicationListConfig.STATUS_1, DataSetWriterId:3, oi4Identifier:'3'}
-            ]},
+        publicationList:[
+            {resource:'health', DataSetWriterId:1, oi4Identifier:'1', active:true,  config: EPublicationListConfig.INTERVAL_2},
+            {resource:'mam', DataSetWriterId:2, oi4Identifier:'2', active:false, config: EPublicationListConfig.NONE_0},
+            {resource:'license', DataSetWriterId:3, oi4Identifier:'3', active:true, config: EPublicationListConfig.STATUS_1},
+        ],
         profile: {resource:['profile', 'b']},
         licenseText: {'a': '1', 'b':'2'},
-        license: {licenses:[
+        license: [
             {licenseId: '1', components: [
                 {licAuthors:['a-01', 'a-02'], component: 'comp-01' , licAddText: 'text-a'},
                     {licAuthors:['b-01', 'b-01'], component: 'comp-02' , licAddText: 'text-b'},
                     {licAuthors:['c-01', 'c-01'], component: 'comp-03' , licAddText: 'text-c'},
                 ],
             },
-                {licenseId: '2', components: [
-                        {licAuthors:['aa-01', 'aa-02'], component: 'comp-001' , licAddText: 'text-aa'},
-                        {licAuthors:['bb-01', 'bb-01'], component: 'comp-002' , licAddText: 'text-bb'},
-                        {licAuthors:['cc-01', 'cc-01'], component: 'comp-003' , licAddText: 'text-cc'},
-                    ],
-                }
-        ]},
+            {licenseId: '2', components: [
+                    {licAuthors:['aa-01', 'aa-02'], component: 'comp-001' , licAddText: 'text-aa'},
+                    {licAuthors:['bb-01', 'bb-01'], component: 'comp-002' , licAddText: 'text-bb'},
+                    {licAuthors:['cc-01', 'cc-01'], component: 'comp-003' , licAddText: 'text-cc'},
+                ],
+            }
+        ],
         health: {health: EDeviceHealth.NORMAL_0, healthScore: 100},
         mam: {
             DeviceClass: 'oi4',
@@ -103,20 +101,17 @@ const getResourceInfo = (): IApplicationResources => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         metaDataLookup: {'tag-01': {MessageId: 'meta-01'}, 'tag-02': {MessageId: 'meta-02'}},
-        subscriptionList: {
-            subscriptionList: [
-                {topicPath:'path-01', config: ESubscriptionListConfig.CONF_1},
-                {topicPath:'path-02', config: ESubscriptionListConfig.NONE_0},
-                {topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0}
-            ]
-        },
+        subscriptionList: [
+            {topicPath:'path-01', config: ESubscriptionListConfig.CONF_1},
+            {topicPath:'path-02', config: ESubscriptionListConfig.NONE_0},
+            {topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0}
+        ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         on: jest.fn()
     }
 }
-
 
 describe('OI4MessageBus test', () => {
 
@@ -188,7 +183,6 @@ describe('OI4MessageBus test', () => {
 
     });
 
-
     it('should trigger resourceChanged',   (done) => {
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -209,6 +203,7 @@ describe('OI4MessageBus test', () => {
         const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const onResourceMock = jest.fn( (_, cb) => {
             cb(ResourceType.HEALTH);
             expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', resources.oi4Id);
@@ -361,7 +356,7 @@ describe('OI4MessageBus test', () => {
         const result = await oi4Application.preparePayload(resource, filter);
         for(let i = 0; i < result.payload.length; i++){
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({components:getResourceInfo().license.licenses[i].components}));
+                .toBe(JSON.stringify({components:getResourceInfo().license[i].components}));
         }
     });
 
@@ -374,7 +369,7 @@ describe('OI4MessageBus test', () => {
         const result = await oi4Application.preparePayload(resource, filter);
         for(let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify(getResourceInfo().publicationList.publicationList[i]));
+                .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
         }
     });
 
@@ -387,7 +382,7 @@ describe('OI4MessageBus test', () => {
         const result = await oi4Application.preparePayload(resource, filter);
         for(let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify(getResourceInfo().subscriptionList.subscriptionList[i]));
+                .toBe(JSON.stringify(getResourceInfo().subscriptionList[i]));
         }
     });
 
@@ -438,7 +433,5 @@ describe('OI4MessageBus test', () => {
             expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${logLevel}/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify({logLevel:logLevel,logString:logString})));
     });
-
-
-
+    
 });
