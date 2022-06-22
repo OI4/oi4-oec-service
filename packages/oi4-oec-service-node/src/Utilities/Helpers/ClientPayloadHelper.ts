@@ -254,10 +254,6 @@ export class ClientPayloadHelper {
         };
     }
 
-    createNamurNe107PayloadDetails(): ValidatedPayload {
-        return {abortSending: true, payload: undefined};
-    }
-
     getNamurNeStateDetails(key: EDeviceHealth): NamurNe107State {
         if (key === EDeviceHealth.NORMAL_0) {
             return {value: 0, description: ENamurEventFilter.normal};
