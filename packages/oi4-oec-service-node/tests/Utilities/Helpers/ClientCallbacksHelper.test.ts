@@ -5,7 +5,8 @@ import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/Mock
 import mqtt from 'async-mqtt';
 import {MockedMqttClientFactory} from '../../Test-utils/Factories/MockedMqttClientFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
+import {initializeLogger} from "@oi4/oi4-oec-service-logger";
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -14,7 +15,7 @@ describe('Unit test for ClientCallbackHelper', () => {
 
     const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
     const mockedMqttClient: mqtt.AsyncClient = MockedMqttClientFactory.getMockedClientWithDefaultImplementation();
-    const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
+    const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
 
     let clientCallbackHelper: ClientCallbacksHelper;
     let mockedClient: IOI4ApplicationResources;
@@ -22,8 +23,9 @@ describe('Unit test for ClientCallbackHelper', () => {
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
-        clientCallbackHelper = new ClientCallbacksHelper(clientPayloadHelper, loggerItems.fakeLogger);
-        mockedClient = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance()
+        clientCallbackHelper = new ClientCallbacksHelper(clientPayloadHelper);
+        mockedClient = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, undefined, undefined);
     });
 
     function checkLogEntries(size: number, messages: string[]) {

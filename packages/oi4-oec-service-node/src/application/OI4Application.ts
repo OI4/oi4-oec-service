@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
-import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
+import {initializeLogger, LOGGER, updateMqttClient} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
 import {
     CDataSetWriterIdLookup,
@@ -39,7 +39,7 @@ class OI4Application extends EventEmitter {
 
     /***
      * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
-     * @param mqttPreSettings -> contains mqtt presettings for connection. for example host and port
+     * @param mqttSettings
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      */
@@ -65,11 +65,12 @@ class OI4Application extends EventEmitter {
             retain: false,
         }
 
-        console.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
+        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
+        LOGGER.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);
 
-        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.client, this.oi4Id, this.serviceType);
-        logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
+        updateMqttClient(this.client);
+        LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
 
@@ -173,14 +174,14 @@ class OI4Application extends EventEmitter {
     private async send(tagName: string, type: string, information: any) {
         if (tagName === '') { // If there is no tag specified, we should send all available metadata
             await this.client.publish(`${this.topicPreamble}/pub/${type}`, JSON.stringify(information));
-            logger.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}`);
+            LOGGER.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}`);
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
         if (tagName in dataLookup) {
             await this.client.publish(`${this.topicPreamble}/pub/${type}/${tagName}`, JSON.stringify(information[tagName]));
-            logger.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
+            LOGGER.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
         }
     }
 
@@ -203,7 +204,7 @@ class OI4Application extends EventEmitter {
     async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
         if(!validatedFilter.isValid) {
-            logger.log('Invalid filter, abort sending...');
+            LOGGER.log('Invalid filter, abort sending...');
             return {payload: undefined, abortSending: true};
         }
 
@@ -253,7 +254,7 @@ class OI4Application extends EventEmitter {
 
     // Basic Error Functions
     async sendError(error: string) {
-        logger.log(`Error: ${error}`, ESyslogEventFilter.error);
+        LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
     private validateFilter(filter: string): ValidatedFilter {
@@ -264,11 +265,11 @@ class OI4Application extends EventEmitter {
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
-                logger.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
+                LOGGER.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
                 return {isValid: false, dswidFilter: undefined };
             }
         } catch (err) {
-            logger.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
+            LOGGER.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
             return {isValid: false, dswidFilter: undefined };
         }
 
@@ -282,13 +283,13 @@ class OI4Application extends EventEmitter {
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
-                logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
+                LOGGER.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
             }
             for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
                 await this.client.publish(
                     `${this.topicPreamble}/pub/${resource}${endTag}`,
                     JSON.stringify(networkMessages));
-                logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+                LOGGER.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
             }
         } catch {
             console.log('Error in building paginated NMA');
@@ -312,7 +313,7 @@ class OI4Application extends EventEmitter {
             DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
         await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
+        LOGGER.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
     }
 
     /**

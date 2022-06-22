@@ -15,6 +15,8 @@ import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUAB
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Oi4IdManager} from '../../../src/application/Oi4IdManager';
+import {initializeLogger} from "@oi4/oi4-oec-service-logger";
+import {ESyslogEventFilter} from "@oi4/oi4-oec-service-model";
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -26,6 +28,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         fakeLogFile.splice(0, fakeLogFile.length);
         MockedOPCUABuilderFactory.resetAllMocks();
         Oi4IdManager.resetCurrentOi4Id();
+        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, undefined, undefined);
     });
 
     function getMockedData() {
@@ -52,7 +55,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: 'Registry/Fake'
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
         await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData), mockedData.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(1);
@@ -68,7 +71,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: 'Mocked/Fake'
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(loggerItems.fakeLogger, MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
         await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info), info.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(0);

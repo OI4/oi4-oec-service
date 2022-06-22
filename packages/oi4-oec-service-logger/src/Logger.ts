@@ -27,7 +27,7 @@ class Logger {
     private _enabled: boolean; /*tslint:disable-line*/
     private _level: ESyslogEventFilter; /*tslint:disable-line*/
     private _name: string; /*tslint:disable-line*/
-    private readonly _mqttClient?: mqtt.AsyncClient;
+    private _mqttClient?: mqtt.AsyncClient;
     private readonly _oi4Id?: string;
     private readonly _serviceType?: string;
     private readonly _builder?: OPCUABuilder;
@@ -158,6 +158,10 @@ class Logger {
         this._name = newname;
     }
 
+    set mqttClient(client: mqtt.AsyncMqttClient){
+        this._mqttClient = client;
+    }
+
     log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
         if (this.enabled) {
             if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.level]) {
@@ -204,10 +208,15 @@ class Logger {
 
 
 let log: Logger;
-const logger: Readonly<Logger> = log;
+let LOGGER: Readonly<Logger> = log;
 
 function initializeLogger(enabled = true, name: string, level: ESyslogEventFilter = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string): void {
     log = new Logger(enabled, name, level, mqttClient, oi4Id, serviceType);
+    LOGGER = log;
 }
 
-export {logger, Logger, initializeLogger}
+function updateMqttClient(client: mqtt.AsyncClient): void {
+    log.mqttClient = client;
+}
+
+export {LOGGER, Logger, initializeLogger, updateMqttClient};

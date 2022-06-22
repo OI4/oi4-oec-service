@@ -1,8 +1,14 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
-import {EDeviceHealth, IOI4ApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {
+    EDeviceHealth,
+    IOI4ApplicationResources,
+    IContainerHealth,
+    ESyslogEventFilter
+} from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {initializeLogger} from "@oi4/oi4-oec-service-logger";
 
 
 describe('Unit test for ClientPayloadHelper', () => {
@@ -21,8 +27,9 @@ describe('Unit test for ClientPayloadHelper', () => {
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
-        clientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
-        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance()
+        clientPayloadHelper = new ClientPayloadHelper();
+        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, undefined, undefined);
     });
 
     function checkAgainstDefaultPayload(payload: ValidatedPayload) {

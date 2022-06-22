@@ -35,9 +35,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
         },
-        subscriptionList: {
-            subscriptionList: []
-        },
+        subscriptionList: [],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on(event: string, listener: Function) {

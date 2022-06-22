@@ -24,13 +24,22 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
  * */
 class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationResources {
   public oi4Id: string; // TODO: doubling? Not needed here
+  private readonly _profile: IContainerProfile;
+  private readonly _mam: IMasterAssetModel;
+  private _health: IContainerHealth;
+  private _brokerState: boolean;
+  private _license: ILicenseObject[];
+  private _licenseText: Record<string, string>;
+  private _rtLicense: IContainerRTLicense;
+  private _publicationList: IPublicationListObject[];
+  private _subscriptionList: ISubscriptionListObject[];
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
  * */
   constructor(mamFile: string = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
     super();
 
-    this.mam = this.extractMamFile(mamFile); // Import MAM from JSON
+    this._mam = OI4ApplicationResources.extractMamFile(mamFile); // Import MAM from JSON
 
     if(this.mam === undefined) {
       throw Error('MAM File not found');
@@ -44,7 +53,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     this.brokerState = false;
 
-    this.profile = {
+    this._profile = {
       resource: [
         'health',
         'license',
@@ -324,7 +333,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
   dataLookup: Record<string, IOPCUANetworkMessage>;
   metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
-  private extractMamFile(path: string): IMasterAssetModel  {
+  private static extractMamFile(path: string): IMasterAssetModel  {
     if(existsSync(path)){
         return JSON.parse(readFileSync(path).toString());
     }
@@ -333,53 +342,45 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
   // Property accessor section
   get brokerState() {
-    return this.brokerState;
+    return this._brokerState;
   }
 
   set brokerState(brokerState: boolean) {
-    this.brokerState = brokerState;
+    this._brokerState = brokerState;
   }
   // Resource accesor section
   // --- HEALTH ---
 
   get health() {
-    return this.health;
+    return this._health;
   }
 
   set health(health: IContainerHealth) {
     if (health.healthScore >= 100 && health.healthScore <= 0) throw new RangeError('healthState out of range');
-    this.health = health;
+    this._health = health;
     this.emit('resourceChanged', 'health');
   }
 
   setHealthState(healthState: number) {
     if (healthState >= 100 && healthState <= 0) throw new RangeError('healthState out of range');
-    this.health.healthScore = healthState;
+    this._health.healthScore = healthState;
     this.emit('resourceChanged', 'health');
   }
 
   setHealth(health: EDeviceHealth) {
-    this.health.health = health;
+    this._health.health = health;
     this.emit('resourceChanged', 'health');
   }
 
   // --- MAM ---
 
   get mam(): IMasterAssetModel {
-    return this.mam;
-  }
-
-  private set mam(mam) {
-    this.mam = mam
+    return this._mam;
   }
 
   // --- Profile ---
   get profile(): IContainerProfile {
-    return this.profile;
-  }
-
-  private set profile(profile) {
-    this.profile = profile;
+    return this._profile;
   }
 
   addProfile(entry: string): void {
@@ -391,20 +392,20 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
   // --- License ---
 
   get license(): ILicenseObject[] {
-    return this.license;
+    return this._license;
   }
 
   private set license(license) {
-    this.license = license
+    this._license = license
   }
 
   // --- LicenseText ---
   get licenseText(): Record<string, string> {
-    return this.licenseText;
+    return this._licenseText;
   }
 
   private set licenseText(licenseText) {
-    this.licenseText = licenseText;
+    this._licenseText = licenseText;
   }
 
   // TODO: Add dynamic ENUM containing all spdx licenseIds
@@ -415,20 +416,20 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
   // --- rtLicense ---
   get rtLicense(): IContainerRTLicense {
-    return this.rtLicense;
+    return this._rtLicense;
   }
 
   private set rtLicense(rtLicense) {
-    this.rtLicense = rtLicense;
+    this._rtLicense = rtLicense;
   }
 
   // --- publicationList ---
   get publicationList(): IPublicationListObject[] {
-    return this.publicationList;
+    return this._publicationList;
   }
 
   private set publicationList(publicationList) {
-    this.publicationList = publicationList;
+    this._publicationList = publicationList;
   }
 
   addPublication(publicationObj: IPublicationListObject): void {
@@ -443,11 +444,11 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
   // --- subscriptionList ---
   get subscriptionList(): ISubscriptionListObject[] {
-    return this.subscriptionList;
+    return this._subscriptionList;
   }
 
   private set subscriptionList(subscriptionList) {
-    this.subscriptionList = subscriptionList;
+    this._subscriptionList = subscriptionList;
   }
 
   addSubscription(subscriptionObj: ISubscriptionListObject): void {
