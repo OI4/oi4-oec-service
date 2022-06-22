@@ -5,7 +5,7 @@ import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/Mock
 import mqtt from 'async-mqtt';
 import {MockedMqttClientFactory} from '../../Test-utils/Factories/MockedMqttClientFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {IApplicationResources} from '@oi4/oi4-oec-service-model';
+import {IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -17,7 +17,7 @@ describe('Unit test for ClientCallbackHelper', () => {
     const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
 
     let clientCallbackHelper: ClientCallbacksHelper;
-    let mockedClient: IApplicationResources;
+    let mockedClient: IOI4ApplicationResources;
 
     beforeEach(() => {
         //Flush the messages log

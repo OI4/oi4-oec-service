@@ -1,7 +1,7 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
-import {EDeviceHealth, IApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, IOI4ApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 
 
@@ -16,7 +16,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     const fakeLogFile = loggerItems.fakeLogFile;
 
     let clientPayloadHelper: ClientPayloadHelper;
-    let mockedIContainerState: IApplicationResources;
+    let mockedIContainerState: IOI4ApplicationResources;
 
     beforeEach(() => {
         //Flush the messages log

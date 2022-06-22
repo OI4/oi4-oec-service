@@ -5,7 +5,7 @@ import {
     DefaultMqttSettingsPaths, IMqttSettingsPaths
 } from './MqttSettings';
 import os from 'os';
-import {ESyslogEventFilter, IApplicationResources} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application} from './OI4Application';
 import {indexOf} from 'lodash';
@@ -20,11 +20,11 @@ export interface IOI4MessageBusFactory {
 
 export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
-    private readonly resources: IApplicationResources;
+    private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: IMqttSettingsPaths;
     private readonly mqttSettingsHelper: MqttCredentialsHelper;
 
-    constructor(resources: IApplicationResources, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
+    constructor(resources: IOI4ApplicationResources, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
         // eslint-disable-next-line @typescript-eslint/no-use-before-define

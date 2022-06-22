@@ -4,7 +4,7 @@ import {
   IContainerHealth,
   IContainerRTLicense,
   ISubscriptionListObject,
-  IPublicationListObject, Application, Resource, IApplicationResources, IContainerProfile, ILicenseObject,
+  IPublicationListObject, Application, Resource, IOI4ApplicationResources, IContainerProfile, ILicenseObject,
 } from '@oi4/oi4-oec-service-model';
 
 import {
@@ -22,7 +22,7 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
-class ApplicationResources extends ConfigParser implements IApplicationResources {
+class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationResources {
   public oi4Id: string; // TODO: doubling? Not needed here
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
@@ -474,4 +474,4 @@ class ApplicationResources extends ConfigParser implements IApplicationResources
   }
 }
 
-export { ApplicationResources, IContainerConfig, IContainerRTLicense };
+export { OI4ApplicationResources, IContainerConfig, IContainerRTLicense };
