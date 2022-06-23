@@ -3,7 +3,7 @@ import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-mod
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
-import {Oi4IdManager} from '../../application/Oi4IdManager';
+import {OI4IdManager} from '../../application/OI4IdManager';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -195,7 +195,7 @@ export class MqttMessageProcessor {
 
     private saveOi4Id(oi4Id: string) {
         LOGGER.log(`Saving the oi4Id ${oi4Id}`);
-        Oi4IdManager.saveCurrentOi4Id(oi4Id);
+        OI4IdManager.saveCurrentOi4Id(oi4Id);
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){

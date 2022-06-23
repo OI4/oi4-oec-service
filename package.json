@@ -38,6 +38,7 @@
     "docker:rm": "docker rm oi4-service",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "buildCore": "lerna run buildCore",
     "clean": "lerna clean",
     "clean:build": "lerna run clean",
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",

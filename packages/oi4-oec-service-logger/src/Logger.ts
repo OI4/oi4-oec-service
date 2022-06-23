@@ -219,4 +219,9 @@ function updateMqttClient(client: mqtt.AsyncClient): void {
     log.mqttClient = client;
 }
 
-export {LOGGER, Logger, initializeLogger, updateMqttClient};
+function setLogger(logger: Logger){
+    log = logger;
+    LOGGER = log;
+}
+
+export {LOGGER, Logger, initializeLogger, updateMqttClient, setLogger};

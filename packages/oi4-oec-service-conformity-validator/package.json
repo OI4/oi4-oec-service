@@ -27,6 +27,7 @@
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
+    "buildCore": "yarn run build",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",

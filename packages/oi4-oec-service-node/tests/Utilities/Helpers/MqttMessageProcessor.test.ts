@@ -14,9 +14,8 @@ import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/Mock
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {Oi4IdManager} from '../../../src/application/Oi4IdManager';
-import {initializeLogger} from "@oi4/oi4-oec-service-logger";
-import {ESyslogEventFilter} from "@oi4/oi4-oec-service-model";
+import {OI4IdManager} from '../../../src';
+import {setLogger} from "@oi4/oi4-oec-service-logger";
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -27,15 +26,15 @@ describe('Unit test for MqttMessageProcessor', () => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         MockedOPCUABuilderFactory.resetAllMocks();
-        Oi4IdManager.resetCurrentOi4Id();
-        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, undefined, undefined);
+        OI4IdManager.resetCurrentOi4Id();
+        setLogger(loggerItems.fakeLogger);
     });
 
     function getMockedData() {
         return {
-            fakeOi4Id: 'forged/mocked/fabricated/counterfait',
+            fakeOi4Id: 'forged/mocked/fabricated/counterfeit',
             fakeServiceType: 'fakeServiceType',
-            fakeTopic: `fake/fictitious/forged/mocked/fabricated/counterfait/${TopicMethods.GET}/mam`,
+            fakeTopic: `fake/fictitious/forged/mocked/fabricated/counterfeit/${TopicMethods.GET}/mam`,
         }
     }
 
@@ -59,8 +58,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData), mockedData.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe('Saving the oi4Id forged/mocked/fabricated/counterfait');
-        expect(Oi4IdManager.fetchCurrentOi4Id()).toBe('forged/mocked/fabricated/counterfait');
+        expect(fakeLogFile[0]).toBe('Saving the oi4Id forged/mocked/fabricated/counterfeit');
+        expect(OI4IdManager.fetchCurrentOi4Id()).toBe('forged/mocked/fabricated/counterfeit');
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {
@@ -75,8 +74,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info), info.fakeOi4Id);
 
         expect(fakeLogFile.length).toBe(0);
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow(Error);
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow(Error);
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
 });
