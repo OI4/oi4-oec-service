@@ -15,7 +15,6 @@ import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
-//FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
 
     private componentLogger: Logger;
@@ -82,7 +81,7 @@ export class ClientPayloadHelper {
                 for (const filteredLicense of filteredLicenseArr) {
                     payload.push({
                         subResource: filteredLicense.licenseId,
-                        Payload: { components: filteredLicense.components },
+                        Payload: {components: filteredLicense.components},
                         DataSetWriterId: CDataSetWriterIdLookup['license'],
                     });
                 }
@@ -96,7 +95,7 @@ export class ClientPayloadHelper {
         for (const license of applicationResources.license) {
             payload.push({
                 subResource: license.licenseId,
-                Payload: { components: license.components },
+                Payload: {components: license.components},
                 DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
@@ -194,7 +193,7 @@ export class ClientPayloadHelper {
             });
             return {abortSending: false, payload: payload};
 
-        // Send only filtered config out
+            // Send only filtered config out
         } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
 
             // Filtered by subResource
@@ -229,16 +228,13 @@ export class ClientPayloadHelper {
     }
 
     createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, publishEventPayload: PublishEventMessagePayload): ValidatedPayload {
-        //FIXME is it correct to return an array of IOPCUAPayload?
-        const messages: IOPCUAPayload[] = [];
-
-        messages.push({
+        const messages: IOPCUAPayload[] = [{
             DataSetWriterId: dataSetWriterId,
             filter: filter,
             subResource: subResource,
             Timestamp: new Date(),
             Payload: publishEventPayload,
-        });
+        }];
 
         return {abortSending: false, payload: messages};
     }
@@ -256,7 +252,7 @@ export class ClientPayloadHelper {
     }
 
     getNamurNeStateDetails(key: EDeviceHealth): NamurNe107State {
-        switch(key) {
+        switch (key) {
             case EDeviceHealth.NORMAL_0: {
                 return {value: 0, description: ENamurEventFilter.normal};
             }
