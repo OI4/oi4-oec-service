@@ -8,13 +8,14 @@ import {
     EDeviceHealth,
     ESubscriptionListConfig,
     ESyslogEventFilter,
-    IApplicationResources
+    EventCategory, EventSubResource,
+    IApplicationResources,
+    IEvent
 } from '@oi4/oi4-oec-service-model';
 import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IEvent} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
@@ -190,13 +191,13 @@ class OI4Application extends EventEmitter {
      * @param [filter] - the tag of the resource
      */
     async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
-        const payloadResult: ValidatedPayload = await this.preparePayload(resource, filter);
+        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, filter);
 
-        if(payloadResult.abortSending) {
+        if(validatedPayload.abortSending) {
             return;
         }
 
-        await this.sendPayload(payloadResult.payload, resource, messageId, page, perPage, filter);
+        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
     }
 
     async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
@@ -249,11 +250,6 @@ class OI4Application extends EventEmitter {
         return payloadResult;
     }
 
-    // Basic Error Functions
-    async sendError(error: string) {
-        this.logger.log(`Error: ${error}`, ESyslogEventFilter.error);
-    }
-
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
@@ -271,11 +267,15 @@ class OI4Application extends EventEmitter {
         return {isValid: true, dswidFilter: dswidFilter };
     }
 
+    // Basic Error Functions
+    async sendError(error: string) {
+        this.logger.log(`Error: ${error}`, ESyslogEventFilter.error);
+    }
+
     private async sendPayload(payload: IOPCUAPayload[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
 
-        //FIXME is this method ok for sending the messages defined in the scope of OI4.273?
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
@@ -292,27 +292,40 @@ class OI4Application extends EventEmitter {
         }
     }
 
-    //FIXME is this sendEvent even used somewhere? Yes but needs to be fixed
     /**
      * Sends an event/event with a specified level to the message bus
      * @param eventStr - The string that is to be sent as the 'event'
      * @param level - the level that is used as a <subresource> element in the event topic
      */
     // TODO figure out how the determine the filter from the actual object/interface, whatever
-    async sendEvent(event: IEvent, subResource: string, filter: string) {
-        const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
-            number: 1,
-            description: 'Registry sendEvent',
-            Payload: {
-                logLevel: event,
-                logString: filter,
-            },
-            DataSetWriterId: CDataSetWriterIdLookup['event'],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        // THIS IS WRONG NEEDS TO FOLLOW
-        // <method>/<resource>/<subResource>/<filter>
-        await this.client.publish(`${this.topicPreamble}/pub/event/${subResource}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        this.logger.log(`Published event on ${this.topicPreamble}/event/${subResource}/${this.oi4Id}`);
+    async sendEvent(event: IEvent, filter: string) {
+        const subResource = this.getEventSubResource(event);
+        const payload: IOPCUAPayload[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
+
+        const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
+        await this.client.publish(`${this.topicPreamble}/pub/event/${subResource}/${filter}`, JSON.stringify(opcUAEvent));
+        this.logger.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
+    }
+
+    private getEventSubResource(event: IEvent) {
+        switch(event.category) {
+            case EventCategory.CAT_SYSLOG_0: {
+                return EventSubResource.SYSLOG;
+                break;
+            }
+            case EventCategory.CAT_OPCSC_1: {
+                return EventSubResource.STATUS;
+                break;
+            }
+            case EventCategory.CAT_NE107_2: {
+                return EventSubResource.NAMUR_NE107;
+                break;
+            }
+            case EventCategory.CAT_GENERIC_99: {
+                return EventSubResource.GENERIC;
+                break;
+            }
+        }
     }
 
     /**

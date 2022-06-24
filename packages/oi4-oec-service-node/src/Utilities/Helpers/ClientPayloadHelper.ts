@@ -1,4 +1,4 @@
-import {NamurNe107State, PublishEventMessagePayload, ValidatedPayload} from './Types';
+import {NamurNe107State, ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
@@ -6,12 +6,12 @@ import {
     ESyslogEventFilter,
     IApplicationResources,
     IContainerHealth,
+    IEvent,
     ILicenseObject,
     IPublicationListObject,
     ISpecificContainerConfig,
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
-import {IEvent} from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
@@ -228,28 +228,14 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, payload: IEvent): ValidatedPayload {
-        const messages: IOPCUAPayload[] = [{
-            DataSetWriterId: dataSetWriterId,
+    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUAPayload[] {
+        return [{
+            DataSetWriterId: CDataSetWriterIdLookup[ResourceType.EVENT],
             filter: filter,
             subResource: subResource,
             Timestamp: new Date(),
-            Payload: payload,
+            Payload: event,
         }];
-
-        return {abortSending: false, payload: messages};
-    }
-
-    createPublishEventMessagePayload(origin: string, payloadNumber: number, description: string, category: string, details: any): PublishEventMessagePayload {
-        return {
-            payload: {
-                origin: origin,
-                number: payloadNumber,
-                description: description,
-                category: category,
-                details: details,
-            }
-        };
     }
 
     getNamurNeStateDetails(key: EDeviceHealth): NamurNe107State {
