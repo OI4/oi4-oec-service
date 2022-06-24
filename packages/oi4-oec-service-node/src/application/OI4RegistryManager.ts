@@ -2,6 +2,7 @@ import {IOPCUANetworkMessage} from "@oi4/oi4-oec-service-opcua-model";
 import {LOGGER} from "@oi4/oi4-oec-service-logger";
 import {indexOf} from "lodash";
 import {EventEmitter} from "events";
+import {ServiceTypes} from "@oi4/oi4-oec-service-model";
 
 /**
  * The OI4RegistryManager class is a singleton that manages the OI4 registry.
@@ -9,7 +10,6 @@ import {EventEmitter} from "events";
 export namespace OI4RegistryManager {
 
     export const OI4_REGISTRY_CHANGED = 'oi4_registry_changed';
-    const REGISTRY: string = 'Registry';
     const emitter: EventEmitter = new EventEmitter();
 
     let oi4Id: string = undefined;
@@ -32,7 +32,7 @@ export namespace OI4RegistryManager {
         const separatorPosition = indexOf(publisherId, '/');
 
         const serviceType = publisherId.substring(0, separatorPosition);
-        if(serviceType !== REGISTRY){
+        if(serviceType !== ServiceTypes.REGISTRY){
             return;
         }
 

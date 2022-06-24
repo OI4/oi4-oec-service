@@ -1,12 +1,12 @@
 import {OI4RegistryManager} from '../../src';
 import {IOPCUANetworkMessage} from "@oi4/oi4-oec-service-opcua-model";
 import {initializeLogger} from "@oi4/oi4-oec-service-logger";
-import {ESyslogEventFilter} from "@oi4/oi4-oec-service-model";
+import {ESyslogEventFilter, ServiceTypes} from "@oi4/oi4-oec-service-model";
 
 const parsedMessage: IOPCUANetworkMessage = {
     MessageId: '',
     MessageType: undefined,
-    PublisherId: 'Registry/123',
+    PublisherId: `${ServiceTypes.REGISTRY}/123`,
     DataSetClassId: undefined,
     Messages: [],
 }
@@ -53,12 +53,12 @@ describe('Unit test for OI4RegistryManager', () => {
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
 
-        parsedMessage.PublisherId = 'Registry';
+        parsedMessage.PublisherId = ServiceTypes.REGISTRY;
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
 
-        parsedMessage.PublisherId = 'Registry/';
+        parsedMessage.PublisherId = `${ServiceTypes.REGISTRY}/`;
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
