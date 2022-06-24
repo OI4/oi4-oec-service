@@ -1,8 +1,7 @@
-import {NamurNe107State, ValidatedPayload} from './Types';
+import {ValidatedPayload} from './Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
-    ENamurEventFilter,
     ESyslogEventFilter,
     IApplicationResources,
     IContainerHealth,
@@ -238,23 +237,4 @@ export class ClientPayloadHelper {
         }];
     }
 
-    getNamurNeStateDetails(key: EDeviceHealth): NamurNe107State {
-        switch (key) {
-            case EDeviceHealth.NORMAL_0: {
-                return {value: 0, description: ENamurEventFilter.normal};
-            }
-            case EDeviceHealth.FAILURE_1: {
-                return {value: 1, description: ENamurEventFilter.failure};
-            }
-            case EDeviceHealth.CHECK_FUNCTION_2: {
-                return {value: 2, description: ENamurEventFilter.checkFunction};
-            }
-            case EDeviceHealth.OFF_SPEC_3: {
-                return {value: 3, description: ENamurEventFilter.outOfSpecification};
-            }
-            case EDeviceHealth.MAINTENANCE_REQUIRED_4: {
-                return {value: 4, description: ENamurEventFilter.maintenanceRequired};
-            }
-        }
-    }
 }

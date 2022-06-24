@@ -303,7 +303,8 @@ class OI4Application extends EventEmitter {
         const payload: IOPCUAPayload[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
-        await this.client.publish(`${this.topicPreamble}/pub/event/${subResource}/${filter}`, JSON.stringify(opcUAEvent));
+        const publishAddress = `${this.topicPreamble}/pub/event/${subResource}/${filter}`;
+        await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
         this.logger.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
     }
 
