@@ -11,6 +11,7 @@ import {
     ISpecificContainerConfig,
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
+import {IEvent} from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
@@ -227,13 +228,13 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, publishEventPayload: PublishEventMessagePayload): ValidatedPayload {
+    createPublishEventMessage(dataSetWriterId: number, filter: string, subResource: string, payload: IEvent): ValidatedPayload {
         const messages: IOPCUAPayload[] = [{
             DataSetWriterId: dataSetWriterId,
             filter: filter,
             subResource: subResource,
             Timestamp: new Date(),
-            Payload: publishEventPayload,
+            Payload: payload,
         }];
 
         return {abortSending: false, payload: messages};

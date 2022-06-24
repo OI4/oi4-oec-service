@@ -14,9 +14,10 @@ import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
+import {IEvent} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents, PublishEventCategories, ResourceType} from '../Utilities/Helpers/Enums';
+import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
 
 class OI4Application extends EventEmitter {
@@ -239,31 +240,6 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
-            case ResourceType.OPC_UA_STATUS: {
-                //FIXME Provide meaningful data to the methods called below
-                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_STATUS_1, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.OPC_UA_STATUS, publishEventMessagePayload);
-                break;
-            }
-            case ResourceType.SYSLOG: {
-                //FIXME Provide meaningful data to the methods called below
-                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, undefined, PublishEventCategories.CAT_SYSLOG_0, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.SYSLOG, publishEventMessagePayload);
-                break;
-            }
-            case ResourceType.NAMUR_NE107: {
-                //FIXME Provide meaningful data to the methods called below
-                const currentState = this.clientPayloadHelper.getNamurNeStateDetails(EDeviceHealth.NORMAL_0);
-                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, currentState.value, currentState.description, PublishEventCategories.CAT_NE107_2, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.NAMUR_NE107, publishEventMessagePayload);
-                break;
-            }
-            case ResourceType.GENERIC: {
-                //FIXME Provide meaningful data to the methods called below
-                const publishEventMessagePayload = this.clientPayloadHelper.createPublishEventMessagePayload(this.oi4Id, 42, 'The answer to universe, life, everything', PublishEventCategories.CAT_GENERIC_99, undefined);
-                payloadResult = this.clientPayloadHelper.createPublishEventMessage(dswidFilter, filter, ResourceType.GENERIC, publishEventMessagePayload);
-                break;
-            }
             default: {
                 await this.sendError(`Unknown Resource: ${resource}`);
                 return;
@@ -316,24 +292,27 @@ class OI4Application extends EventEmitter {
         }
     }
 
-    //FIXME is this sendEvent even used somewhere?
+    //FIXME is this sendEvent even used somewhere? Yes but needs to be fixed
     /**
      * Sends an event/event with a specified level to the message bus
      * @param eventStr - The string that is to be sent as the 'event'
      * @param level - the level that is used as a <subresource> element in the event topic
      */
-    async sendEvent(eventStr: string, level: string) {
+    // TODO figure out how the determine the filter from the actual object/interface, whatever
+    async sendEvent(event: IEvent, subResource: string, filter: string) {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
             number: 1,
             description: 'Registry sendEvent',
             Payload: {
-                logLevel: level,
-                logString: eventStr,
+                logLevel: event,
+                logString: filter,
             },
             DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        this.logger.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
+        // THIS IS WRONG NEEDS TO FOLLOW
+        // <method>/<resource>/<subResource>/<filter>
+        await this.client.publish(`${this.topicPreamble}/pub/event/${subResource}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
+        this.logger.log(`Published event on ${this.topicPreamble}/event/${subResource}/${this.oi4Id}`);
     }
 
     /**
