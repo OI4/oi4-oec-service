@@ -3,13 +3,12 @@ import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-mod
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {TopicMethods, PayloadTypes} from './Enums';
-import {OI4IdManager} from '../../application/OI4IdManager';
+import { OI4RegistryManager } from '../../application/OI4RegistryManager';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
     private readonly METADATA = 'metadata';
-    private readonly REGISTRY = 'Registry';
     private readonly emit: Function;
     private readonly DATA = 'data';
 
@@ -26,14 +25,15 @@ export class MqttMessageProcessor {
      * Processes the incoming mqtt message by parsing the different elements of the topic and reacting to it
      * @param topic - the incoming topic from the messagebus
      * @param message - the entire binary message from the messagebus
+     * @param builder
      */
-    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder, oi4Id: string) => {
+    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder) => {
         const validatedData: ValidatedIncomingMessageData = this.validateData(topic, message, builder);
         if(!validatedData.areValid) {
             return;
         }
 
-        await this.processMessage(validatedData.topicInfo, validatedData.parsedMessage, builder, oi4Id);
+        await this.processMessage(validatedData.topicInfo, validatedData.parsedMessage, builder);
     }
 
     private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
@@ -109,13 +109,13 @@ export class MqttMessageProcessor {
         return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter};
     }
 
-    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Id: string) {
+    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo.appId === oi4Id) {
+        if (topicInfo.appId === this.applicationResources.oi4Id) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
-                    await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Id)
+                    await this.executeGetActions(topicInfo, parsedMessage, builder)
                     break;
                 }
                 case TopicMethods.PUB: {
@@ -139,7 +139,7 @@ export class MqttMessageProcessor {
         }
     }
 
-    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Id: string) {
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         //FIXME this assignemtn is pretty useless but if I put topicInfo.topic directly in the object I got an error notified by esLint. Would be nce to find a way to solve this.
         const topic = topicInfo.topic;
@@ -151,9 +151,7 @@ export class MqttMessageProcessor {
             return;
         }
 
-        if(this.isServiceTypeRegistry(parsedMessage)) {
-            this.saveOi4Id(oi4Id);
-        }
+        OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
         let payloadType: string = PayloadTypes.EMPTY;
         let page = 0;
@@ -181,21 +179,6 @@ export class MqttMessageProcessor {
         }
 
         this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.filter, page, perPage)
-    }
-
-    private isServiceTypeRegistry(parsedMessage: IOPCUANetworkMessage) {
-        if(parsedMessage.PublisherId.indexOf('/') == -1) {
-            LOGGER.log('PublisherId does not respect the structure serviceType/appId')
-            return false;
-        }
-
-        const serviceType: string = parsedMessage.PublisherId.split('/')[0];
-        return serviceType === this.REGISTRY;
-    }
-
-    private saveOi4Id(oi4Id: string) {
-        LOGGER.log(`Saving the oi4Id ${oi4Id}`);
-        OI4IdManager.saveCurrentOi4Id(oi4Id);
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){
