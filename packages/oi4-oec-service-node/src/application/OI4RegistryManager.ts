@@ -39,7 +39,7 @@ export namespace OI4RegistryManager {
         saveCurrentOi4Id(publisherId.substring(separatorPosition + 1));
     }
 
-    export function resetOi4Id() {
+    export function resetOI4RegistryManager() {
         oi4Id = undefined;
     }
 
@@ -47,14 +47,14 @@ export namespace OI4RegistryManager {
         return emitter;
     }
 
-    function saveCurrentOi4Id(id: string) {
-        if(id === undefined || id.length === 0) {
+    function saveCurrentOi4Id(newId: string) {
+        if(newId === undefined || newId.length === 0) {
             LOGGER.log('Invalid oi4Id: either undefined or empty')
             return;
         }
-        if(id !== oi4Id) {
-            emitter.emit(OI4_REGISTRY_CHANGED, oi4Id, id);
-            oi4Id = id;
+        if(newId !== oi4Id) {
+            emitter.emit(OI4_REGISTRY_CHANGED, oi4Id, newId);
+            oi4Id = newId;
             LOGGER.log(`Saved registry OI4 ID: ${oi4Id}`);
         }
     }

@@ -15,22 +15,39 @@ describe('Unit test for OI4RegistryManager', () => {
 
     beforeEach(() => {
         initializeLogger(true, 'HereIam', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, '', '');
-        OI4RegistryManager.resetOi4Id();
+        OI4RegistryManager.resetOI4RegistryManager();
+        OI4RegistryManager.getEmitter().removeAllListeners();
     });
 
     it('The OI4RegistryManager works', async () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
 
-        OI4RegistryManager.checkForOi4Registry(parsedMessage);
+        await OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(OI4RegistryManager.getOi4Id()).toBe('123');
 
-        OI4RegistryManager.resetOi4Id();
+        OI4RegistryManager.resetOI4RegistryManager();
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    it('The OI4RegistryManager ignores invalid publisherId', async () => {
+    it('The OI4RegistryManager works with event emitter', () => {
+        expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
+        expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        const callback = jest.fn();
+        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.OI4_REGISTRY_CHANGED, callback);
+
+        OI4RegistryManager.checkForOi4Registry(parsedMessage);
+        expect(callback).toBeCalledTimes(1);
+        expect(callback).toBeCalledWith(undefined, '123');
+
+        parsedMessage.PublisherId = 'Registry/456';
+        OI4RegistryManager.checkForOi4Registry(parsedMessage);
+        expect(callback).toBeCalledTimes(2);
+        expect(callback).toBeCalledWith('123', '456');
+    });
+
+    it('The OI4RegistryManager ignores invalid publisherId', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         parsedMessage.PublisherId = undefined;
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
@@ -45,25 +62,6 @@ describe('Unit test for OI4RegistryManager', () => {
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
-    });
-
-    it('The OI4RegistryManager works with event emitter', async () => {
-        let actualOldId: string;
-        let actualNewId: string;
-        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.OI4_REGISTRY_CHANGED, (oldId, newId) => {
-            actualOldId = oldId;
-            actualNewId = newId;
-        });
-
-        await OI4RegistryManager.checkForOi4Registry(parsedMessage);
-
-        expect(actualOldId).toBe(undefined);
-        expect(actualNewId).toBe('123');
-
-        parsedMessage.PublisherId = 'Registry/456';
-        await OI4RegistryManager.checkForOi4Registry(parsedMessage);
-        expect(actualOldId).toBe('123');
-        expect(actualNewId).toBe('456');
     });
 
 });

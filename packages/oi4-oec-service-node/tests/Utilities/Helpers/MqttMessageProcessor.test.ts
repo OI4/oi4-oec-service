@@ -16,7 +16,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         MockedOPCUABuilderFactory.resetAllMocks();
-        OI4RegistryManager.resetOi4Id();
+        OI4RegistryManager.resetOI4RegistryManager();
         setLogger(loggerItems.fakeLogger);
     });
 
