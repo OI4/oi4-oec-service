@@ -7,7 +7,7 @@ import {
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {ClientPayloadHelper} from './ClientPayloadHelper';
-import {logger} from '@oi4/oi4-oec-service-logger';
+import {LOGGER} from '@oi4/oi4-oec-service-logger';
 
 export class ClientCallbacksHelper {
 
@@ -18,7 +18,7 @@ export class ClientCallbacksHelper {
     }
 
     public async onErrorCallback(err: Error) {
-        logger.log(`Error in mqtt client: ${err}`);
+        LOGGER.log(`Error in mqtt client: ${err}`);
     };
 
     public async onCloseCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
@@ -30,21 +30,21 @@ export class ClientCallbacksHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
-        logger.log('Connection to mqtt broker closed');
+        LOGGER.log('Connection to mqtt broker closed');
     };
 
     public async onDisconnectCallback(applicationResources: IOI4ApplicationResources) {
         applicationResources.brokerState = false;
-        logger.log('Disconnected from mqtt broker');
+        LOGGER.log('Disconnected from mqtt broker');
     };
 
     public async onReconnectCallback(applicationResources: IOI4ApplicationResources) {
         applicationResources.brokerState = false;
-        logger.log('Reconnecting to mqtt broker');
+        LOGGER.log('Reconnecting to mqtt broker');
     };
 
     public async onClientConnectCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
-        logger.log('Connected successfully', ESyslogEventFilter.warning);
+        LOGGER.log('Connected successfully', ESyslogEventFilter.warning);
         applicationResources.brokerState = true;
 
         await client.publish(
@@ -54,7 +54,7 @@ export class ClientCallbacksHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['mam']
             }], new Date(), DataSetClassIds.mam)),
         );
-        logger.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
+        LOGGER.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
     };
 
 

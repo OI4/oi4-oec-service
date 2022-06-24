@@ -106,3 +106,4 @@ out
 .idea
 /oi4-service.iml
 .DS_Store
+./prepare.sh

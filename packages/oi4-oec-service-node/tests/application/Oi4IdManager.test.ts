@@ -1,22 +1,18 @@
-//FIXME get rid of this ignore as soon as possible.
+import {OI4IdManager} from '../../src';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import {Oi4IdManager} from '../src/messagebus/Oi4IdManager';
+describe('Unit test for OI4IdManager.test', () => {
 
-describe('Unit test for Oi4IdManager.test', () => {
+    it('The OI4IdManager works', async () => {
 
-    it('The Oi4IdManager works', async () => {
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow(Error);
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
 
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow(Error);
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        OI4IdManager.saveCurrentOi4Id('123');
+        expect(OI4IdManager.fetchCurrentOi4Id()).toBe('123');
 
-        Oi4IdManager.saveCurrentOi4Id('123');
-        expect(Oi4IdManager.fetchCurrentOi4Id()).toBe('123');
-
-        Oi4IdManager.resetCurrentOi4Id();
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow(Error);
-        expect(() => Oi4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        OI4IdManager.resetCurrentOi4Id();
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow(Error);
+        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
 
     });
 

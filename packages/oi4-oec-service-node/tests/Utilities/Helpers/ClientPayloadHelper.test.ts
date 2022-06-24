@@ -1,8 +1,13 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
-import {EDeviceHealth, IOI4ApplicationResources, IContainerHealth} from '@oi4/oi4-oec-service-model';
+import {
+    EDeviceHealth,
+    IOI4ApplicationResources,
+    IContainerHealth
+} from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {setLogger} from "@oi4/oi4-oec-service-logger";
 
 
 describe('Unit test for ClientPayloadHelper', () => {
@@ -21,8 +26,9 @@ describe('Unit test for ClientPayloadHelper', () => {
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
-        clientPayloadHelper = new ClientPayloadHelper(loggerItems.fakeLogger);
-        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance()
+        clientPayloadHelper = new ClientPayloadHelper();
+        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        setLogger(loggerItems.fakeLogger);
     });
 
     function checkAgainstDefaultPayload(payload: ValidatedPayload) {
@@ -89,13 +95,19 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function checkAgainstLicensePayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = {components: [{licAddText: 'fakeLicence', component: 'fakeComponent', licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson']}]};
-        const expectedPayload = createMockedPayloadWithSubresource('1',dataSetWriterId, expectedInnerPayload);
+        const expectedInnerPayload = {
+            components: [{
+                licAddText: 'fakeLicence',
+                component: 'fakeComponent',
+                licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson']
+            }]
+        };
+        const expectedPayload = createMockedPayloadWithSubresource('1', dataSetWriterId, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'health');
         checkAgainstLicensePayload(validatedPayload, 2);
     });
 
@@ -106,7 +118,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createLicenseSendResourcePayload works when dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'license');
         checkForUnfittingDataSetId(validatedPayload);
     });
 
@@ -115,7 +127,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkAgainstLicensePayload(validatedPayload, 3);
     });
 
-    function createPublicationMockedPayload (resource: string, datasetWriterId: number, oi4Id: string) {
+    function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: string) {
         return {
             DataSetWriterId: datasetWriterId,
             oi4Identifier: oi4Id,
@@ -126,17 +138,17 @@ describe('Unit test for ClientPayloadHelper', () => {
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createPublicationMockedPayload('fakeResource', 42, 'fakeOi4Id');
-        const expectedPayload = createMockedPayloadWithSubresource('fakeResource',dataSetWriterId, expectedInnerPayload);
+        const expectedPayload = createMockedPayloadWithSubresource('fakeResource', dataSetWriterId, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createPublicationListSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'health');
         checkAgainstPublicationPayload(validatedPayload, 2);
     });
 
     it('createPublicationListSendResourcePayload works when dataSetWriterIdFilter is not NaN but dataSetWriterId does not match the resource', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'license');
         checkForUnfittingDataSetId(validatedPayload);
     });
 
@@ -145,7 +157,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkAgainstPublicationPayload(validatedPayload, 2);
     });
 
-    function createSubscriptionMockedPayload (topicPath: string) {
+    function createSubscriptionMockedPayload(topicPath: string) {
         return {
             topicPath: topicPath,
         }
@@ -154,17 +166,17 @@ describe('Unit test for ClientPayloadHelper', () => {
     function checkAgainstSubscriptionPayload(validatedPayload: ValidatedPayload, topicPath: string, subresource: string) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createSubscriptionMockedPayload(topicPath);
-        const expectedPayload = createMockedPayloadWithSubresource(subresource,2, expectedInnerPayload);
+        const expectedPayload = createMockedPayloadWithSubresource(subresource, 2, expectedInnerPayload);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'health');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'health');
         checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', undefined);
     });
 
     it('createSubscriptionListSendResourcePayload works when dataSetWriterIdFilter is not NaN and dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id',2, 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'license');
         checkForUnfittingDataSetId(validatedPayload);
     });
 

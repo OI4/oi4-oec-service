@@ -9,7 +9,7 @@ import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application} from './OI4Application';
 import {indexOf} from 'lodash';
-import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
+import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -50,13 +50,13 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
     private initCredentials(mqttSettings: MqttSettings) {
         if (this.hasRequiredCertCredentials()) {
-            logger.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
+            LOGGER.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
             mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
             mqttSettings.cert = readFileSync(this.settingsPaths.clientCertificate);
             mqttSettings.key = readFileSync(this.settingsPaths.privateKey);
             mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
         } else {
-            logger.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
+            LOGGER.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
             const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
             mqttSettings.username = userCredentials.username;
             mqttSettings.password = userCredentials.password;
