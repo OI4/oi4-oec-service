@@ -4,7 +4,7 @@ import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
     EDeviceHealth,
     IOI4ApplicationResources,
-    IContainerHealth,
+    IContainerHealth
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from "@oi4/oi4-oec-service-logger";
