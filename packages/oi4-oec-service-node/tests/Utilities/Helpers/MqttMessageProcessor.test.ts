@@ -1,20 +1,10 @@
-//FIXME is there a way to get rid of this ts-ignore?
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {MqttMessageProcessor} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {OI4IdManager} from '../../../src';
+import {OI4RegistryManager} from '../../../src';
 import {setLogger} from "@oi4/oi4-oec-service-logger";
 
 describe('Unit test for MqttMessageProcessor', () => {
@@ -22,11 +12,11 @@ describe('Unit test for MqttMessageProcessor', () => {
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
 
-    beforeEach( () => {
+    beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         MockedOPCUABuilderFactory.resetAllMocks();
-        OI4IdManager.resetCurrentOi4Id();
+        OI4RegistryManager.resetOi4Id();
         setLogger(loggerItems.fakeLogger);
     });
 
@@ -39,9 +29,15 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     function mockBuilder(info: any): OPCUABuilder {
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {return Promise.resolve(true)});
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {return Promise.resolve(true)});
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {return Promise.resolve('FakeType');});
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
+            return Promise.resolve(true)
+        });
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
+            return Promise.resolve(true)
+        });
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
+            return Promise.resolve('FakeType');
+        });
 
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(info.fakeOi4Id, info.fakeServiceType);
     }
@@ -51,15 +47,17 @@ describe('Unit test for MqttMessageProcessor', () => {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: 'Registry/Fake'
+            PublisherId: `Registry/${mockedData.fakeOi4Id}`,
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
-        await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData), mockedData.fakeOi4Id);
+        const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        applicationResource.oi4Id = mockedData.fakeOi4Id;
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), jest.fn());
+        await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData));
 
         expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe('Saving the oi4Id forged/mocked/fabricated/counterfeit');
-        expect(OI4IdManager.fetchCurrentOi4Id()).toBe('forged/mocked/fabricated/counterfeit');
+        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${mockedData.fakeOi4Id}`);
+        expect(OI4RegistryManager.getOi4Id()).toBe(mockedData.fakeOi4Id);
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {
@@ -70,12 +68,14 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: 'Mocked/Fake'
         };
 
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(), jest.fn(),jest.fn(),jest.fn());
-        await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info), info.fakeOi4Id);
+        const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        applicationResource.oi4Id = info.fakeOi4Id;
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), jest.fn());
+        await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info));
 
         expect(fakeLogFile.length).toBe(0);
-        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow(Error);
-        expect(() => OI4IdManager.fetchCurrentOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
+        expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
 });

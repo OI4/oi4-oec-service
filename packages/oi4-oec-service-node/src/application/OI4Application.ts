@@ -65,7 +65,7 @@ class OI4Application extends EventEmitter {
             retain: false,
         }
 
-        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
+        initializeLogger(true, mqttSettings.clientId, process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
         LOGGER.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);
 
