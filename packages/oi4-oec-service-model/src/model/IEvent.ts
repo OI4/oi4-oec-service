@@ -6,6 +6,7 @@ export interface IEvent {
     details?: any;
 }
 
+//FIXME is it normal that this is marked as unused?
 export interface INamurNe107Event extends IEvent {
     details: {
         diagnosticCode?: string;
@@ -33,6 +34,7 @@ export enum EventCategory {
     CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
+//FIXME is it normal that this is marked as unused?
 export enum EventSubResource {
     SYSLOG = 'syslog',
     STATUS = 'status',

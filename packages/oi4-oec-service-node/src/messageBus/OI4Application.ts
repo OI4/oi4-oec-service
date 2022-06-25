@@ -308,7 +308,7 @@ class OI4Application extends EventEmitter {
         this.logger.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
     }
 
-    private getEventSubResource(event: IEvent) {
+    private getEventSubResource(event: IEvent): EventSubResource {
         switch(event.category) {
             case EventCategory.CAT_SYSLOG_0: {
                 return EventSubResource.SYSLOG;

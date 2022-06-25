@@ -7,7 +7,7 @@ import {
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    EventCategory,
+    EventCategory, EventSubResource,
     IApplicationResources,
     ISyslogEvent,
 } from '@oi4/oi4-oec-service-model';
@@ -378,11 +378,9 @@ describe('OI4MessageBus test', () => {
         jest.clearAllMocks();
         await oi4Application.sendEvent(event, '1');
 
-        //const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${EventSubResource.SYSLOG}/1`;
-
-        expect(publish).toHaveBeenCalledTimes(1);
-        //FIXME add a check on the called topic.
-        //expect(calledTopic).toBe(expectedPublishAddress);
+        const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${EventSubResource.SYSLOG}/1`;
+        expect(publish).toHaveBeenCalled();
+        expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
     });
 
 });
