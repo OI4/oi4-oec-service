@@ -7,9 +7,10 @@ import {
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    EventCategory, EventSubResource,
+    EventCategory,
+    EventSubResource,
     IApplicationResources,
-    ISyslogEvent,
+    INamurNe107Event,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
@@ -359,21 +360,21 @@ describe('OI4MessageBus test', () => {
         mockOPCUABuilder.mockRestore();
     });
 
-    function createEvent(): ISyslogEvent {
+    function createEvent(): INamurNe107Event {
         return {
             origin: 'fakeOrigin',
             number: 0,
             description: 'fakeDescription',
             category: EventCategory.CAT_SYSLOG_0,
             details: {
-                MSG: 'fakeMSG',
-                HEADER: 'fakeHeader',
+                diagnosticCode: 'fakeCode',
+                location: 'fakeLocation',
             }
         }
     }
 
     it('should send event',   async () => {
-        const event: ISyslogEvent = createEvent();
+        const event: INamurNe107Event = createEvent();
         const oi4Application = getOi4App();
         jest.clearAllMocks();
         await oi4Application.sendEvent(event, '1');

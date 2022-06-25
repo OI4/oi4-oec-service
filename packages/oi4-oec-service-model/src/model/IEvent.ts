@@ -6,7 +6,7 @@ export interface IEvent {
     details?: any;
 }
 
-//FIXME is it normal that this is marked as unused?
+//FIXME is it normal that this looks unused despite it is used in the tests?
 export interface INamurNe107Event extends IEvent {
     details: {
         diagnosticCode?: string;
@@ -34,7 +34,7 @@ export enum EventCategory {
     CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
-//FIXME is it normal that this is marked as unused?
+//FIXME is it normal that this is marked as unused despite it is actually used in the OI4Application.ts?
 export enum EventSubResource {
     SYSLOG = 'syslog',
     STATUS = 'status',
