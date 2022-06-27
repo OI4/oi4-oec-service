@@ -139,7 +139,7 @@ export class MqttMessageProcessor {
         }
     }
 
-    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Id: string) {
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === this.DATA) {
             this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});

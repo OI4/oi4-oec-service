@@ -5,12 +5,14 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     EventCategory,
-    IOI4ApplicationResources,
     IContainerHealth,
+    IOI4ApplicationResources,
     ISyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {setLogger} from '@oi4/oi4-oec-service-logger';
+import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {ResourceType} from '../../../dist/Utilities/Helpers/Enums';
 
 
 describe('Unit test for ClientPayloadHelper', () => {
