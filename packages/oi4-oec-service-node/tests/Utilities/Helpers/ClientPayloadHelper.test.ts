@@ -6,7 +6,7 @@ import {
     EDeviceHealth,
     IContainerHealth,
     IOI4ApplicationResources,
-    SyslogEvent
+    SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
@@ -89,16 +89,19 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(2, {licenseText: 'fakeKey'}));
     });
 
-    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any) {
+    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any, filter: string = undefined, timestamp: Date = undefined) {
         return [{
             subResource: subResource,
             Payload: payload,
-            DataSetWriterId: dataSetWriterId
+            DataSetWriterId: dataSetWriterId,
+            filter: filter,
+            Timestamp: timestamp,
         }];
     }
 
     function checkAgainstLicensePayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
+        validatedPayload.payload[0].Timestamp = undefined;
         const expectedInnerPayload = {
             components: [{
                 licAddText: 'fakeLicence',
@@ -111,8 +114,8 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'health');
-        checkAgainstLicensePayload(validatedPayload, 2);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 3, 'license');
+        checkAgainstLicensePayload(validatedPayload, 3);
     });
 
     function checkForUnfittingDataSetId(validatedPayload: ValidatedPayload) {
@@ -122,13 +125,19 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createLicenseSendResourcePayload works when dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, 2, 'license');
         checkForUnfittingDataSetId(validatedPayload);
     });
 
     it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, '1', NaN, 'health');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, NaN, 'license');
         checkAgainstLicensePayload(validatedPayload, 3);
+    });
+
+    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is NaN and filter not undefined', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, NaN, 'license', 'asd');
+        expect(validatedPayload.abortSending).toBe(false);
+        expect(validatedPayload.payload.length).toBe(0);
     });
 
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: string) {
