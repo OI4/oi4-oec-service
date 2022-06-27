@@ -74,9 +74,11 @@ export class ClientPayloadHelper {
 
                 for (const filteredLicense of filteredLicenseArr) {
                     payload.push({
-                        subResource: filteredLicense.licenseId,
-                        Payload: {components: filteredLicense.components},
                         DataSetWriterId: CDataSetWriterIdLookup['license'],
+                        filter: filter,
+                        subResource: filteredLicense.licenseId,
+                        Timestamp: new Date(),
+                        Payload: {components: filteredLicense.components},
                     });
                 }
 
