@@ -1,43 +1,88 @@
+export enum EventCategory {
+    CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
+    CAT_STATUS_1 = 'CAT_STATUS_1',
+    CAT_NE107_2 = 'CAT_NE107_2',
+    CAT_GENERIC_99 = 'CAT_GENERIC_99',
+}
+
 export interface IEvent {
     origin: string;
     number: number;
     description?: string;
-    category: EventCategory;
+    readonly category: EventCategory;
     details?: any;
+    subResource(): string;
 }
 
-//FIXME is it normal that this looks unused despite it is used in the tests?
-export interface INamurNe107Event extends IEvent {
-    details: {
-        diagnosticCode?: string;
-        location?: string;
+export abstract class BaseEvent implements IEvent {
+    description: string;
+    number: number;
+    origin: string;
+
+    constructor(origin: string, number: number, description?: string) {
+        this.origin = origin;
+        this.number = number;
+        this.description = description;
+    }
+
+    abstract readonly category: EventCategory;
+    abstract details: any;
+    abstract subResource(): string;
+}
+
+
+export class SyslogEvent extends BaseEvent {
+    category: EventCategory.CAT_SYSLOG_0;
+
+    constructor(origin: string, number: number, description?: string) {
+        super(origin, number, description);
+    }
+
+    subResource(): string {
+        return 'syslog';
     };
-}
-
-export interface ISyslogEvent extends IEvent {
     details: {
         MSG?: string;
         HEADER?: string;
     };
 }
 
-export interface IStatusEvent extends IEvent {
+export class StatusEvent extends BaseEvent {
+    category: EventCategory.CAT_STATUS_1;
+
+    constructor(origin: string, number: number, description?: string) {
+        super(origin, number, description);
+    }
+
+    subResource(): string {
+        return 'status';
+    }
+
     details: {
         symbolicId?: string;
     };
 }
 
-export enum EventCategory {
-    CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
-    CAT_OPCSC_1 = 'CAT_OPCSC_1',
-    CAT_NE107_2 = 'CAT_NE107_2',
-    CAT_GENERIC_99 = 'CAT_GENERIC_99',
+export class NamurNE107Event extends BaseEvent {
+    category: EventCategory.CAT_NE107_2;
+
+    constructor(origin: string, number: number, description?: string) {
+        super(origin, number, description);
+    }
+
+    subResource(): string {
+        return 'ne107';
+    };
+    details: {
+        diagnosticCode?: string;
+        location?: string;
+    };
 }
 
-//FIXME is it normal that this is marked as unused despite it is actually used in the OI4Application.ts?
-export enum EventSubResource {
-    SYSLOG = 'syslog',
-    STATUS = 'status',
-    NAMUR_NE107 = 'ne107',
-    GENERIC = 'generic',
+export class GenericEvent extends BaseEvent {
+    category: EventCategory.CAT_GENERIC_99;
+    subResource(): string {
+        return 'generic';
+    };
+    details: any;
 }

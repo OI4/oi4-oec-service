@@ -4,10 +4,9 @@ import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
-    EventCategory,
     IContainerHealth,
     IOI4ApplicationResources,
-    ISyslogEvent
+    SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
@@ -230,17 +229,12 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkForUndefinedPayload(validatedPayload);
     });
 
-    it('createPublishEventMessage works', async() => {
-        const event: ISyslogEvent = {
-            origin: 'fakeOrigin',
-            number: 0,
-            description: 'fakeDescription',
-            category: EventCategory.CAT_SYSLOG_0,
-            details: {
-                MSG: 'fakeMSG',
-                HEADER: 'fakeHeader',
-            }
-        }
+    it('createPublishEventMessage works', async () => {
+        const event = new SyslogEvent('fakeOrigin', 0, 'fakeDescription');
+        event.details = {
+            MSG: 'fakeMSG',
+            HEADER: 'fakeHeader',
+        };
         const message: IOPCUAPayload[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];

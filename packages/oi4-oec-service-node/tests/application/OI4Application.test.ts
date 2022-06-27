@@ -1,20 +1,18 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttSettings} from '../../src/application/MqttSettings';
-import {OI4Application} from '../../src/application/OI4Application';
+import {MqttSettings} from '../../src';
+import {OI4Application} from '../../src';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    EventCategory,
-    EventSubResource,
     IOI4ApplicationResources,
-    INamurNe107Event,
+    NamurNE107Event,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../../src/application/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../../src';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
 
 
@@ -204,7 +202,7 @@ describe('OI4MessageBus test', () => {
         return new OI4Application(resources, mqttOpts);
     }
 
-    it('should trigger all events',  async () => {
+    it('should trigger all events', async () => {
         const onMock = onEvent();
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -255,7 +253,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const onResourceMock = jest.fn( (_, cb) => {
+        const onResourceMock = jest.fn((_, cb) => {
             cb(ResourceType.HEALTH);
             expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', resources.oi4Id);
             mockSendResource.mockRestore();
@@ -329,7 +327,7 @@ describe('OI4MessageBus test', () => {
 
         const filter = '1'
         const oi4Application = getOi4App()
-        await oi4Application.sendResource('health', '', filter, 20,20);
+        await oi4Application.sendResource('health', '', filter, 20, 20);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
@@ -338,22 +336,22 @@ describe('OI4MessageBus test', () => {
         return await oi4Application.preparePayload(resource, filter);
     }
 
-    it('should prepare mam payload',   async () => {
+    it('should prepare mam payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.mam.toString(), 'mam');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
-    it('should prepare profile payload',   async () => {
+    it('should prepare profile payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), 'profile');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().profile));
     });
 
-    it('should prepare rt license payload',   async () => {
+    it('should prepare rt license payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.rtLicense.toString(), 'rtLicense');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
     });
 
-    it('should prepare health payload',   async () => {
+    it('should prepare health payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.health.toString(), 'health');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
@@ -365,31 +363,31 @@ describe('OI4MessageBus test', () => {
             .toBe(JSON.stringify({licenseText: getResourceInfo().licenseText[filter]}));
     });
 
-    it('should prepare license payload',   async () => {
+    it('should prepare license payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.license.toString(), 'license');
-        for(let i = 0; i < result.payload.length; i++){
+        for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({components: getResourceInfo().license[i].components}));
         }
     });
 
-    it('should prepare publicationList  payload',   async () => {
+    it('should prepare publicationList  payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.publicationList.toString(), 'publicationList');
-        for(let i = 0; i < result.payload.length; i++) {
+        for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
         }
     });
 
-    it('should prepare subscriptionList  payload',   async () => {
+    it('should prepare subscriptionList  payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.subscriptionList.toString(), 'subscriptionList');
-        for(let i = 0; i < result.payload.length; i++) {
+        for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().subscriptionList[i]));
         }
     });
 
-    it('should  prepare config payload',   async () => {
+    it('should  prepare config payload', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.config.toString(), 'config');
         expect(JSON.stringify(result.payload[0].Payload))
             .toBe(JSON.stringify(getResourceInfo().config));
@@ -405,7 +403,7 @@ describe('OI4MessageBus test', () => {
         expect(result).toBeUndefined();
     });
 
-    it('should not send resource if error occured in pagination',   async () => {
+    it('should not send resource if error occured in pagination', async () => {
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
         const filter = '1'
         const oi4Application = getOi4App()
@@ -415,26 +413,22 @@ describe('OI4MessageBus test', () => {
         mockOPCUABuilder.mockRestore();
     });
 
-    function createEvent(): INamurNe107Event {
-        return {
-            origin: 'fakeOrigin',
-            number: 0,
-            description: 'fakeDescription',
-            category: EventCategory.CAT_SYSLOG_0,
-            details: {
-                diagnosticCode: 'fakeCode',
-                location: 'fakeLocation',
-            }
+    function createEvent(): NamurNE107Event {
+        const event = new NamurNE107Event('fakeOrigin', 0, 'fakeDescription');
+        event.details = {
+            diagnosticCode: 'fakeCode',
+            location: 'fakeLocation',
         }
+        return event;
     }
 
-    it('should send event',   async () => {
-        const event: INamurNe107Event = createEvent();
+    it('should send event', async () => {
+        const event = createEvent();
         const oi4Application = getOi4App();
         jest.clearAllMocks();
         await oi4Application.sendEvent(event, '1');
 
-        const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${EventSubResource.SYSLOG}/1`;
+        const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${event.subResource()}/1`;
         expect(publish).toHaveBeenCalled();
         expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
     });

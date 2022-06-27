@@ -8,7 +8,6 @@ import {
     EDeviceHealth,
     ESubscriptionListConfig,
     ESyslogEventFilter,
-    EventCategory, EventSubResource,
     IOI4ApplicationResources,
     IEvent
 } from '@oi4/oi4-oec-service-model';
@@ -87,24 +86,24 @@ class OI4Application extends EventEmitter {
     }
 
     private setOnClientErrorCallback() {
-        this.client.on(AsyncClientEvents.ERROR, async(err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
+        this.client.on(AsyncClientEvents.ERROR, async (err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
     }
 
     private setOnClientCloseCallback() {
-        this.client.on(AsyncClientEvents.CLOSE, async() => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this. oi4Id, this.builder));
+        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder));
     }
 
     private setOnClientDisconnectCallback() {
-        this.client.on(AsyncClientEvents.DISCONNECT, async() => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
     }
 
     private setOnClientReconnectCallback() {
-        this.client.on(AsyncClientEvents.RECONNECT, async() => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
     }
 
     private setOnClientConnectCallback() {
         // Publish Birth Message and start listening to topics
-        this.client.on(AsyncClientEvents.CONNECT, async() => {
+        this.client.on(AsyncClientEvents.CONNECT, async () => {
             await this.clientCallbacksHelper.onClientConnectCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder);
             await this.initIncomingMessageListeners();
             this.initClientHealthHeartBeat();
@@ -120,7 +119,7 @@ class OI4Application extends EventEmitter {
         this.client.on(AsyncClientEvents.MESSAGE, this.mqttMessageProcessor.processMqttMessage);
     }
 
-    private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
+    private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {
         this.applicationResources.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
@@ -192,7 +191,7 @@ class OI4Application extends EventEmitter {
     async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
         const validatedPayload: ValidatedPayload = await this.preparePayload(resource, filter);
 
-        if(validatedPayload.abortSending) {
+        if (validatedPayload.abortSending) {
             return;
         }
 
@@ -201,7 +200,7 @@ class OI4Application extends EventEmitter {
 
     async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
-        if(!validatedFilter.isValid) {
+        if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
             return {payload: undefined, abortSending: true};
         }
@@ -256,14 +255,14 @@ class OI4Application extends EventEmitter {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
                 LOGGER.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
-                return {isValid: false, dswidFilter: undefined };
+                return {isValid: false, dswidFilter: undefined};
             }
         } catch (err) {
             LOGGER.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
-            return {isValid: false, dswidFilter: undefined };
+            return {isValid: false, dswidFilter: undefined};
         }
 
-        return {isValid: true, dswidFilter: dswidFilter };
+        return {isValid: true, dswidFilter: dswidFilter};
     }
 
     // Basic Error Functions
@@ -298,34 +297,13 @@ class OI4Application extends EventEmitter {
      */
     // TODO figure out how the determine the filter from the actual object/interface, whatever
     async sendEvent(event: IEvent, filter: string) {
-        const subResource = this.getEventSubResource(event);
+        const subResource = event.subResource();
         const payload: IOPCUAPayload[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
         const publishAddress = `${this.topicPreamble}/pub/event/${subResource}/${filter}`;
         await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
         LOGGER.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
-    }
-
-    private getEventSubResource(event: IEvent): EventSubResource {
-        switch(event.category) {
-            case EventCategory.CAT_SYSLOG_0: {
-                return EventSubResource.SYSLOG;
-                break;
-            }
-            case EventCategory.CAT_OPCSC_1: {
-                return EventSubResource.STATUS;
-                break;
-            }
-            case EventCategory.CAT_NE107_2: {
-                return EventSubResource.NAMUR_NE107;
-                break;
-            }
-            case EventCategory.CAT_GENERIC_99: {
-                return EventSubResource.GENERIC;
-                break;
-            }
-        }
     }
 
     /**
