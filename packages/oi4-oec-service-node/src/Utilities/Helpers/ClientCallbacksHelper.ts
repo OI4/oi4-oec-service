@@ -26,6 +26,7 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
+                subResource: oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                 DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
@@ -50,6 +51,7 @@ export class ClientCallbacksHelper {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
+                subResource: oi4Id,
                 Payload: applicationResources.mam,
                 DataSetWriterId: CDataSetWriterIdLookup['mam']
             }], new Date(), DataSetClassIds.mam)),
