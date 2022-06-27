@@ -3,7 +3,7 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IApplicationResources,
+    IOI4ApplicationResources,
     IContainerHealth,
     IEvent,
     ILicenseObject,
@@ -12,16 +12,10 @@ import {
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
 export class ClientPayloadHelper {
-
-    private componentLogger: Logger;
-
-    constructor(logger: Logger) {
-        this.componentLogger = logger;
-    }
 
     private createPayload(payload: any, dataSetWriterId: number): IOPCUAPayload {
         return {
@@ -41,7 +35,7 @@ export class ClientPayloadHelper {
         return {health: health, healthScore: score};
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (filter === oi4Id) {
@@ -58,7 +52,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseTextSendResourcePayload(applicationResources: IApplicationResources, filter: string, resource: string): ValidatedPayload {
+    createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
         // FIXME: Hotfix
         if (typeof applicationResources.licenseText[filter] === 'undefined') {
@@ -69,7 +63,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
@@ -103,7 +97,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -136,7 +130,7 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -175,11 +169,11 @@ export class ClientPayloadHelper {
         // We don't need to fill the Payloads in the "else" case. Since there's only one DataSetWriterId in the license Resource, we send all licenses
         // Whether there's a DataSetWriterId filter, or not we always send all licenses
         // We only need a check here, if the DataSetWriterId even fits. If not, we just abort sending
-        this.componentLogger.log(`DataSetWriterId does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
+        LOGGER.log(`DataSetWriterId does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
         return {abortSending: true, payload: undefined};
     }
 
-    createConfigSendResourcePayload(applicationResources: IApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUAPayload[] = [];
 

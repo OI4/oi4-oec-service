@@ -1,4 +1,4 @@
-import {MqttCredentialsHelper} from '../src/messageBus/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../src/application/OI4ApplicationFactory';
 
 describe('Unit test for MqttCredentialsHelper', () => {
 

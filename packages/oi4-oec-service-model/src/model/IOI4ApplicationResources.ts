@@ -10,7 +10,7 @@ import {
     ISubscriptionListObject
 } from './IContainer';
 
-export interface IApplicationResources {
+export interface IOI4ApplicationResources {
     oi4Id: string;
     health: IContainerHealth;
     profile: IContainerProfile;

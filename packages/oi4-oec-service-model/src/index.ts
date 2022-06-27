@@ -6,4 +6,5 @@ export * from './model/IContainer';
 export * from './model/IEvent';
 export * from './model/IContainerConfig';
 export * from './model/Profiles';
-export * from './model/IApplicationResources'
+export * from './model/IOI4ApplicationResources'
+export * from './model/ServiceTypes';

@@ -2,28 +2,26 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    ESyslogEventFilter, IApplicationResources
+    ESyslogEventFilter, IOI4ApplicationResources
 } from '@oi4/oi4-oec-service-model';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {ClientPayloadHelper} from './ClientPayloadHelper';
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {LOGGER} from '@oi4/oi4-oec-service-logger';
 
 export class ClientCallbacksHelper {
 
     private clientPayloadHelper: ClientPayloadHelper;
-    private componentLogger: Logger;
 
-    constructor(clientPayloadHelper: ClientPayloadHelper, logger: Logger) {
+    constructor(clientPayloadHelper: ClientPayloadHelper) {
         this.clientPayloadHelper = clientPayloadHelper;
-        this.componentLogger = logger;
     }
 
     public async onErrorCallback(err: Error) {
-        this.componentLogger.log(`Error in mqtt client: ${err}`);
+        LOGGER.log(`Error in mqtt client: ${err}`);
     };
 
-    public async onCloseCallback(applicationResources: IApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
+    public async onCloseCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
         applicationResources.brokerState = false;
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
@@ -32,21 +30,21 @@ export class ClientCallbacksHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['health']
             }], new Date(), DataSetClassIds.mam)),
         );
-        this.componentLogger.log('Connection to mqtt broker closed');
+        LOGGER.log('Connection to mqtt broker closed');
     };
 
-    public async onDisconnectCallback(applicationResources: IApplicationResources) {
+    public async onDisconnectCallback(applicationResources: IOI4ApplicationResources) {
         applicationResources.brokerState = false;
-        this.componentLogger.log('Disconnected from mqtt broker');
+        LOGGER.log('Disconnected from mqtt broker');
     };
 
-    public async onReconnectCallback(applicationResources: IApplicationResources) {
+    public async onReconnectCallback(applicationResources: IOI4ApplicationResources) {
         applicationResources.brokerState = false;
-        this.componentLogger.log('Reconnecting to mqtt broker');
+        LOGGER.log('Reconnecting to mqtt broker');
     };
 
-    public async onClientConnectCallback(applicationResources: IApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
-        this.componentLogger.log('Connected successfully', ESyslogEventFilter.warning);
+    public async onClientConnectCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
+        LOGGER.log('Connected successfully', ESyslogEventFilter.warning);
         applicationResources.brokerState = true;
 
         await client.publish(
@@ -56,7 +54,7 @@ export class ClientCallbacksHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['mam']
             }], new Date(), DataSetClassIds.mam)),
         );
-        this.componentLogger.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
+        LOGGER.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
     };
 
 

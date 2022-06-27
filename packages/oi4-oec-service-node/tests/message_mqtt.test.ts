@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {MqttSettings} from '../src/messageBus/MqttSettings';
+import {MqttSettings} from '../src';
 import fs = require('fs'); /*tslint:disable-line*/
-import {OI4Application} from '../src/messageBus/OI4Application';
-import {EDeviceHealth, IContainerHealth, IApplicationResources} from '@oi4/oi4-oec-service-model';
+import {OI4Application} from '../src';
+import {EDeviceHealth, IContainerHealth, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../src/messageBus/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../src';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -17,7 +17,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getResourceInfo = (): IApplicationResources => {
+const getResourceInfo = (): IOI4ApplicationResources => {
     return {
         oi4Id: '1',
         mam: {
@@ -41,7 +41,7 @@ const getResourceInfo = (): IApplicationResources => {
         on(event: string, listener: Function) {
             return this;
         }
-    } as IApplicationResources
+    } as IOI4ApplicationResources;
 }
 
 describe('Connection to MQTT with TLS', () => {

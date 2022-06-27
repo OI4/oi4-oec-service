@@ -1,7 +1,7 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttSettings} from '../../src/messageBus/MqttSettings';
-import {OI4Application} from '../../src/messageBus/OI4Application';
+import {MqttSettings} from '../../src/application/MqttSettings';
+import {OI4Application} from '../../src/application/OI4Application';
 import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
@@ -9,19 +9,21 @@ import {
     ESubscriptionListConfig,
     EventCategory,
     EventSubResource,
-    IApplicationResources,
+    IOI4ApplicationResources,
     INamurNe107Event,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../../src/messageBus/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../../src/application/OI4ApplicationFactory';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 const onEvent = () => jest.fn(async (event, cb) => {
-        await cb(event);
+    await cb(event);
 });
+
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const publish = jest.fn((topic, _) => {
@@ -38,7 +40,7 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getResourceInfo = (): IApplicationResources => {
+const getResourceInfo = (): IOI4ApplicationResources => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     return {
@@ -46,38 +48,75 @@ const getResourceInfo = (): IApplicationResources => {
         config: {
             registry: {
                 name: {locale: EOPCUALocale.enUS, text: 'reg-01'},
-                showRegistry: { value: 'val-showreg-01', type: EOPCUABaseDataType.DateTime ,name: {locale: EOPCUALocale.enUS, text: 'showreg-01'}},
-                developmentMode: {value:'val-dev-01',type: EOPCUABaseDataType.Number,name: {locale: EOPCUALocale.enUS, text: 'dev-01'}}
+                showRegistry: {
+                    value: 'val-showreg-01',
+                    type: EOPCUABaseDataType.DateTime,
+                    name: {locale: EOPCUALocale.enUS, text: 'showreg-01'}
+                },
+                developmentMode: {
+                    value: 'val-dev-01',
+                    type: EOPCUABaseDataType.Number,
+                    name: {locale: EOPCUALocale.enUS, text: 'dev-01'}
+                }
             },
             logging: {
                 auditLevel: {
                     name: {locale: EOPCUALocale.enUS, text: 'audit-01'},
-                    value:'val-01',
+                    value: 'val-01',
                     type: EOPCUABaseDataType.Boolean
                 },
                 name: {locale: EOPCUALocale.enUS, text: 'login-01'},
-                logType: {value: 'val-type-01', type: EOPCUABaseDataType.String, name: {locale: EOPCUALocale.enUS, text: 'type-01'} },
-                logFileSize: {value:'val-log-01', type: EOPCUABaseDataType.ByteString,name: {locale: EOPCUALocale.enUS, text: 'log-01'} }
+                logType: {
+                    value: 'val-type-01',
+                    type: EOPCUABaseDataType.String,
+                    name: {locale: EOPCUALocale.enUS, text: 'type-01'}
+                },
+                logFileSize: {
+                    value: 'val-log-01',
+                    type: EOPCUABaseDataType.ByteString,
+                    name: {locale: EOPCUALocale.enUS, text: 'log-01'}
+                }
             },
-            context: { name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}},
-        publicationList:[
-            {resource:'health', DataSetWriterId:1, oi4Identifier:'1', active:true,  config: EPublicationListConfig.INTERVAL_2},
-            {resource:'mam', DataSetWriterId:2, oi4Identifier:'2', active:false, config: EPublicationListConfig.NONE_0},
-            {resource:'license', DataSetWriterId:3, oi4Identifier:'3', active:true, config: EPublicationListConfig.STATUS_1},
+            context: {name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}
+        },
+        publicationList: [
+            {
+                active: true,
+                resource: 'health',
+                config: EPublicationListConfig.INTERVAL_2,
+                DataSetWriterId: 1,
+                oi4Identifier: '1'
+            },
+            {
+                active: false,
+                resource: 'mam',
+                config: EPublicationListConfig.NONE_0,
+                DataSetWriterId: 2,
+                oi4Identifier: '2'
+            },
+            {
+                active: true,
+                resource: 'license',
+                config: EPublicationListConfig.STATUS_1,
+                DataSetWriterId: 3,
+                oi4Identifier: '3'
+            }
         ],
-        profile: {resource:['profile', 'b']},
-        licenseText: {'a': '1', 'b':'2'},
+        profile: {resource: ['profile', 'b']},
+        licenseText: {'a': '1', 'b': '2'},
         license: [
-            {licenseId: '1', components: [
-                {licAuthors:['a-01', 'a-02'], component: 'comp-01' , licAddText: 'text-a'},
-                    {licAuthors:['b-01', 'b-01'], component: 'comp-02' , licAddText: 'text-b'},
-                    {licAuthors:['c-01', 'c-01'], component: 'comp-03' , licAddText: 'text-c'},
+            {
+                licenseId: '1', components: [
+                    {licAuthors: ['a-01', 'a-02'], component: 'comp-01', licAddText: 'text-a'},
+                    {licAuthors: ['b-01', 'b-01'], component: 'comp-02', licAddText: 'text-b'},
+                    {licAuthors: ['c-01', 'c-01'], component: 'comp-03', licAddText: 'text-c'},
                 ],
             },
-            {licenseId: '2', components: [
-                    {licAuthors:['aa-01', 'aa-02'], component: 'comp-001' , licAddText: 'text-aa'},
-                    {licAuthors:['bb-01', 'bb-01'], component: 'comp-002' , licAddText: 'text-bb'},
-                    {licAuthors:['cc-01', 'cc-01'], component: 'comp-003' , licAddText: 'text-cc'},
+            {
+                licenseId: '2', components: [
+                    {licAuthors: ['aa-01', 'aa-02'], component: 'comp-001', licAddText: 'text-aa'},
+                    {licAuthors: ['bb-01', 'bb-01'], component: 'comp-002', licAddText: 'text-bb'},
+                    {licAuthors: ['cc-01', 'cc-01'], component: 'comp-003', licAddText: 'text-cc'},
                 ],
             }
         ],
@@ -99,13 +138,13 @@ const getResourceInfo = (): IApplicationResources => {
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        dataLookup: {'tag-01':{MessageId: '1'}, 'tag-02':{MessageId: '2'}},
+        dataLookup: {'tag-01': {MessageId: '1'}, 'tag-02': {MessageId: '2'}},
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         metaDataLookup: {'tag-01': {MessageId: 'meta-01'}, 'tag-02': {MessageId: 'meta-02'}},
         subscriptionList: [
-            {topicPath:'path-01', config: ESubscriptionListConfig.CONF_1},
-            {topicPath:'path-02', config: ESubscriptionListConfig.NONE_0},
+            {topicPath: 'path-01', config: ESubscriptionListConfig.CONF_1},
+            {topicPath: 'path-02', config: ESubscriptionListConfig.NONE_0},
             {topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0}
         ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -115,17 +154,21 @@ const getResourceInfo = (): IApplicationResources => {
     }
 }
 
+
 describe('OI4MessageBus test', () => {
 
     beforeAll(() => {
         jest.useFakeTimers();
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function,ms: number)=>{
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
             cb();
         });
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-        jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
+        jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({
+            username: 'test-user',
+            password: '1234'
+        });
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
     });
 
@@ -145,7 +188,7 @@ describe('OI4MessageBus test', () => {
                     subscribe: jest.fn(),
                     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
-                    on:  onEvent()
+                    on: onEvent()
                 }
             }
         );
@@ -174,7 +217,7 @@ describe('OI4MessageBus test', () => {
                     subscribe: jest.fn(),
                     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                     // @ts-ignore
-                    on:  onMock
+                    on: onMock
                 }
             }
         );
@@ -184,17 +227,18 @@ describe('OI4MessageBus test', () => {
         const setOfEvents = new Set<string>(Object.values(AsyncClientEvents)
             .filter(event => event !== AsyncClientEvents.MESSAGE && event !== AsyncClientEvents.RESOURCE_CHANGED));
 
-        for(const event of events) {
+        for (const event of events) {
             expect(setOfEvents.has(event)).toBeTruthy();
         }
 
     });
 
-    it('should trigger resourceChanged',   (done) => {
+
+    it('should trigger resourceChanged', (done) => {
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
-        const onResourceMock = jest.fn( (event, cb) => {
+        const onResourceMock = jest.fn((event, cb) => {
             cb(event);
             expect(event).toBe(AsyncClientEvents.RESOURCE_CHANGED);
             done()
@@ -205,7 +249,7 @@ describe('OI4MessageBus test', () => {
         new OI4Application(resources, mqttOpts);
     });
 
-    it('should trigger health from resourceChangedCallback',   (done) => {
+    it('should trigger health from resourceChangedCallback', (done) => {
 
         const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -223,16 +267,17 @@ describe('OI4MessageBus test', () => {
         new OI4Application(resources, mqttOpts);
     });
 
-    it('should send specific metadata by tagname',   async () => {
+    it('should send specific metadata by tagname', async () => {
+
         const tagName = 'tag-01'
         const oi4Application = getOi4App()
         await oi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/metadata/${tagName}`),
-            expect.stringContaining(JSON.stringify({MessageId: 'meta-01' })));
+            expect.stringContaining(JSON.stringify({MessageId: 'meta-01'})));
     });
 
-    it('should send all metadata if tagname not specified',   async () => {
+    it('should send all metadata if tagname not specified', async () => {
 
         const tagName = ''
         const oi4Application = getOi4App()
@@ -242,17 +287,17 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().metaDataLookup)));
     });
 
-    it('should send specific data by tagname',   async () => {
+    it('should send specific data by tagname', async () => {
 
         const tagName = 'tag-01'
         const oi4Application = getOi4App()
         await oi4Application.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/data/${tagName}`),
-            expect.stringContaining(JSON.stringify({MessageId: '1' })));
+            expect.stringContaining(JSON.stringify({MessageId: '1'})));
     });
 
-    it('should send all data if tagname not specified',   async () => {
+    it('should send all data if tagname not specified', async () => {
 
         const tagName = ''
         const oi4Application = getOi4App()
@@ -262,7 +307,7 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
     });
 
-    it('should send resource with valid filter',   async () => {
+    it('should send resource with valid filter', async () => {
 
         const filter = '1'
         const oi4Application = getOi4App()
@@ -272,7 +317,7 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().health)));
     });
 
-    it('should not send resource with invalid zero filter',   async () => {
+    it('should not send resource with invalid zero filter', async () => {
 
         const filter = '0'
         const oi4Application = getOi4App()
@@ -280,7 +325,7 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    it('should not send resource if page is out of range',   async () => {
+    it('should not send resource if page is out of range', async () => {
 
         const filter = '1'
         const oi4Application = getOi4App()
@@ -313,18 +358,18 @@ describe('OI4MessageBus test', () => {
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
-    it('should prepare license text payload',   async () => {
+    it('should prepare license text payload', async () => {
         const filter = 'a';
         const result = await getPayload(filter, 'licenseText');
         expect(JSON.stringify(result.payload[0].Payload))
-            .toBe(JSON.stringify({licenseText:getResourceInfo().licenseText[filter]}));
+            .toBe(JSON.stringify({licenseText: getResourceInfo().licenseText[filter]}));
     });
 
     it('should prepare license payload',   async () => {
         const result = await getPayload(CDataSetWriterIdLookup.license.toString(), 'license');
         for(let i = 0; i < result.payload.length; i++){
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({components:getResourceInfo().license[i].components}));
+                .toBe(JSON.stringify({components: getResourceInfo().license[i].components}));
         }
     });
 
@@ -350,12 +395,22 @@ describe('OI4MessageBus test', () => {
             .toBe(JSON.stringify(getResourceInfo().config));
     });
 
+    it('should not prepare anything if resource not found', async () => {
+        const filter = CDataSetWriterIdLookup.config.toString();
+        const resource = 'invalid resource';
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        const result = await oi4Application.preparePayload(resource, filter);
+        expect(result).toBeUndefined();
+    });
+
     it('should not send resource if error occured in pagination',   async () => {
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
         const filter = '1'
         const oi4Application = getOi4App()
         jest.clearAllMocks();
-        await oi4Application.sendResource('health', '', filter, 1,20);
+        await oi4Application.sendResource('health', '', filter, 1, 20);
         expect(publish).toBeCalledTimes(0);
         mockOPCUABuilder.mockRestore();
     });
