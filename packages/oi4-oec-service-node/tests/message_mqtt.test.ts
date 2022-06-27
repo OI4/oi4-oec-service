@@ -61,11 +61,13 @@ describe('Connection to MQTT with TLS', () => {
         jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
     });
+
     afterAll(() => {
         jest.clearAllTimers();
         jest.resetModules();
         jest.resetAllMocks();
     });
+
     it('should send birth message on connect',  () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
@@ -124,7 +126,6 @@ describe('Connection to MQTT with TLS', () => {
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0 } as IContainerHealth)));
     });
-
 
     it('should set will message on create',  () => {
 

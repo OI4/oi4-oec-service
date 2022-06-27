@@ -5,6 +5,7 @@ import {
     ESyslogEventFilter,
     IOI4ApplicationResources,
     IContainerHealth,
+    IEvent,
     ILicenseObject,
     IPublicationListObject,
     ISpecificContainerConfig,
@@ -14,7 +15,6 @@ import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
-//FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
 
     private createPayload(payload: any, dataSetWriterId: number): IOPCUAPayload {
@@ -75,7 +75,7 @@ export class ClientPayloadHelper {
                 for (const filteredLicense of filteredLicenseArr) {
                     payload.push({
                         subResource: filteredLicense.licenseId,
-                        Payload: { components: filteredLicense.components },
+                        Payload: {components: filteredLicense.components},
                         DataSetWriterId: CDataSetWriterIdLookup['license'],
                     });
                 }
@@ -89,7 +89,7 @@ export class ClientPayloadHelper {
         for (const license of applicationResources.license) {
             payload.push({
                 subResource: license.licenseId,
-                Payload: { components: license.components },
+                Payload: {components: license.components},
                 DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
@@ -187,7 +187,7 @@ export class ClientPayloadHelper {
             });
             return {abortSending: false, payload: payload};
 
-        // Send only filtered config out
+            // Send only filtered config out
         } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
 
             // Filtered by subResource
@@ -219,6 +219,16 @@ export class ClientPayloadHelper {
 
         //FIXME is this needed? I do not fully understand how this method is supposed to behave
         return {abortSending: true, payload: undefined};
+    }
+
+    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUAPayload[] {
+        return [{
+            DataSetWriterId: CDataSetWriterIdLookup[ResourceType.EVENT],
+            filter: filter,
+            subResource: subResource,
+            Timestamp: new Date(),
+            Payload: event,
+        }];
     }
 
 }

@@ -2,12 +2,16 @@ import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadH
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
+    CDataSetWriterIdLookup,
     EDeviceHealth,
+    IContainerHealth,
     IOI4ApplicationResources,
-    IContainerHealth
+    SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {setLogger} from '@oi4/oi4-oec-service-logger';
+import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {ResourceType} from '../../../dist/Utilities/Helpers/Enums';
 
 
 describe('Unit test for ClientPayloadHelper', () => {
@@ -223,6 +227,21 @@ describe('Unit test for ClientPayloadHelper', () => {
     it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is invalid', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 9, 'config');
         checkForUndefinedPayload(validatedPayload);
+    });
+
+    it('createPublishEventMessage works', async () => {
+        const event = new SyslogEvent('fakeOrigin', 0, 'fakeDescription');
+        event.details = {
+            MSG: 'fakeMSG',
+            HEADER: 'fakeHeader',
+        };
+        const message: IOPCUAPayload[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
+        expect(message.length).toBe(1);
+        const extractedMessage = message[0];
+        expect(extractedMessage.DataSetWriterId).toBe(CDataSetWriterIdLookup[ResourceType.EVENT]);
+        expect(extractedMessage.filter).toBe('fakeFilter');
+        expect(extractedMessage.subResource).toBe('fakeSubResource');
+        expect(extractedMessage.Payload).toStrictEqual(event);
     });
 
 });
