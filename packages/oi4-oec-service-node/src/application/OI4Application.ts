@@ -65,7 +65,7 @@ class OI4Application extends EventEmitter {
             retain: false,
         }
 
-        initializeLogger(true, 'Registry-BusProxy', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
+        initializeLogger(true, mqttSettings.clientId, process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
         LOGGER.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);
 
@@ -260,8 +260,6 @@ class OI4Application extends EventEmitter {
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
-        console.log('================')
-        console.log(filter)
         try {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
