@@ -63,36 +63,27 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, dataSetWriterIdFilter: number, resource: string, filter: string = undefined): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
+        let licenses: ILicenseObject[] = applicationResources.license;
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if (applicationResources.license.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
-                const filteredLicenseArr = applicationResources.license.filter((elem: ILicenseObject) => {
+            if(filter !== undefined) {
+                licenses = applicationResources.license.filter((elem: ILicenseObject) => {
                     if (elem.licenseId === filter) return elem;
                 });
-
-                for (const filteredLicense of filteredLicenseArr) {
-                    payload.push({
-                        DataSetWriterId: CDataSetWriterIdLookup['license'],
-                        filter: filter,
-                        subResource: filteredLicense.licenseId,
-                        Timestamp: new Date(),
-                        Payload: {components: filteredLicense.components},
-                    });
-                }
-
-                return {abortSending: false, payload: payload};
             }
         } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
-        for (const license of applicationResources.license) {
+        for (const license of licenses) {
             payload.push({
+                DataSetWriterId: CDataSetWriterIdLookup['license'],
+                filter: filter,
                 subResource: license.licenseId,
+                Timestamp: new Date(),
                 Payload: {components: license.components},
-                DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
 
