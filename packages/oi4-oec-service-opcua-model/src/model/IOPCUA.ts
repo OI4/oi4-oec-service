@@ -2,10 +2,6 @@ import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from './EOPCUA';
 
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
 
-export interface IOPCUAPayload {
-  [key: string]: any;
-}
-
 export interface IMasterAssetModel {
   Manufacturer: IOPCUALocalizedText;
   ManufacturerUri: string;
@@ -99,14 +95,6 @@ export interface IOPCUALocalizedText {
 export interface IOPCUAConfigurationVersionDataType{
   majorVersion: number;
   minorVersion: number;
-}
-
-export interface IOPCUAPayload {
-  subResource?: string;
-  filter?: string;
-  Payload: any;
-  DataSetWriterId: number;
-  Status?: EOPCUAStatusCode;
 }
 
 // TODO: STRING for now, validators found below (thanks to node-opcua)

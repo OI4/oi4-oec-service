@@ -4,8 +4,7 @@ import {
   IOPCUADataSetMessage,
   IOPCUADataSetMetaDataType,
   IOPCUAFieldMetaData,
-  IOPCUAConfigurationVersionDataType,
-  IOPCUAPayload,
+  IOPCUAConfigurationVersionDataType
 } from '../model/IOPCUA';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
@@ -38,7 +37,7 @@ export class OPCUABuilder {
   }
 
 
-  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUAPayload[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
+  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
     const networkMessageArray: IOPCUANetworkMessage[] = [];
     networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId, filter, metadataVersion));
     let currentNetworkMessageIndex = 0;
@@ -98,7 +97,7 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUANetworkMessage(dataSetPayloads: IOPCUAPayload[], timestamp: Date, dataSetClassId: string, correlationId = '', filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
+  buildOPCUANetworkMessage(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
     const opcUaDataPayload: IOPCUADataSetMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {

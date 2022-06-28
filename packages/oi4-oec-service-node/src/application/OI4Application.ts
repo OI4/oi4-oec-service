@@ -15,7 +15,7 @@ import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
@@ -56,6 +56,7 @@ class OI4Application extends EventEmitter {
         mqttSettings.will = {
             topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                subResource: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: CDataSetWriterIdLookup[ResourceType.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
@@ -216,7 +217,7 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload();
+                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload(this.oi4Id);
                 break;
             }
             case ResourceType.LICENSE_TEXT: {
@@ -270,7 +271,7 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
-    private async sendPayload(payload: IOPCUAPayload[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
 
@@ -298,7 +299,7 @@ class OI4Application extends EventEmitter {
     // TODO figure out how the determine the filter from the actual object/interface, whatever
     async sendEvent(event: IEvent, filter: string) {
         const subResource = event.subResource();
-        const payload: IOPCUAPayload[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
+        const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
         const publishAddress = `${this.topicPreamble}/pub/event/${subResource}/${filter}`;
