@@ -585,7 +585,7 @@ describe('OI4MessageBus test', () => {
         const buf = Buffer.from(JSON.stringify(status));
         await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
         expect(sendResourceMock).toBeCalledTimes(1);
-        expect(oi4Application.applicationResources).toBe(resources);girt
+        expect(oi4Application.applicationResources).toBe(resources);
 
     });
 
