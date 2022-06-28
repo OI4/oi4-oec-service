@@ -65,14 +65,16 @@ export class ClientPayloadHelper {
 
     createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, dataSetWriterIdFilter: number, resource: string, filter: string = undefined): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
-        let licenses: ILicenseObject[] = applicationResources.license;
+        let licenses: ILicenseObject[] = [];
 
-        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if(filter !== undefined) {
-                licenses = applicationResources.license.filter((elem: ILicenseObject) => elem.licenseId === filter ? elem : null);
-            }
-        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
+        if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
             return this.manageInvaliddataSetWriterIdFilter(resource);
+        }
+
+        if(filter !== undefined) {
+            licenses = applicationResources.license.filter((elem: ILicenseObject) => elem.licenseId === filter ? elem : null);
+        } else {
+            licenses = applicationResources.license;
         }
 
         for (const license of licenses) {
