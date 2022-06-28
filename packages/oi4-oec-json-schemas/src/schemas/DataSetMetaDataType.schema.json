@@ -9,7 +9,7 @@
     "name",
     "namespaces",
     "enumDataTypes",
-    "structuredDataTypes",
+    "structureDataTypes",
     "simpleDataTypes"
   ],
   "properties": {
@@ -23,7 +23,10 @@
       "$ref": "LocalizedText.schema.json"
     },
     "fields": {
-      "$ref": "FieldMetaData.schema.json"
+	  "type": "array",
+	  "items": {
+        "$ref": "FieldMetaData.schema.json"
+	  }
     },
     "name": {
       "type": "string",
@@ -43,7 +46,7 @@
       },
       "description": "For details see OPC UA specification Annex A:  Part 14-A1.4"
     },
-    "structuredDataTypes": {
+    "structureDataTypes": {
       "type": "array",
       "items": {
         "$ref": "StructureDescription.schema.json"
