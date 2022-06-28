@@ -89,7 +89,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(2, {licenseText: 'fakeKey'}));
     });
 
-    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any, filter: string = undefined, timestamp: Date = undefined) {
+    function createMockedPayloadWithSubresourceFilterAndTimestamp(subResource: string, dataSetWriterId: number, payload: any, filter: string = undefined, timestamp: Date = undefined) {
         return [{
             subResource: subResource,
             Payload: payload,
@@ -99,7 +99,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         }];
     }
 
-    function checkAgainstLicensePayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
+    function checkAgainstLicensePayload(validatedPayload: ValidatedPayload, dataSetWriterId: number, filter: string = undefined) {
         expect(validatedPayload.abortSending).toBe(false);
         validatedPayload.payload[0].Timestamp = undefined;
         const expectedInnerPayload = {
@@ -109,7 +109,7 @@ describe('Unit test for ClientPayloadHelper', () => {
                 licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson']
             }]
         };
-        const expectedPayload = createMockedPayloadWithSubresource('1', dataSetWriterId, expectedInnerPayload);
+        const expectedPayload = createMockedPayloadWithSubresourceFilterAndTimestamp('1', dataSetWriterId, expectedInnerPayload, filter);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
@@ -134,7 +134,12 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkAgainstLicensePayload(validatedPayload, 3);
     });
 
-    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is NaN and filter not undefined', async () => {
+    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is NaN and filter not undefined and matching a value', async () => {
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, NaN, 'license', '1');
+        checkAgainstLicensePayload(validatedPayload, 3, '1');
+    });
+
+    it('createLicenseSendResourcePayload works when dataSetWriterIdFilter is NaN and filter not undefined and not matching any value', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, NaN, 'license', 'asd');
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(0);
@@ -146,6 +151,14 @@ describe('Unit test for ClientPayloadHelper', () => {
             oi4Identifier: oi4Id,
             resource: resource,
         }
+    }
+
+    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any) {
+        return [{
+            subResource: subResource,
+            Payload: payload,
+            DataSetWriterId: dataSetWriterId
+        }];
     }
 
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {

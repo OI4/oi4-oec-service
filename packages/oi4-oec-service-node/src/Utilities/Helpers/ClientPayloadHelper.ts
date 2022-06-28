@@ -69,9 +69,7 @@ export class ClientPayloadHelper {
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
             if(filter !== undefined) {
-                licenses = applicationResources.license.filter((elem: ILicenseObject) => {
-                    if (elem.licenseId === filter) return elem;
-                });
+                licenses = applicationResources.license.filter((elem: ILicenseObject) => elem.licenseId === filter ? elem : null);
             }
         } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
             return this.manageInvaliddataSetWriterIdFilter(resource);
