@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NodeId schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'Id'
+    Path:     NodeId.schema.json#/required
+  must have required property 'Id'
+    Path:     NodeId.schema.json#/required
+  must have required property 'Id'
+    Path:     NodeId.schema.json#/required
+  must have required property 'Id'
+    Path:     NodeId.schema.json#/required
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (1) match fails for invalid config -> Numeric Node Id with string instead number: Numeric Node Id with string instead number 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Id must be integer
+    Received: <string> SomeString
+    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type
+  /Id must match format \\"uuid\\"
+    Received: <string> SomeString
+    Path:     NodeId.schema.json#/properties/Id/format
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (2) match fails for invalid config -> String Node Id with number instead string: String Node Id with number instead string 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /IdType must be <= 0
+    Received: <number> 1
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /IdType must be >= 2
+    Received: <number> 1
+    Path:     NodeId.schema.json#/properties/IdType/minimum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /IdType must be >= 3
+    Received: <number> 1
+    Path:     NodeId.schema.json#/properties/IdType/minimum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (3) match fails for invalid config -> Guid Node Id with number instead guid: Guid Node Id with number instead guid 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /IdType must be <= 0
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /IdType must be <= 1
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /IdType must be >= 3
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/minimum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (4) match fails for invalid config -> Guid Node Id with invalid guid: Guid Node Id with invalid guid 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /IdType must be <= 0
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be integer
+    Received: <string> Invalid
+    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type
+  /IdType must be <= 1
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must match format \\"uuid\\"
+    Received: <string> Invalid
+    Path:     NodeId.schema.json#/properties/Id/format
+  /IdType must be >= 3
+    Received: <number> 2
+    Path:     NodeId.schema.json#/properties/IdType/minimum
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (5) match fails for invalid config -> Opaque Node Id with invalid byte string: Opaque Node Id with invalid byte string 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /IdType must be <= 0
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be integer
+    Received: <string> %?
+    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type
+  /IdType must be <= 1
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /IdType must be <= 2
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must match format \\"uuid\\"
+    Received: <string> %?
+    Path:     NodeId.schema.json#/properties/Id/format
+  /Id must match pattern \\"^[-A-Za-z0-9+/]*={0,3}$\\"
+    Received: <string> %?
+    Path:     NodeId.schema.json#/properties/Id/pattern
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;
+
+exports[`NodeId schema (6) match fails for invalid config -> Opaque Node Id with number instead byte string: Opaque Node Id with number instead byte string 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /IdType must be <= 0
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /IdType must be <= 1
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /IdType must be <= 2
+    Received: <number> 3
+    Path:     NodeId.schema.json#/properties/IdType/maximum
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  /Id must be string
+    Received: <number> 42
+    Path:     NodeId.schema.json#/properties/Id/type
+  must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Path:     NodeId.schema.json#/oneOf
+"
+`;

@@ -1,0 +1,45 @@
+[
+  ["empty", {}],
+  [
+    "Numeric Node Id with string instead number",
+    {
+      "Id": "SomeString"
+    }
+  ],
+  [
+    "String Node Id with number instead string",
+    {
+      "IdType": 1,
+      "Id": 42
+    }
+  ],
+  [
+    "Guid Node Id with number instead guid",
+    {
+      "IdType": 2,
+      "Id": 42
+    }
+  ],
+  [
+    "Guid Node Id with invalid guid",
+    {
+      "IdType": 2,
+      "Id": "Invalid"
+    }
+  ],
+  [
+    "Opaque Node Id with invalid byte string",
+    {
+      "IdType": 3,
+      "Id": "%?"
+    }
+  ],
+  [
+    "Opaque Node Id with number instead byte string",
+    {
+      "IdType": 3,
+      "Id": 42,
+      "Namespace": 4
+    }
+  ]
+]
