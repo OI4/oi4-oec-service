@@ -29,6 +29,8 @@ export interface IOI4ApplicationResources {
     setHealthState(healthState: number): void;
     setHealth(health: EDeviceHealth): void;
 
+    getLicense(oi4Id: string, licenseId?: string): ILicenseObject[];
+
     addProfile(entry: string): void;
     addLicenseText(licenseName: string, licenseText: string): void;
     addPublication(publicationObj: IPublicationListObject): void;

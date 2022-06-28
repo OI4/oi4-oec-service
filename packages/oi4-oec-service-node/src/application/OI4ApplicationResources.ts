@@ -173,6 +173,20 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     return this._license;
   }
 
+  getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+    if(oi4Id === undefined) {
+      return this.license;
+    } else if (oi4Id !==  this.oi4Id){
+      throw new Error('Sub resources not yet implemented');
+    }
+
+    if(licenseId === undefined) {
+      return this.license;
+    }
+
+    return this.license.filter((elem: ILicenseObject) => elem.licenseId === licenseId ? elem : null);
+  }
+
   private set license(license) {
     this._license = license
   }
