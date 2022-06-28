@@ -10,7 +10,6 @@ import {
     EPublicationListConfig,
     ESubscriptionListConfig,
     IApplicationStatus,
-    IOI4ApplicationResources
     IOI4ApplicationResources,
     NamurNE107Event,
 } from '@oi4/oi4-oec-service-model';

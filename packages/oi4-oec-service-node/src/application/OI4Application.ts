@@ -6,8 +6,8 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    ESubscriptionListConfig, IApplicationStatus,
-    IOI4ApplicationResources
+    ESubscriptionListConfig,
+    IApplicationStatus,
     ESyslogEventFilter,
     IOI4ApplicationResources,
     IEvent
@@ -271,11 +271,6 @@ class OI4Application extends EventEmitter {
         return {isValid: true, dswidFilter: dswidFilter};
     }
 
-    // Basic Error Functions
-    async sendError(error: string) {
-        LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
-    }
-
     private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
@@ -312,10 +307,11 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
     }
 
+
     async sendEventStatus(status: IApplicationStatus) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
-            number: 1,
-            description: 'Registry sendStatus',
+            SequenceNumber: 1,
+            subResource: this.oi4Id,
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
@@ -324,8 +320,8 @@ class OI4Application extends EventEmitter {
 
     async getConfig() {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
-            number: 1,
-            description: 'Registry getConfig',
+            SequenceNumber: 1,
+            subResource: this.oi4Id,
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup['config'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
@@ -338,6 +334,9 @@ class OI4Application extends EventEmitter {
      */
     get mqttClient(): mqtt.AsyncClient {
         return this.client;
+    }
+    get mqttMessageProcess() {
+        return this.mqttMessageProcessor;
     }
 }
 

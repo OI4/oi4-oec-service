@@ -3,7 +3,6 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IOI4ApplicationResources,
     IContainerHealth,
     IEvent,
     ILicenseObject,
@@ -16,7 +15,6 @@ import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
-//FIXME The code of some methods here is pretty similar. Is not possible to refactor it somehow?
 export class ClientPayloadHelper {
 
     private createPayload(payload: any, dataSetWriterId: number, subResource: string): IOPCUADataSetMessage {
@@ -134,7 +132,7 @@ export class ClientPayloadHelper {
     }
 
     createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
             // 7 is resource
@@ -177,8 +175,8 @@ export class ClientPayloadHelper {
     }
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
-        const payload: IOPCUAPayload[] = [];
+        const actualPayload: IContainerConfig = (applicationResources as any)[resource];
+        const payload: IOPCUADataSetMessage[] = [];
 
         // Send all configs out
         if (filter === '') {
@@ -190,7 +188,7 @@ export class ClientPayloadHelper {
             });
             return {abortSending: false, payload: payload};
 
-        // Send only filtered config out
+            // Send only filtered config out
         } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
 
             // Filtered by subResource
@@ -210,7 +208,7 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
+            const actualPayload: IContainerConfig = (applicationResources as any)[resource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,
@@ -222,6 +220,16 @@ export class ClientPayloadHelper {
 
         //FIXME is this needed? I do not fully understand how this method is supposed to behave
         return {abortSending: true, payload: undefined};
+    }
+
+    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
+        return [{
+            DataSetWriterId: CDataSetWriterIdLookup[ResourceType.EVENT],
+            filter: filter,
+            subResource: subResource,
+            Timestamp: new Date().toISOString(),
+            Payload: event,
+        }];
     }
 
 }

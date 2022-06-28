@@ -2,8 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {
     CDataSetWriterIdLookup,
-    EContainerEventCategory,
-    ESyslogEventFilter, IApplicationStatus, EventCategory,
+    ESyslogEventFilter, EventCategory,
     IEvent,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
@@ -107,14 +106,6 @@ class Logger {
             glossyParser.parse(msg, (parsedMessage: any) => {
                 let syslogDataMessage;
                 if (this._builder) {
-                    const logPayload: IApplicationStatus = {
-                        category: EContainerEventCategory.CAT_SYSLOG_0,
-                        origin: oi4Id,
-                        number: parsedMessage.prival,
-                        details: {
-                            MSG: parsedMessage.message,
-                            HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
-                        },
                     const event: IEvent = new SyslogEvent(oi4Id, parsedMessage.prival);
                     event.details = {
                         MSG: parsedMessage.message,
