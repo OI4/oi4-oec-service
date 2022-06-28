@@ -589,4 +589,15 @@ describe('OI4MessageBus test', () => {
 
     });
 
+    it('should send config with get request', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        await oi4Application.getConfig();
+        expect(publish).toHaveBeenCalledWith(
+            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/get/config/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(JSON.stringify(resources.config)));
+    });
+
 });
