@@ -11,7 +11,6 @@ export interface IEventObject {
   timestamp: string; // NOT OI4 Conform and just for us
   tag: string; // Oi4Id of log originator
 }
-
 // Common Container config interfaces
 export interface IContainerConfig extends Record<string, IContainerConfigGroupName | IContainerConfigContext> {
   context: IContainerConfigContext;
@@ -52,11 +51,13 @@ export interface IContainerHealth {
   healthScore: number; // UInt16 (from 0 to 100%)
 }
 
-export interface IContainerEvent {
+export interface IApplicationStatus {
+  origin: string;
   number: number;
   description?: string;
   category: EContainerEventCategory;
   details?: object;
+  symbolicId?: string;
 }
 
 export enum EContainerEventCategory {
@@ -64,6 +65,7 @@ export enum EContainerEventCategory {
   CAT_OPCSC_1 = 'CAT_OPCSC_1',
   CAT_NE107_2 = 'CAT_NE107_2',
   CAT_GENERIC_99 = 'CAT_GENERIC_99',
+  CAT_STATUS_1 = 'CAT_STATUS_1'
 }
 
 export interface IContainerRTLicense {

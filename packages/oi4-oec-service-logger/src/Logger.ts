@@ -3,8 +3,7 @@ import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {
     CDataSetWriterIdLookup,
     EContainerEventCategory,
-    ESyslogEventFilter,
-    IContainerEvent
+    ESyslogEventFilter, IApplicationStatus
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
 import {Syslog, SyslogTransportInstance} from 'winston-syslog';
@@ -105,8 +104,9 @@ class Logger {
             glossyParser.parse(msg, (parsedMessage: any) => {
                 let syslogDataMessage;
                 if (this._builder) {
-                    const logPayload: IContainerEvent = {
+                    const logPayload: IApplicationStatus = {
                         category: EContainerEventCategory.CAT_SYSLOG_0,
+                        origin: oi4Id,
                         number: parsedMessage.prival,
                         details: {
                             MSG: parsedMessage.message,

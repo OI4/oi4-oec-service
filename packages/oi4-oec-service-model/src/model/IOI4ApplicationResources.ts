@@ -1,7 +1,7 @@
 import {IMasterAssetModel, IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {ISpecificContainerConfig} from './IContainerConfig';
 import {EDeviceHealth} from './EContainer';
 import {
+    IContainerConfig,
     IContainerHealth,
     IContainerProfile,
     IContainerRTLicense,
@@ -18,7 +18,7 @@ export interface IOI4ApplicationResources {
     license: ILicenseObject[];
     licenseText: Record<string, string>;
     rtLicense: IContainerRTLicense;
-    config: ISpecificContainerConfig;
+    config: IContainerConfig;
     publicationList: IPublicationListObject[];
     subscriptionList: ISubscriptionListObject[];
     brokerState: boolean;

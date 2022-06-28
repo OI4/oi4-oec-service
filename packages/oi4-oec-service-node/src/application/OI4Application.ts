@@ -7,7 +7,7 @@ import {
     DataSetClassIds,
     EDeviceHealth,
     ESubscriptionListConfig,
-    ESyslogEventFilter,
+    ESyslogEventFilter, IApplicationStatus,
     IOI4ApplicationResources
 } from '@oi4/oi4-oec-service-model';
 import {
@@ -20,7 +20,6 @@ import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
-
 
 class OI4Application extends EventEmitter {
 
@@ -74,6 +73,7 @@ class OI4Application extends EventEmitter {
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
 
+        this.on('setConfig',this.sendEventStatus);
         this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
@@ -314,11 +314,35 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
     }
 
+    async sendEventStatus(status: IApplicationStatus) {
+        const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
+            number: 1,
+            description: 'Registry sendStatus',
+            Payload: status,
+            DataSetWriterId: CDataSetWriterIdLookup['event'],
+        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
+        await this.client.publish(`${this.topicPreamble}/pub/event/status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
+    }
+
+    async getConfig() {
+        const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
+            number: 1,
+            description: 'Registry getConfig',
+            Payload: this.applicationResources.config,
+            DataSetWriterId: CDataSetWriterIdLookup['config'],
+        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
+        await this.client.publish(`${this.topicPreamble}/get/config/${this.oi4Id}`, JSON.stringify(opcUAEvent));
+        LOGGER.log(`Published get config on ${this.topicPreamble}/get/config/${this.oi4Id}`);
+    }
+
     /**
      * Makes the MQTT Client available to be used by other applications
      */
     get mqttClient(): mqtt.AsyncClient {
         return this.client;
+    }
+    get mqttMessageProcess() {
+        return this.mqttMessageProcessor;
     }
 }
 

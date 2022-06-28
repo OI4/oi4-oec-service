@@ -36,7 +36,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
  * */
-  constructor(mamFile: string = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
+  constructor(mamFile = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
     super();
 
     this._mam = OI4ApplicationResources.extractMamFile(mamFile); // Import MAM from JSON

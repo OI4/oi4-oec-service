@@ -1,10 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {OI4ApplicationResources, IMqttSettingsPaths} from '../../src';
+import {OI4ApplicationResources, IMqttSettingsPaths, OI4ApplicationFactory} from '../../src';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import os = require('os');
-import {OI4ApplicationFactory} from '../../dist'; /*tslint:disable-line*/
 
 describe('Test OI4MessageBusFactory', () => {
     let mockConnection: any = jest.fn();

@@ -1,9 +1,17 @@
-import {DataSetClassIds, ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    DataSetClassIds,
+    EContainerEventCategory,
+    ESyslogEventFilter,
+    IApplicationStatus,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IOI4ApplicationResources
+} from '@oi4/oi4-oec-service-model';
+import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, PayloadTypes} from './Enums';
-import { OI4RegistryManager } from '../../application/OI4RegistryManager';
+import {PayloadTypes, ResourceType, TopicMethods} from './Enums';
+import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
@@ -77,7 +85,7 @@ export class MqttMessageProcessor {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
             LOGGER.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
-            return false;
+            return undefined;
         }
     }
 
@@ -187,6 +195,12 @@ export class MqttMessageProcessor {
                 this.setData(topicInfo.filter, parsedMessage);
                 break;
             }
+            case ResourceType.CONFIG: {
+                if(parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
+                    this.setConfig(topicInfo.filter, parsedMessage);
+                }
+                break;
+            }
             default: {
                 break;
             }
@@ -208,6 +222,30 @@ export class MqttMessageProcessor {
             this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
             LOGGER.log(`${tagName} already exists in dataLookup`);
         }
+    }
+
+    private setConfig(filter: string, config: IOPCUANetworkMessage): void {
+        const currentConfig = this.applicationResources.config;
+        const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
+        if (filter === '') {
+            return;
+        }
+        if (!(filter in currentConfig)) {
+            currentConfig[filter] = newConfig;
+            LOGGER.log(`Added ${filter} to config group`);
+        } else {
+            currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in config group`);
+        }
+        OI4RegistryManager.checkForOi4Registry(config);
+        const status: IApplicationStatus = {
+            origin: OI4RegistryManager.getOi4Id(),
+            number: EOPCUAStatusCode.Good,
+            category: EContainerEventCategory.CAT_STATUS_1
+        };
+
+        this.emit('setConfig', {status:status});
+        this.sendResource(ResourceType.CONFIG,config.MessageId, filter);
     }
 
     private async executeDelActions(topicInfo: TopicInfo){

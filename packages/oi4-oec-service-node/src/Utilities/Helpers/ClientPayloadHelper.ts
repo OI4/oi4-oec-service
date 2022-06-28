@@ -7,7 +7,7 @@ import {
     IContainerHealth,
     ILicenseObject,
     IPublicationListObject,
-    ISpecificContainerConfig,
+    IContainerConfig,
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
@@ -174,7 +174,7 @@ export class ClientPayloadHelper {
     }
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
+        const actualPayload: IContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUAPayload[] = [];
 
         // Send all configs out
@@ -207,7 +207,7 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
+            const actualPayload: IContainerConfig = (applicationResources as any)[resource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,

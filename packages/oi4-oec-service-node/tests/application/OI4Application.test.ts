@@ -4,15 +4,19 @@ import {MqttSettings} from '../../src/application/MqttSettings';
 import {OI4Application} from '../../src/application/OI4Application';
 import {
     CDataSetWriterIdLookup,
+    DataSetClassIds,
+    EContainerEventCategory,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
+    IApplicationStatus,
     IOI4ApplicationResources
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUABaseDataType, EOPCUALocale, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src/application/OI4ApplicationFactory';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
+import {EventEmitter} from 'events';
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -476,5 +480,113 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify({logLevel: logLevel, logString: logString})));
     });
 
+    it('should send status', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        const status: IApplicationStatus = {
+            category: EContainerEventCategory.CAT_STATUS_1,
+            number: 1,
+            description: 'fake',
+            origin: resources.oi4Id,
+        };
+        await oi4Application.sendEventStatus(status);
+        expect(publish).toHaveBeenCalledWith(
+            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/status/${encodeURI(`${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}`)}`),
+            expect.stringContaining(JSON.stringify(status)));
+    });
+
+
+    it('should replace old config with new config and emit status status via mqttprocess', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+
+        const status: IOPCUANetworkMessage = {
+            DataSetClassId: DataSetClassIds['config'],
+            PublisherId: 'Registry/Fake',
+            Messages: [
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                {Payload:
+                    {
+                    category: EContainerEventCategory.CAT_STATUS_1,
+                    number: 1,
+                    description: 'fake',
+                    origin: resources.oi4Id
+                },
+                    DataSetWriterId: CDataSetWriterIdLookup['event']
+                }],
+        };
+
+        resources.oi4Id = '1/1/1/pub'
+        const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit').mockImplementation(()=>jest.fn());
+        const buf = Buffer.from(JSON.stringify(status));
+        await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
+        expect(sendResourceMock).toBeCalledTimes(1);
+        expect(eventemitMock).toBeCalledTimes(1);
+        expect(oi4Application.applicationResources).toBe(resources);
+        mock.mockRestore();
+        sendResourceMock.mockRestore();
+    });
+
+    it('should add new config and send emit status status via mqttprocess', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+
+        const status: IOPCUANetworkMessage = {
+            DataSetClassId: DataSetClassIds['config'],
+            PublisherId: 'Registry/Fake',
+            Messages: [
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                {Payload:
+                        {
+                            category: EContainerEventCategory.CAT_STATUS_1,
+                            number: 1,
+                            description: 'fake',
+                            origin: resources.oi4Id
+                        },
+                    DataSetWriterId: CDataSetWriterIdLookup['event']
+                }],
+        };
+
+        resources.oi4Id = '1/1/1/pub'
+        resources.config['group-a'] =  {
+            name: {locale: EOPCUALocale.enUS, text: 'text'},
+            'config_a':{
+            category: EContainerEventCategory.CAT_STATUS_1,
+            number: 1,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+            description: 'fake',
+            origin: resources.oi4Id
+        }
+        };
+        jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit').mockImplementation(()=>jest.fn());
+        const buf = Buffer.from(JSON.stringify(status));
+        await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
+        expect(sendResourceMock).toBeCalledTimes(1);
+        expect(oi4Application.applicationResources).toBe(resources);girt
+
+    });
 
 });

@@ -5,7 +5,7 @@ import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUAB
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {setLogger} from '@oi4/oi4-oec-service-logger';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
