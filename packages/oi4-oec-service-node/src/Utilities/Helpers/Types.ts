@@ -1,4 +1,4 @@
-import {IOPCUANetworkMessage, IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 export type ValidatedFilter = {
     isValid: boolean;
@@ -7,7 +7,7 @@ export type ValidatedFilter = {
 
 export type ValidatedPayload = {
     abortSending: boolean;
-    payload: IOPCUAPayload[];
+    payload: IOPCUADataSetMessage[];
 }
 
 export type ValidatedMessage = {

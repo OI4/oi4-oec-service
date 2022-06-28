@@ -3,7 +3,9 @@ import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {
     CDataSetWriterIdLookup,
     EContainerEventCategory,
-    ESyslogEventFilter, IApplicationStatus
+    ESyslogEventFilter, IApplicationStatus, EventCategory,
+    IEvent,
+    SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
 import {Syslog, SyslogTransportInstance} from 'winston-syslog';
@@ -11,6 +13,7 @@ import {Syslog, SyslogTransportInstance} from 'winston-syslog';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
 const glossyParser = require('glossy').Parse;
+
 /**
  * Logger implementation.<br>
  * Adds several logging options, including levels and colors of the logs
@@ -112,15 +115,20 @@ class Logger {
                             MSG: parsedMessage.message,
                             HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                         },
+                    const event: IEvent = new SyslogEvent(oi4Id, parsedMessage.prival);
+                    event.details = {
+                        MSG: parsedMessage.message,
+                        HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                     };
                     syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                        Payload: logPayload,
+                        subResource: event.subResource(),
+                        Payload: event,
                         DataSetWriterId: CDataSetWriterIdLookup['event']
                     }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */
                         this._mqttClient.publish(
-                            `oi4/${this._serviceType}/${this._oi4Id}/pub/event/${this.categoryToTopic[EContainerEventCategory.CAT_SYSLOG_0]}/${data.level}`,
+                            `oi4/${this._serviceType}/${this._oi4Id}/pub/event/${this.categoryToTopic[EventCategory.CAT_SYSLOG_0]}/${data.level}`,
                             JSON.stringify(syslogDataMessage)
                         );
                     }
@@ -158,7 +166,7 @@ class Logger {
         this._name = newname;
     }
 
-    set mqttClient(client: mqtt.AsyncMqttClient){
+    set mqttClient(client: mqtt.AsyncMqttClient) {
         this._mqttClient = client;
     }
 
@@ -219,7 +227,7 @@ function updateMqttClient(client: mqtt.AsyncClient): void {
     log.mqttClient = client;
 }
 
-function setLogger(logger: Logger){
+function setLogger(logger: Logger) {
     log = logger;
     LOGGER = log;
 }

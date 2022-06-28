@@ -19,6 +19,7 @@ export enum ResourceType {
     CONFIG = 'config',
     PUBLICATION_LIST = 'publicationList',
     SUBSCRIPTION_LIST = 'subscriptionList',
+    EVENT = 'event',
 }
 
 export enum TopicMethods {

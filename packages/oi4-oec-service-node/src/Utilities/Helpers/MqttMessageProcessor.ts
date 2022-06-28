@@ -149,10 +149,8 @@ export class MqttMessageProcessor {
 
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
-        //FIXME this assignemtn is pretty useless but if I put topicInfo.topic directly in the object I got an error notified by esLint. Would be nce to find a way to solve this.
-        const topic = topicInfo.topic;
         if (topicInfo.resource === this.DATA) {
-            this.emit('getData', {topic, message: parsedMessage});
+            this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);

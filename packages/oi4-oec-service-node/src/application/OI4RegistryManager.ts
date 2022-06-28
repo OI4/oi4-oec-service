@@ -1,8 +1,8 @@
-import {IOPCUANetworkMessage} from "@oi4/oi4-oec-service-opcua-model";
-import {LOGGER} from "@oi4/oi4-oec-service-logger";
-import {indexOf} from "lodash";
-import {EventEmitter} from "events";
-import {ServiceTypes} from "@oi4/oi4-oec-service-model";
+import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {indexOf} from 'lodash';
+import {EventEmitter} from 'events';
+import {ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 /**
  * The OI4RegistryManager class is a singleton that manages the OI4 registry.

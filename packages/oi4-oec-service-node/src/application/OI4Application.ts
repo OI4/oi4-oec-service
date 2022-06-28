@@ -6,18 +6,17 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    ESubscriptionListConfig,
-    ESyslogEventFilter, IApplicationStatus,
+    ESubscriptionListConfig, IApplicationStatus,
     IOI4ApplicationResources
+    ESyslogEventFilter,
+    IOI4ApplicationResources,
+    IEvent
 } from '@oi4/oi4-oec-service-model';
-import {
-    ValidatedPayload,
-    ValidatedFilter
-} from '../Utilities/Helpers/Types';
+import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUAPayload, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
 
@@ -57,6 +56,7 @@ class OI4Application extends EventEmitter {
         mqttSettings.will = {
             topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
+                subResource: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: CDataSetWriterIdLookup[ResourceType.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
@@ -73,7 +73,6 @@ class OI4Application extends EventEmitter {
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
 
-        this.on('setConfig',this.sendEventStatus);
         this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
@@ -88,24 +87,24 @@ class OI4Application extends EventEmitter {
     }
 
     private setOnClientErrorCallback() {
-        this.client.on(AsyncClientEvents.ERROR, async(err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
+        this.client.on(AsyncClientEvents.ERROR, async (err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
     }
 
     private setOnClientCloseCallback() {
-        this.client.on(AsyncClientEvents.CLOSE, async() => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this. oi4Id, this.builder));
+        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder));
     }
 
     private setOnClientDisconnectCallback() {
-        this.client.on(AsyncClientEvents.DISCONNECT, async() => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
     }
 
     private setOnClientReconnectCallback() {
-        this.client.on(AsyncClientEvents.RECONNECT, async() => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
     }
 
     private setOnClientConnectCallback() {
         // Publish Birth Message and start listening to topics
-        this.client.on(AsyncClientEvents.CONNECT, async() => {
+        this.client.on(AsyncClientEvents.CONNECT, async () => {
             await this.clientCallbacksHelper.onClientConnectCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder);
             await this.initIncomingMessageListeners();
             this.initClientHealthHeartBeat();
@@ -121,7 +120,7 @@ class OI4Application extends EventEmitter {
         this.client.on(AsyncClientEvents.MESSAGE, this.mqttMessageProcessor.processMqttMessage);
     }
 
-    private async ownSubscribe(topic: string):  Promise<mqtt.ISubscriptionGrant[]> {
+    private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {
         this.applicationResources.subscriptionList.push({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
@@ -132,16 +131,15 @@ class OI4Application extends EventEmitter {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(response => {
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(() => {
                 //No actual actions are needed here
-                console.log(`Received response from health heartbeat: ${response}`)
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
     }
 
     private resourceChangeCallback(resource: string) {
         if (resource === ResourceType.HEALTH) {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id);
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then();
         }
     }
 
@@ -192,18 +190,18 @@ class OI4Application extends EventEmitter {
      * @param [filter] - the tag of the resource
      */
     async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
-        const payloadResult: ValidatedPayload = await this.preparePayload(resource, filter);
+        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, filter);
 
-        if(payloadResult.abortSending) {
+        if (validatedPayload.abortSending) {
             return;
         }
 
-        await this.sendPayload(payloadResult.payload, resource, messageId, page, perPage, filter);
+        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
     }
 
     async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
-        if(!validatedFilter.isValid) {
+        if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
             return {payload: undefined, abortSending: true};
         }
@@ -218,9 +216,8 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
                 break;
             }
-            //FIXME This is the sending of the default health state, but not 100% is it right to implement it like this. Maybe double check is better.
             case ResourceType.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload();
+                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload(this.oi4Id);
                 break;
             }
             case ResourceType.LICENSE_TEXT: {
@@ -264,17 +261,22 @@ class OI4Application extends EventEmitter {
             dswidFilter = parseInt(filter, 10);
             if (dswidFilter === 0) {
                 LOGGER.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
-                return {isValid: false, dswidFilter: undefined };
+                return {isValid: false, dswidFilter: undefined};
             }
         } catch (err) {
             LOGGER.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
-            return {isValid: false, dswidFilter: undefined };
+            return {isValid: false, dswidFilter: undefined};
         }
 
-        return {isValid: true, dswidFilter: dswidFilter };
+        return {isValid: true, dswidFilter: dswidFilter};
     }
 
-    private async sendPayload(payload: IOPCUAPayload[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
+    // Basic Error Functions
+    async sendError(error: string) {
+        LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
+    }
+
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
         // Don't forget the slash
         const endTag: string = filter === '' ? filter : `/${filter}`;
 
@@ -294,24 +296,20 @@ class OI4Application extends EventEmitter {
         }
     }
 
-    //FIXME is this sendEvent even used somewhere?
     /**
      * Sends an event/event with a specified level to the message bus
      * @param eventStr - The string that is to be sent as the 'event'
      * @param level - the level that is used as a <subresource> element in the event topic
      */
-    async sendEvent(eventStr: string, level: string) {
-        const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
-            number: 1,
-            description: 'Registry sendEvent',
-            Payload: {
-                logLevel: level,
-                logString: eventStr,
-            },
-            DataSetWriterId: CDataSetWriterIdLookup['event'],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/pub/event/${level}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        LOGGER.log(`Published event on ${this.topicPreamble}/event/${level}/${this.oi4Id}`);
+    // TODO figure out how the determine the filter from the actual object/interface, whatever
+    async sendEvent(event: IEvent, filter: string) {
+        const subResource = event.subResource();
+        const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
+
+        const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
+        const publishAddress = `${this.topicPreamble}/pub/event/${subResource}/${filter}`;
+        await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
+        LOGGER.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
     }
 
     async sendEventStatus(status: IApplicationStatus) {
@@ -340,9 +338,6 @@ class OI4Application extends EventEmitter {
      */
     get mqttClient(): mqtt.AsyncClient {
         return this.client;
-    }
-    get mqttMessageProcess() {
-        return this.mqttMessageProcessor;
     }
 }
 
