@@ -130,7 +130,7 @@ class OI4Application extends EventEmitter {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(() => {
+            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then(() => {
                 //No actual actions are needed here
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
@@ -138,7 +138,7 @@ class OI4Application extends EventEmitter {
 
     private resourceChangeCallback(resource: string) {
         if (resource === ResourceType.HEALTH) {
-            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then();
+            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then();
         }
     }
 
