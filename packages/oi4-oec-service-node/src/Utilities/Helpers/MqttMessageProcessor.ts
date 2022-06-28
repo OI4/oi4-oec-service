@@ -106,7 +106,7 @@ export class MqttMessageProcessor {
         const topicResource = topicArray[7];
         const topicFilter = topicArray.splice(8).join('/');
 
-        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter};
+        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, subResource:'', filter:topicFilter};
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
@@ -176,7 +176,7 @@ export class MqttMessageProcessor {
             }
         }
 
-        this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.filter, page, perPage)
+        this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){

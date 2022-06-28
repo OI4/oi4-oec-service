@@ -63,24 +63,14 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, dataSetWriterIdFilter: number, resource: string, filter: string = undefined): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
         const payload: IOPCUAPayload[] = [];
-        let licenses: ILicenseObject[] = [];
-
-        if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
-            return this.manageInvaliddataSetWriterIdFilter(resource);
-        }
-
-        if(filter !== undefined) {
-            licenses = applicationResources.license.filter((elem: ILicenseObject) => elem.licenseId === filter ? elem : null);
-        } else {
-            licenses = applicationResources.license;
-        }
+        const licenses: ILicenseObject[] = applicationResources.getLicense(subResource, licenseId);
 
         for (const license of licenses) {
             payload.push({
                 DataSetWriterId: CDataSetWriterIdLookup['license'],
-                filter: filter,
+                filter: licenseId,
                 subResource: license.licenseId,
                 Timestamp: new Date(),
                 Payload: {components: license.components},

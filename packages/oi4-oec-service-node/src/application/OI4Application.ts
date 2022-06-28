@@ -188,8 +188,8 @@ class OI4Application extends EventEmitter {
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
      * @param [filter] - the tag of the resource
      */
-    async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
-        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, filter);
+    async sendResource(resource: string, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
+        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, subResource, filter);
 
         if (validatedPayload.abortSending) {
             return;
@@ -198,7 +198,7 @@ class OI4Application extends EventEmitter {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
     }
 
-    async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: string, subResource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -224,7 +224,7 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.LICENCE: {
-                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, dswidFilter, resource, filter);
+                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
             case ResourceType.PUBLICATION_LIST: {
