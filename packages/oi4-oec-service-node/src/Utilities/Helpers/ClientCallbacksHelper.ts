@@ -1,13 +1,15 @@
 import {
-    CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    ESyslogEventFilter, IOI4ApplicationResources
+    ESyslogEventFilter,
+    IOI4ApplicationResources,
+    Resource,
+    DataSetWriterIdManager
 } from '@oi4/oi4-oec-service-model';
-import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {ClientPayloadHelper} from './ClientPayloadHelper';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 
 export class ClientCallbacksHelper {
 
@@ -28,7 +30,7 @@ export class ClientCallbacksHelper {
             JSON.stringify(builder.buildOPCUANetworkMessage([{
                 subResource: oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                DataSetWriterId: CDataSetWriterIdLookup['health']
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.HEALTH, oi4Id),
             }], new Date(), DataSetClassIds.mam)),
         );
         LOGGER.log('Connection to mqtt broker closed');
@@ -53,10 +55,10 @@ export class ClientCallbacksHelper {
             JSON.stringify(builder.buildOPCUANetworkMessage([{
                 subResource: oi4Id,
                 Payload: applicationResources.mam,
-                DataSetWriterId: CDataSetWriterIdLookup['mam']
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.MAM, oi4Id),
             }], new Date(), DataSetClassIds.mam)),
         );
-        LOGGER.log(`Published Birthmessage on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
+        LOGGER.log(`Published birth message on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
     };
 
 

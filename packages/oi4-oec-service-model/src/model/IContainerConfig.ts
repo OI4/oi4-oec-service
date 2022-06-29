@@ -1,12 +1,19 @@
-import { IContainerConfigConfigName, IContainerConfigGroupName } from './IContainer';
+import { IContainerConfig, IContainerConfigConfigName, IContainerConfigGroupName } from './IContainer';
 
-  export interface ILoggingContainerConfigGroupName extends IContainerConfigGroupName {
-    auditLevel: IContainerConfigConfigName;
-    logType: IContainerConfigConfigName;
-    logFileSize: IContainerConfigConfigName;
-  }
+// Specific Container Config interfaces
+export interface ISpecificContainerConfig extends IContainerConfig {
+  logging: ILoggingContainerConfigGroupName;
+  registry: IRegistryContainerConfigGroupName;
+}
 
-  export interface IRegistryContainerConfigGroupName extends IContainerConfigGroupName {
-    developmentMode: IContainerConfigConfigName;
-    showRegistry: IContainerConfigConfigName;
-  }
+
+export interface ILoggingContainerConfigGroupName extends IContainerConfigGroupName {
+  auditLevel: IContainerConfigConfigName;
+  logType: IContainerConfigConfigName;
+  logFileSize: IContainerConfigConfigName;
+}
+
+export interface IRegistryContainerConfigGroupName extends IContainerConfigGroupName {
+  developmentMode: IContainerConfigConfigName;
+  showRegistry: IContainerConfigConfigName;
+}

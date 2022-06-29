@@ -7,7 +7,6 @@ import {
     DataSetClassIds,
     EDeviceHealth,
     ESubscriptionListConfig,
-    StatusEvent,
     ESyslogEventFilter,
     IOI4ApplicationResources,
     IEvent
@@ -72,9 +71,8 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
-        this.on('setConfig', this.sendEventStatus);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, super.removeListener('',()=>{}));
+
+         this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
 
         this.initClientCallbacks();
     }
@@ -132,7 +130,7 @@ class OI4Application extends EventEmitter {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then(() => {
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then(() => {
                 //No actual actions are needed here
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
@@ -140,7 +138,7 @@ class OI4Application extends EventEmitter {
 
     private resourceChangeCallback(resource: string) {
         if (resource === ResourceType.HEALTH) {
-            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then();
+            this.sendResource(ResourceType.HEALTH, '', this.oi4Id).then();
         }
     }
 
@@ -190,8 +188,8 @@ class OI4Application extends EventEmitter {
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
      * @param [filter] - the tag of the resource
      */
-    async sendResource(resource: string, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
-        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, subResource, filter);
+    async sendResource(resource: string, messageId: string, filter: string, page = 0, perPage = 0) {
+        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, filter);
 
         if (validatedPayload.abortSending) {
             return;
@@ -200,7 +198,7 @@ class OI4Application extends EventEmitter {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
     }
 
-    async preparePayload(resource: string, subResource: string, filter: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -212,12 +210,9 @@ class OI4Application extends EventEmitter {
 
         switch (resource) {
             case ResourceType.MAM:
+            case ResourceType.PROFILE:
             case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
-                payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
-                break;
-            }
-            case ResourceType.PROFILE: {
-                payloadResult = this.clientPayloadHelper.createProfileSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
+                payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
                 break;
             }
             case ResourceType.HEALTH: {
@@ -225,11 +220,11 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.LICENSE_TEXT: {
-                payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter, resource);
+                payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter);
                 break;
             }
             case ResourceType.LICENCE: {
-                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, subResource, filter);
+                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
             case ResourceType.PUBLICATION_LIST: {
@@ -253,11 +248,6 @@ class OI4Application extends EventEmitter {
         return payloadResult;
     }
 
-    // Basic Error Functions
-    async sendError(error: string) {
-        LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
-    }
-
     private validateFilter(filter: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
@@ -273,6 +263,11 @@ class OI4Application extends EventEmitter {
         }
 
         return {isValid: true, dswidFilter: dswidFilter};
+    }
+
+    // Basic Error Functions
+    async sendError(error: string) {
+        LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
     private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
@@ -311,36 +306,11 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
     }
 
-
-    async sendEventStatus(status: StatusEvent) {
-        const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
-            SequenceNumber: 1,
-            subResource: 'status',
-            Payload: status,
-            DataSetWriterId: CDataSetWriterIdLookup['event'],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/pub/event/status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
-    }
-
-    async getConfig() {
-        const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
-            SequenceNumber: 1,
-            subResource: this.oi4Id,
-            Payload: this.applicationResources.config,
-            DataSetWriterId: CDataSetWriterIdLookup['config'],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/get/config/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        LOGGER.log(`Published get config on ${this.topicPreamble}/get/config/${this.oi4Id}`);
-    }
-
     /**
      * Makes the MQTT Client available to be used by other applications
      */
     get mqttClient(): mqtt.AsyncClient {
         return this.client;
-    }
-    get mqttMessageProcess() {
-        return this.mqttMessageProcessor;
     }
 }
 
