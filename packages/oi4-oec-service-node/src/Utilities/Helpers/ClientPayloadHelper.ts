@@ -9,7 +9,7 @@ import {
     LicenseText,
     IOI4ApplicationResources,
     IPublicationListObject,
-    ISpecificContainerConfig,
+    IContainerConfig,
     ISubscriptionListObject,
     DataSetWriterIdManager,
     OI4Payload,
@@ -35,8 +35,7 @@ export class ClientPayloadHelper {
     }
 
     createHealthStatePayload(deviceHealth: EDeviceHealth, score: number): Health {
-        const health = new Health(deviceHealth, score);
-        return health;
+        return new Health(deviceHealth, score);
     }
 
     createRTLicenseResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: string): ValidatedPayload {
@@ -44,23 +43,27 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    // TODO Check if relevant
-    // createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
-    //     const payload: IOPCUADataSetMessage[] = [];
-    //
-    //     if (filter === oi4Id) {
-    //         payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-    //     } else if (Number.isNaN(dataSetWriterIdFilter)) {
-    //         // If the filter is not an oi4Id and not a number, we don't know how to handle it
-    //         return {abortSending: true, payload: undefined};
-    //     } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
-    //         payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-    //         // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
-    //         //return;
-    //     }
-    //
-    //     return {abortSending: false, payload: payload};
-    // }
+    // TODO Check
+    private getProfileResourcePayload(): any {
+        const resources: Array<string> = Object.keys(CDataSetWriterIdLookup);
+        //Removing unwanted entries
+        resources.splice(resources.indexOf('event', 0), 1);
+        resources.splice(resources.indexOf('config', 0), 1);
+
+        return {resource: resources};
+    }
+
+    // TODO Check
+    createProfileSendResourcePayload(applicationResources: IOI4ApplicationResources): ValidatedPayload {
+        const payload: IOPCUADataSetMessage[] = [];
+
+        payload.push(this.createPayload(this.getProfileResourcePayload(), applicationResources.oi4Id));
+
+        payload[0].filter = '';
+        payload[0].Timestamp = new Date().toISOString();
+
+        return {abortSending: false, payload: payload};
+    }
 
     createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
@@ -74,34 +77,18 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    // TODO Rework
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
+        const licenses: License[] = applicationResources.getLicense(subResource, licenseId);
 
-        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if (applicationResources.license.some((elem: License) => elem.licenseId === filter)) { // Does it even make sense to filter?
-                const filteredLicenseArr = applicationResources.license.filter((elem: License) => {
-                    if (elem.licenseId === filter) return elem;
-                });
-
-                for (const filteredLicense of filteredLicenseArr) {
-                    payload.push({
-                        subResource: filteredLicense.licenseId,
-                        Payload: {components: filteredLicense.components},
-                        DataSetWriterId: CDataSetWriterIdLookup['license'],
-                    });
-                }
-
-                return {abortSending: false, payload: payload};
-            }
-        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
-            return this.manageInvaliddataSetWriterIdFilter(resource);
-        }
-
-        for (const license of applicationResources.license) {
+        for (const license of licenses) {
             payload.push({
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resource(), subResource),
+                filter: licenseId,
                 subResource: license.licenseId,
+                Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
-                DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
 
@@ -185,7 +172,7 @@ export class ClientPayloadHelper {
     }
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
+        const actualPayload: IContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUADataSetMessage[] = [];
 
         // Send all configs out
@@ -218,7 +205,7 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
+            const actualPayload: IContainerConfig = (applicationResources as any)[resource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,

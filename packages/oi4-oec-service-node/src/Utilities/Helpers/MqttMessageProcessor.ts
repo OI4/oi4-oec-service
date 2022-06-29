@@ -1,24 +1,32 @@
-import {DataSetClassIds, ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    DataSetClassIds,
+    ESyslogEventFilter,
+    StatusEvent,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IOI4ApplicationResources
+} from '@oi4/oi4-oec-service-model';
+import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, PayloadTypes} from './Enums';
-import { OI4RegistryManager } from '../../application/OI4RegistryManager';
+import {TopicMethods, ResourceType, PayloadTypes} from './Enums';
+import {OI4RegistryManager} from '../../application/OI4RegistryManager';
+import EventEmitter from 'events';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
     private readonly METADATA = 'metadata';
-    private readonly emit: Function;
+    private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 
     private applicationResources: IOI4ApplicationResources;
 
-    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
+    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emitter: EventEmitter) {
         this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;
-        this.emit = emit;
+        this.emitter = emitter;
     }
 
     /**
@@ -29,7 +37,7 @@ export class MqttMessageProcessor {
      */
     public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder) => {
         const validatedData: ValidatedIncomingMessageData = this.validateData(topic, message, builder);
-        if(!validatedData.areValid) {
+        if (!validatedData.areValid) {
             return;
         }
 
@@ -38,15 +46,15 @@ export class MqttMessageProcessor {
 
     private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
         const validateMessage: ValidatedMessage = this.validateIncomingMessage(message);
-        if(!validateMessage.isValid) {
+        if (!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         } else if (validateMessage.parsedMessage.Messages.length === 0) {
             LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
         }
 
         const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
-        if(!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)){
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
+        if (!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)) {
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
         // Split the topic into its different elements
@@ -55,7 +63,7 @@ export class MqttMessageProcessor {
         // Safety-Check: DataSetClassId
         if (validateMessage.parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
             LOGGER.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
         return {areValid: true, parsedMessage: validateMessage.parsedMessage, topicInfo: topicInfo};
@@ -77,7 +85,7 @@ export class MqttMessageProcessor {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
             LOGGER.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
-            return false;
+            return undefined;
         }
     }
 
@@ -106,7 +114,14 @@ export class MqttMessageProcessor {
         const topicResource = topicArray[7];
         const topicFilter = topicArray.splice(8).join('/');
 
-        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter};
+        return {
+            topic: topic,
+            appId: topicAppId,
+            method: topicMethod,
+            resource: topicResource,
+            subResource: '',
+            filter: topicFilter
+        };
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
@@ -142,7 +157,7 @@ export class MqttMessageProcessor {
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === this.DATA) {
-            this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);
@@ -176,13 +191,19 @@ export class MqttMessageProcessor {
             }
         }
 
-        this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.filter, page, perPage)
+        this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
     }
 
-    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){
+    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         switch (topicInfo.resource) {
             case this.DATA: {
                 this.setData(topicInfo.filter, parsedMessage);
+                break;
+            }
+            case ResourceType.CONFIG: {
+                if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
+                    this.setConfig(topicInfo.filter, parsedMessage);
+                }
                 break;
             }
             default: {
@@ -208,7 +229,27 @@ export class MqttMessageProcessor {
         }
     }
 
-    private async executeDelActions(topicInfo: TopicInfo){
+    private setConfig(filter: string, config: IOPCUANetworkMessage): void {
+        const currentConfig = this.applicationResources.config;
+        const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
+        if (filter === '') {
+            return;
+        }
+        if (!(filter in currentConfig)) {
+            currentConfig[filter] = newConfig;
+            LOGGER.log(`Added ${filter} to config group`);
+        } else {
+            currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in config group`);
+        }
+        OI4RegistryManager.checkForOi4Registry(config);
+        const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
+
+        this.emitter.emit('setConfig', status);
+        this.sendResource(ResourceType.CONFIG, config.MessageId, filter);
+    }
+
+    private async executeDelActions(topicInfo: TopicInfo) {
         switch (topicInfo.resource) {
             case this.DATA: {
                 this.deleteData(topicInfo.filter);
