@@ -311,7 +311,7 @@ class OI4Application extends EventEmitter {
     async sendEventStatus(status: StatusEvent) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            subResource: this.oi4Id,
+            subResource: 'status',
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
