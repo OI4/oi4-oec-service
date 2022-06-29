@@ -5,7 +5,7 @@ import {OI4Application} from '../../src';
 import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
-    EContainerEventCategory,
+    EventCategory,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
@@ -473,7 +473,7 @@ describe('OI4MessageBus test', () => {
                 // @ts-ignore
                 {Payload:
                     {
-                    category: EContainerEventCategory.CAT_STATUS_1,
+                    category: EventCategory.CAT_STATUS_1,
                     number: 1,
                     description: 'fake',
                     origin: resources.oi4Id
@@ -517,7 +517,7 @@ describe('OI4MessageBus test', () => {
                 // @ts-ignore
                 {Payload:
                         {
-                            category: EContainerEventCategory.CAT_STATUS_1,
+                            category: EventCategory.CAT_STATUS_1,
                             number: 1,
                             description: 'fake',
                             origin: resources.oi4Id
@@ -528,7 +528,7 @@ describe('OI4MessageBus test', () => {
         resources.config['group-a'] =  {
             name: {locale: EOPCUALocale.enUS, text: 'text'},
             'config_a':{
-            category: EContainerEventCategory.CAT_STATUS_1,
+            category: EventCategory.CAT_STATUS_1,
             number: 1,
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
