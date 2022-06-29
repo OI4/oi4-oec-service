@@ -1,24 +1,32 @@
-import {DataSetClassIds, ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    DataSetClassIds,
+    ESyslogEventFilter,
+    StatusEvent,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IOI4ApplicationResources
+} from '@oi4/oi4-oec-service-model';
+import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, PayloadTypes} from './Enums';
-import { OI4RegistryManager } from '../../application/OI4RegistryManager';
+import {PayloadTypes, ResourceType, TopicMethods} from './Enums';
+import {OI4RegistryManager} from '../../application/OI4RegistryManager';
+import EventEmitter from 'events';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
     private readonly METADATA = 'metadata';
-    private readonly emit: Function;
+    private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 
     private applicationResources: IOI4ApplicationResources;
 
-    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
+    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emitter: EventEmitter) {
         this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;
-        this.emit = emit;
+        this.emitter = emitter;
     }
 
     /**
@@ -77,7 +85,7 @@ export class MqttMessageProcessor {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
             LOGGER.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
-            return false;
+            return undefined;
         }
     }
 
@@ -142,7 +150,7 @@ export class MqttMessageProcessor {
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === this.DATA) {
-            this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);
@@ -185,6 +193,12 @@ export class MqttMessageProcessor {
                 this.setData(topicInfo.filter, parsedMessage);
                 break;
             }
+            case ResourceType.CONFIG: {
+                if(parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
+                    this.setConfig(topicInfo.filter, parsedMessage);
+                }
+                break;
+            }
             default: {
                 break;
             }
@@ -206,6 +220,26 @@ export class MqttMessageProcessor {
             this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
             LOGGER.log(`${tagName} already exists in dataLookup`);
         }
+    }
+
+    private setConfig(filter: string, config: IOPCUANetworkMessage): void {
+        const currentConfig = this.applicationResources.config;
+        const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
+        if (filter === '') {
+            return;
+        }
+        if (!(filter in currentConfig)) {
+            currentConfig[filter] = newConfig;
+            LOGGER.log(`Added ${filter} to config group`);
+        } else {
+            currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in config group`);
+        }
+        OI4RegistryManager.checkForOi4Registry(config);
+        const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
+
+        this.emitter.emit('setConfig', status);
+        this.sendResource(ResourceType.CONFIG,config.MessageId, filter);
     }
 
     private async executeDelActions(topicInfo: TopicInfo){

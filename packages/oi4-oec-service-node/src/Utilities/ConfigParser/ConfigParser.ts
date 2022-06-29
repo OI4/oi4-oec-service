@@ -2,14 +2,14 @@ import fs = require('fs');
 import path = require('path');
 
 import { EventEmitter } from 'events';
-import { ISpecificContainerConfig } from '@oi4/oi4-oec-service-model';
+import { IContainerConfig } from '@oi4/oi4-oec-service-model';
 
 /**
  * Responsible for reading / writing configuration data to a containerConfig.json file (currently hardcoded name and path)
  */
 // TODO: Is this even needed???
 class ConfigParser extends EventEmitter {
-  private _config: ISpecificContainerConfig;
+  private _config: IContainerConfig;
   private configPath: string = path.join(__dirname, '..', '..', 'Config', 'containerConfig.json');
   constructor() {
     super();
@@ -102,18 +102,18 @@ class ConfigParser extends EventEmitter {
   /**
    * Set config from Parameter to containerConfig.json
    */
-  set config(newConfig: ISpecificContainerConfig) {
+  set config(newConfig: IContainerConfig) {
     this.writeConfig(newConfig);
     const oldConfig = JSON.parse(JSON.stringify(this._config));
     this._config = newConfig;
     this.emit('newConfig', oldConfig);
   }
 
-  private writeConfig(newConfig: ISpecificContainerConfig) {
+  private writeConfig(newConfig: IContainerConfig) {
     fs.writeFileSync(this.configPath, Buffer.from(JSON.stringify(newConfig, null, 4)));
   }
 
-  public readConfig(): ISpecificContainerConfig {
+  public readConfig(): IContainerConfig {
     const getConfigData = fs.readFileSync(this.configPath);
     // TODO: Remove this level of complexity and reduce to one line
     const getConfigString = getConfigData.toString();

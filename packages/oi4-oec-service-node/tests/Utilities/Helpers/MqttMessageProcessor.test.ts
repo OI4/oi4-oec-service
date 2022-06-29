@@ -5,7 +5,8 @@ import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUAB
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {setLogger} from '@oi4/oi4-oec-service-logger';
+import EventEmitter from 'events';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -52,7 +53,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         applicationResource.oi4Id = mockedData.fakeOi4Id;
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), new EventEmitter());
         await mqttMessageProcessor.processMqttMessage(mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData));
 
         expect(fakeLogFile.length).toBe(1);
@@ -70,7 +71,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         applicationResource.oi4Id = info.fakeOi4Id;
-        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), jest.fn());
+        const mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor(applicationResource, jest.fn(), jest.fn(), new EventEmitter());
         await mqttMessageProcessor.processMqttMessage(info.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(info));
 
         expect(fakeLogFile.length).toBe(0);

@@ -22,6 +22,21 @@ export class MockedIApplicationResourceFactory {
         return {
             brokerState: false,
             config: {
+                'group_a': {
+                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    'config_a': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    'config_b': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
+                },
+                'group_b': {
+                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    'config_ab': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    'config_bb': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
+                },
+                'group_c': {
+                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    'config_ac': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
+                    'config_bc': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
+                },
                 context: {name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeContext')},
                 logging: {
                     auditLevel: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),

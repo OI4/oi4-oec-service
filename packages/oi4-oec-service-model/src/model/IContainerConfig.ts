@@ -1,11 +1,4 @@
-import { IContainerConfig, IContainerConfigConfigName, IContainerConfigGroupName } from './IContainer';
-
-// Specific Container Config interfaces
-export interface ISpecificContainerConfig extends IContainerConfig {
-    logging: ILoggingContainerConfigGroupName;
-    registry: IRegistryContainerConfigGroupName;
-  }
-
+import { IContainerConfigConfigName, IContainerConfigGroupName } from './IContainer';
 
   export interface ILoggingContainerConfigGroupName extends IContainerConfigGroupName {
     auditLevel: IContainerConfigConfigName;

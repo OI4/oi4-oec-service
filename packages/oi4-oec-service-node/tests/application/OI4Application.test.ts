@@ -4,17 +4,27 @@ import {MqttSettings} from '../../src';
 import {OI4Application} from '../../src';
 import {
     CDataSetWriterIdLookup,
+    DataSetClassIds,
+    EventCategory,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
+    StatusEvent,
     ILicenseObject,
     IOI4ApplicationResources,
     NamurNE107Event,
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUABaseDataType, EOPCUALocale, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    EOPCUABaseDataType,
+    EOPCUALocale,
+    EOPCUAStatusCode,
+    IOPCUANetworkMessage,
+    OPCUABuilder
+} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
+import EventEmitter from 'events';
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -257,7 +267,6 @@ describe('OI4MessageBus test', () => {
         const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         const onResourceMock = jest.fn((_, cb) => {
             cb(ResourceType.HEALTH);
             expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', '', resources.oi4Id);
@@ -273,7 +282,9 @@ describe('OI4MessageBus test', () => {
     it('should send specific metadata by tagname', async () => {
 
         const tagName = 'tag-01'
-        const oi4Application = getOi4App()
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
         await oi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/metadata/${tagName}`),
@@ -283,7 +294,9 @@ describe('OI4MessageBus test', () => {
     it('should send all metadata if tagname not specified', async () => {
 
         const tagName = ''
-        const oi4Application = getOi4App()
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const container = getResourceInfo();
+        const oi4Application = new OI4Application(container, mqttOpts);
         await oi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/metadata`),
@@ -409,6 +422,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should not send resource if error occured in pagination', async () => {
+
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
         const filter = '1'
         const oi4Application = getOi4App()
@@ -436,6 +450,123 @@ describe('OI4MessageBus test', () => {
         const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${event.subResource()}/1`;
         expect(publish).toHaveBeenCalled();
         expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
+    });
+    it('should send status', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        const status: StatusEvent = new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good, 'fake');
+        await oi4Application.sendEventStatus(status);
+        expect(publish).toHaveBeenCalledWith(
+            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/status/${encodeURI(`${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}`)}`),
+            expect.stringContaining(JSON.stringify(status)));
+    });
+
+
+    it('should replace old config with new config and emit status status via mqttprocess', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        resources.oi4Id = '1/1/1/pub';
+        const status: IOPCUANetworkMessage = {
+            DataSetClassId: DataSetClassIds['config'],
+            PublisherId: `Registry/${resources.oi4Id}`,
+            Messages: [
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                {Payload:
+                    {
+                    category: EventCategory.CAT_STATUS_1,
+                    number: 1,
+                    description: 'fake',
+                    origin: resources.oi4Id
+                },
+                    DataSetWriterId: CDataSetWriterIdLookup['event']
+                }],
+        };
+
+        const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
+        const buf = Buffer.from(JSON.stringify(status));
+        await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
+        expect(sendResourceMock).toBeCalledTimes(1);
+        expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good));
+        expect(oi4Application.applicationResources).toBe(resources);
+        mock.mockRestore();
+        eventemitMock.mockClear();
+        sendResourceMock.mockRestore();
+    });
+
+    it('should add new config and send emit status status via mqttprocess', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+
+
+        resources.oi4Id = '1/1/1/pub'
+
+        const status: IOPCUANetworkMessage = {
+            DataSetClassId: DataSetClassIds['config'],
+            PublisherId: `Registry/${resources.oi4Id}`,
+            Messages: [
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                {Payload:
+                        {
+                            category: EventCategory.CAT_STATUS_1,
+                            number: 1,
+                            description: 'fake',
+                            origin: resources.oi4Id
+                        },
+                    DataSetWriterId: CDataSetWriterIdLookup['event']
+                }],
+        };
+        resources.config['group-a'] =  {
+            name: {locale: EOPCUALocale.enUS, text: 'text'},
+            'config_a':{
+            category: EventCategory.CAT_STATUS_1,
+            number: 1,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+            description: 'fake',
+            origin: resources.oi4Id
+        }
+        };
+        jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
+        const buf = Buffer.from(JSON.stringify(status));
+        await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
+        expect(sendResourceMock).toBeCalledTimes(1);
+        expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good));
+        expect(oi4Application.applicationResources).toBe(resources);
+        sendResourceMock.mockRestore();
+        eventemitMock.mockClear();
+    });
+
+    it('should send config with get request', async () => {
+
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const resources = getResourceInfo();
+        const oi4Application = new OI4Application(resources, mqttOpts);
+        await oi4Application.getConfig();
+        expect(publish).toHaveBeenCalledWith(
+            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/get/config/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(JSON.stringify(resources.config)));
     });
 
 });

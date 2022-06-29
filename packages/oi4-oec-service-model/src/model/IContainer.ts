@@ -11,7 +11,6 @@ export interface IEventObject {
   timestamp: string; // NOT OI4 Conform and just for us
   tag: string; // Oi4Id of log originator
 }
-
 // Common Container config interfaces
 export interface IContainerConfig extends Record<string, IContainerConfigGroupName | IContainerConfigContext> {
   context: IContainerConfigContext;
