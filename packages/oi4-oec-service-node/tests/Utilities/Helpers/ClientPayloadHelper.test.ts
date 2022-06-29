@@ -10,13 +10,16 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
-import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
-import {ResourceType} from '../../../src/Utilities/Helpers/Enums';
+import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {ResourceType} from '../../../dist/Utilities/Helpers/Enums';
 
 
 describe('Unit test for ClientPayloadHelper', () => {
 
+    const SUB_RESOURCE = 'fakeOi4ID';
+
     const default_payload = [{
+        subResource: SUB_RESOURCE,
         DataSetWriterId: 2,
         Payload: {health: EDeviceHealth.NORMAL_0, healthScore: 100}
     }];
@@ -41,7 +44,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('getDefaultHealthStatePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.getDefaultHealthStatePayload();
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.getDefaultHealthStatePayload(mockedIContainerState.oi4Id);
         checkAgainstDefaultPayload(validatedPayload);
     });
 
@@ -78,6 +81,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function createLicenseMockedPayload(dataSetWriterId: number, payload: any) {
         return [{
+            subResource: SUB_RESOURCE,
             DataSetWriterId: dataSetWriterId,
             Payload: payload
         }];
@@ -213,7 +217,7 @@ describe('Unit test for ClientPayloadHelper', () => {
             MSG: 'fakeMSG',
             HEADER: 'fakeHeader',
         };
-        const message: IOPCUAPayload[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
+        const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];
         expect(extractedMessage.DataSetWriterId).toBe(CDataSetWriterIdLookup[ResourceType.EVENT]);

@@ -3,31 +3,32 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IOI4ApplicationResources,
     IContainerHealth,
     IEvent,
     ILicenseObject,
+    IOI4ApplicationResources,
     IPublicationListObject,
     ISpecificContainerConfig,
     ISubscriptionListObject
 } from '@oi4/oi4-oec-service-model';
-import {IOPCUAPayload} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {ResourceType} from './Enums';
 
 export class ClientPayloadHelper {
 
-    private createPayload(payload: any, dataSetWriterId: number): IOPCUAPayload {
+    private createPayload(payload: any, dataSetWriterId: number, subResource: string): IOPCUADataSetMessage {
         return {
+            subResource: subResource,
             Payload: payload,
             DataSetWriterId: dataSetWriterId,
         };
     };
 
-    getDefaultHealthStatePayload(): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+    getDefaultHealthStatePayload(oi4Id: string): ValidatedPayload {
+        const payload: IOPCUADataSetMessage[] = [];
         const healthState: IContainerHealth = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
-        payload.push(this.createPayload(healthState, CDataSetWriterIdLookup[ResourceType.HEALTH]));
+        payload.push(this.createPayload(healthState, CDataSetWriterIdLookup[ResourceType.HEALTH], oi4Id));
         return {abortSending: false, payload: payload};
     }
 
@@ -36,15 +37,15 @@ export class ClientPayloadHelper {
     }
 
     createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
 
         if (filter === oi4Id) {
-            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
         } else if (Number.isNaN(dataSetWriterIdFilter)) {
             // If the filter is not an oi4Id and not a number, we don't know how to handle it
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
-            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource]));
+            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
             // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
             //return;
         }
@@ -53,18 +54,18 @@ export class ClientPayloadHelper {
     }
 
     createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, resource: string): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
         // FIXME: Hotfix
         if (typeof applicationResources.licenseText[filter] === 'undefined') {
             return {abortSending: true, payload: undefined};
         }
         // licenseText is special...
-        payload.push(this.createPayload({licenseText: applicationResources.licenseText[filter]}, CDataSetWriterIdLookup[resource]));
+        payload.push(this.createPayload({licenseText: applicationResources.licenseText[filter]}, CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
         return {abortSending: false, payload: payload};
     }
 
     createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
         const licenses: ILicenseObject[] = applicationResources.getLicense(subResource, licenseId);
 
         for (const license of licenses) {
@@ -72,7 +73,7 @@ export class ClientPayloadHelper {
                 DataSetWriterId: CDataSetWriterIdLookup['license'],
                 filter: licenseId,
                 subResource: license.licenseId,
-                Timestamp: new Date(),
+                Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
             })
         }
@@ -81,7 +82,7 @@ export class ClientPayloadHelper {
     }
 
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
             if (applicationResources.publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
@@ -114,7 +115,7 @@ export class ClientPayloadHelper {
     }
 
     createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
             // 7 is resource
@@ -158,7 +159,7 @@ export class ClientPayloadHelper {
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
-        const payload: IOPCUAPayload[] = [];
+        const payload: IOPCUADataSetMessage[] = [];
 
         // Send all configs out
         if (filter === '') {
@@ -204,12 +205,12 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUAPayload[] {
+    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
         return [{
             DataSetWriterId: CDataSetWriterIdLookup[ResourceType.EVENT],
             filter: filter,
             subResource: subResource,
-            Timestamp: new Date(),
+            Timestamp: new Date().toISOString(),
             Payload: event,
         }];
     }

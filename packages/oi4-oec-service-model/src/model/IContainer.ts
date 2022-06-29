@@ -52,20 +52,6 @@ export interface IContainerHealth {
   healthScore: number; // UInt16 (from 0 to 100%)
 }
 
-export interface IContainerEvent {
-  number: number;
-  description?: string;
-  category: EContainerEventCategory;
-  details?: object;
-}
-
-export enum EContainerEventCategory {
-  CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
-  CAT_OPCSC_1 = 'CAT_OPCSC_1',
-  CAT_NE107_2 = 'CAT_NE107_2',
-  CAT_GENERIC_99 = 'CAT_GENERIC_99',
-}
-
 export interface IContainerRTLicense {
 
 }
