@@ -36,7 +36,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 /**
  * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
  * */
-  constructor(mamFile: string = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
+  constructor(mamFile = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
     super();
 
     this._mam = OI4ApplicationResources.extractMamFile(mamFile); // Import MAM from JSON
@@ -68,232 +68,10 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
       ],
     };
 
-    this.health = {
+    this._health = {
       health: EDeviceHealth.NORMAL_0,
       healthScore: 100,
     };
-
-    this.license =[
-        {
-          licenseId: 'MIT',
-          components: [
-            {
-              component: 'Async-Mqtt.js',
-              licAuthors: [
-                'Adam Rudd',
-                'Octavian Ionescu',
-                'Nick O\'Leary',
-                'Matteo Collina',
-                'Nicholas Dudfield',
-                'Wouter Klijn',
-                'Yohei Onishi',
-                'RangerMauve',
-              ],
-              licAddText: 'https://www.npmjs.com/package/async-mqtt',
-            },
-            {
-              component: 'Express.js',
-              licAuthors: [
-                'Andrew Kelley',
-                'Ryan',
-                'Rand McKinney',
-                'Yiyu He',
-                'Douglas Wilson',
-                'fengmk2',
-                'Jeremiah Senkpiel',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/express',
-            },
-            {
-              component: 'uuid',
-              licAuthors: [
-                'ctavan',
-                'broofa',
-                'defunctzombie',
-                'solderjs',
-                'benjreinhart',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/uuid',
-            },
-            {
-              component: 'ajv',
-              licAuthors: [
-                'epoberezkin',
-                'blakeembrey',
-                'gajus',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/ajv',
-            },
-            {
-              component: 'cors',
-              licAuthors: [
-                'dougwilson',
-                'troygoode',
-                'alex94cp',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/cors',
-            },
-            {
-              component: 'cors',
-              licAuthors: [
-                'dougwilson',
-                'troygoode',
-                'alex94cp',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/cors',
-            },
-            {
-              component: 'OEC-Registry',
-              licAuthors: [
-                'OI4-Hilscher',
-                'Berti Martens',
-              ],
-              licAddText: 'none',
-            },
-            {
-              component: 'winston',
-              licAuthors: [
-                'indexzero',
-                'chij',
-                'DABH',
-                'et al'
-              ],
-              licAddText: 'https://www.npmjs.com/package/winston',
-            },
-            {
-              component: 'winston-syslog',
-              licAuthors: [
-                'santigimeno',
-                'indexzero',
-                'DABH',
-                'et al'
-              ],
-              licAddText: 'https://www.npmjs.com/package/winston-syslog',
-            },
-            {
-              component: 'glossy',
-              licAuthors: [
-                'squeeks',
-                'fygrave',
-                'mattbornski',
-                'et al'
-              ],
-              licAddText: 'https://www.npmjs.com/package/glossy',
-            },
-            {
-              component: 'sequential-ask-queue',
-              licAuthors: [
-                'BalassaMarton'
-              ],
-              licAddText: 'https://www.npmjs.com/package/sequential-task-queue',
-            },
-            {
-              component: 'material-ui/core',
-              licAuthors: [
-                'material-ui organization'
-              ],
-              licAddText: 'https://www.npmjs.com/package/@material-ui/core',
-            },
-            {
-              component: 'material-ui/icons',
-              licAuthors: [
-                'material-ui organization'
-              ],
-              licAddText: 'https://www.npmjs.com/package/@material-ui/icons',
-            },
-            {
-              component: 'react',
-              licAuthors: [
-                'facebook'
-              ],
-              licAddText: 'https://www.npmjs.com/package/react',
-            },
-            {
-              component: 'react-dom',
-              licAuthors: [
-                'facebook'
-              ],
-              licAddText: 'https://www.npmjs.com/package/react-dom',
-            },
-            {
-              component: 'lodash',
-              licAuthors: [
-                'lodash'
-              ],
-              licAddText: 'https://www.npmjs.com/package/lodash',
-            },
-          ],
-        },
-        {
-          licenseId: 'BSD-2-Clause',
-          components: [
-            {
-              component: 'dotenv',
-              licAuthors: [
-                'motdotla',
-                'maxbeatty',
-                'jcblw',
-                'jessefulton',
-                'et al',
-              ],
-              licAddText: 'https://www.npmjs.com/package/dotenv',
-            },
-          ],
-        }
-      ];
-
-    this.licenseText = {};
-    this.addLicenseText('MIT', `(The MIT License)
-    Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>
-    Copyright (c) 2013-2014 Roman Shtylman <shtylman+expressjs@gmail.com>
-    Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
-
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files (the
-    'Software'), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-
-    The above copyright notice and this permission notice shall be
-    included in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`);
-
-    this.addLicenseText('BSD-2-Clause', `(BSD 2-Clause License)
-    All rights reserved.
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this
-      list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`);
 
     this.rtLicense = {};
 
@@ -393,6 +171,20 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
   get license(): ILicenseObject[] {
     return this._license;
+  }
+
+  getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+    if(oi4Id === undefined) {
+      return this.license;
+    } else if (oi4Id !==  this.oi4Id){
+      throw new Error('Sub resources not yet implemented');
+    }
+
+    if(licenseId === undefined) {
+      return this.license;
+    }
+
+    return this.license.filter((elem: ILicenseObject) => elem.licenseId === licenseId ? elem : null);
   }
 
   private set license(license) {
