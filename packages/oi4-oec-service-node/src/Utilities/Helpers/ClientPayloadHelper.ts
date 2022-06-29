@@ -64,34 +64,17 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
+        const licenses: ILicenseObject[] = applicationResources.getLicense(subResource, licenseId);
 
-        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
-            if (applicationResources.license.some((elem: ILicenseObject) => elem.licenseId === filter)) { // Does it even make sense to filter?
-                const filteredLicenseArr = applicationResources.license.filter((elem: ILicenseObject) => {
-                    if (elem.licenseId === filter) return elem;
-                });
-
-                for (const filteredLicense of filteredLicenseArr) {
-                    payload.push({
-                        subResource: filteredLicense.licenseId,
-                        Payload: {components: filteredLicense.components},
-                        DataSetWriterId: CDataSetWriterIdLookup['license'],
-                    });
-                }
-
-                return {abortSending: false, payload: payload};
-            }
-        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
-            return this.manageInvaliddataSetWriterIdFilter(resource);
-        }
-
-        for (const license of applicationResources.license) {
+        for (const license of licenses) {
             payload.push({
+                DataSetWriterId: CDataSetWriterIdLookup['license'],
+                filter: licenseId,
                 subResource: license.licenseId,
+                Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
-                DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
 
