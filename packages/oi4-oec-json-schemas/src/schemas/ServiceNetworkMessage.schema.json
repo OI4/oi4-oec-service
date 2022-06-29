@@ -4,13 +4,32 @@
   "description": "A representation of an event",
   "type": "object",
   "additionalProperties": false,
-  "$comment": "TODO: oi4identifier needs to be updated and implemented here. NetworkMessageBase was removed, if necessary, we can patch it back in",
-  "allOf": [
-    {
-      "$ref": "NetworkMessageBase.schema.json"
-    }
-  ],
   "properties": {
+    "correlationId": {
+      "type": "string",
+      "description": "Correlation ID used for logging and as debug information"
+    },
+    "DataSetClassId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Dataset Class ID"
+    },
+    "MessageId": {
+      "type": "string",
+      "description": "Message ID",
+      "$comment": "TODO: find a way to include the oi4Identifier better here",
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+    },
+    "MessageType": {
+      "const": "MSG",
+      "description": "Message Type"
+    },
+    "PublisherId": {
+      "description": "Publisher ID",
+      "$comment": "TODO: find a way to include the oi4Identifier better here",
+      "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
+      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+    },
     "Message": {
       "oneOf": [
         {
@@ -26,6 +45,6 @@
     "MessageId",
     "MessageType",
     "PublisherId",
-    "Messages"
+    "Message"
   ]
 }
