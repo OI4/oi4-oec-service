@@ -11,21 +11,22 @@ import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
 import {PayloadTypes, ResourceType, TopicMethods} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
+import EventEmitter from 'events';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
     private readonly METADATA = 'metadata';
-    private readonly emit: Function;
+    private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 
     private applicationResources: IOI4ApplicationResources;
 
-    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emit: Function) {
+    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emitter: EventEmitter) {
         this.applicationResources = applicationResources;
         this.sendMetaData = sendMetaData;
         this.sendResource = sendResource;
-        this.emit = emit;
+        this.emitter = emitter;
     }
 
     /**
@@ -149,7 +150,7 @@ export class MqttMessageProcessor {
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === this.DATA) {
-            this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);
@@ -237,7 +238,7 @@ export class MqttMessageProcessor {
         OI4RegistryManager.checkForOi4Registry(config);
         const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
-        this.emit('setConfig', {status:status});
+        this.emitter.emit('setConfig', status);
         this.sendResource(ResourceType.CONFIG,config.MessageId, filter);
     }
 

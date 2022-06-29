@@ -23,7 +23,7 @@ import {
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
-import {EventEmitter} from 'events';
+import EventEmitter from 'events';
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -464,10 +464,10 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
-
+        resources.oi4Id = '1/1/1/pub';
         const status: IOPCUANetworkMessage = {
             DataSetClassId: DataSetClassIds['config'],
-            PublisherId: 'Registry/Fake',
+            PublisherId: `Registry/${resources.oi4Id}`,
             Messages: [
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
@@ -482,7 +482,6 @@ describe('OI4MessageBus test', () => {
                 }],
         };
 
-        resources.oi4Id = '1/1/1/pub'
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -490,13 +489,14 @@ describe('OI4MessageBus test', () => {
         const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit').mockImplementation(()=>jest.fn());
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
         const buf = Buffer.from(JSON.stringify(status));
         await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
         expect(sendResourceMock).toBeCalledTimes(1);
-        expect(eventemitMock).toBeCalledTimes(1);
+        expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good));
         expect(oi4Application.applicationResources).toBe(resources);
         mock.mockRestore();
+        eventemitMock.mockClear();
         sendResourceMock.mockRestore();
     });
 
@@ -506,9 +506,12 @@ describe('OI4MessageBus test', () => {
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
 
+
+        resources.oi4Id = '1/1/1/pub'
+
         const status: IOPCUANetworkMessage = {
             DataSetClassId: DataSetClassIds['config'],
-            PublisherId: 'Registry/Fake',
+            PublisherId: `Registry/${resources.oi4Id}`,
             Messages: [
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
@@ -522,8 +525,6 @@ describe('OI4MessageBus test', () => {
                     DataSetWriterId: CDataSetWriterIdLookup['event']
                 }],
         };
-
-        resources.oi4Id = '1/1/1/pub'
         resources.config['group-a'] =  {
             name: {locale: EOPCUALocale.enUS, text: 'text'},
             'config_a':{
@@ -542,12 +543,14 @@ describe('OI4MessageBus test', () => {
         const sendResourceMock = jest.spyOn(oi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit').mockImplementation(()=>jest.fn());
+        const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
         const buf = Buffer.from(JSON.stringify(status));
         await oi4Application.mqttMessageProcess.processMqttMessage('oi4/Registry/1/1/1/pub/set/config/group-a', buf, oi4Application.builder);
         expect(sendResourceMock).toBeCalledTimes(1);
+        expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good));
         expect(oi4Application.applicationResources).toBe(resources);
-
+        sendResourceMock.mockRestore();
+        eventemitMock.mockClear();
     });
 
     it('should send config with get request', async () => {

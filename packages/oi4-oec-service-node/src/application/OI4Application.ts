@@ -72,8 +72,9 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
-
-        this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, this.emit);
+        this.on('setConfig', this.sendEventStatus);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, super.removeListener('',()=>{}));
 
         this.initClientCallbacks();
     }

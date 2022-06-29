@@ -51,15 +51,6 @@ export interface IContainerHealth {
   healthScore: number; // UInt16 (from 0 to 100%)
 }
 
-export interface IApplicationStatus {
-  origin: string;
-  number: number;
-  description?: string;
-  category: EContainerEventCategory;
-  details?: object;
-  symbolicId?: string;
-}
-
 export enum EContainerEventCategory {
   CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
   CAT_OPCSC_1 = 'CAT_OPCSC_1',
