@@ -1,0 +1,25 @@
+[
+  [
+    "Minimal DataSetMetaData",
+    {
+      "MessageId": "1639693510094-provider.com/FieldDataService/FDS-001/1200-0345",
+      "MessageType": "ua-metadata",
+      "PublisherId": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "DataSetWriterId": 753,
+      "filter": "oee",
+      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MetaData": {
+        "name": "Dataset1",
+        "description": {
+          "text": "Description",
+          "locale":  "en-US" 
+        },
+        "namespaces": [],
+        "structureDataTypes": [], 
+        "enumDataTypes":  [], 
+        "simpleDataTypes": [] 
+      }
+    }
+  ]
+]

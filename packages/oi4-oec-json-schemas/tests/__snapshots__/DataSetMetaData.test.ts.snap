@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataSetMetaData schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'DataSetWriterId'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'filter'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'MessageId'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'MessageType'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'PublisherId'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'MetaData'
+    Path:     DataSetMetaData.schema.json#/required
+  must have required property 'subResource'
+    Path:     DataSetMetaData.schema.json#/required
+"
+`;
+
+exports[`DataSetMetaData schema (1) match fails for invalid config -> Invalid message id: Invalid message id 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /MessageId must match pattern \\"^.{1,}-(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^
+]+){3})\\"
+    Received: <string> provider.com/FieldDataService/FDS-001/1200-0345
+    Path:     DataSetMetaData.schema.json#/properties/MessageId/pattern
+"
+`;
+
+exports[`DataSetMetaData schema (2) match fails for invalid config -> Invalid publisher id: Invalid publisher id 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /PublisherId must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^
+]+){3})$\\"
+    Received: <string> provider.com
+    Path:     DataSetMetaData.schema.jsonoi4Identifier.schema.json/pattern
+"
+`;

@@ -4,7 +4,6 @@
   "description": "A representation of a metadata message",
   "type": "object",
   "additionalProperties": false,
-  "$comment": "TODO: oi4identifier needs to be updated and implemented here",
   "required": [
     "DataSetWriterId",
     "filter",
@@ -29,7 +28,9 @@
     "MessageId": {
       "type": "string",
       "description": "Message ID",
-      "pattern": "^.{1,}-{oi4Identifier}"
+      "pattern": "^.{1,}-(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:/[^/`\\^\r\n]+){3})",
+      "minLength": 11,
+      "maxLength": 255
     },
     "MetaData": {
       "$ref": "DataSetMetaDataType.schema.json"
@@ -42,7 +43,7 @@
     "PublisherId": {
       "type": "string",
       "description": "Publisher ID",
-      "pattern": "{oi4Identifier}"
+      "$ref": "oi4Identifier.schema.json"
     },
     "subResource": {
       "type": "string",
