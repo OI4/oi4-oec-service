@@ -9,11 +9,17 @@ import {
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    IApplicationStatus,
+    StatusEvent,
     IOI4ApplicationResources,
     NamurNE107Event,
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUABaseDataType, EOPCUALocale, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    EOPCUABaseDataType,
+    EOPCUALocale,
+    EOPCUAStatusCode,
+    IOPCUANetworkMessage,
+    OPCUABuilder
+} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../../src';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
@@ -445,12 +451,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
-        const status: IApplicationStatus = {
-            category: EContainerEventCategory.CAT_STATUS_1,
-            number: 1,
-            description: 'fake',
-            origin: resources.oi4Id,
-        };
+        const status: StatusEvent = new StatusEvent(resources.oi4Id, EOPCUAStatusCode.Good, 'fake');
         await oi4Application.sendEventStatus(status);
         expect(publish).toHaveBeenCalledWith(
             expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/status/${encodeURI(`${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}`)}`),

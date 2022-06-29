@@ -7,7 +7,7 @@ import {
     DataSetClassIds,
     EDeviceHealth,
     ESubscriptionListConfig,
-    IApplicationStatus,
+    StatusEvent,
     ESyslogEventFilter,
     IOI4ApplicationResources,
     IEvent
@@ -308,7 +308,7 @@ class OI4Application extends EventEmitter {
     }
 
 
-    async sendEventStatus(status: IApplicationStatus) {
+    async sendEventStatus(status: StatusEvent) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
             subResource: this.oi4Id,

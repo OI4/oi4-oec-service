@@ -1,8 +1,7 @@
 import {
     DataSetClassIds,
-    EContainerEventCategory,
     ESyslogEventFilter,
-    IApplicationStatus,
+    StatusEvent,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
     IOI4ApplicationResources
@@ -236,11 +235,7 @@ export class MqttMessageProcessor {
             LOGGER.log(`${filter} already exists in config group`);
         }
         OI4RegistryManager.checkForOi4Registry(config);
-        const status: IApplicationStatus = {
-            origin: OI4RegistryManager.getOi4Id(),
-            number: EOPCUAStatusCode.Good,
-            category: EContainerEventCategory.CAT_STATUS_1
-        };
+        const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
         this.emit('setConfig', {status:status});
         this.sendResource(ResourceType.CONFIG,config.MessageId, filter);
