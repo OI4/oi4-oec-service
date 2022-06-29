@@ -2,9 +2,9 @@
   [
     "Minimal DataSetMetaData",
     {
-      "MessageId": "1639693510094-provider.com/FieldDataService/FDS-001/1200-0345",
+      "MessageId": "1639693510094-ITConnector/provider.com/FieldDataService/FDS-001/1200-0345",
       "MessageType": "ua-metadata",
-      "PublisherId": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "PublisherId": "ITConnector/provider.com/FieldDataService/FDS-001/1200-0345",
       "DataSetWriterId": 753,
       "filter": "oee",
       "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
