@@ -10,6 +10,7 @@ import {
     EPublicationListConfig,
     ESubscriptionListConfig,
     StatusEvent,
+    ILicenseObject,
     IOI4ApplicationResources,
     NamurNE107Event,
 } from '@oi4/oi4-oec-service-model';
@@ -158,7 +159,11 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        on: jest.fn()
+        on: jest.fn(),
+        getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+            console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
+            return this.license;
+        }
     }
 }
 
@@ -264,7 +269,7 @@ describe('OI4MessageBus test', () => {
         const resources = getResourceInfo();
         const onResourceMock = jest.fn((_, cb) => {
             cb(ResourceType.HEALTH);
-            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', resources.oi4Id);
+            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', '', resources.oi4Id);
             mockSendResource.mockRestore();
             done();
         });
@@ -319,20 +324,20 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should send resource with valid filter', async () => {
-
         const filter = '1'
         const oi4Application = getOi4App()
-        await oi4Application.sendResource('health', '', filter);
-        expect(publish).toHaveBeenCalledWith(
-            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`),
-            expect.stringContaining(JSON.stringify(getResourceInfo().health)));
+        await oi4Application.sendResource('health', '', '', filter);
+        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`;
+        expect(publish.mock.calls[2][0]).toBe(expectedAddress);
+        expect(publish.mock.calls[2][1]).not.toBeUndefined();
+        expect(publish.mock.calls[2][1]).not.toBeNull();
     });
 
     it('should not send resource with invalid zero filter', async () => {
 
         const filter = '0'
         const oi4Application = getOi4App()
-        await oi4Application.sendResource('health', '', filter);
+        await oi4Application.sendResource('health', '', '', filter);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
@@ -340,13 +345,13 @@ describe('OI4MessageBus test', () => {
 
         const filter = '1'
         const oi4Application = getOi4App()
-        await oi4Application.sendResource('health', '', filter, 20, 20);
+        await oi4Application.sendResource('health', '', '', filter, 20, 20);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     async function getPayload(filter: string, resource: string) {
         const oi4Application = getOi4App()
-        return await oi4Application.preparePayload(resource, filter);
+        return await oi4Application.preparePayload(resource, '', filter);
     }
 
     it('should prepare mam payload', async () => {
@@ -412,7 +417,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, filter);
+        const result = await oi4Application.preparePayload(resource, '',filter);
         expect(result).toBeUndefined();
     });
 
@@ -422,7 +427,7 @@ describe('OI4MessageBus test', () => {
         const filter = '1'
         const oi4Application = getOi4App()
         jest.clearAllMocks();
-        await oi4Application.sendResource('health', '', filter, 1, 20);
+        await oi4Application.sendResource('health', '', '', filter, 1, 20);
         expect(publish).toBeCalledTimes(0);
         mockOPCUABuilder.mockRestore();
     });

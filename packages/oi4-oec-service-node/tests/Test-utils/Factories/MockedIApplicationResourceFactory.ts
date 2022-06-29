@@ -13,7 +13,7 @@ import {
     IContainerConfigConfigName,
     IContainerProfile,
     IPublicationListObject,
-    ISubscriptionListObject
+    ISubscriptionListObject, ILicenseObject
 } from '@oi4/oi4-oec-service-model';
 
 export class MockedIApplicationResourceFactory {
@@ -76,6 +76,11 @@ export class MockedIApplicationResourceFactory {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             addLicenseText(_: string, __: string): void {
                 console.log('Called mocked addLicenseText. Do nothing....');
+            },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+                console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
+                return this.license;
             },
             // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/naming-convention
             addProfile(_: string): void {
