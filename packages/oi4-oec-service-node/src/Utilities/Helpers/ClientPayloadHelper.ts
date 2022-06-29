@@ -3,13 +3,16 @@ import {
     CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
-    IContainerHealth,
+    Health,
     IEvent,
-    ILicenseObject,
+    License,
+    LicenseText,
     IOI4ApplicationResources,
     IPublicationListObject,
-    IContainerConfig,
-    ISubscriptionListObject
+    ISpecificContainerConfig,
+    ISubscriptionListObject,
+    DataSetWriterIdManager,
+    OI4Payload,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
@@ -17,86 +20,88 @@ import {ResourceType} from './Enums';
 
 export class ClientPayloadHelper {
 
-    private createPayload(payload: any, dataSetWriterId: number, subResource: string): IOPCUADataSetMessage {
+    private createPayload(payload: OI4Payload, subResource: string): IOPCUADataSetMessage {
         return {
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resource(), subResource),
             subResource: subResource,
             Payload: payload,
-            DataSetWriterId: dataSetWriterId,
         };
     };
 
     getDefaultHealthStatePayload(oi4Id: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-        const healthState: IContainerHealth = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
-        payload.push(this.createPayload(healthState, CDataSetWriterIdLookup[ResourceType.HEALTH], oi4Id));
+        const healthState: Health = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(healthState, oi4Id)];
         return {abortSending: false, payload: payload};
     }
 
-    createHealthStatePayload(health: EDeviceHealth, score: number): IContainerHealth {
-        return {health: health, healthScore: score};
+    createHealthStatePayload(deviceHealth: EDeviceHealth, score: number): Health {
+        const health = new Health(deviceHealth, score);
+        return health;
     }
 
-    createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-
-        if (filter === oi4Id) {
-            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-        } else if (Number.isNaN(dataSetWriterIdFilter)) {
-            // If the filter is not an oi4Id and not a number, we don't know how to handle it
-            return {abortSending: true, payload: undefined};
-        } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
-            payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-        }
-
+    createRTLicenseResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: string): ValidatedPayload {
+        const payload = [this.createPayload(applicationResources.rtLicense, oi4Id)];
         return {abortSending: false, payload: payload};
     }
 
-    private getProfileResourcePayload(): any {
-        const resources: Array<string> = Object.keys(CDataSetWriterIdLookup);
-        //Removing unwanted entries
-        resources.splice(resources.indexOf('event', 0), 1);
-        resources.splice(resources.indexOf('config', 0), 1);
+    // TODO Check if relevant
+    // createDefaultSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+    //     const payload: IOPCUADataSetMessage[] = [];
+    //
+    //     if (filter === oi4Id) {
+    //         payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
+    //     } else if (Number.isNaN(dataSetWriterIdFilter)) {
+    //         // If the filter is not an oi4Id and not a number, we don't know how to handle it
+    //         return {abortSending: true, payload: undefined};
+    //     } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
+    //         payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
+    //         // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
+    //         //return;
+    //     }
+    //
+    //     return {abortSending: false, payload: payload};
+    // }
 
-        return {resource: resources};
-    }
-
-    createProfileSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-
-        if (filter === oi4Id) {
-            payload.push(this.createPayload(this.getProfileResourcePayload(), CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-        } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
-            payload.push(this.createPayload(this.getProfileResourcePayload(), CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-        }
-
-        payload[0].filter = '';
-        payload[0].Timestamp = new Date().toISOString();
-
-        return {abortSending: false, payload: payload};
-    }
-
-    createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, resource: string): ValidatedPayload {
+    createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
         // FIXME: Hotfix
         if (typeof applicationResources.licenseText[filter] === 'undefined') {
             return {abortSending: true, payload: undefined};
         }
         // licenseText is special...
-        payload.push(this.createPayload({licenseText: applicationResources.licenseText[filter]}, CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
+        const licenseText = new LicenseText(applicationResources.licenseText[filter]);
+        payload.push(this.createPayload(licenseText, applicationResources.oi4Id));
         return {abortSending: false, payload: payload};
     }
 
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
-        const licenses: ILicenseObject[] = applicationResources.getLicense(subResource, licenseId);
 
-        for (const license of licenses) {
+        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with licenseId
+            if (applicationResources.license.some((elem: License) => elem.licenseId === filter)) { // Does it even make sense to filter?
+                const filteredLicenseArr = applicationResources.license.filter((elem: License) => {
+                    if (elem.licenseId === filter) return elem;
+                });
+
+                for (const filteredLicense of filteredLicenseArr) {
+                    payload.push({
+                        subResource: filteredLicense.licenseId,
+                        Payload: {components: filteredLicense.components},
+                        DataSetWriterId: CDataSetWriterIdLookup['license'],
+                    });
+                }
+
+                return {abortSending: false, payload: payload};
+            }
+        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
+            return this.manageInvaliddataSetWriterIdFilter(resource);
+        }
+
+        for (const license of applicationResources.license) {
             payload.push({
-                DataSetWriterId: CDataSetWriterIdLookup['license'],
-                filter: licenseId,
                 subResource: license.licenseId,
-                Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
+                DataSetWriterId: CDataSetWriterIdLookup[resource],
             })
         }
 
@@ -180,7 +185,7 @@ export class ClientPayloadHelper {
     }
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: IContainerConfig = (applicationResources as any)[resource];
+        const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
         const payload: IOPCUADataSetMessage[] = [];
 
         // Send all configs out
@@ -213,7 +218,7 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: IContainerConfig = (applicationResources as any)[resource];
+            const actualPayload: ISpecificContainerConfig = (applicationResources as any)[resource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,
