@@ -211,9 +211,12 @@ class OI4Application extends EventEmitter {
 
         switch (resource) {
             case ResourceType.MAM:
-            case ResourceType.PROFILE:
             case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createDefaultSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
+                break;
+            }
+            case ResourceType.PROFILE: {
+                payloadResult = this.clientPayloadHelper.createProfileSendResourcePayload(this.oi4Id, this.applicationResources, resource, filter, dswidFilter);
                 break;
             }
             case ResourceType.HEALTH: {

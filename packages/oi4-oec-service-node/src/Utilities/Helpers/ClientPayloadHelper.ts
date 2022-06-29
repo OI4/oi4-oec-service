@@ -46,9 +46,31 @@ export class ClientPayloadHelper {
             return {abortSending: true, payload: undefined};
         } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
             payload.push(this.createPayload((applicationResources as any)[resource], CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
-            // FIXME I guess that this return is wrong ain't it? Because it makes no sense at all, since the Payload won't be used
-            //return;
         }
+
+        return {abortSending: false, payload: payload};
+    }
+
+    private getProfileResourcePayload(): any {
+        const resources: Array<string> = Object.keys(CDataSetWriterIdLookup);
+        //Removing unwanted entries
+        resources.splice(resources.indexOf('event', 0), 1);
+        resources.splice(resources.indexOf('config', 0), 1);
+
+        return {resource: resources};
+    }
+
+    createProfileSendResourcePayload(oi4Id: string, applicationResources: IOI4ApplicationResources, resource: string, filter: string, dataSetWriterIdFilter: number): ValidatedPayload {
+        const payload: IOPCUADataSetMessage[] = [];
+
+        if (filter === oi4Id) {
+            payload.push(this.createPayload(this.getProfileResourcePayload(), CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
+        } else if (resource === Object.keys(CDataSetWriterIdLookup)[dataSetWriterIdFilter - 1]) { // Fallback to DataSetWriterId based resource
+            payload.push(this.createPayload(this.getProfileResourcePayload(), CDataSetWriterIdLookup[resource], applicationResources.oi4Id));
+        }
+
+        payload[0].filter = '';
+        payload[0].Timestamp = new Date().toISOString();
 
         return {abortSending: false, payload: payload};
     }
