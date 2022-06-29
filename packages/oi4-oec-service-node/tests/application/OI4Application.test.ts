@@ -246,7 +246,6 @@ describe('OI4MessageBus test', () => {
 
     });
 
-
     it('should trigger resourceChanged', (done) => {
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -359,9 +358,21 @@ describe('OI4MessageBus test', () => {
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
-    it('should prepare profile payload', async () => {
+    function checkProfilePayload(payload: any) {
+        expect(payload.Payload.resource.length).toBeGreaterThan(0);
+        expect(payload.filter).toBe('');
+        expect(payload.Timestamp).not.toBeNull();
+        expect(payload.Timestamp).not.toBeUndefined();
+    }
+
+    it('should prepare profile payload when filter !== oi4Id', async () => {
         const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), 'profile');
-        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().profile));
+        checkProfilePayload(result.payload[0]);
+    });
+
+    it('should prepare profile payload when filter === oi4Id', async () => {
+        const result = await getPayload('1', 'profile');
+        checkProfilePayload(result.payload[0]);
     });
 
     it('should prepare rt license payload', async () => {
