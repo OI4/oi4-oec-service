@@ -2,20 +2,20 @@ import {IMasterAssetModel, IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-
 import {EDeviceHealth} from './EContainer';
 import {
     IContainerConfig,
-    IContainerProfile,
     IPublicationListObject,
     ISubscriptionListObject
 } from './IContainer';
 import {
     License,
     Health,
-    RTLicense
+    RTLicense,
+    Profile
 } from "./Resource";
 
 export interface IOI4ApplicationResources {
     oi4Id: string;
     health: Health;
-    profile: IContainerProfile;
+    profile: Profile;
     mam: IMasterAssetModel;
     license: License[];
     licenseText: Record<string, string>;
@@ -33,7 +33,6 @@ export interface IOI4ApplicationResources {
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
-    addProfile(entry: string): void;
     addLicenseText(licenseName: string, licenseText: string): void;
     addPublication(publicationObj: IPublicationListObject): void;
     addSubscription(subscriptionObj: ISubscriptionListObject): void;

@@ -6,10 +6,9 @@ import {
     ISubscriptionListObject,
     IPublicationListObject,
     Application,
-    getResource,
     IOI4ApplicationResources,
-    IContainerProfile,
     License,
+    Profile,
 } from '@oi4/oi4-oec-service-model';
 
 import {
@@ -30,7 +29,7 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
  * */
 class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationResources {
     public oi4Id: string; // TODO: doubling? Not needed here
-    private readonly _profile: IContainerProfile;
+    private readonly _profile: Profile;
     private readonly _mam: IMasterAssetModel;
     private _health: Health;
     private _brokerState: boolean;
@@ -60,20 +59,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
         this.brokerState = false;
 
-        this._profile = {
-            resource: [
-                'health',
-                'license',
-                'rtLicense',
-                'config',
-                'mam',
-                'profile',
-                'licenseText',
-                'publicationList',
-                'subscriptionList',
-                'event',
-            ],
-        };
+        this._profile = new Profile(Application.mandatory);
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
 
@@ -162,14 +148,8 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     }
 
     // --- Profile ---
-    get profile(): IContainerProfile {
+    get profile(): Profile {
         return this._profile;
-    }
-
-    addProfile(entry: string): void {
-        if (!(Application.full.includes(getResource(entry)))) console.log('Attention! Adding non-conform profile entry, proceed at own risk');
-        this.profile.resource.push(entry);
-        this.emit('resourceChanged', 'profile');
     }
 
     // --- License ---

@@ -1,6 +1,5 @@
 import {ValidatedPayload} from './Types';
 import {
-    CDataSetWriterIdLookup,
     EDeviceHealth,
     ESyslogEventFilter,
     Health,
@@ -13,6 +12,7 @@ import {
     ISubscriptionListObject,
     DataSetWriterIdManager,
     OI4Payload,
+    CDataSetWriterIdLookup,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
@@ -22,7 +22,7 @@ export class ClientPayloadHelper {
 
     private createPayload(payload: OI4Payload, subResource: string): IOPCUADataSetMessage {
         return {
-            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resource(), subResource),
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), subResource),
             subResource: subResource,
             Payload: payload,
         };
@@ -43,25 +43,8 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    // TODO Check
-    private getProfileResourcePayload(): any {
-        const resources: Array<string> = Object.keys(CDataSetWriterIdLookup);
-        //Removing unwanted entries
-        resources.splice(resources.indexOf('event', 0), 1);
-        resources.splice(resources.indexOf('config', 0), 1);
-
-        return {resource: resources};
-    }
-
-    // TODO Check
     createProfileSendResourcePayload(applicationResources: IOI4ApplicationResources): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-
-        payload.push(this.createPayload(this.getProfileResourcePayload(), applicationResources.oi4Id));
-
-        payload[0].filter = '';
-        payload[0].Timestamp = new Date().toISOString();
-
+        const payload = [this.createPayload(applicationResources.profile, applicationResources.oi4Id)];
         return {abortSending: false, payload: payload};
     }
 
@@ -84,7 +67,7 @@ export class ClientPayloadHelper {
 
         for (const license of licenses) {
             payload.push({
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resource(), subResource),
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), subResource),
                 filter: licenseId,
                 subResource: license.licenseId,
                 Timestamp: new Date().toISOString(),

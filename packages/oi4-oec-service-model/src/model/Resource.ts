@@ -73,13 +73,13 @@ export class Health implements OI4Payload {
         this.healthScore = healthScore;
     }
 
-    resource(): Resource {
+    resourceType(): Resource {
         return Resource.HEALTH;
     }
 }
 
 export class RTLicense implements OI4Payload {
-    resource(): Resource {
+    resourceType(): Resource {
         return Resource.RT_LICENSE;
     }
 }
@@ -91,7 +91,7 @@ export class LicenseText implements OI4Payload {
         this.licenseText = licenseText;
     }
 
-    resource(): Resource {
+    resourceType(): Resource {
         return Resource.LICENSE_TEXT;
     }
 }
@@ -105,10 +105,22 @@ export class License implements OI4Payload {
         this.components = components;
     }
 
-    resource(): Resource {
+    resourceType(): Resource {
         return Resource.LICENSE;
     }
 
+}
+
+export class Profile implements OI4Payload {
+    readonly resource: Resource[];
+
+    constructor(resource: Resource[]) {
+        this.resource = resource;
+    }
+
+    resourceType(): Resource {
+        return Resource.PROFILE;
+    }
 }
 
 export interface IComponentObject {
