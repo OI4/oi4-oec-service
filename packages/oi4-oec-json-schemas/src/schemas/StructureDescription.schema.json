@@ -7,7 +7,7 @@
   "required": [
     "structureDefinition"
   ],
-  "definitions": {
+  "properties": {
     "structureDefinition": {
       "description": "StructureDefinition object (see 9.2.10)",
       "type": "object",

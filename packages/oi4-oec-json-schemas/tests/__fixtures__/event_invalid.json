@@ -1,0 +1,193 @@
+[
+  ["empty", {}],
+  [
+    "Status event with unsupported property",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 0,
+      "description": "The operation succeeded.",
+      "category": "CAT_STATUS_1",
+      "unsupported": true,
+      "details": {
+        "symbolicId": "Good"
+      }
+    }
+  ],
+  [
+    "Status event with missing origin",
+    {
+      "number": 0,
+      "description": "The operation succeeded.",
+      "category": "CAT_STATUS_1",
+      "details": {
+        "symbolicId": "Good"
+      }
+    }
+  ],
+  [
+    "Status event with missing number",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "description": "The operation succeeded.",
+      "category": "CAT_STATUS_1",
+      "details": {
+        "symbolicId": "Good"
+      }
+    }
+  ],
+  [
+    "Status event with wrong symbolicId",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 0,
+      "description": "The operation succeeded.",
+      "category": "CAT_STATUS_1",
+      "details": {
+        "symbolicId": 11
+      }
+    }
+  ],
+  [
+    "Syslog event with unsupported property",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 1,
+      "category": "CAT_SYSLOG_0",
+      "unsupported": 42,
+      "details": {
+        "MSG": "<MSG>",
+        "HEADER": "<HEADER>"
+      }
+    }
+  ],
+  [
+    "Syslog event with missing origin",
+    {
+      "number": 1,
+      "category": "CAT_SYSLOG_0",
+      "details": {
+        "MSG": "<MSG>",
+        "HEADER": "<HEADER>"
+      }
+    }
+  ],
+  [
+    "Syslog event with missing number",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "category": "CAT_SYSLOG_0",
+      "details": {
+        "MSG": "<MSG>",
+        "HEADER": "<HEADER>"
+      }
+    }
+  ],
+  [
+    "Syslog event with wrong details",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 1,
+      "category": "CAT_SYSLOG_0",
+      "details": {
+       "symbolicId": "Good"
+      }
+    }
+  ],
+  [
+    "NE107 event with unsupported property",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 4,
+      "description": "Maintenance Required",
+      "category": "CAT_NE107_2",
+      "unsupported": true,
+      "details": {
+        "diagnosticCode": "F-238",
+        "location": "Floor 1"
+      }
+    }
+  ],
+  [
+    "NE107 event with missing origin",
+    {
+      "number": 4,
+      "description": "Maintenance Required",
+      "category": "CAT_NE107_2",
+      "details": {
+        "diagnosticCode": "F-238",
+        "location": "Floor 1"
+      }
+    }
+  ],
+  [
+    "NE107 event with missing number",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "description": "Maintenance Required",
+      "category": "CAT_NE107_2",
+      "details": {
+        "diagnosticCode": "F-238",
+        "location": "Floor 1"
+      }
+    }
+  ],
+  [
+    "NE107 event with wrong details",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 4,
+      "description": "Maintenance Required",
+      "category": "CAT_NE107_2",
+      "details": {
+        "symbolicId": "Good"
+      }
+    }
+  ],
+  [
+    "Generic event with unsupported property",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 100,
+      "description": "<application defined description>",
+      "category": "CAT_GENERIC_99",
+      "unsupported": true,
+      "details": {
+        "foo": "bar" 
+      }
+    }
+  ],
+  [
+    "Generic event with missing origin",
+    {
+      "number": 100,
+      "description": "<application defined description>",
+      "category": "CAT_GENERIC_99",
+      "details": {
+        "foo": "bar" 
+      }
+    }
+  ],
+  [
+    "Generic event with missing number",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "description": "<application defined description>",
+      "category": "CAT_GENERIC_99",
+      "details": {
+        "foo": "bar" 
+      }
+    }
+  ],
+  [
+    "Event with unknown category",
+    {
+      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "number": 100,
+      "description": "<application defined description>",
+      "category": "CAT_GENERIC_0",
+      "details": {
+        "foo": "bar" 
+      }
+    }
+  ]
+]

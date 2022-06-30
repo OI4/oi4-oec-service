@@ -3,7 +3,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a Message",
   "type": "object",
-  "additionalProperties": false,
   "oneOf": [
     {
       "$ref": "#/definitions/statusEvent"
@@ -19,12 +18,13 @@
     }
   ],
   "definitions": {
-    "baseEvent": {
+    "statusEvent": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "origin",
-        "number"
+        "number",
+        "category"
       ],
       "properties": {
         "origin": {
@@ -38,23 +38,7 @@
         "description": {
           "description": "Human readable description for the event number",
           "type": "string"
-        }
-      }
-    },
-    "statusEvent": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "origin",
-        "number",
-        "category"
-      ],
-      "allOf": [
-        {
-          "$ref": "#/definitions/baseEvent"
-        }
-      ],
-      "properties": {
+        },
         "category": {
           "const": "CAT_STATUS_1"
         },
@@ -79,16 +63,25 @@
         "number",
         "category"
       ],
-      "allOf": [
-        {
-          "$ref": "#/definitions/baseEvent"
-        }
-      ],
       "properties": {
+        "origin": {
+          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
+          "$ref": "oi4Identifier.schema.json"
+        },
+        "number": {
+          "description": "An number to hint to the reason of the event",
+          "$ref": "dataTypes/uint32.schema.json"
+        },
+        "description": {
+          "description": "Human readable description for the event number",
+          "type": "string"
+        },
         "category": {
           "const": "CAT_SYSLOG_0"
         },
         "details": {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "MSG": {
               "description": "The MSG contains the MSG part of a syslog message",
@@ -111,16 +104,25 @@
         "number",
         "category"
       ],
-      "allOf": [
-        {
-          "$ref": "#/definitions/baseEvent"
-        }
-      ],
       "properties": {
+        "origin": {
+          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
+          "$ref": "oi4Identifier.schema.json"
+        },
+        "number": {
+          "description": "An number to hint to the reason of the event",
+          "$ref": "dataTypes/uint32.schema.json"
+        },
+        "description": {
+          "description": "Human readable description for the event number",
+          "type": "string"
+        },
         "category": {
           "const": "CAT_NE107_2"
         },
         "details": {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "diagnosticCode": {
               "description": "Manufacturer specific detail information about the the event. E.g. F-238",
@@ -143,12 +145,19 @@
         "number",
         "category"
       ],
-      "allOf": [
-        {
-          "$ref": "#/definitions/baseEvent"
-        }
-      ],
       "properties": {
+        "origin": {
+          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
+          "$ref": "oi4Identifier.schema.json"
+        },
+        "number": {
+          "description": "An number to hint to the reason of the event",
+          "$ref": "dataTypes/uint32.schema.json"
+        },
+        "description": {
+          "description": "Human readable description for the event number",
+          "type": "string"
+        },
         "category": {
           "const": "CAT_GENERIC_99"
         },

@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ServiceNetworkMessage schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'MessageId'
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must have required property 'MessageType'
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must have required property 'PublisherId'
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must have required property 'Message'
+    Path:     ServiceNetworkMessage.schema.json#/required
+"
+`;
+
+exports[`ServiceNetworkMessage schema (1) match fails for invalid config -> Missing methodId in Request: Missing methodId in Request 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Message/methodsToCall/0 must have required property 'methodId'
+    Received: <object> {\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  /Message must have required property 'results'
+    Received: <object> {\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must NOT have additional properties, but found 'methodsToCall'
+    Expected: <boolean> false
+    Received: <object> {\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/additionalProperties
+  /Message must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}]
+    Received: <object> {\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf
+"
+`;
+
+exports[`ServiceNetworkMessage schema (2) match fails for invalid config -> Missing inputArguments in Request: Missing inputArguments in Request 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Message/methodsToCall/0 must have required property 'inputArguments'
+    Received: <object> {\\"methodId\\":\\"newDataSetWriterId\\"}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  /Message must have required property 'results'
+    Received: <object> {\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must NOT have additional properties, but found 'methodsToCall'
+    Expected: <boolean> false
+    Received: <object> {\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/additionalProperties
+  /Message must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}]
+    Received: <object> {\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf
+"
+`;
+
+exports[`ServiceNetworkMessage schema (3) match fails for invalid config -> Missing statusCode in response : Missing statusCode in response  1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Message must have required property 'methodsToCall'
+    Received: <object> {\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must NOT have additional properties, but found 'results'
+    Expected: <boolean> false
+    Received: <object> {\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/additionalProperties
+  /Message/results/0 must have required property 'statusCode'
+    Received: <object> {\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  /Message must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}]
+    Received: <object> {\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf
+"
+`;
+
+exports[`ServiceNetworkMessage schema (4) match fails for invalid config -> Missing inputArgumentResults in response: Missing inputArgumentResults in response 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Message must have required property 'methodsToCall'
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must NOT have additional properties, but found 'results'
+    Expected: <boolean> false
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/additionalProperties
+  /Message/results/0 must have required property 'inputArgumentResults'
+    Received: <object> {\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  /Message must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}]
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}
+    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf
+"
+`;
+
+exports[`ServiceNetworkMessage schema (5) match fails for invalid config -> Missing outputArguments in response: Missing outputArguments in response 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Message must have required property 'methodsToCall'
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  must NOT have additional properties, but found 'results'
+    Expected: <boolean> false
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}
+    Path:     ServiceNetworkMessage.schema.json#/additionalProperties
+  /Message/results/0 must have required property 'outputArguments'
+    Received: <object> {\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}
+    Path:     ServiceNetworkMessage.schema.json#/required
+  /Message must match exactly one schema in oneOf
+    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}]
+    Received: <object> {\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}
+    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf
+"
+`;

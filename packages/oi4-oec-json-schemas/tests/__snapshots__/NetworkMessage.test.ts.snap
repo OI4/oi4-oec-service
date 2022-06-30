@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NetworkMessage schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'MessageId'
+    Path:     NetworkMessage.schema.json#/required
+  must have required property 'MessageType'
+    Path:     NetworkMessage.schema.json#/required
+  must have required property 'PublisherId'
+    Path:     NetworkMessage.schema.json#/required
+  must have required property 'Messages'
+    Path:     NetworkMessage.schema.json#/required
+"
+`;
+
+exports[`NetworkMessage schema (1) match fails for invalid config -> Network message with unsupported property: Network message with unsupported property 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must NOT have additional properties, but found 'unsupported'
+    Expected: <boolean> false
+    Path:     NetworkMessage.schema.json#/additionalProperties
+"
+`;
+
+exports[`NetworkMessage schema (2) match fails for invalid config -> Network message without MessageId: Network message without MessageId 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'MessageId'
+    Path:     NetworkMessage.schema.json#/required
+"
+`;
+
+exports[`NetworkMessage schema (3) match fails for invalid config -> Network message without MessageType: Network message without MessageType 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'MessageType'
+    Path:     NetworkMessage.schema.json#/required
+"
+`;
+
+exports[`NetworkMessage schema (4) match fails for invalid config -> Network message without PublisherId: Network message without PublisherId 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'PublisherId'
+    Path:     NetworkMessage.schema.json#/required
+"
+`;

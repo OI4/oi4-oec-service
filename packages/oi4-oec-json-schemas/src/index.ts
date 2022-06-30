@@ -22,7 +22,6 @@ import referenceDesignationSchemaJson from './schemas/referenceDesignation.schem
 import localeSchemaJson from './schemas/locale.schema.json';
 import paginationSchemaJson from './schemas/pagination.schema.json';
 
-import NetworkMessageBaseSchemaJson from './schemas/NetworkMessageBase.schema.json';
 import NetworkMessageSchemaJson from './schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from './schemas/ConfigurationVersionDataType.schema.json';
 import DataSetMessageSchemaJson from './schemas/DataSetMessage.schema.json';

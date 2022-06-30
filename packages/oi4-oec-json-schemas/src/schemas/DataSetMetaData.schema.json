@@ -4,7 +4,6 @@
   "description": "A representation of a metadata message",
   "type": "object",
   "additionalProperties": false,
-  "$comment": "TODO: oi4identifier needs to be updated and implemented here",
   "required": [
     "DataSetWriterId",
     "filter",
@@ -29,20 +28,20 @@
     "MessageId": {
       "type": "string",
       "description": "Message ID",
-      "pattern": "^.{1,}-{oi4Identifier}"
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
     "MetaData": {
       "$ref": "DataSetMetaDataType.schema.json"
     },
     "MessageType": {
-      "type": "string",
-      "enum": ["ua-metadata"],
+      "const": "ua-metadata",
       "description": "Message Type"
     },
     "PublisherId": {
       "type": "string",
       "description": "Publisher ID",
-      "pattern": "{oi4Identifier}"
+      "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
+      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
     "subResource": {
       "type": "string",
