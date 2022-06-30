@@ -10,7 +10,6 @@ import {
     IPublicationListObject,
     ISubscriptionListObject,
     License,
-    LicenseText,
     OI4Payload,
     Resource,
 } from '@oi4/oi4-oec-service-model';
@@ -54,14 +53,11 @@ export class ClientPayloadHelper {
     }
 
     createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-        // FIXME: Hotfix
-        if (typeof applicationResources.licenseText[filter] === 'undefined') {
+        const payload: IOPCUADataSetMessage[] = [];;
+        if (!applicationResources.licenseText.has(filter)) {
             return {abortSending: true, payload: undefined};
         }
-        // licenseText is special...
-        const licenseText = new LicenseText(applicationResources.licenseText[filter]);
-        payload.push(this.createPayload(licenseText, applicationResources.oi4Id));
+        payload.push(this.createPayload(applicationResources.licenseText.get(filter), applicationResources.oi4Id));
         return {abortSending: false, payload: payload};
     }
 

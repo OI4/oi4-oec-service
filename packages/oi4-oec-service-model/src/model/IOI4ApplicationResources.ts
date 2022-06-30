@@ -10,7 +10,7 @@ import {
     Health,
     RTLicense,
     Profile,
-    MasterAssetModel
+    MasterAssetModel, LicenseText
 } from "./Resource";
 
 export interface IOI4ApplicationResources {
@@ -19,7 +19,7 @@ export interface IOI4ApplicationResources {
     profile: Profile;
     mam: MasterAssetModel;
     license: License[];
-    licenseText: Record<string, string>;
+    licenseText: Map<string, LicenseText>;
     rtLicense: RTLicense;
     config: IContainerConfig;
     publicationList: IPublicationListObject[];
@@ -34,7 +34,6 @@ export interface IOI4ApplicationResources {
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
-    addLicenseText(licenseName: string, licenseText: string): void;
     addPublication(publicationObj: IPublicationListObject): void;
     addSubscription(subscriptionObj: ISubscriptionListObject): void;
 

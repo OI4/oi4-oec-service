@@ -2,10 +2,10 @@ import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadH
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
-    CDataSetWriterIdLookup,
+    CDataSetWriterIdLookup, DataSetWriterIdManager,
     EDeviceHealth,
     Health,
-    IOI4ApplicationResources,
+    IOI4ApplicationResources, LicenseText,
     SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
@@ -20,8 +20,8 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     const default_payload = [{
         subResource: SUB_RESOURCE,
-        DataSetWriterId: 2,
-        Payload: {health: EDeviceHealth.NORMAL_0, healthScore: 100}
+        DataSetWriterId: 0,
+        Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
@@ -31,11 +31,16 @@ describe('Unit test for ClientPayloadHelper', () => {
     let mockedIContainerState: IOI4ApplicationResources;
 
     beforeEach(() => {
+        DataSetWriterIdManager.resetDataSetWriterIdManager();
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
         clientPayloadHelper = new ClientPayloadHelper();
         mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         setLogger(loggerItems.fakeLogger);
+    });
+
+    afterEach(() => {
+        DataSetWriterIdManager.resetDataSetWriterIdManager();
     });
 
     function checkAgainstDefaultPayload(payload: ValidatedPayload) {
@@ -88,9 +93,9 @@ describe('Unit test for ClientPayloadHelper', () => {
     };
 
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedIContainerState, 'health');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedIContainerState, 'fakeKey');
         expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(2, {licenseText: 'fakeKey'}));
+        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText')));
     });
 
     it('createLicenseSendResourcePayload works', async () => {

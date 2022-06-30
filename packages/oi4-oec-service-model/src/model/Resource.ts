@@ -105,18 +105,6 @@ export class RTLicense implements OI4Payload {
     }
 }
 
-export class LicenseText implements OI4Payload {
-    readonly licenseText: string;
-
-    constructor(licenseText: string) {
-        this.licenseText = licenseText;
-    }
-
-    resourceType(): Resource {
-        return Resource.LICENSE_TEXT;
-    }
-}
-
 export class License implements OI4Payload {
     readonly licenseId: string;
     readonly components: IComponentObject[];
@@ -130,6 +118,18 @@ export class License implements OI4Payload {
         return Resource.LICENSE;
     }
 
+}
+
+export class LicenseText implements OI4Payload {
+    readonly licenseText: string;
+
+    constructor(licenseText: string) {
+        this.licenseText = licenseText;
+    }
+
+    resourceType(): Resource {
+        return Resource.LICENSE_TEXT;
+    }
 }
 
 export class Profile implements OI4Payload {

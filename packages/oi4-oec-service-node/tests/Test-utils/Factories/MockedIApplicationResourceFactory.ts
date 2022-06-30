@@ -14,7 +14,7 @@ import {
     IOI4ApplicationResources,
     IPublicationListObject,
     ISubscriptionListObject,
-    License,
+    License, LicenseText,
     MasterAssetModel,
     Profile,
     RTLicense
@@ -77,10 +77,6 @@ export class MockedIApplicationResourceFactory {
                 console.log('Called mocked addDataSet. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            addLicenseText(_: string, __: string): void {
-                console.log('Called mocked addLicenseText. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             getLicense(oi4Id: string, licenseId?: string): License[] {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
@@ -134,7 +130,9 @@ export class MockedIApplicationResourceFactory {
     }
 
     private static getDefaultKeyValueItem() {
-        return {key: 'fakeKey', text: 'fakeText'};
+        const licenseText = new Map<string, LicenseText>();
+        licenseText.set('fakeKey', new LicenseText('fakeText'));
+        return licenseText;
     }
 
     private static getMockedDefaultMasterAssetModel(): MasterAssetModel {

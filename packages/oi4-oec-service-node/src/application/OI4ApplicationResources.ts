@@ -1,25 +1,28 @@
 import {ConfigParser} from '../Utilities/ConfigParser/ConfigParser';
 import {
-    IContainerConfig,
-    Health,
-    RTLicense,
-    ISubscriptionListObject,
-    IPublicationListObject,
     Application,
+    EDeviceHealth,
+    EPublicationListConfig,
+    ESubscriptionListConfig,
+    Health,
+    IContainerConfig,
     IOI4ApplicationResources,
+    IPublicationListObject,
+    ISubscriptionListObject,
     License,
+    LicenseText,
+    MasterAssetModel,
     Profile,
-    MasterAssetModel
+    RTLicense
 } from '@oi4/oi4-oec-service-model';
 
 import {
-    IOPCUANetworkMessage,
+    EOPCUALocale,
+    IOPCUADataSetMetaData,
     IOPCUAMetaData,
-    IOPCUADataSetMetaData
+    IOPCUANetworkMessage
 } from '@oi4/oi4-oec-service-opcua-model';
 import os from 'os';
-import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
 
@@ -34,7 +37,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _health: Health;
     private _brokerState: boolean;
     private _license: License[];
-    private _licenseText: Record<string, string>;
+    private _licenseText: Map<string, LicenseText>;
     private _rtLicense: RTLicense;
     private _publicationList: IPublicationListObject[];
     private _subscriptionList: ISubscriptionListObject[];
@@ -63,6 +66,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
 
+        this._licenseText = new Map<string, LicenseText>();
         this.rtLicense = new RTLicense();
 
         this.dataLookup = {};
@@ -177,18 +181,12 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     }
 
     // --- LicenseText ---
-    get licenseText(): Record<string, string> {
+    get licenseText(): Map<string, LicenseText> {
         return this._licenseText;
     }
 
     private set licenseText(licenseText) {
         this._licenseText = licenseText;
-    }
-
-    // TODO: Add dynamic ENUM containing all spdx licenseIds
-    addLicenseText(licenseName: string, licenseText: string) {
-        this.licenseText[licenseName] = licenseText;
-        this.emit('resourceChanged', 'licenseText');
     }
 
     // --- rtLicense ---
