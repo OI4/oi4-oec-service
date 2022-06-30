@@ -1,18 +1,21 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttSettings} from '../../src';
-import {OI4Application} from '../../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../../src';
 import {
+    Application,
     CDataSetWriterIdLookup,
     DataSetClassIds,
-    EventCategory,
     EDeviceHealth,
     EPublicationListConfig,
     ESubscriptionListConfig,
-    StatusEvent,
-    ILicenseObject,
+    EventCategory,
+    Health,
     IOI4ApplicationResources,
+    License,
+    MasterAssetModel,
     NamurNE107Event,
+    Profile,
+    StatusEvent,
 } from '@oi4/oi4-oec-service-model';
 import {
     EOPCUABaseDataType,
@@ -22,7 +25,6 @@ import {
     OPCUABuilder
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../../src';
 import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
 import EventEmitter from 'events';
 
@@ -111,25 +113,23 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 oi4Identifier: '3'
             }
         ],
-        profile: {resource: ['profile', 'b']},
+        profile: new Profile(Application.mandatory),
         licenseText: {'a': '1', 'b': '2'},
         license: [
-            {
-                licenseId: '1', components: [
+            new License('1', [
                     {licAuthors: ['a-01', 'a-02'], component: 'comp-01', licAddText: 'text-a'},
                     {licAuthors: ['b-01', 'b-01'], component: 'comp-02', licAddText: 'text-b'},
                     {licAuthors: ['c-01', 'c-01'], component: 'comp-03', licAddText: 'text-c'},
-                ],
-            },
-            {
-                licenseId: '2', components: [
+                ]
+            ),
+            new License('2', [
                     {licAuthors: ['aa-01', 'aa-02'], component: 'comp-001', licAddText: 'text-aa'},
                     {licAuthors: ['bb-01', 'bb-01'], component: 'comp-002', licAddText: 'text-bb'},
                     {licAuthors: ['cc-01', 'cc-01'], component: 'comp-003', licAddText: 'text-cc'},
                 ],
-            }
+            )
         ],
-        health: {health: EDeviceHealth.NORMAL_0, healthScore: 100},
+        health: new Health(EDeviceHealth.NORMAL_0, 100),
         mam: {
             DeviceClass: 'oi4',
             ManufacturerUri: 'test',
@@ -144,7 +144,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
-        },
+        } as MasterAssetModel,
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         dataLookup: {'tag-01': {MessageId: '1'}, 'tag-02': {MessageId: '2'}},
@@ -160,7 +160,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         on: jest.fn(),
-        getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+        getLicense(oi4Id: string, licenseId?: string): License[] {
             console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
             return this.license;
         }
@@ -354,7 +354,7 @@ describe('OI4MessageBus test', () => {
     }
 
     it('should prepare mam payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.mam.toString(), 'mam');
+        const result = await getPayload('mam', '');
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
@@ -428,7 +428,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const oi4Application = new OI4Application(resources, mqttOpts);
-        const result = await oi4Application.preparePayload(resource, '',filter);
+        const result = await oi4Application.preparePayload(resource, '', filter);
         expect(result).toBeUndefined();
     });
 
@@ -487,13 +487,14 @@ describe('OI4MessageBus test', () => {
             Messages: [
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
-                {Payload:
-                    {
-                    category: EventCategory.CAT_STATUS_1,
-                    number: 1,
-                    description: 'fake',
-                    origin: resources.oi4Id
-                },
+                {
+                    Payload:
+                        {
+                            category: EventCategory.CAT_STATUS_1,
+                            number: 1,
+                            description: 'fake',
+                            origin: resources.oi4Id
+                        },
                     DataSetWriterId: CDataSetWriterIdLookup['event']
                 }],
         };
@@ -531,7 +532,8 @@ describe('OI4MessageBus test', () => {
             Messages: [
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
-                {Payload:
+                {
+                    Payload:
                         {
                             category: EventCategory.CAT_STATUS_1,
                             number: 1,
@@ -541,16 +543,16 @@ describe('OI4MessageBus test', () => {
                     DataSetWriterId: CDataSetWriterIdLookup['event']
                 }],
         };
-        resources.config['group-a'] =  {
+        resources.config['group-a'] = {
             name: {locale: EOPCUALocale.enUS, text: 'text'},
-            'config_a':{
-            category: EventCategory.CAT_STATUS_1,
-            number: 1,
+            'config_a': {
+                category: EventCategory.CAT_STATUS_1,
+                number: 1,
                 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
-            description: 'fake',
-            origin: resources.oi4Id
-        }
+                description: 'fake',
+                origin: resources.oi4Id
+            }
         };
         jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
