@@ -1,10 +1,10 @@
 import {
     DataSetClassIds,
     ESyslogEventFilter,
-    StatusEvent,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
-    IOI4ApplicationResources
+    IOI4ApplicationResources,
+    StatusEvent
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
@@ -45,11 +45,17 @@ export class MqttMessageProcessor {
     }
 
     private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
+
         const validateMessage: ValidatedMessage = this.validateIncomingMessage(message);
         if(!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         } else if (validateMessage.parsedMessage.Messages.length === 0) {
             LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
+        }
+
+        if(topic.indexOf(`/${TopicMethods.PUB}/`) != -1) {
+            LOGGER.log(`No reaction needed to our own publication messages${topic.substring(topic.indexOf(`/${TopicMethods.PUB}/`), topic.length)}`);
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
         const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
@@ -79,8 +85,7 @@ export class MqttMessageProcessor {
         return {isValid: false, parsedMessage: undefined};
     }
 
-    //FIXME add a return type
-    private async getSchemaResult(builder: OPCUABuilder, parsedMessage: IOPCUANetworkMessage) {
+    private async getSchemaResult(builder: OPCUABuilder, parsedMessage: IOPCUANetworkMessage): Promise<boolean> {
         try {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
@@ -89,8 +94,7 @@ export class MqttMessageProcessor {
         }
     }
 
-    //FIXME add the type of schema result
-    private areSchemaResultAndBuildValid(schemaResult: any, builder: OPCUABuilder, topic: string): boolean {
+    private areSchemaResultAndBuildValid(schemaResult: Promise<boolean>, builder: OPCUABuilder, topic: string): boolean {
         if (!schemaResult) {
             LOGGER.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
             return false;
@@ -105,16 +109,65 @@ export class MqttMessageProcessor {
     }
 
     private extractTopicInfo(topic: string): TopicInfo {
-        const topicArray = topic.split('/');
-        //FIXME can this be removed?
-        //const topicServiceType = topicArray[1];
 
+        /**
+        Accordingly to the guideline, these are the possible generic requests
+                - oi4/<serviceType>/<appId>/get/mam/<oi4Identifier>
+                - oi4/<serviceType>/<appId>/get/health/<oi4Identifier>
+                - oi4/<serviceType>/<appId>/get/rtLicense/<oi4Identifier>
+                - oi4/<serviceType>/<appId>/get/profile/<oi4Identifier>
+                - oi4/<serviceType>/<appId>/get/referenceDesignation/<oi4Identifier>
+                - oi4/<serviceType>/<appId>/{get/set/del}/referenceDesignation/<oi4Identifier>
+                ---
+                - oi4/<serviceType>/<appId>/get/config/<oi4Identifier>/<filter>
+                - oi4/<serviceType>/<appId>/set/config/<oi4Identifier>/<filter>
+                - oi4/<serviceType>/<appId>/{get/set}/data/<oi4Identifier>/<filter>
+                - oi4/<serviceType>/<appId>/{get/set}/metadata/<oi4Identifier>/<filter>
+                ---
+                - oi4/<serviceType>/<appId>/get/license/<oi4Identifier>/<licenseId>
+                - oi4/<serviceType>/<appId>/get/licenseText/<oi4Identifier>/<licenseId>
+                ---
+                - oi4/<serviceType>/<appId>/{get/set}/publicationList/<oi4Identifier>/<resourceType>/<tag>
+                - oi4/<serviceType>/<appId>/{get/set/del}/subscriptionList/<oi4Identifier>/<resourceType>/<tag>
+
+         Example of topic string
+            oi4/OTConnector/mymanufacturer.com/myModel/myProductCode/000-555/get/health/myManufacturer.com/myModel/myProductCode/000-555/oi4_pv
+             0       1     |     2               3           4          5   | 6    7           8          #   9       10          11      12
+                           |                Topic App Id                    |                             #       (subResource)         #
+
+         */
+
+        const topicArray = topic.split('/');
         const topicAppId = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
         const topicMethod = topicArray[6];
         const topicResource = topicArray[7];
-        const topicFilter = topicArray.splice(8).join('/');
+        let topicFilter = undefined;
+        let licenseId = undefined;
+        let subResource = undefined;
+        let topicTag = undefined;
 
-        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, subResource:'', filter:topicFilter};
+        if(topicArray.length >= 8) {
+            switch(topicResource) {
+                case ResourceType.LICENSE_TEXT:
+                case ResourceType.LICENCE: {
+                    licenseId = topicArray[8];
+                    break;
+                }
+
+                case ResourceType.PUBLICATION_LIST:
+                case ResourceType.SUBSCRIPTION_LIST: {
+                    subResource = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
+                    topicTag = topicArray[12]
+                    break;
+                }
+
+                default: {
+                    topicFilter = topicArray[8];
+                }
+            }
+        }
+
+        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter, licenseId: licenseId, subResource:subResource, topicTag: topicTag};
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
