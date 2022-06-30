@@ -7,12 +7,12 @@ import {
     Health,
     IContainerConfig,
     IOI4ApplicationResources,
-    IPublicationListObject,
     ISubscriptionListObject,
     License,
     LicenseText,
     MasterAssetModel,
     Profile,
+    PublicationList, Resource,
     RTLicense
 } from '@oi4/oi4-oec-service-model';
 
@@ -39,7 +39,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _license: License[];
     private _licenseText: Map<string, LicenseText>;
     private _rtLicense: RTLicense;
-    private _publicationList: IPublicationListObject[];
+    private _publicationList: PublicationList[];
     private _subscriptionList: ISubscriptionListObject[];
 
     /**
@@ -91,7 +91,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
                 oi4Identifier: this.oi4Id,
                 interval: resInterval,
                 config: EPublicationListConfig.NONE_0,
-            });
+            } as PublicationList);
 
             this.addSubscription({
                 topicPath: `oi4/${this.mam.DeviceClass}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
@@ -199,7 +199,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     }
 
     // --- publicationList ---
-    get publicationList(): IPublicationListObject[] {
+    get publicationList(): PublicationList[] {
         return this._publicationList;
     }
 
@@ -207,7 +207,12 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this._publicationList = publicationList;
     }
 
-    addPublication(publicationObj: IPublicationListObject): void {
+    getPublicationList(oi4Id: string, resourceType: Resource, tag: string): PublicationList[] {
+        console.log('getPublicationList called but not yet implemented', oi4Id, resourceType, tag);
+        return [];
+    }
+
+    addPublication(publicationObj: PublicationList): void {
         this.publicationList.push(publicationObj);
         this.emit('resourceChanged', 'publicationList');
     }

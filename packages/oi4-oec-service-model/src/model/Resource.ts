@@ -1,5 +1,5 @@
 import {OI4Payload} from "./Payload";
-import {EDeviceHealth} from "./EContainer";
+import {EDeviceHealth, EPublicationListConfig, EPublicationListExplicit} from "./EContainer";
 import {IMasterAssetModel, IOPCUALocalizedText} from "@oi4/oi4-oec-service-opcua-model";
 
 export enum Resource {
@@ -141,6 +141,22 @@ export class Profile implements OI4Payload {
 
     resourceType(): Resource {
         return Resource.PROFILE;
+    }
+}
+
+export class PublicationList implements OI4Payload {
+    resource: string;
+    tag?: string;
+    DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
+    oi4Identifier: string;
+    active?: boolean;
+    explicit?: EPublicationListExplicit;
+    interval?: number; // UINT32
+    precisions?: number; // REAL
+    config?: EPublicationListConfig;
+
+    resourceType(): Resource {
+        return Resource.PUBLICATION_LIST;
     }
 }
 

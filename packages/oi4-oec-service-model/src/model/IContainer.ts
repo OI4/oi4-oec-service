@@ -1,4 +1,4 @@
-import { EPublicationListConfig, EPublicationListExplicit, ESubscriptionListConfig } from './EContainer';
+import { ESubscriptionListConfig } from './EContainer';
 import { EOPCUABaseDataType } from '@oi4/oi4-oec-service-opcua-model';
 import { IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
 
@@ -43,14 +43,14 @@ export interface ISubscriptionListObject {
   config?: ESubscriptionListConfig;
 }
 
-export interface IPublicationListObject {
-  resource: string;
-  tag?: string;
-  DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
-  oi4Identifier: string;
-  active?: boolean;
-  explicit?: EPublicationListExplicit;
-  interval?: number; // UINT32
-  precisions?: number; // REAL
-  config?: EPublicationListConfig;
-}
+// export interface IPublicationListObject {
+//   resource: string;
+//   tag?: string;
+//   DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
+//   oi4Identifier: string;
+//   active?: boolean;
+//   explicit?: EPublicationListExplicit;
+//   interval?: number; // UINT32
+//   precisions?: number; // REAL
+//   config?: EPublicationListConfig;
+// }

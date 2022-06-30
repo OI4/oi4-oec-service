@@ -4,12 +4,13 @@ import {
     StatusEvent,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
-    IOI4ApplicationResources
+    IOI4ApplicationResources,
+    Resource
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, ResourceType, PayloadTypes} from './Enums';
+import {TopicMethods, PayloadTypes} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 
@@ -200,7 +201,7 @@ export class MqttMessageProcessor {
                 this.setData(topicInfo.filter, parsedMessage);
                 break;
             }
-            case ResourceType.CONFIG: {
+            case Resource.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
                     this.setConfig(topicInfo.filter, parsedMessage);
                 }
@@ -246,7 +247,7 @@ export class MqttMessageProcessor {
         const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(ResourceType.CONFIG, config.MessageId, filter);
+        this.sendResource(Resource.CONFIG, config.MessageId, filter);
     }
 
     private async executeDelActions(topicInfo: TopicInfo) {

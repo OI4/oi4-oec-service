@@ -2,15 +2,15 @@ import {ValidatedPayload} from './Types';
 import {
     DataSetWriterIdManager,
     EDeviceHealth,
-    ESyslogEventFilter,
+    ESyslogEventFilter, getResource,
     Health,
     IContainerConfig,
     IEvent,
     IOI4ApplicationResources,
-    IPublicationListObject,
     ISubscriptionListObject,
     License,
     OI4Payload,
+    PublicationList,
     Resource,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
@@ -79,37 +79,18 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+    createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: string, filter?: string, tag?: string): ValidatedPayload {
+        const resourceType = filter !== undefined ? getResource(filter) : undefined;
+
         const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.PUBLICATION_LIST, applicationResources.oi4Id);
-        const payload: IOPCUADataSetMessage[] = [];
-
-        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
-            if (applicationResources.publicationList.some((elem: IPublicationListObject) => elem.resource === filter)) { // Does it even make sense to filter?
-                const filteredPubsArr = applicationResources.publicationList.filter((elem: IPublicationListObject) => {
-                    if (elem.resource === filter) return elem;
-                });
-                for (const filteredPubs of filteredPubsArr) {
-                    payload.push({
-                        subResource: filteredPubs.resource,
-                        Payload: filteredPubs,
-                        DataSetWriterId: dataSetWriterId,
-                    });
-                }
-                // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
-                //break;
-                return {abortSending: false, payload: payload};
-            }
-        } else if (dataSetWriterIdFilter !== dataSetWriterId) {
-            return this.manageInvaliddataSetWriterIdFilter(resource);
-        }
-
-        for (const pubs of applicationResources.publicationList) {
-            payload.push({
-                subResource: pubs.resource,
-                Payload: pubs,
+        const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
+            return {
                 DataSetWriterId: dataSetWriterId,
-            })
-        }
+                subResource: elem.resourceType(),
+                Payload: elem,
+            } as IOPCUADataSetMessage;
+        });
+
         return {abortSending: false, payload: payload};
     }
 

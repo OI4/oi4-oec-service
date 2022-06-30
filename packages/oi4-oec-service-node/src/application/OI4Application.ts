@@ -10,7 +10,7 @@ import {
     StatusEvent,
     ESyslogEventFilter,
     IOI4ApplicationResources,
-    IEvent
+    IEvent, Resource
 } from '@oi4/oi4-oec-service-model';
 import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
@@ -18,7 +18,7 @@ import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper'
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents, ResourceType} from '../Utilities/Helpers/Enums';
+import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 
 class OI4Application extends EventEmitter {
 
@@ -58,7 +58,7 @@ class OI4Application extends EventEmitter {
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                 subResource: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
-                DataSetWriterId: CDataSetWriterIdLookup[ResourceType.HEALTH]
+                DataSetWriterId: CDataSetWriterIdLookup[Resource.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
             qos: 0,
             retain: false,
@@ -133,15 +133,15 @@ class OI4Application extends EventEmitter {
 
     private initClientHealthHeartBeat() {
         setInterval(() => {
-            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then(() => {
+            this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then(() => {
                 //No actual actions are needed here
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
     }
 
     private resourceChangeCallback(resource: string) {
-        if (resource === ResourceType.HEALTH) {
-            this.sendResource(ResourceType.HEALTH, '', '', this.oi4Id).then();
+        if (resource === Resource.HEALTH) {
+            this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then();
         }
     }
 
@@ -215,38 +215,39 @@ class OI4Application extends EventEmitter {
         let payloadResult: ValidatedPayload;
 
         switch (resource) {
-            case ResourceType.MAM:
+            case Resource.MAM:
                 payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, subResource);
                 break;
-            case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
+            case Resource.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
                 break;
             }
-            case ResourceType.PROFILE: {
+            case Resource.PROFILE: {
                 payloadResult = this.clientPayloadHelper.createProfileSendResourcePayload(this.applicationResources);
                 break;
             }
-            case ResourceType.HEALTH: {
+            case Resource.HEALTH: {
                 payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload(this.oi4Id);
                 break;
             }
-            case ResourceType.LICENSE_TEXT: {
+            case Resource.LICENSE_TEXT: {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter);
                 break;
             }
-            case ResourceType.LICENCE: {
+            case Resource.LICENSE: {
                 payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
-            case ResourceType.PUBLICATION_LIST: {
-                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
+            case Resource.PUBLICATION_LIST: {
+                // TODO TAG is missing in topic element
+                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
-            case ResourceType.SUBSCRIPTION_LIST: {
+            case Resource.SUBSCRIPTION_LIST: {
                 payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
                 break;
             }
-            case ResourceType.CONFIG: {
+            case Resource.CONFIG: {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, subResource);
                 break;
             }
