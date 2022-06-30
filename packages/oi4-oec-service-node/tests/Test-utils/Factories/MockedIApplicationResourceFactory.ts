@@ -2,23 +2,27 @@ import {
     EOPCUABaseDataType,
     EOPCUALocale,
     EOPCUAMessageType,
-    IMasterAssetModel,
     IOPCUALocalizedText,
     IOPCUAMetaData,
     IOPCUANetworkMessage
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
+    Application,
     EDeviceHealth,
-    IOI4ApplicationResources,
+    Health,
     IContainerConfigConfigName,
-    IContainerProfile,
+    IOI4ApplicationResources,
     IPublicationListObject,
-    ISubscriptionListObject, ILicenseObject
+    ISubscriptionListObject,
+    License,
+    MasterAssetModel,
+    Profile,
+    RTLicense
 } from '@oi4/oi4-oec-service-model';
 
 export class MockedIApplicationResourceFactory {
 
-    public static getMockedIApplicationResourceInstance= (): IOI4ApplicationResources => {
+    public static getMockedIApplicationResourceInstance = (): IOI4ApplicationResources => {
         return {
             brokerState: false,
             config: {
@@ -53,20 +57,19 @@ export class MockedIApplicationResourceFactory {
                     }
             },
             dataLookup: MockedIApplicationResourceFactory.getMockedDataLookup(),
-            health: {health: EDeviceHealth.NORMAL_0, healthScore: 100},
-            license: [
-                {
-                    licenseId: '1',
-                    components: [{licAuthors:['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson'], component: 'fakeComponent' , licAddText: 'fakeLicence'}],
-                }
-            ],
+            health: new Health(EDeviceHealth.NORMAL_0, 100),
+            license: [new License('1', [{
+                licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson'],
+                component: 'fakeComponent',
+                licAddText: 'fakeLicence'
+            }])],
             licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
-            mam: MockedIApplicationResourceFactory.getMockedDefaultIMasterAssetModel(),
+            mam: MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel(),
             metaDataLookup: MockedIApplicationResourceFactory.getMockedDefaultIContainerMetaData(),
             oi4Id: 'fakeOi4ID',
-            profile: MockedIApplicationResourceFactory.getMockedDefaultIContainerProfile(),
+            profile: new Profile(Application.mandatory), //,
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
-            rtLicense: {fakeRTLicense: 'fakeRTLicense'},
+            rtLicense: new RTLicense(),
             subscriptionList: [{topicPath: 'fakePath'}],
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -78,13 +81,9 @@ export class MockedIApplicationResourceFactory {
                 console.log('Called mocked addLicenseText. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            getLicense(oi4Id: string, licenseId?: string): ILicenseObject[] {
+            getLicense(oi4Id: string, licenseId?: string): License[] {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
-            },
-            // eslint-disable-next-line @typescript-eslint/no-empty-function,@typescript-eslint/naming-convention
-            addProfile(_: string): void {
-                console.log('Called mocked addProfile. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             addPublication(_: IPublicationListObject): void {
@@ -138,10 +137,10 @@ export class MockedIApplicationResourceFactory {
         return {key: 'fakeKey', text: 'fakeText'};
     }
 
-    private static getMockedDefaultIMasterAssetModel(): IMasterAssetModel{
+    private static getMockedDefaultMasterAssetModel(): MasterAssetModel {
         return {
             ManufacturerUri: 'fakeManufacturerUri',
-            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel' ),
+            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel'),
             ProductCode: 'fakeProductCode',
             HardwareRevision: 'fakeHardwareRevision',
             SoftwareRevision: 'fakeSoftwareRevision',
@@ -151,9 +150,9 @@ export class MockedIApplicationResourceFactory {
             SerialNumber: 'fakeSerialNumber',
             ProductInstanceUri: 'fakeProductInstanceURI',
             RevisionCounter: -1,
-            Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription' ),
-            Manufacturer: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeManufacturer' )
-        };
+            Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
+            Manufacturer: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeManufacturer')
+        } as MasterAssetModel;
     };
 
     private static getMockedDefaultIContainerMetaData(): Record<string, IOPCUAMetaData> {
@@ -180,15 +179,11 @@ export class MockedIApplicationResourceFactory {
         };
     }
 
-    private static getMockedDefaultIContainerProfile(): IContainerProfile {
-        return {resource: ['fakeProfile']};
-    }
-
     private static getMockedIOPCUALocalizedText(text: string): IOPCUALocalizedText {
         return {locale: EOPCUALocale.enUS, text: text};
     }
 
-    private static getMockedPublicationList() : IPublicationListObject[] {
+    private static getMockedPublicationList(): IPublicationListObject[] {
         return [{
             resource: 'fakeResource',
             DataSetWriterId: 42,

@@ -1,22 +1,21 @@
 import {ValidatedPayload} from './Types';
 import {
+    DataSetWriterIdManager,
     EDeviceHealth,
     ESyslogEventFilter,
     Health,
+    IContainerConfig,
     IEvent,
-    License,
-    LicenseText,
     IOI4ApplicationResources,
     IPublicationListObject,
-    IContainerConfig,
     ISubscriptionListObject,
-    DataSetWriterIdManager,
+    License,
+    LicenseText,
     OI4Payload,
-    CDataSetWriterIdLookup,
+    Resource,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {ResourceType} from './Enums';
 
 export class ClientPayloadHelper {
 
@@ -28,9 +27,15 @@ export class ClientPayloadHelper {
         };
     };
 
+
     getDefaultHealthStatePayload(oi4Id: string): ValidatedPayload {
         const healthState: Health = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
         const payload: IOPCUADataSetMessage[] = [this.createPayload(healthState, oi4Id)];
+        return {abortSending: false, payload: payload};
+    }
+
+    createMamResourcePayload(applicationResources: IOI4ApplicationResources, subResource: string): ValidatedPayload {
+        const payload = [this.createPayload(applicationResources.mam, subResource)];
         return {abortSending: false, payload: payload};
     }
 
@@ -79,6 +84,7 @@ export class ClientPayloadHelper {
     }
 
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.PUBLICATION_LIST, applicationResources.oi4Id);
         const payload: IOPCUADataSetMessage[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -90,14 +96,14 @@ export class ClientPayloadHelper {
                     payload.push({
                         subResource: filteredPubs.resource,
                         Payload: filteredPubs,
-                        DataSetWriterId: CDataSetWriterIdLookup[resource],
+                        DataSetWriterId: dataSetWriterId,
                     });
                 }
                 // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
                 //break;
                 return {abortSending: false, payload: payload};
             }
-        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
+        } else if (dataSetWriterIdFilter !== dataSetWriterId) {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
@@ -105,13 +111,14 @@ export class ClientPayloadHelper {
             payload.push({
                 subResource: pubs.resource,
                 Payload: pubs,
-                DataSetWriterId: CDataSetWriterIdLookup[resource],
+                DataSetWriterId: dataSetWriterId,
             })
         }
         return {abortSending: false, payload: payload};
     }
 
     createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
+        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.SUBSCRIPTION_LIST, applicationResources.oi4Id);
         const payload: IOPCUADataSetMessage[] = [];
 
         if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
@@ -124,14 +131,14 @@ export class ClientPayloadHelper {
                     payload.push({
                         subResource: filteredSubs.topicPath.split('/')[7],
                         Payload: filteredSubs,
-                        DataSetWriterId: CDataSetWriterIdLookup[resource],
+                        DataSetWriterId: dataSetWriterId,
                     });
                 }
                 // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
                 //break;
                 return {abortSending: false, payload: payload};
             }
-        } else if (dataSetWriterIdFilter !== CDataSetWriterIdLookup[resource]) {
+        } else if (dataSetWriterIdFilter !== dataSetWriterId) {
             return this.manageInvaliddataSetWriterIdFilter(resource);
         }
 
@@ -139,7 +146,7 @@ export class ClientPayloadHelper {
             payload.push({ // TODO: subResource out of topicPath property
                 subResource: subs.topicPath.split('/')[7],
                 Payload: subs,
-                DataSetWriterId: CDataSetWriterIdLookup[resource],
+                DataSetWriterId: dataSetWriterId,
             })
         }
 
@@ -154,8 +161,9 @@ export class ClientPayloadHelper {
         return {abortSending: true, payload: undefined};
     }
 
-    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const actualPayload: IContainerConfig = (applicationResources as any)[resource];
+    // TODO this method must be refactored
+    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, subResource: string): ValidatedPayload {
+        const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
         const payload: IOPCUADataSetMessage[] = [];
 
         // Send all configs out
@@ -164,7 +172,7 @@ export class ClientPayloadHelper {
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,
-                DataSetWriterId: CDataSetWriterIdLookup[resource]
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
             });
             return {abortSending: false, payload: payload};
 
@@ -176,7 +184,7 @@ export class ClientPayloadHelper {
             payload.push({
                 subResource: filter,
                 Payload: actualPayload,
-                DataSetWriterId: CDataSetWriterIdLookup[resource]
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
             });
             return {abortSending: false, payload: payload};
 
@@ -188,11 +196,11 @@ export class ClientPayloadHelper {
         } else if (dataSetWriterIdFilter === 8) {
 
             // Filtered by DataSetWriterId
-            const actualPayload: IContainerConfig = (applicationResources as any)[resource];
+            const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
             payload.push({
                 subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
                 Payload: actualPayload,
-                DataSetWriterId: CDataSetWriterIdLookup[resource]
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
             });
             return {abortSending: false, payload: payload};
 
@@ -204,7 +212,7 @@ export class ClientPayloadHelper {
 
     createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
         return [{
-            DataSetWriterId: CDataSetWriterIdLookup[ResourceType.EVENT],
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(event.resourceType(), subResource),
             filter: filter,
             subResource: subResource,
             Timestamp: new Date().toISOString(),

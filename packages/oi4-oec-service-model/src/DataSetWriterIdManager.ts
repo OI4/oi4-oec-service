@@ -4,8 +4,8 @@ import {Resource} from "./model/Resource";
  * This class handles the creation and management of the DataSetWriterId.
  */
 export namespace DataSetWriterIdManager {
-    let lastDataSetMessageId: number;
-    let dataSetWriterIds: Map<string, number>;
+    const dataSetWriterIds: Map<string, number> = new Map<string, number>();
+    let lastDataSetMessageId = -1;
 
     /**
      * Returns the next DataSetWriterId for the matching resource and sub resource combination.
@@ -28,7 +28,7 @@ export namespace DataSetWriterIdManager {
     }
 
     export function resetDataSetWriterIdManager(): void {
-        this.getInstance().dataSetWriterIds = new Map<string, number>();
-        this.getInstance().lastDataSetMessageId = -1;
+        dataSetWriterIds.clear();
+        lastDataSetMessageId = -1;
     }
 }

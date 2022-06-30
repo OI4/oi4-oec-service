@@ -9,12 +9,12 @@ import {
     IOI4ApplicationResources,
     License,
     Profile,
+    MasterAssetModel
 } from '@oi4/oi4-oec-service-model';
 
 import {
     IOPCUANetworkMessage,
     IOPCUAMetaData,
-    IMasterAssetModel,
     IOPCUADataSetMetaData
 } from '@oi4/oi4-oec-service-opcua-model';
 import os from 'os';
@@ -30,7 +30,7 @@ import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
 class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationResources {
     public oi4Id: string; // TODO: doubling? Not needed here
     private readonly _profile: Profile;
-    private readonly _mam: IMasterAssetModel;
+    private readonly _mam: MasterAssetModel;
     private _health: Health;
     private _brokerState: boolean;
     private _license: License[];
@@ -101,7 +101,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
-    private static extractMamFile(path: string): IMasterAssetModel {
+    private static extractMamFile(path: string): MasterAssetModel {
         if (existsSync(path)) {
             return JSON.parse(readFileSync(path).toString());
         }
@@ -143,7 +143,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     // --- MAM ---
 
-    get mam(): IMasterAssetModel {
+    get mam(): MasterAssetModel {
         return this._mam;
     }
 

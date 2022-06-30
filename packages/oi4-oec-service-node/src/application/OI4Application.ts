@@ -216,6 +216,8 @@ class OI4Application extends EventEmitter {
 
         switch (resource) {
             case ResourceType.MAM:
+                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, subResource);
+                break;
             case ResourceType.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
                 break;
@@ -245,7 +247,7 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case ResourceType.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, subResource);
                 break;
             }
             default: {

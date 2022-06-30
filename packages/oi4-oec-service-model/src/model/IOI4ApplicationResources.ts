@@ -1,4 +1,4 @@
-import {IMasterAssetModel, IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {EDeviceHealth} from './EContainer';
 import {
     IContainerConfig,
@@ -9,14 +9,15 @@ import {
     License,
     Health,
     RTLicense,
-    Profile
+    Profile,
+    MasterAssetModel
 } from "./Resource";
 
 export interface IOI4ApplicationResources {
     oi4Id: string;
     health: Health;
     profile: Profile;
-    mam: IMasterAssetModel;
+    mam: MasterAssetModel;
     license: License[];
     licenseText: Record<string, string>;
     rtLicense: RTLicense;

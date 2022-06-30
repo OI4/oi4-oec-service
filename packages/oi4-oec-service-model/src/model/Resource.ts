@@ -1,5 +1,6 @@
 import {OI4Payload} from "./Payload";
 import {EDeviceHealth} from "./EContainer";
+import {IMasterAssetModel, IOPCUALocalizedText} from "@oi4/oi4-oec-service-opcua-model";
 
 export enum Resource {
     MAM = 'mam',
@@ -62,6 +63,26 @@ export const CDataSetWriterIdLookup: Record<string, number> = {
     config: 8,
     publicationList: 9,
     subscriptionList: 10,
+}
+
+export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
+    Description: IOPCUALocalizedText;
+    DeviceClass: string;
+    DeviceManual: string;
+    DeviceRevision: string;
+    HardwareRevision: string;
+    Manufacturer: IOPCUALocalizedText;
+    ManufacturerUri: string;
+    Model: IOPCUALocalizedText;
+    ProductCode: string;
+    ProductInstanceUri: string;
+    RevisionCounter: number;
+    SerialNumber: string;
+    SoftwareRevision: string;
+
+    resourceType(): Resource {
+        return Resource.MAM;
+    }
 }
 
 export class Health implements OI4Payload {

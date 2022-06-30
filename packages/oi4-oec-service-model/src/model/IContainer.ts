@@ -37,10 +37,6 @@ export interface IContainerConfigValidation {
   values?: string[];
 }
 
-export interface IContainerProfile {
-  resource: string[];
-}
-
 export interface ISubscriptionListObject {
   topicPath: string;
   interval?: number;
