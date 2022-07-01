@@ -12,6 +12,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
+    const defaultFakeOi4Id = 'mymanufacturer.com/1/1/1';
 
     beforeEach(() => {
         //Flush the messages log
@@ -21,11 +22,11 @@ describe('Unit test for MqttMessageProcessor', () => {
         setLogger(loggerItems.fakeLogger);
     });
 
-    function getMockedData(fakeOi4Id: string) {
+    function getMockedData() {
         return {
-            fakeOi4Id: fakeOi4Id,
+            fakeOi4Id: defaultFakeOi4Id,
             fakeServiceType: 'fakeServiceType',
-            fakeTopic: `fake/fictitious/${fakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`,
+            fakeTopic: `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`,
         }
     }
 
@@ -40,13 +41,13 @@ describe('Unit test for MqttMessageProcessor', () => {
             return Promise.resolve('FakeType');
         });
 
-        return MockedOPCUABuilderFactory.getMockedOPCUABuilder(info.fakeOi4Id, info.fakeServiceType);
+        return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeOi4Id, info.fakeServiceType);
     }
 
-    function getMqttProcessorAndMockedData(fakeOi4Id: string, mockedSendData: Function): any {
-        const mockedData = getMockedData(fakeOi4Id);
+    function getMqttProcessorAndMockedData(mockedSendData: Function): any {
+        const mockedData = getMockedData();
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
-        applicationResource.oi4Id = mockedData.fakeOi4Id;
+        applicationResource.oi4Id = defaultFakeOi4Id;
         return {
             processor: new MqttMessageProcessor(applicationResource, jest.fn(), mockedSendData, new EventEmitter()),
             mockedData: mockedData,
@@ -54,30 +55,28 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     it('If the serviceType is "Registry" the oi4Id is saved', async () => {
-        const fakeOi4Id = 'mymanufacturer.com/1/1/1';
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: `Registry/${fakeOi4Id}`,
+            PublisherId: `Registry/${defaultFakeOi4Id}`,
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData(fakeOi4Id, jest.fn());
+        const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
         expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${processorAndMockedData.mockedData.fakeOi4Id}`);
-        expect(OI4RegistryManager.getOi4Id()).toBe(processorAndMockedData.mockedData.fakeOi4Id);
+        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${defaultFakeOi4Id}`);
+        expect(OI4RegistryManager.getOi4Id()).toBe(defaultFakeOi4Id);
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {
-        const fakeOi4Id = 'mymanufacturer.com/1/1/1';
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
             PublisherId: 'Mocked/Fake'
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData(fakeOi4Id, jest.fn());
+        const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
         expect(fakeLogFile.length).toBe(0);
@@ -85,29 +84,33 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    async function processMessageAndReturnMockedSendData(fakeOi4Id: string, fakeTopic: string) {
+    async function processMessageAndReturnMockedSendData(fakeTopic: string) {
         const fakeSendData = jest.fn();
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: `Registry/${fakeOi4Id}`,
+            PublisherId: `Registry/${defaultFakeOi4Id}`,
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData(fakeOi4Id, fakeSendData);
+        const processorAndMockedData = getMqttProcessorAndMockedData(fakeSendData);
         processorAndMockedData.mockedData.fakeTopic = fakeTopic;
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
         return fakeSendData;
     }
 
-    it('extract topic info works', async () => {
-        const fakeOi4Id = 'mymanufacturer.com/1/1/1';
-        const fakeTopic = `fake/fictitious/${fakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`;
-        const fakeSendData = await processMessageAndReturnMockedSendData(fakeOi4Id, fakeTopic);
+    async function checkResult(resource: string, fakeTopic: string) {
+        const fakeSendData = await processMessageAndReturnMockedSendData(fakeTopic);
 
-        expect(fakeSendData.mock.calls[0][0]).toBe('mam');
+        //this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
+        expect(fakeSendData.mock.calls[0][0]).toBe(resource);
         expect(fakeSendData.mock.calls[0][3]).toBe('oi4_pv');
         expect(fakeSendData.mock.calls[0][4]).toBe(0);
         expect(fakeSendData.mock.calls[0][5]).toBe(0);
+    }
+
+    it('extract topic info works', async () => {
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`;
+        await checkResult('mam', fakeTopic);
     });
 
 });
