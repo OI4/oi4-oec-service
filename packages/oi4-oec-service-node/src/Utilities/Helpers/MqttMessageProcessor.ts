@@ -109,7 +109,6 @@ export class MqttMessageProcessor {
     }
 
     private extractTopicInfo(topic: string): TopicInfo {
-
         /**
         Accordingly to the guideline, these are the possible generic requests
                 - oi4/<serviceType>/<appId>/get/mam/<oi4Identifier>
@@ -132,9 +131,8 @@ export class MqttMessageProcessor {
 
          Example of topic string
             oi4/OTConnector/mymanufacturer.com/myModel/myProductCode/000-555/get/health/myManufacturer.com/myModel/myProductCode/000-555/oi4_pv
-             0       1     |     2               3           4          5   | 6    7           8          #   9       10          11      12
-                           |                Topic App Id                    |                             #       (subResource)         #
-
+             0       1     |     2               3           4          5   | 6    7           8             9       10            11      12
+                           |                Topic App Id                    |          #              (subResource)             #
          */
 
         const topicArray = topic.split('/');
