@@ -16,7 +16,7 @@ import EventEmitter from 'events';
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
-    private readonly METADATA = 'metadata';
+    private readonly METADATA = 'METADATA';
     private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 

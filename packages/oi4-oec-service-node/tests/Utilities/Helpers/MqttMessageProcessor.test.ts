@@ -46,12 +46,12 @@ describe('Unit test for MqttMessageProcessor', () => {
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeOi4Id, info.fakeServiceType);
     }
 
-    function getMqttProcessorAndMockedData(mockedSendData: Function, emitter: EventEmitter = defaultEmitter): any {
+    function getMqttProcessorAndMockedData(mockedSendData: Function, emitter: EventEmitter = defaultEmitter, sendMetaData: Function = jest.fn()): any {
         const mockedData = getMockedData();
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         applicationResource.oi4Id = defaultFakeOi4Id;
         return {
-            processor: new MqttMessageProcessor(applicationResource, jest.fn(), mockedSendData, emitter),
+            processor: new MqttMessageProcessor(applicationResource, sendMetaData, mockedSendData, emitter),
             mockedData: mockedData,
         }
     }
@@ -86,14 +86,14 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    async function processMessage(mockedSendMessage: Function, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter) {
+    async function processMessage(mockedSendMessage: Function, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: Function = jest.fn()) {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: DataSetClassIds[resource],
             PublisherId: `Registry/${defaultFakeOi4Id}`,
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData(mockedSendMessage, emitter);
+        const processorAndMockedData = getMqttProcessorAndMockedData(mockedSendMessage, emitter, sendMetaData);
         processorAndMockedData.mockedData.fakeTopic = fakeTopic;
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
     }
@@ -129,7 +129,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(fakeLogFile[1]).toBe('Added oi4_pv to config group');
     });
 
-    it('extract topic info works - data - get', async () => {
+    it('extract topic info works - data', async () => {
         const resourceConfig = 'data';
         const emitter: EventEmitter = new EventEmitter();
         const spiedEmit = jest.spyOn(emitter, 'emit');
@@ -141,5 +141,17 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processMessage(jest.fn(), fakeTopic, resourceConfig, emitter);
         expect(fakeLogFile[0]).toBe('Added oi4_pv to dataLookup');
     });
-    
+
+    it('extract topic info works - metadata', async () => {
+        const filter = 'oi4_pv';
+        const resourceConfig = 'METADATA';
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${filter}`;
+        const sendMetaData: Function = jest.fn();
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, sendMetaData);
+
+        expect(sendMetaData).toHaveBeenCalledWith(filter);
+
+        //set metadata basically does nothing
+    });
+
 });
