@@ -35,12 +35,15 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private readonly _profile: Profile;
     private readonly _mam: MasterAssetModel;
     private _health: Health;
-    private _brokerState: boolean;
     private _license: License[];
     private _licenseText: Map<string, LicenseText>;
     private _rtLicense: RTLicense;
     private _publicationList: PublicationList[];
     private _subscriptionList: ISubscriptionListObject[];
+
+    subResources: Map<string, IOI4ApplicationResources>;
+    dataLookup: Record<string, IOPCUANetworkMessage>;
+    metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
     /**
      * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
@@ -59,8 +62,6 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this.mam.ProductInstanceUri = `${this.mam.ManufacturerUri}/${encodeURIComponent(this.mam.Model.text)}/${encodeURIComponent(this.mam.ProductCode)}/${encodeURIComponent(this.mam.SerialNumber)}`;
 
         this.oi4Id = this.mam.ProductInstanceUri;
-
-        this.brokerState = false;
 
         this._profile = new Profile(Application.mandatory);
 
@@ -102,9 +103,6 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     }
 
-    dataLookup: Record<string, IOPCUANetworkMessage>;
-    metaDataLookup: Record<string, IOPCUADataSetMetaData>;
-
     private static extractMamFile(path: string): MasterAssetModel {
         if (existsSync(path)) {
             return JSON.parse(readFileSync(path).toString());
@@ -112,14 +110,22 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return undefined;
     }
 
-    // Property accessor section
-    get brokerState() {
-        return this._brokerState;
+    getSubResource(oi4Id?: string): IOI4ApplicationResources | IterableIterator<IOI4ApplicationResources>{
+        if(oi4Id !== undefined) {
+            return this.subResources.get(oi4Id);
+        }
+        return this.subResources.values();
     }
 
-    set brokerState(brokerState: boolean) {
-        this._brokerState = brokerState;
+    setSubResource(oi4Id: string, subResource: IOI4ApplicationResources): void {
+        this.subResources.set(oi4Id, subResource);
     }
+
+    deleteSubResource(oi4Id: string): boolean {
+        return this.subResources.delete(oi4Id);
+    }
+
+    // Property accessor section
 
     // Resource accesor section
     // --- HEALTH ---

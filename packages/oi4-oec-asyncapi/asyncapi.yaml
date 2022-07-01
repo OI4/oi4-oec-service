@@ -700,7 +700,7 @@ components:
   messageTraits:
     networkMessage:
       headers:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/NetworkMessageBase.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/NetworkMessage.schema.json'
     commonHeaders:
       headers:
         type: object

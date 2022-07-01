@@ -6,6 +6,10 @@ exports[`CallMethodResult schema test invalid values: 0 1`] = `
 received
 [31m  must have required property 'statusCode'[39m
 [31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m[31m  must have required property 'inputArgumentResults'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m[31m  must have required property 'outputArguments'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
 [31m[39m"
 `;
 

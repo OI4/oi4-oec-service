@@ -10,23 +10,11 @@ import {
     RTLicense,
     Profile,
     MasterAssetModel, LicenseText, PublicationList, Resource
-} from "./Resource";
+} from './Resource';
 
-export interface IOI4ApplicationResources {
-    oi4Id: string;
-    health: Health;
-    profile: Profile;
-    mam: MasterAssetModel;
-    license: License[];
-    licenseText: Map<string, LicenseText>;
-    rtLicense: RTLicense;
-    config: IContainerConfig;
-    publicationList: PublicationList[];
-    subscriptionList: ISubscriptionListObject[];
-    brokerState: boolean;
+export interface IOI4ApplicationResources extends IOI4Resource{
 
-    dataLookup: Record<string, IOPCUANetworkMessage>;
-    metaDataLookup: Record<string, IOPCUAMetaData>;
+    subResources: Map<string, IOI4ApplicationResources>;
 
     setHealthState(healthState: number): void;
     setHealth(health: EDeviceHealth): void;
@@ -39,4 +27,19 @@ export interface IOI4ApplicationResources {
 
     // Methods
     addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
+}
+
+export interface IOI4Resource {
+    oi4Id: string;
+    health: Health;
+    profile: Profile;
+    mam: MasterAssetModel;
+    license: License[];
+    licenseText: Map<string, LicenseText>;
+    rtLicense: RTLicense;
+    config: IContainerConfig;
+    publicationList: PublicationList[];
+    subscriptionList: ISubscriptionListObject[];
+    dataLookup: Record<string, IOPCUANetworkMessage>;
+    metaDataLookup: Record<string, IOPCUAMetaData>;
 }

@@ -1,6 +1,5 @@
 // // Base
 import {oi4IdentifierSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {NetworkMessageBaseSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {NetworkMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {ConfigurationVersionDataTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {DataSetMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
@@ -22,7 +21,6 @@ export const buildOpcUaJsonValidator = () => {
     const jsonValidator = new Ajv();
 
     // OPC UA common Schemas
-    jsonValidator.addSchema(NetworkMessageBaseSchemaJson, 'NetworkMessageBase.schema.json');
     jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
     jsonValidator.addSchema(ConfigurationVersionDataTypeSchemaJson, 'ConfigurationVersionDataType.schema.json');
     jsonValidator.addSchema(oi4IdentifierSchemaJson, 'oi4Identifier.schema.json');

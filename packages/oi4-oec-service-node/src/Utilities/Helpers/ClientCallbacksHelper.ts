@@ -23,8 +23,7 @@ export class ClientCallbacksHelper {
         LOGGER.log(`Error in mqtt client: ${err}`);
     };
 
-    public async onCloseCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
-        applicationResources.brokerState = false;
+    public async onCloseCallback(client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(builder.buildOPCUANetworkMessage([{
@@ -36,19 +35,16 @@ export class ClientCallbacksHelper {
         LOGGER.log('Connection to mqtt broker closed');
     };
 
-    public async onDisconnectCallback(applicationResources: IOI4ApplicationResources) {
-        applicationResources.brokerState = false;
+    public async onDisconnectCallback() {
         LOGGER.log('Disconnected from mqtt broker');
     };
 
-    public async onReconnectCallback(applicationResources: IOI4ApplicationResources) {
-        applicationResources.brokerState = false;
+    public async onReconnectCallback() {
         LOGGER.log('Reconnecting to mqtt broker');
     };
 
     public async onClientConnectCallback(applicationResources: IOI4ApplicationResources, client: mqtt.AsyncClient, topicPreamble: string, oi4Id: string, builder: OPCUABuilder) {
         LOGGER.log('Connected successfully', ESyslogEventFilter.warning);
-        applicationResources.brokerState = true;
 
         await client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
