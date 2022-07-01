@@ -146,7 +146,7 @@ export class MqttMessageProcessor {
         let subResource = undefined;
         let topicTag = undefined;
 
-        if(topicArray.length >= 8) {
+        if(topicArray.length >= 9) {
             switch(topicResource) {
                 case ResourceType.LICENSE_TEXT:
                 case ResourceType.LICENCE: {
