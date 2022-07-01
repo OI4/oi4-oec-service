@@ -85,9 +85,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    it('extract topic info works', async () => {
+    async function processMessageAndReturnMockedSendData(fakeOi4Id: string, fakeTopic: string) {
         const fakeSendData = jest.fn();
-        const fakeOi4Id = 'mymanufacturer.com/1/1/1';
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
@@ -95,7 +94,15 @@ describe('Unit test for MqttMessageProcessor', () => {
         };
 
         const processorAndMockedData = getMqttProcessorAndMockedData(fakeOi4Id, fakeSendData);
+        processorAndMockedData.mockedData.fakeTopic = fakeTopic;
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        return fakeSendData;
+    }
+
+    it('extract topic info works', async () => {
+        const fakeOi4Id = 'mymanufacturer.com/1/1/1';
+        const fakeTopic = `fake/fictitious/${fakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`;
+        const fakeSendData = await processMessageAndReturnMockedSendData(fakeOi4Id, fakeTopic);
 
         expect(fakeSendData.mock.calls[0][0]).toBe('mam');
         expect(fakeSendData.mock.calls[0][3]).toBe('oi4_pv');
