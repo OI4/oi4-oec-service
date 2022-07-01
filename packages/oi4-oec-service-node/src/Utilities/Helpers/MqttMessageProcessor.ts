@@ -115,11 +115,9 @@ export class MqttMessageProcessor {
                 - oi4/<serviceType>/<appId>/get/health/<oi4Identifier>
                 - oi4/<serviceType>/<appId>/get/rtLicense/<oi4Identifier>
                 - oi4/<serviceType>/<appId>/get/profile/<oi4Identifier>
-                - oi4/<serviceType>/<appId>/get/referenceDesignation/<oi4Identifier>
                 - oi4/<serviceType>/<appId>/{get/set/del}/referenceDesignation/<oi4Identifier>
                 ---
-                - oi4/<serviceType>/<appId>/get/config/<oi4Identifier>/<filter>
-                - oi4/<serviceType>/<appId>/set/config/<oi4Identifier>/<filter>
+                - oi4/<serviceType>/<appId>/{get/set}/config/<oi4Identifier>/<filter>
                 - oi4/<serviceType>/<appId>/{get/set}/data/<oi4Identifier>/<filter>
                 - oi4/<serviceType>/<appId>/{get/set}/metadata/<oi4Identifier>/<filter>
                 ---

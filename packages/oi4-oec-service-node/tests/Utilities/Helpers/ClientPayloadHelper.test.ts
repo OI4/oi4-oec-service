@@ -11,11 +11,12 @@ import {
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {ResourceType} from '../../../dist/Utilities/Helpers/Enums';
+import {ResourceType} from '../../../src/Utilities/Helpers/Enums';
 
 
 describe('Unit test for ClientPayloadHelper', () => {
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const SUB_RESOURCE = 'fakeOi4ID';
 
     const default_payload = [{

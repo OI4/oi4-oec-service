@@ -7,13 +7,14 @@ import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
-import {DataSetClassIds} from "@oi4/oi4-oec-service-model";
+import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const defaultFakeOi4Id = 'mymanufacturer.com/1/1/1';
+    const defaultEmitter: EventEmitter = new EventEmitter();
 
     beforeEach(() => {
         //Flush the messages log
@@ -45,12 +46,12 @@ describe('Unit test for MqttMessageProcessor', () => {
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeOi4Id, info.fakeServiceType);
     }
 
-    function getMqttProcessorAndMockedData(mockedSendData: Function): any {
+    function getMqttProcessorAndMockedData(mockedSendData: Function, emitter: EventEmitter = defaultEmitter): any {
         const mockedData = getMockedData();
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         applicationResource.oi4Id = defaultFakeOi4Id;
         return {
-            processor: new MqttMessageProcessor(applicationResource, jest.fn(), mockedSendData, new EventEmitter()),
+            processor: new MqttMessageProcessor(applicationResource, jest.fn(), mockedSendData, emitter),
             mockedData: mockedData,
         }
     }
@@ -85,30 +86,60 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    async function processMessage(mockedSendMessage: Function, fakeTopic: string, resource: string) {
+    async function processMessage(mockedSendMessage: Function, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter) {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: DataSetClassIds[resource],
             PublisherId: `Registry/${defaultFakeOi4Id}`,
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData(mockedSendMessage);
+        const processorAndMockedData = getMqttProcessorAndMockedData(mockedSendMessage, emitter);
         processorAndMockedData.mockedData.fakeTopic = fakeTopic;
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
     }
 
-    async function checkResultGet(resource: string, fakeTopic: string) {
+    async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined, emitter: EventEmitter = defaultEmitter) {
         const mockedSendMessage = jest.fn();
-        await processMessage(mockedSendMessage, fakeTopic, resource);
-        expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, 'oi4_pv', 0 , 0);
+        await processMessage(mockedSendMessage, fakeTopic, resource, emitter);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0 , 0);
     }
 
     it('extract topic info works', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
-            const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resource}/oi4_pv`;
+            const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resource}`;
             await checkResultGet(resource, fakeTopic);
         }
+
+        //Set e Del for referenceDesignation basically do nothing
     });
 
+    it('extract topic info works - config', async() => {
+        const resourceConfig = 'config';
+        let fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/oi4_pv`;
+        await checkResultGet(resourceConfig, fakeTopic, 'oi4_pv');
+
+        const mockedSendMessage = jest.fn();
+        const emitter: EventEmitter = new EventEmitter();
+        const spiedEmit = jest.spyOn(emitter, 'emit');
+        fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.SET}/${resourceConfig}/oi4_pv`;
+        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, emitter);
+        expect(spiedEmit).toHaveBeenCalledWith('setConfig', {origin: defaultFakeOi4Id, number: 0, description: undefined});
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, 'oi4_pv');
+        expect(fakeLogFile[1]).toBe('Added oi4_pv to config group');
+    });
+
+    it('extract topic info works - data - get', async () => {
+        const resourceConfig = 'data';
+        const emitter: EventEmitter = new EventEmitter();
+        const spiedEmit = jest.spyOn(emitter, 'emit');
+        let fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/oi4_pv`;
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, emitter);
+        expect(spiedEmit).toHaveBeenCalledWith('getData', {topic: fakeTopic, message: {Messages: [{Payload: 'fakePayload'}], PublisherId: 'Registry/mymanufacturer.com/1/1/1'}});
+
+        fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.SET}/${resourceConfig}/oi4_pv`;
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, emitter);
+        expect(fakeLogFile[0]).toBe('Added oi4_pv to dataLookup');
+    });
+    
 });
