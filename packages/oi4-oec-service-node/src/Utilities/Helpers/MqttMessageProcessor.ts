@@ -130,7 +130,7 @@ export class MqttMessageProcessor {
          Example of topic string
             oi4/OTConnector/mymanufacturer.com/myModel/myProductCode/000-555/get/health/myManufacturer.com/myModel/myProductCode/000-555/oi4_pv
              0       1     |     2               3           4          5   | 6    7           8             9       10            11      12
-                           |                Topic App Id                    |          #              (subResource)             #
+                           |                Topic App Id                    |
          */
 
         const topicArray = topic.split('/');
@@ -142,11 +142,15 @@ export class MqttMessageProcessor {
         let subResource = undefined;
         let topicTag = undefined;
 
-        if(topicArray.length >= 9) {
-            switch(topicResource) {
+        if(topicArray.length >= 8) {
+            switch (topicResource) {
                 case ResourceType.LICENSE_TEXT:
                 case ResourceType.LICENCE: {
-                    licenseId = topicArray[8];
+                    if (this.isStringEmpty(topicArray[8]) || this.isStringEmpty(topicArray[9])) {
+                        throw new Error(`Missing Oi4 Identifier or License Id: ${topic}`);
+                    }
+                    topicFilter = topicArray[8];
+                    licenseId = topicArray[9];
                     break;
                 }
 
@@ -158,12 +162,19 @@ export class MqttMessageProcessor {
                 }
 
                 default: {
+                    if (this.isStringEmpty(topicArray[8])) {
+                        throw new Error(`Missing Oi4 Identifier: ${topic}`);
+                    }
                     topicFilter = topicArray[8];
                 }
             }
         }
 
         return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter, licenseId: licenseId, subResource:subResource, topicTag: topicTag};
+    }
+
+    private isStringEmpty(str: string) {
+        return str === undefined || str === null || str.length == 0;
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {

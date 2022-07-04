@@ -154,4 +154,40 @@ describe('Unit test for MqttMessageProcessor', () => {
         //set metadata basically does nothing
     });
 
+    it('extract topic info - metadata - if filter is missing, an error is thrown', async () => {
+        const resourceConfig = 'METADATA';
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}//`;
+
+        try {
+            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+        } catch(err: any) {
+            expect(err.message).toBe(`Missing Oi4 Identifier: ${fakeTopic}`);
+        }
+
+        //set metadata basically does nothing
+    });
+
+    it('extract topic info works - license and licenseText', async () => {
+        const resourceConfig = 'license';
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/license/${defaultFilter}/1234`;
+
+        const mockedSendMessage = jest.fn();
+        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+
+        expect(mockedSendMessage).toHaveBeenCalledWith('license', undefined, undefined, defaultFilter, 0, 0);
+
+        //set metadata basically does nothing
+    });
+
+    it('extract topic info - license and licenseText - if filter or licenseId is missing, an error is thrown', async () => {
+        const resourceConfig = 'license';
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/license///`;
+
+        try {
+           await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn())
+        } catch(err: any) {
+            expect(err.message).toBe(`Missing Oi4 Identifier or License Id: ${fakeTopic}`);
+        }
+    });
+
 });
