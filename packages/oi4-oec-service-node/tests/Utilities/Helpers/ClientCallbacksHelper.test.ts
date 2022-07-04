@@ -6,7 +6,7 @@ import mqtt from 'async-mqtt';
 import {MockedMqttClientFactory} from '../../Test-utils/Factories/MockedMqttClientFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {setLogger} from '@oi4/oi4-oec-service-logger';
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -44,35 +44,23 @@ describe('Unit test for ClientCallbackHelper', () => {
     });
 
     it('onCloseCallback works', async () => {
-        mockedClient.brokerState = true;
-
-        await clientCallbackHelper.onCloseCallback(mockedClient, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
+        await clientCallbackHelper.onCloseCallback(mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
         expect(mockedMqttClient.publish).toHaveBeenCalled();
-        expect(mockedClient.brokerState).toBe(false);
         checkLogEntry('Connection to mqtt broker closed');
     });
 
     it('onDisconnectCallback works', async () => {
-        mockedClient.brokerState = true;
-
-        await clientCallbackHelper.onDisconnectCallback(mockedClient);
-        expect(mockedClient.brokerState).toBe(false);
+        await clientCallbackHelper.onDisconnectCallback();
         checkLogEntry('Disconnected from mqtt broker');
     });
 
     it('onReconnectCallback works', async () => {
-        mockedClient.brokerState = true;
-
-        await clientCallbackHelper.onReconnectCallback(mockedClient);
-        expect(mockedClient.brokerState).toBe(false);
+        await clientCallbackHelper.onReconnectCallback();
         checkLogEntry('Reconnecting to mqtt broker');
     });
 
     it('onClientConnectCallback works', async () => {
-        mockedClient.brokerState = false;
-
         await clientCallbackHelper.onClientConnectCallback(mockedClient, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
-        expect(mockedClient.brokerState).toBe(true);
         checkLogEntries(2, ['Connected successfully', 'Published birth message on fakePreamble/pub/mam/fakeOi4Id']);
     });
 

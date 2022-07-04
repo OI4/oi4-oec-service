@@ -1,25 +1,23 @@
 import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {EDeviceHealth} from './EContainer';
 import {
-    IContainerConfig,
-    ISubscriptionListObject
+    IContainerConfig
 } from './IContainer';
 import {
     License,
     Health,
     RTLicense,
     Profile,
-    MasterAssetModel, LicenseText, PublicationList, Resource
+    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
 } from './Resource';
 
-export interface IOI4ApplicationResources extends IOI4Resource{
+export interface IOI4ApplicationResources extends IOI4Resource {
 
     subResources: Map<string, IOI4ApplicationResources>;
 
     setHealthState(healthState: number): void;
+
     setHealth(health: EDeviceHealth): void;
-    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
-} from "./Resource";
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
@@ -42,7 +40,6 @@ export interface IOI4Resource {
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
-    brokerState: boolean;
 
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUAMetaData>;
