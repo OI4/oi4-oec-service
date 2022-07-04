@@ -54,8 +54,8 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getResourceInfo = (): IOI4ApplicationResources => {
     const licenseText = new Map<string, LicenseText>();
-    licenseText.set('a', {licenseText: '1'} as LicenseText);
-    licenseText.set('b', {licenseText: '2'} as LicenseText);
+    licenseText.set('a', LicenseText.clone({licenseText: '1'} as LicenseText));
+    licenseText.set('b', LicenseText.clone({licenseText: '2'} as LicenseText));
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -103,20 +103,20 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
             } as PublicationList),
-            {
+            PublicationList.clone({
                 active: false,
                 resource: 'mam',
                 config: EPublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
-            } as PublicationList,
-            {
+            } as PublicationList),
+            PublicationList.clone({
                 active: true,
                 resource: 'license',
                 config: EPublicationListConfig.STATUS_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
-            } as PublicationList
+            } as PublicationList)
         ],
         profile: new Profile(Application.mandatory),
         licenseText: licenseText,
@@ -210,11 +210,15 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         on: jest.fn(),
-        getLicense(oi4Id: string, licenseId ?: string): License[] {
+        getLicense(oi4Id: string, licenseId?: string): License[] {
             console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
             return this.license;
+        },
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
+            return this.publicationList;
         }
     }
 }
@@ -339,7 +343,7 @@ describe('OI4MessageBus test', () => {
         await oi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/metadata/${tagName}`),
-            expect.stringContaining(JSON.stringify({MessageId: 'meta-01'})));
+            expect.stringContaining(JSON.stringify(resources.metaDataLookup[tagName])));
     });
 
     it('should send all metadata if tagname not specified', async () => {
@@ -354,14 +358,14 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().metaDataLookup)));
     });
 
-    it('should send specific data by tagname', async () => {
+    it('should send specific data lookup by tagname', async () => {
 
         const tagName = 'tag-01'
         const oi4Application = getOi4App()
         await oi4Application.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/data/${tagName}`),
-            expect.stringContaining(JSON.stringify({MessageId: '1'})));
+            expect.stringContaining(JSON.stringify(oi4Application.applicationResources.dataLookup[tagName])));
     });
 
     it('should send all data if tagname not specified', async () => {
@@ -400,9 +404,9 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/health/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    async function getPayload(filter: string, resource: string) {
+    async function getPayload(filter: string, resource: string, subResource?: string) {
         const oi4Application = getOi4App()
-        return await oi4Application.preparePayload(resource, '', filter);
+        return await oi4Application.preparePayload(resource, subResource, filter);
     }
 
     it('should prepare mam payload', async () => {
@@ -411,10 +415,10 @@ describe('OI4MessageBus test', () => {
     });
 
     function checkProfilePayload(payload: any) {
-        expect(payload.Payload.resource.length).toBeGreaterThan(0);
-        expect(payload.filter).toBe('');
-        expect(payload.Timestamp).not.toBeNull();
-        expect(payload.Timestamp).not.toBeUndefined();
+        const profilePayload: Profile = payload.Payload;
+        expect(profilePayload.resourceType()).toBe(Resource.PROFILE);
+        expect(profilePayload.resource).not.toBeUndefined();
+        expect(profilePayload.resource.length).toBeGreaterThan(0);
     }
 
     it('should prepare profile payload when filter !== oi4Id', async () => {
@@ -453,7 +457,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare publicationList  payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.publicationList.toString(), 'publicationList');
+        const result = await getPayload(Resource.PUBLICATION_LIST, 'publicationList');
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
@@ -461,7 +465,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare subscriptionList  payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.subscriptionList.toString(), 'subscriptionList');
+        const result = await getPayload(Resource.SUBSCRIPTION_LIST, 'subscriptionList');
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().subscriptionList[i]));
@@ -469,7 +473,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should  prepare config payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), 'config');
+        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), 'config', 'config');
         expect(JSON.stringify(result.payload[0].Payload))
             .toBe(JSON.stringify(getResourceInfo().config));
     });
