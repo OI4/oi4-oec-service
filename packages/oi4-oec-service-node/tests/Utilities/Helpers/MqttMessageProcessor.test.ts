@@ -105,7 +105,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0 , 0);
     }
 
-    it('extract topic info works', async () => {
+    it('extract topic info works - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
             const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resource}`;
@@ -165,25 +165,33 @@ describe('Unit test for MqttMessageProcessor', () => {
         }
     });
 
-    it('extract topic info works - license and licenseText', async () => {
-        const resourceConfig = 'license';
+    async function testAgainstResource(resourceConfig: string) {
         const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${defaultFilter}/1234`;
 
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
         expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, undefined, defaultFilter, 0, 0);
+    }
+
+    it('extract topic info works - license and licenseText', async () => {
+        await testAgainstResource('license');
+        await testAgainstResource('licenseText');
     });
 
-    it('extract topic info - license and licenseText - if filter or licenseId is missing, an error is thrown', async () => {
-        const resourceConfig = 'license';
+    async function testErrorCaseAgainstResource(resourceConfig: string) {
         const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/license///`;
 
         try {
-           await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn())
+            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn())
         } catch(err: any) {
             expect(err.message).toBe(`Missing Oi4 Identifier or License Id: ${fakeTopic}`);
         }
+    }
+
+    it('extract topic info - license and licenseText - if filter or licenseId is missing, an error is thrown', async () => {
+        await testErrorCaseAgainstResource('license');
+        await testErrorCaseAgainstResource('licenseText');
     });
 
     it('extract topic info works - publicationList', async () => {
