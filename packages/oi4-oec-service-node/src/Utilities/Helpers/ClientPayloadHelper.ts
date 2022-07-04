@@ -82,11 +82,12 @@ export class ClientPayloadHelper {
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: string, filter?: string, tag?: string): ValidatedPayload {
         const resourceType = filter !== undefined ? getResource(filter) : undefined;
 
-        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.PUBLICATION_LIST, applicationResources.oi4Id);
         const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
+            const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(elem.resourceType(), applicationResources.oi4Id);
             return {
                 DataSetWriterId: dataSetWriterId,
-                subResource: elem.resourceType(),
+                filter : filter,
+                subResource: applicationResources.oi4Id,
                 Payload: elem,
             } as IOPCUADataSetMessage;
         });

@@ -207,9 +207,13 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this._publicationList = publicationList;
     }
 
-    getPublicationList(oi4Id: string, resourceType: Resource, tag: string): PublicationList[] {
-        console.log('getPublicationList called but not yet implemented', oi4Id, resourceType, tag);
-        return [];
+    getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
+        return this._publicationList.filter((elem: PublicationList) => {
+            if (elem.oi4Identifier !== oi4Id) return false;
+            if (resourceType !== undefined && elem.resource !== resourceType) return false;
+            if (tag !== undefined && elem.tag !== tag) return false;
+            return true;
+        });
     }
 
     addPublication(publicationObj: PublicationList): void {

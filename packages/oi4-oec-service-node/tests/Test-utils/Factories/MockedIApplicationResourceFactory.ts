@@ -23,6 +23,8 @@ import {
 
 export class MockedIApplicationResourceFactory {
 
+    public static OI4_ID = 'fakeOi4Id';
+
     public static getMockedIApplicationResourceInstance = (): IOI4ApplicationResources => {
         return {
             brokerState: false,
@@ -67,7 +69,7 @@ export class MockedIApplicationResourceFactory {
             licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
             mam: MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel(),
             metaDataLookup: MockedIApplicationResourceFactory.getMockedDefaultIContainerMetaData(),
-            oi4Id: 'fakeOi4ID',
+            oi4Id: this.OI4_ID,
             profile: new Profile(Application.mandatory), //,
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: new RTLicense(),
@@ -83,8 +85,13 @@ export class MockedIApplicationResourceFactory {
                 return this.license;
             },
             getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
-                console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}. Do nothing....`);
-                return this.publicationList;
+                console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
+                return this.publicationList.filter((elem: PublicationList) => {
+                    if (elem.oi4Identifier !== oi4Id) return false;
+                    if (resourceType !== undefined && elem.resource !== resourceType) return false;
+                    if (tag !== undefined && elem.tag !== tag) return false;
+                    return true;
+                });
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             setHealth(_: EDeviceHealth): void {
@@ -125,7 +132,7 @@ export class MockedIApplicationResourceFactory {
     }
 
     private static getMockedDefaultMasterAssetModel(): MasterAssetModel {
-        return {
+        return MasterAssetModel.clone({
             ManufacturerUri: 'fakeManufacturerUri',
             Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel'),
             ProductCode: 'fakeProductCode',
@@ -139,7 +146,7 @@ export class MockedIApplicationResourceFactory {
             RevisionCounter: -1,
             Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
             Manufacturer: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeManufacturer')
-        } as MasterAssetModel;
+        } as MasterAssetModel);
     };
 
     private static getMockedDefaultIContainerMetaData(): Record<string, IOPCUAMetaData> {
@@ -171,11 +178,11 @@ export class MockedIApplicationResourceFactory {
     }
 
     private static getMockedPublicationList(): PublicationList[] {
-        return [{
+        return [PublicationList.clone({
             resource: 'fakeResource',
             DataSetWriterId: 42,
-            oi4Identifier: 'fakeOi4Id',
-        } as PublicationList]
+            oi4Identifier: MockedIApplicationResourceFactory.OI4_ID,
+        } as PublicationList)];
     }
 
     private static getMockedDataLookup(): Record<string, IOPCUANetworkMessage> {

@@ -2,10 +2,11 @@ import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadH
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
-    CDataSetWriterIdLookup, DataSetWriterIdManager,
+    DataSetWriterIdManager,
     EDeviceHealth,
     Health,
-    IOI4ApplicationResources, LicenseText, Resource,
+    IOI4ApplicationResources,
+    LicenseText, PublicationList, Resource,
     SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
@@ -14,10 +15,11 @@ import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for ClientPayloadHelper', () => {
 
-    const SUB_RESOURCE = 'fakeOi4ID';
+    const OI4_ID = MockedIApplicationResourceFactory.OI4_ID;
+    // const SUB_RESOURCE = `sub_${MockedIApplicationResourceFactory.OI4_ID}`;
 
     const default_payload = [{
-        subResource: SUB_RESOURCE,
+        subResource: OI4_ID,
         DataSetWriterId: 0,
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
@@ -84,7 +86,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function createLicenseMockedPayload(dataSetWriterId: number, payload: any) {
         return [{
-            subResource: SUB_RESOURCE,
+            subResource: OI4_ID,
             DataSetWriterId: dataSetWriterId,
             Payload: payload
         }];
@@ -103,31 +105,32 @@ describe('Unit test for ClientPayloadHelper', () => {
     });
 
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: string) {
-        return {
+        return PublicationList.clone({
             DataSetWriterId: datasetWriterId,
             oi4Identifier: oi4Id,
             resource: resource,
-        }
+        } as PublicationList);
     }
 
-    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any) {
+    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any, filter?: string) {
         return [{
+            DataSetWriterId: dataSetWriterId,
             subResource: subResource,
+            filter: filter,
             Payload: payload,
-            DataSetWriterId: dataSetWriterId
         }];
     }
 
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number) {
         expect(validatedPayload.abortSending).toBe(false);
-        const expectedInnerPayload = createPublicationMockedPayload('fakeResource', 42, 'fakeOi4Id');
-        const expectedPayload = createMockedPayloadWithSubresource('fakeResource', dataSetWriterId, expectedInnerPayload);
+        const expectedInnerPayload = createPublicationMockedPayload('fakeResource', 42, OI4_ID);
+        const expectedPayload = createMockedPayloadWithSubresource(OI4_ID, dataSetWriterId, expectedInnerPayload, Resource.HEALTH);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createPublicationListSendResourcePayload works when dataSetWriterIdFilter is not NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'health');
-        checkAgainstPublicationPayload(validatedPayload, 2);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID, Resource.HEALTH);
+        checkAgainstPublicationPayload(validatedPayload, 0);
     });
 
     function checkForUnfittingDataSetId(validatedPayload: ValidatedPayload) {
@@ -137,13 +140,13 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createPublicationListSendResourcePayload works when dataSetWriterIdFilter is not NaN but dataSetWriterId does not match the resource', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id', 2, 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'oi4Id', 'license');
         checkForUnfittingDataSetId(validatedPayload);
     });
 
     it('createPublicationListSendResourcePayload works when dataSetWriterIdFilter is NaN', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'fakeResource', NaN, 'health');
-        checkAgainstPublicationPayload(validatedPayload, 2);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, 'fakeResource', 'health');
+        checkAgainstPublicationPayload(validatedPayload, 0);
     });
 
     function createSubscriptionMockedPayload(topicPath: string) {
@@ -223,7 +226,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];
-        expect(extractedMessage.DataSetWriterId).toBe(CDataSetWriterIdLookup[Resource.EVENT]);
+        expect(extractedMessage.DataSetWriterId).toBe(0);
         expect(extractedMessage.filter).toBe('fakeFilter');
         expect(extractedMessage.subResource).toBe('fakeSubResource');
         expect(extractedMessage.Payload).toStrictEqual(event);
