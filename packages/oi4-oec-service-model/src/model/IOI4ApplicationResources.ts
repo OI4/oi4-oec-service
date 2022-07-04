@@ -2,14 +2,13 @@ import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-m
 import {EDeviceHealth} from './EContainer';
 import {
     IContainerConfig,
-    ISubscriptionListObject
 } from './IContainer';
 import {
     License,
     Health,
     RTLicense,
     Profile,
-    MasterAssetModel, LicenseText, PublicationList, Resource
+    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
 } from "./Resource";
 
 export interface IOI4ApplicationResources {
@@ -22,7 +21,7 @@ export interface IOI4ApplicationResources {
     rtLicense: RTLicense;
     config: IContainerConfig;
     publicationList: PublicationList[];
-    subscriptionList: ISubscriptionListObject[];
+    subscriptionList: SubscriptionList[];
     brokerState: boolean;
 
     dataLookup: Record<string, IOPCUANetworkMessage>;
@@ -33,10 +32,12 @@ export interface IOI4ApplicationResources {
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
-    getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[];
+    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[];
+
+    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[];
 
     on(event: string, listener: Function): this;
 
     // Methods
-    addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
+    addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }

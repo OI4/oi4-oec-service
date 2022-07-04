@@ -1,6 +1,6 @@
-import {OI4Payload} from "./Payload";
-import {EDeviceHealth, EPublicationListConfig, EPublicationListExplicit} from "./EContainer";
-import {IMasterAssetModel, IOPCUALocalizedText} from "@oi4/oi4-oec-service-opcua-model";
+import {OI4Payload} from './Payload';
+import {EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig} from './EContainer';
+import {IMasterAssetModel, IOPCUALocalizedText} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum Resource {
     MAM = 'mam',
@@ -168,11 +168,11 @@ export class Profile implements OI4Payload {
 
 export class PublicationList implements OI4Payload {
     resource: string;
-    tag?: string;
+    subResource?: string;
+    filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
     oi4Identifier: string;
-    active?: boolean;
-    explicit?: EPublicationListExplicit;
+    mode: string; // Change me to enum
     interval?: number; // UINT32
     precisions?: number; // REAL
     config?: EPublicationListConfig;
@@ -183,6 +183,22 @@ export class PublicationList implements OI4Payload {
 
     static clone(source: PublicationList): PublicationList {
         const copy = new PublicationList();
+        Object.assign(copy, source);
+        return copy;
+    }
+}
+
+export class SubscriptionList implements OI4Payload {
+    topicPath: string;
+    interval: number;
+    config?: ESubscriptionListConfig;
+
+    resourceType(): Resource {
+        return Resource.SUBSCRIPTION_LIST;
+    }
+
+    static clone(source: SubscriptionList): SubscriptionList {
+        const copy = new SubscriptionList();
         Object.assign(copy, source);
         return copy;
     }

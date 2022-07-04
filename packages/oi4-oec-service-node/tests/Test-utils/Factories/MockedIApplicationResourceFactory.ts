@@ -18,7 +18,7 @@ import {
     Profile,
     PublicationList,
     Resource,
-    RTLicense
+    RTLicense, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 
 export class MockedIApplicationResourceFactory {
@@ -73,7 +73,7 @@ export class MockedIApplicationResourceFactory {
             profile: new Profile(Application.mandatory), //,
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: new RTLicense(),
-            subscriptionList: [{topicPath: 'fakePath'}],
+            subscriptionList: MockedIApplicationResourceFactory.getMockedSubscriptionList(),
 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             addDataSet(_: string, __: IOPCUANetworkMessage, ___: IOPCUAMetaData): void {
@@ -84,14 +84,18 @@ export class MockedIApplicationResourceFactory {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
             },
-            getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
+            getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
                 console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
                     if (elem.oi4Identifier !== oi4Id) return false;
                     if (resourceType !== undefined && elem.resource !== resourceType) return false;
-                    if (tag !== undefined && elem.tag !== tag) return false;
+                    if (tag !== undefined && elem.filter !== tag) return false;
                     return true;
                 });
+            },
+            getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+                console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
+                return this.subscriptionList;
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             setHealth(_: EDeviceHealth): void {
@@ -178,11 +182,27 @@ export class MockedIApplicationResourceFactory {
     }
 
     private static getMockedPublicationList(): PublicationList[] {
-        return [PublicationList.clone({
-            resource: 'fakeResource',
-            DataSetWriterId: 42,
-            oi4Identifier: MockedIApplicationResourceFactory.OI4_ID,
-        } as PublicationList)];
+        return [
+            PublicationList.clone({
+                resource: Resource.HEALTH,
+                DataSetWriterId: 42,
+                oi4Identifier: MockedIApplicationResourceFactory.OI4_ID,
+            } as PublicationList),
+            PublicationList.clone({
+                resource: Resource.EVENT,
+                DataSetWriterId: 43,
+                filter: 'fakeFilter',
+                oi4Identifier: MockedIApplicationResourceFactory.OI4_ID + '_2',
+            } as PublicationList)
+        ];
+    }
+
+    private static getMockedSubscriptionList(): SubscriptionList[] {
+        return [
+            SubscriptionList.clone({
+                topicPath: 'fakePath'
+            } as SubscriptionList)
+        ];
     }
 
     private static getMockedDataLookup(): Record<string, IOPCUANetworkMessage> {

@@ -1,8 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {OI4ApplicationResources} from '../../src';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
 import fs = require('fs');
@@ -11,7 +7,7 @@ describe('Test Oi4ApplicationResources', () => {
 
     const mam: IMasterAssetModel = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance().mam;
     let resources: OI4ApplicationResources;
-    
+
     beforeEach(() => {
         jest.spyOn(fs, 'existsSync').mockReturnValue(true);
         jest.spyOn(fs, 'readFileSync').mockReturnValue(Buffer.from(JSON.stringify(mam)));
@@ -23,7 +19,9 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('If oi4Id undefined all licenses are returned', () => {
-        expect(resources.getLicense(undefined)).toBe(undefined);
+        console.log('Wait for it...');
+        const license = resources.getLicense(undefined);
+        expect(license).toBe(undefined);
     });
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
