@@ -163,20 +163,16 @@ describe('Unit test for MqttMessageProcessor', () => {
         } catch(err: any) {
             expect(err.message).toBe(`Missing Oi4 Identifier: ${fakeTopic}`);
         }
-
-        //set metadata basically does nothing
     });
 
     it('extract topic info works - license and licenseText', async () => {
         const resourceConfig = 'license';
-        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/license/${defaultFilter}/1234`;
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${defaultFilter}/1234`;
 
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
-        expect(mockedSendMessage).toHaveBeenCalledWith('license', undefined, undefined, defaultFilter, 0, 0);
-
-        //set metadata basically does nothing
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, undefined, defaultFilter, 0, 0);
     });
 
     it('extract topic info - license and licenseText - if filter or licenseId is missing, an error is thrown', async () => {
@@ -187,6 +183,40 @@ describe('Unit test for MqttMessageProcessor', () => {
            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn())
         } catch(err: any) {
             expect(err.message).toBe(`Missing Oi4 Identifier or License Id: ${fakeTopic}`);
+        }
+    });
+
+    it('extract topic info works - publicationList', async () => {
+        const resourceConfig = 'publicationList';
+        const subResource = 'myManufacturer.com/myModel/myProductCode/000-555';
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${subResource}/${defaultFilter}`;
+
+        const mockedSendMessage = jest.fn();
+        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, subResource, undefined, 0, 0);
+
+        //set publicationList basically does nothing
+    });
+
+    it('extract topic info - publicationList  - if subresource or tag is missing, an error is thrown', async () => {
+        const resourceConfig = 'publicationList';
+        let subResource = 'myManufacturer.com/myModel//000-555';
+        let fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${subResource}/${defaultFilter}`;
+
+        try{
+            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+        } catch(err: any) {
+            expect(err.message).toBe(`Subresource has an invalid value: ${subResource}`);
+        }
+
+        subResource = 'myManufacturer.com/myModel/myProductCode/000-555';
+        fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${subResource}//`;
+
+        try{
+            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+        } catch(err: any) {
+            expect(err.message).toBe(`Missing Tag: ${fakeTopic}`);
         }
     });
 
