@@ -11,21 +11,22 @@ import {
     EventCategory,
     Health,
     IOI4ApplicationResources,
-    License,
+    License, LicenseText,
     MasterAssetModel,
     NamurNE107Event,
-    Profile,
+    Profile, PublicationList, Resource,
+    RTLicense,
     StatusEvent,
 } from '@oi4/oi4-oec-service-model';
 import {
     EOPCUABaseDataType,
-    EOPCUALocale,
+    EOPCUALocale, EOPCUAMessageType,
     EOPCUAStatusCode,
     IOPCUANetworkMessage,
     OPCUABuilder
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {AsyncClientEvents, ResourceType} from '../../src/Utilities/Helpers/Enums';
+import {AsyncClientEvents} from '../../src/Utilities/Helpers/Enums';
 import EventEmitter from 'events';
 
 
@@ -52,6 +53,10 @@ const getStandardMqttConfig = (): MqttSettings => {
 }
 
 const getResourceInfo = (): IOI4ApplicationResources => {
+    const licenseText = new Map<string, LicenseText>();
+    licenseText.set('a', {licenseText: '1'} as LicenseText);
+    licenseText.set('b', {licenseText: '2'} as LicenseText);
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     return {
@@ -91,30 +96,30 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             context: {name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}
         },
         publicationList: [
-            {
+            PublicationList.clone({
                 active: true,
                 resource: 'health',
                 config: EPublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
-            },
+            } as PublicationList),
             {
                 active: false,
                 resource: 'mam',
                 config: EPublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
-            },
+            } as PublicationList,
             {
                 active: true,
                 resource: 'license',
                 config: EPublicationListConfig.STATUS_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
-            }
+            } as PublicationList
         ],
         profile: new Profile(Application.mandatory),
-        licenseText: {'a': '1', 'b': '2'},
+        licenseText: licenseText,
         license: [
             new License('1', [
                     {licAuthors: ['a-01', 'a-02'], component: 'comp-01', licAddText: 'text-a'},
@@ -129,14 +134,24 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 ],
             )
         ],
+        rtLicense: new RTLicense(),
         health: new Health(EDeviceHealth.NORMAL_0, 100),
-        mam: {
+        mam: MasterAssetModel.clone({
             DeviceClass: 'oi4',
             ManufacturerUri: 'test',
-            Model: {locale: EOPCUALocale.enUS, text: 'text'},
-            Description: {locale: EOPCUALocale.enUS, text: 'text'},
+            Model: {
+                locale: EOPCUALocale.enUS,
+                text: 'text'
+            },
+            Description: {
+                locale: EOPCUALocale.enUS,
+                text: 'text'
+            },
             DeviceManual: '',
-            Manufacturer: {locale: EOPCUALocale.enUS, text: 'text'},
+            Manufacturer: {
+                locale: EOPCUALocale.enUS,
+                text: 'text'
+            },
             HardwareRevision: '1.0',
             ProductCode: '213dq',
             DeviceRevision: '1.0',
@@ -144,13 +159,50 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
-        } as MasterAssetModel,
+        } as MasterAssetModel),
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        dataLookup: {'tag-01': {MessageId: '1'}, 'tag-02': {MessageId: '2'}},
+        dataLookup: {
+            'tag-01': {
+                MessageId: '1',
+                MessageType: EOPCUAMessageType.uaData,
+                PublisherId: '',
+                DataSetClassId: '',
+                Messages: []
+            },
+            'tag-02': {
+                MessageId: '2',
+                MessageType: EOPCUAMessageType.uaData,
+                PublisherId: '',
+                DataSetClassId: '',
+                Messages: []
+            }
+        },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        metaDataLookup: {'tag-01': {MessageId: 'meta-01'}, 'tag-02': {MessageId: 'meta-02'}},
+        metaDataLookup: {
+            'tag-01': {
+                MessageId: 'meta-01',
+                MessageType: EOPCUAMessageType.uaMetadata,
+                PublisherId: '',
+                DataSetWriterId: 0,
+                filter: '',
+                subResource: '',
+                correlationId: '',
+                MetaData: undefined
+
+            },
+            'tag-02': {
+                MessageId: 'meta-02',
+                MessageType: EOPCUAMessageType.uaMetadata,
+                PublisherId: '',
+                DataSetWriterId: 0,
+                filter: '',
+                subResource: '',
+                correlationId: '',
+                MetaData: undefined
+            }
+        },
         subscriptionList: [
             {topicPath: 'path-01', config: ESubscriptionListConfig.CONF_1},
             {topicPath: 'path-02', config: ESubscriptionListConfig.NONE_0},
@@ -160,7 +212,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         on: jest.fn(),
-        getLicense(oi4Id: string, licenseId?: string): License[] {
+        getLicense(oi4Id: string, licenseId ?: string): License[] {
             console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
             return this.license;
         }
@@ -267,7 +319,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const onResourceMock = jest.fn((_, cb) => {
-            cb(ResourceType.HEALTH);
+            cb(Resource.HEALTH);
             expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining('health'), '', '', resources.oi4Id);
             mockSendResource.mockRestore();
             done();
@@ -354,7 +406,7 @@ describe('OI4MessageBus test', () => {
     }
 
     it('should prepare mam payload', async () => {
-        const result = await getPayload('mam', '');
+        const result = await getPayload('', Resource.MAM);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
@@ -366,7 +418,7 @@ describe('OI4MessageBus test', () => {
     }
 
     it('should prepare profile payload when filter !== oi4Id', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), 'profile');
+        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), Resource.PROFILE);
         checkProfilePayload(result.payload[0]);
     });
 
@@ -389,7 +441,7 @@ describe('OI4MessageBus test', () => {
         const filter = 'a';
         const result = await getPayload(filter, 'licenseText');
         expect(JSON.stringify(result.payload[0].Payload))
-            .toBe(JSON.stringify({licenseText: getResourceInfo().licenseText[filter]}));
+            .toBe(JSON.stringify(getResourceInfo().licenseText.get(filter)));
     });
 
     it('should prepare license payload', async () => {

@@ -53,7 +53,7 @@ export class ClientPayloadHelper {
     }
 
     createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];;
+        const payload: IOPCUADataSetMessage[] = [];
         if (!applicationResources.licenseText.has(filter)) {
             return {abortSending: true, payload: undefined};
         }

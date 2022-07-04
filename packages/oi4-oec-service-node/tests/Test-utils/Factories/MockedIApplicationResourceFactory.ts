@@ -12,11 +12,12 @@ import {
     Health,
     IContainerConfigConfigName,
     IOI4ApplicationResources,
-    IPublicationListObject,
-    ISubscriptionListObject,
-    License, LicenseText,
+    License,
+    LicenseText,
     MasterAssetModel,
     Profile,
+    PublicationList,
+    Resource,
     RTLicense
 } from '@oi4/oi4-oec-service-model';
 
@@ -81,21 +82,9 @@ export class MockedIApplicationResourceFactory {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            addPublication(_: IPublicationListObject): void {
-                console.log('Called mocked addPublication. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            addSubscription(_: ISubscriptionListObject): void {
-                console.log('Called mocked addSubscription. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            removePublicationByTag(_: string): void {
-                console.log('Called mocked removePublicationByTag. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            removeSubscriptionByTopic(_: string): void {
-                console.log('Called mocked removeSubscriptionByTopic. Do nothing....');
+            getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
+                console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}. Do nothing....`);
+                return this.publicationList;
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             setHealth(_: EDeviceHealth): void {
@@ -181,12 +170,12 @@ export class MockedIApplicationResourceFactory {
         return {locale: EOPCUALocale.enUS, text: text};
     }
 
-    private static getMockedPublicationList(): IPublicationListObject[] {
+    private static getMockedPublicationList(): PublicationList[] {
         return [{
             resource: 'fakeResource',
             DataSetWriterId: 42,
             oi4Identifier: 'fakeOi4Id',
-        }]
+        } as PublicationList]
     }
 
     private static getMockedDataLookup(): Record<string, IOPCUANetworkMessage> {

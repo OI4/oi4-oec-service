@@ -5,14 +5,12 @@ import {
     CDataSetWriterIdLookup, DataSetWriterIdManager,
     EDeviceHealth,
     Health,
-    IOI4ApplicationResources, LicenseText,
+    IOI4ApplicationResources, LicenseText, Resource,
     SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {ResourceType} from '../../../dist/Utilities/Helpers/Enums';
-
 
 describe('Unit test for ClientPayloadHelper', () => {
 
@@ -225,7 +223,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];
-        expect(extractedMessage.DataSetWriterId).toBe(CDataSetWriterIdLookup[ResourceType.EVENT]);
+        expect(extractedMessage.DataSetWriterId).toBe(CDataSetWriterIdLookup[Resource.EVENT]);
         expect(extractedMessage.filter).toBe('fakeFilter');
         expect(extractedMessage.subResource).toBe('fakeSubResource');
         expect(extractedMessage.Payload).toStrictEqual(event);
