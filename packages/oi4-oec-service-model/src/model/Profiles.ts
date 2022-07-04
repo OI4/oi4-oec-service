@@ -1,29 +1,29 @@
 import {Resource} from './Resource';
 
-const profileFull: string [] = [
-    Resource.mam,
-    Resource.health,
-    Resource.license,
-    Resource.licenseText,
-    Resource.profile,
-    Resource.data,
-    Resource.rtLicense,
-    Resource.config,
-    Resource.event,
-    Resource.metadata,
-    Resource.publicationList,
-    Resource.subscriptionList,
-    Resource.referenceDesignation
+const profileFull: Resource [] = [
+    Resource.MAM,
+    Resource.HEALTH,
+    Resource.LICENSE,
+    Resource.LICENSE_TEXT,
+    Resource.PROFILE,
+    Resource.DATA,
+    Resource.RT_LICENSE,
+    Resource.CONFIG,
+    Resource.EVENT,
+    Resource.METADATA,
+    Resource.PUBLICATION_LIST,
+    Resource.SUBSCRIPTION_LIST,
+    Resource.REFERENCE_DESIGNATION
 ];
 
 export const Application = {
     mandatory:  [
-        Resource.mam,
-        Resource.health,
-        Resource.license,
-        Resource.licenseText,
-        Resource.publicationList,
-        Resource.profile
+        Resource.MAM,
+        Resource.HEALTH,
+        Resource.LICENSE,
+        Resource.LICENSE_TEXT,
+        Resource.PUBLICATION_LIST,
+        Resource.PROFILE
     ],
     full: profileFull
 };
@@ -31,10 +31,9 @@ export const Application = {
 export const Device = {
 
     mandatory: [
-        Resource.mam,
-        Resource.health,
-        Resource.profile
+        Resource.MAM,
+        Resource.HEALTH,
+        Resource.PROFILE
     ],
     full: profileFull,
 };
-

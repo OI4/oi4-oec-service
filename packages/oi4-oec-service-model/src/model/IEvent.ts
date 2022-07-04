@@ -1,3 +1,6 @@
+import {OI4Payload} from './Payload';
+import {Resource} from "./Resource";
+
 export enum EventCategory {
     CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
     CAT_STATUS_1 = 'CAT_STATUS_1',
@@ -5,7 +8,7 @@ export enum EventCategory {
     CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
-export interface IEvent {
+export interface IEvent extends OI4Payload {
     origin: string;
     number: number;
     description?: string;
@@ -23,6 +26,10 @@ export abstract class BaseEvent implements IEvent {
         this.origin = origin;
         this.number = number;
         this.description = description;
+    }
+
+    resourceType() {
+        return Resource.EVENT;
     }
 
     abstract readonly category: EventCategory;

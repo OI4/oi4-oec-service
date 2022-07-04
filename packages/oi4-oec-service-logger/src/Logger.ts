@@ -1,13 +1,14 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {
-    CDataSetWriterIdLookup,
     ESyslogEventFilter, EventCategory,
     IEvent,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
 import {Syslog, SyslogTransportInstance} from 'winston-syslog';
+import {DataSetWriterIdManager} from "@oi4/oi4-oec-service-model";
+import { Resource } from '@oi4/oi4-oec-service-model';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
@@ -114,7 +115,7 @@ class Logger {
                     syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
                         subResource: event.subResource(),
                         Payload: event,
-                        DataSetWriterId: CDataSetWriterIdLookup['event']
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.EVENT, event.subResource()),
                     }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */

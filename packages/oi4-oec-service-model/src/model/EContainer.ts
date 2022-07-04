@@ -49,13 +49,6 @@ export enum EDeviceHealth {
   MAINTENANCE_REQUIRED_4 = 'MAINTENANCE_REQUIRED_4',
 }
 
-export enum EPublicationListExplicit {
-  EXPL_OFF_0 = 'EXPL_OFF_0',
-  EXPL_TAG_1 = 'EXPL_TAG_1',
-  EXPL_DSWID_2 = 'EXPL_DSWID_2',
-  EXPL_TAG_AND_DSWID_3 = 'EXPL_TAG_AND_DSWID_3'
-}
-
 export enum EPublicationListConfig {
   NONE_0 = 'NONE_0',
   STATUS_1 = 'STATUS_1',

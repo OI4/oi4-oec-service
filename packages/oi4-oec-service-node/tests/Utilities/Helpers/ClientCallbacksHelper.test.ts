@@ -73,7 +73,7 @@ describe('Unit test for ClientCallbackHelper', () => {
 
         await clientCallbackHelper.onClientConnectCallback(mockedClient, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
         expect(mockedClient.brokerState).toBe(true);
-        checkLogEntries(2, ['Connected successfully', 'Published Birthmessage on fakePreamble/pub/mam/fakeOi4Id']);
+        checkLogEntries(2, ['Connected successfully', 'Published birth message on fakePreamble/pub/mam/fakeOi4Id']);
     });
 
 });

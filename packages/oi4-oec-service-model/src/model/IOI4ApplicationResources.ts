@@ -1,26 +1,27 @@
-import {IMasterAssetModel, IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {EDeviceHealth} from './EContainer';
 import {
     IContainerConfig,
-    IContainerHealth,
-    IContainerProfile,
-    IContainerRTLicense,
-    ILicenseObject,
-    IPublicationListObject,
-    ISubscriptionListObject
 } from './IContainer';
+import {
+    License,
+    Health,
+    RTLicense,
+    Profile,
+    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
+} from "./Resource";
 
 export interface IOI4ApplicationResources {
     oi4Id: string;
-    health: IContainerHealth;
-    profile: IContainerProfile;
-    mam: IMasterAssetModel;
-    license: ILicenseObject[];
-    licenseText: Record<string, string>;
-    rtLicense: IContainerRTLicense;
+    health: Health;
+    profile: Profile;
+    mam: MasterAssetModel;
+    license: License[];
+    licenseText: Map<string, LicenseText>;
+    rtLicense: RTLicense;
     config: IContainerConfig;
-    publicationList: IPublicationListObject[];
-    subscriptionList: ISubscriptionListObject[];
+    publicationList: PublicationList[];
+    subscriptionList: SubscriptionList[];
     brokerState: boolean;
 
     dataLookup: Record<string, IOPCUANetworkMessage>;
@@ -29,18 +30,14 @@ export interface IOI4ApplicationResources {
     setHealthState(healthState: number): void;
     setHealth(health: EDeviceHealth): void;
 
-    getLicense(oi4Id: string, licenseId?: string): ILicenseObject[];
+    getLicense(oi4Id: string, licenseId?: string): License[];
 
-    addProfile(entry: string): void;
-    addLicenseText(licenseName: string, licenseText: string): void;
-    addPublication(publicationObj: IPublicationListObject): void;
-    addSubscription(subscriptionObj: ISubscriptionListObject): void;
+    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[];
 
-    removePublicationByTag(tag: string): void;
-    removeSubscriptionByTopic(topic: string): void;
+    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[];
 
     on(event: string, listener: Function): this;
 
     // Methods
-    addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
+    addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }
