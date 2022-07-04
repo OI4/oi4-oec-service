@@ -157,7 +157,12 @@ export class MqttMessageProcessor {
                 case ResourceType.PUBLICATION_LIST:
                 case ResourceType.SUBSCRIPTION_LIST: {
                     subResource = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
-                    topicTag = topicArray[12]
+                    if (this.isStringEmpty(topicArray[8]) || this.isStringEmpty(topicArray[9]) || this.isStringEmpty(topicArray[10]) || this.isStringEmpty(topicArray[11])) {
+                        throw new Error(`Subresource has an invalid value: ${subResource}`);
+                    } else if (this.isStringEmpty(topicArray[12])) {
+                        throw new Error(`Missing Tag: ${topic}`);
+                    }
+                    topicTag = topicArray[12];
                     break;
                 }
 
