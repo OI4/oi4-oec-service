@@ -20,6 +20,8 @@ export enum ResourceType {
     PUBLICATION_LIST = 'publicationList',
     SUBSCRIPTION_LIST = 'subscriptionList',
     EVENT = 'event',
+    DATA = 'data',
+    METADATA = 'METADATA',
 }
 
 export enum TopicMethods {

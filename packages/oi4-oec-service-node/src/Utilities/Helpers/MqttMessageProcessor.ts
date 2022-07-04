@@ -45,7 +45,6 @@ export class MqttMessageProcessor {
     }
 
     private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
-
         const validateMessage: ValidatedMessage = this.validateIncomingMessage(message);
         if(!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
@@ -108,74 +107,112 @@ export class MqttMessageProcessor {
         return true;
     }
 
-    private extractTopicInfo(topic: string): TopicInfo {
-        /**
-        Accordingly to the guideline, these are the possible generic requests
-                - oi4/<serviceType>/<appId>/get/mam/<oi4Identifier>
-                - oi4/<serviceType>/<appId>/get/health/<oi4Identifier>
-                - oi4/<serviceType>/<appId>/get/rtLicense/<oi4Identifier>
-                - oi4/<serviceType>/<appId>/get/profile/<oi4Identifier>
-                - oi4/<serviceType>/<appId>/{get/set/del}/referenceDesignation/<oi4Identifier>
-                ---
-                - oi4/<serviceType>/<appId>/{get/set}/config/<oi4Identifier>/<filter>
-                - oi4/<serviceType>/<appId>/{get/set}/data/<oi4Identifier>/<filter>
-                - oi4/<serviceType>/<appId>/{get/set}/metadata/<oi4Identifier>/<filter>
-                ---
-                - oi4/<serviceType>/<appId>/get/license/<oi4Identifier>/<licenseId>
-                - oi4/<serviceType>/<appId>/get/licenseText/<oi4Identifier>/<licenseId>
-                ---
-                - oi4/<serviceType>/<appId>/{get/set}/publicationList/<oi4Identifier>/<resourceType>/<tag>
-                - oi4/<serviceType>/<appId>/{get/set/del}/subscriptionList/<oi4Identifier>/<resourceType>/<tag>
+    /**
+     Accordingly to the guideline, these are the possible generic requests
 
-         Example of topic string
-            oi4/OTConnector/mymanufacturer.com/myModel/myProductCode/000-555/get/health/myManufacturer.com/myModel/myProductCode/000-555/oi4_pv
-             0       1     |     2               3           4          5   | 6    7           8             9       10            11      12
-                           |                Topic App Id                    |
-         */
+     - oi4/<serviceType>/<appId>/get/mam                                /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/health                             /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/rtLicense                          /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/profile                            /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/{get/set/del}/referenceDesignation     /<oi4Identifier>?
+     --- length = 8 -> no oi4Id
+     --- length = 12 -> yes Oi4Id
+
+     - oi4/<serviceType>/<appId>/{get/set}/config                       /<oi4Identifier>?/<filter>?
+     - oi4/<serviceType>/<appId>/{get/set}/data                         /<oi4Identifier>?/<filter>?
+     - oi4/<serviceType>/<appId>/{get/set}/metadata                     /<oi4Identifier>?/<filter>?
+     --- length = 8 -> no oi4Id and no filter
+     --- length = 12 -> yes Oi4Id but no filter
+     --- length = 13 -> yes oi4Id and yes filter
+
+     - oi4/<serviceType>/<appId>/get/license                            /<oi4Identifier>?/<licenseId>?
+     - oi4/<serviceType>/<appId>/get/licenseText                        /<oi4Identifier>?/<licenseId>?
+     --- length = 8 -> no oi4Id and no licenseId
+     --- length = 12 -> yes Oi4Id but no licenseId
+     --- length = 13 -> yes oi4Id and yes licenseId
+
+     - oi4/<serviceType>/<appId>/{get/set}/publicationList              /<oi4Identifier>?/<resourceType>?/<tag>?
+     - oi4/<serviceType>/<appId>/{get/set/del}/subscriptionList         /<oi4Identifier>?/<resourceType>?/<tag>?
+     --- length = 8 -> no oi4Identifier and no resourceType and no tag
+     --- length = 12 -> yes oi4Identifier and no resourceType and no tag
+     --- length = 14 -> yes oi4Identifier and yes resourceType and yes tag
+     */
+    private extractTopicInfo(topic: string): TopicInfo {
+        //FIXME Add the parsing of the pub event
 
         const topicArray = topic.split('/');
-        const topicAppId = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-        const topicMethod = topicArray[6];
-        const topicResource = topicArray[7];
-        let topicFilter = undefined;
-        let licenseId = undefined;
-        let subResource = undefined;
-        let topicTag = undefined;
+        const topicInfo: TopicInfo = this.extractCommonInfo(topic, topicArray);
 
-        if(topicArray.length >= 8) {
-            switch (topicResource) {
-                case ResourceType.LICENSE_TEXT:
-                case ResourceType.LICENCE: {
-                    if (this.isStringEmpty(topicArray[8]) || this.isStringEmpty(topicArray[9])) {
-                        throw new Error(`Missing Oi4 Identifier or License Id: ${topic}`);
-                    }
-                    topicFilter = topicArray[8];
-                    licenseId = topicArray[9];
-                    break;
-                }
-
-                case ResourceType.PUBLICATION_LIST:
-                case ResourceType.SUBSCRIPTION_LIST: {
-                    subResource = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
-                    if (this.isStringEmpty(topicArray[8]) || this.isStringEmpty(topicArray[9]) || this.isStringEmpty(topicArray[10]) || this.isStringEmpty(topicArray[11])) {
-                        throw new Error(`Subresource has an invalid value: ${subResource}`);
-                    } else if (this.isStringEmpty(topicArray[12])) {
-                        throw new Error(`Missing Tag: ${topic}`);
-                    }
-                    topicTag = topicArray[12];
-                    break;
-                }
-
-                default: {
-                    if (this.isStringEmpty(topicArray[8])) {
-                        throw new Error(`Missing Oi4 Identifier: ${topic}`);
-                    }
-                    topicFilter = topicArray[8];
-                }
-            }
+        if(topicArray.length > 12) {
+            this.extractResourceSpecificInfo(topic, topicArray, topicInfo);
         }
 
-        return {topic: topic, appId: topicAppId, method:topicMethod, resource:topicResource, filter:topicFilter, licenseId: licenseId, subResource:subResource, topicTag: topicTag};
+        return topicInfo;
+    }
+
+    private extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
+        const topicInfo: TopicInfo = {
+            topic: topic,
+            appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
+            method: topicArray[6],
+            resource: topicArray[7],
+            oi4Id: undefined,
+            filter: undefined,
+            licenseId: undefined,
+            subResource: undefined,
+            topicTag: undefined,
+        };
+
+        if (topicArray.length >= 12) {
+            if(this.isAtLeastOneStringEmpty([topicArray[8], topicArray[9], topicArray[10], topicArray[11]])) {
+                throw new Error(`Malformed Oi4Id : ${topic}`);
+            }
+            topicInfo.oi4Id = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
+        }
+
+        return topicInfo;
+    }
+
+    private extractResourceSpecificInfo(topic: string, topicArray: Array<string>, topicInfo: TopicInfo) {
+        switch (topicInfo.resource) {
+            case ResourceType.CONFIG:
+            case ResourceType.DATA:
+            case ResourceType.METADATA: {
+                if (this.isStringEmpty(topicArray[12])) {
+                    throw new Error(`Invalid filter: ${topic}`);
+                }
+                topicInfo.filter = topicArray[12];
+                break;
+            }
+
+            case ResourceType.LICENSE_TEXT:
+            case ResourceType.LICENCE: {
+                if (this.isStringEmpty(topicArray[12])) {
+                    throw new Error(`Invalid licenseId: ${topic}`);
+                }
+                topicInfo.licenseId = topicArray[12];
+                break;
+            }
+
+            case ResourceType.PUBLICATION_LIST:
+            case ResourceType.SUBSCRIPTION_LIST: {
+                if (this.isAtLeastOneStringEmpty([topicArray[12], topicArray[13]])) {
+                    throw new Error(`Invalid resourceType/tag: ${topic}`);
+                }
+                topicInfo.subResource = topicArray[12];
+                topicInfo.topicTag = topicArray[13];
+                break;
+            }
+        }
+    }
+
+    private isAtLeastOneStringEmpty(strings: Array<string>) {
+        for (const str of strings) {
+            if(this.isStringEmpty(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private isStringEmpty(str: string) {
@@ -272,18 +309,18 @@ export class MqttMessageProcessor {
 
     // SET Function section ------//
     private setData(cutTopic: string, data: IOPCUANetworkMessage) {
-        const tagName = cutTopic;
+        const filter = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
-        if (tagName === '') {
+        if (filter === '') {
             return;
         }
-        if (!(tagName in dataLookup)) {
-            this.applicationResources.dataLookup[tagName] = data;
-            LOGGER.log(`Added ${tagName} to dataLookup`);
+        if (!(filter in dataLookup)) {
+            this.applicationResources.dataLookup[filter] = data;
+            LOGGER.log(`Added ${filter} to dataLookup`);
         } else {
-            this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
-            LOGGER.log(`${tagName} already exists in dataLookup`);
+            this.applicationResources.dataLookup[filter] = data; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in dataLookup`);
         }
     }
 

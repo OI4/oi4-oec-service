@@ -28,6 +28,7 @@ export type TopicInfo = {
     appId: string;
     method: string;
     resource: string;
+    oi4Id: string;
     filter?: string;
     licenseId?: string;
     subResource?: string;
