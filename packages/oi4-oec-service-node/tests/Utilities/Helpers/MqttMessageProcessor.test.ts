@@ -140,7 +140,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
     */
 
-    it('extract topic info works - if wrong oi4Id an error is thrown - mam, health, rtLicense, profile, referenceDesignation', async () => {
+    it('extract topic info works - if oi4Id is wrong an error is thrown - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         let errorArrived = false;
 
@@ -196,7 +196,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(errorArrived).toBeTruthy();
     }
 
-    it('extract topic info works - config - if the filter is wrong an error is thrown', async() => {
+    it('extract topic info works - config - if the filter is missing an error is thrown', async() => {
         await checkAgainstError('config', 'Invalid filter: ');
     });
 
@@ -221,7 +221,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(fakeLogFile[0]).toBe(`Added ${defaultFilter} to dataLookup`);
     });
 
-    it('extract topic info works - data - if the filter is wrong an error is thrown', async() => {
+    it('extract topic info works - data - if the filter is missing an error is thrown', async() => {
         await checkAgainstError('data', 'Invalid filter: ');
     });
 
@@ -262,11 +262,13 @@ describe('Unit test for MqttMessageProcessor', () => {
         await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicense, `${baseFakeTopic}/${resourceConfigLicense}/${defaultFakeOi4Id}/${defaultLicenseId}`);
         await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicenseText, `${baseFakeTopic}/${resourceConfigLicenseText}/${defaultFakeOi4Id}/${defaultLicenseId}`);
     });
-    
-    it('extract topic info - license and licenseText - if filter or licenseId is missing, an error is thrown', async () => {
+
+    it('extract topic info - license and licenseText - if licenseId is missing, an error is thrown', async () => {
         await checkAgainstError('license', 'Invalid licenseId: ');
         await checkAgainstError('licenseText' ,'Invalid licenseId: ');
     });
+
+    // ------------- RICONTROLLARE DA QUA IN SU, CORREGGERE DA QUA IN GIÚ
 
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
         const subResource = 'myManufacturer.com/myModel/myProductCode/000-555';
