@@ -13,8 +13,9 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
-    const defaultFakeOi4Id = 'mymanufacturer.com/1/1/1';
     const defaultEmitter: EventEmitter = new EventEmitter();
+    const defaultFakeOi4Id = 'mymanufacturer.com/1/1/1';
+    const defaultFilter = 'oi4_pv';
 
     beforeEach(() => {
         //Flush the messages log
@@ -28,7 +29,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         return {
             fakeOi4Id: defaultFakeOi4Id,
             fakeServiceType: 'fakeServiceType',
-            fakeTopic: `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/mam/oi4_pv`,
+            fakeTopic: `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/mam/${defaultFilter}`,
         }
     }
 
@@ -116,40 +117,39 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     it('extract topic info works - config', async() => {
         const resourceConfig = 'config';
-        let fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/oi4_pv`;
-        await checkResultGet(resourceConfig, fakeTopic, 'oi4_pv');
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${defaultFilter}`;
+
+        await checkResultGet(resourceConfig, fakeTopic, defaultFilter);
 
         const mockedSendMessage = jest.fn();
-        const emitter: EventEmitter = new EventEmitter();
-        const spiedEmit = jest.spyOn(emitter, 'emit');
-        fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.SET}/${resourceConfig}/oi4_pv`;
-        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, emitter);
+        const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
+        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter);
+
         expect(spiedEmit).toHaveBeenCalledWith('setConfig', {origin: defaultFakeOi4Id, number: 0, description: undefined});
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, 'oi4_pv');
-        expect(fakeLogFile[1]).toBe('Added oi4_pv to config group');
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFilter);
+        expect(fakeLogFile[1]).toBe(`Added ${defaultFilter} to config group`);
     });
 
     it('extract topic info works - data', async () => {
         const resourceConfig = 'data';
-        const emitter: EventEmitter = new EventEmitter();
-        const spiedEmit = jest.spyOn(emitter, 'emit');
-        let fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/oi4_pv`;
-        await processMessage(jest.fn(), fakeTopic, resourceConfig, emitter);
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${defaultFilter}`;
+
+        const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter);
         expect(spiedEmit).toHaveBeenCalledWith('getData', {topic: fakeTopic, message: {Messages: [{Payload: 'fakePayload'}], PublisherId: 'Registry/mymanufacturer.com/1/1/1'}});
 
-        fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.SET}/${resourceConfig}/oi4_pv`;
-        await processMessage(jest.fn(), fakeTopic, resourceConfig, emitter);
-        expect(fakeLogFile[0]).toBe('Added oi4_pv to dataLookup');
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter);
+        expect(fakeLogFile[0]).toBe(`Added ${defaultFilter} to dataLookup`);
     });
 
     it('extract topic info works - metadata', async () => {
-        const filter = 'oi4_pv';
         const resourceConfig = 'METADATA';
-        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${filter}`;
+        const fakeTopic = `fake/fictitious/${defaultFakeOi4Id}/${TopicMethods.GET}/${resourceConfig}/${defaultFilter}`;
+
         const sendMetaData: Function = jest.fn();
         await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, sendMetaData);
 
-        expect(sendMetaData).toHaveBeenCalledWith(filter);
+        expect(sendMetaData).toHaveBeenCalledWith(defaultFilter);
 
         //set metadata basically does nothing
     });
