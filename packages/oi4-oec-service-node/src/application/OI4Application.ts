@@ -10,7 +10,7 @@ import {
     StatusEvent,
     ESyslogEventFilter,
     IOI4ApplicationResources,
-    IEvent, Resource
+    IEvent, Resource, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
@@ -123,11 +123,11 @@ class OI4Application extends EventEmitter {
     }
 
     private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {
-        this.applicationResources.subscriptionList.push({
+        this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
             config: ESubscriptionListConfig.NONE_0,
             interval: 0,
-        });
+        } as SubscriptionList));
         return await this.client.subscribe(topic);
     }
 
@@ -211,7 +211,6 @@ class OI4Application extends EventEmitter {
             return {payload: undefined, abortSending: true};
         }
 
-        const dswidFilter: number = validatedFilter.dswidFilter;
         let payloadResult: ValidatedPayload;
 
         switch (resource) {
@@ -244,11 +243,11 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case Resource.SUBSCRIPTION_LIST: {
-                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, filter, dswidFilter, resource);
+                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
             case Resource.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, filter, dswidFilter, subResource);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
             default: {

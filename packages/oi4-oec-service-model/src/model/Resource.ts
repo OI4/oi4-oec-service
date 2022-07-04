@@ -1,6 +1,6 @@
-import {OI4Payload} from "./Payload";
-import {EDeviceHealth, EPublicationListConfig, EPublicationListExplicit} from "./EContainer";
-import {IMasterAssetModel, IOPCUALocalizedText} from "@oi4/oi4-oec-service-opcua-model";
+import {OI4Payload} from './Payload';
+import {EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig} from './EContainer';
+import {IMasterAssetModel, IOPCUALocalizedText} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum Resource {
     MAM = 'mam',
@@ -83,6 +83,12 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
     resourceType(): Resource {
         return Resource.MAM;
     }
+
+    static clone(source: MasterAssetModel): MasterAssetModel {
+        const copy = new MasterAssetModel();
+        Object.assign(copy, source);
+        return copy;
+    }
 }
 
 export class Health implements OI4Payload {
@@ -96,6 +102,10 @@ export class Health implements OI4Payload {
 
     resourceType(): Resource {
         return Resource.HEALTH;
+    }
+
+    static clone(source: Health): Health {
+        return new Health(source.health, source.healthScore);
     }
 }
 
@@ -118,6 +128,10 @@ export class License implements OI4Payload {
         return Resource.LICENSE;
     }
 
+    static clone(source: License): License {
+        return new License(source.licenseId, source.components);
+    }
+
 }
 
 export class LicenseText implements OI4Payload {
@@ -129,6 +143,10 @@ export class LicenseText implements OI4Payload {
 
     resourceType(): Resource {
         return Resource.LICENSE_TEXT;
+    }
+
+    static clone(source: LicenseText): LicenseText {
+        return new LicenseText(source.licenseText);
     }
 }
 
@@ -142,21 +160,47 @@ export class Profile implements OI4Payload {
     resourceType(): Resource {
         return Resource.PROFILE;
     }
+
+    static clone(source: Profile): Profile {
+        return new Profile(source.resource);
+    }
 }
 
 export class PublicationList implements OI4Payload {
     resource: string;
-    tag?: string;
+    subResource?: string;
+    filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
     oi4Identifier: string;
-    active?: boolean;
-    explicit?: EPublicationListExplicit;
+    mode: string; // Change me to enum
     interval?: number; // UINT32
     precisions?: number; // REAL
     config?: EPublicationListConfig;
 
     resourceType(): Resource {
         return Resource.PUBLICATION_LIST;
+    }
+
+    static clone(source: PublicationList): PublicationList {
+        const copy = new PublicationList();
+        Object.assign(copy, source);
+        return copy;
+    }
+}
+
+export class SubscriptionList implements OI4Payload {
+    topicPath: string;
+    interval: number;
+    config?: ESubscriptionListConfig;
+
+    resourceType(): Resource {
+        return Resource.SUBSCRIPTION_LIST;
+    }
+
+    static clone(source: SubscriptionList): SubscriptionList {
+        const copy = new SubscriptionList();
+        Object.assign(copy, source);
+        return copy;
     }
 }
 

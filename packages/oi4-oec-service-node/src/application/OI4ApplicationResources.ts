@@ -7,13 +7,14 @@ import {
     Health,
     IContainerConfig,
     IOI4ApplicationResources,
-    ISubscriptionListObject,
     License,
     LicenseText,
     MasterAssetModel,
     Profile,
-    PublicationList, Resource,
-    RTLicense
+    PublicationList,
+    Resource,
+    RTLicense,
+    SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 
 import {
@@ -39,7 +40,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _licenseText: Map<string, LicenseText>;
     private _rtLicense: RTLicense;
     private _publicationList: PublicationList[];
-    private _subscriptionList: ISubscriptionListObject[];
+    private _subscriptionList: SubscriptionList[];
 
     subResources: Map<string, IOI4ApplicationResources>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
@@ -85,20 +86,21 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
             } else {
                 resInterval = 0;
             }
+
             this.addPublication({
                 resource: resources,
-                tag: this.oi4Id,
+                subResource: this.oi4Id,
                 DataSetWriterId: 0,
                 oi4Identifier: this.oi4Id,
                 interval: resInterval,
                 config: EPublicationListConfig.NONE_0,
             } as PublicationList);
 
-            this.addSubscription({
+            this.addSubscription(SubscriptionList.clone({
                 topicPath: `oi4/${this.mam.DeviceClass}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
                 interval: 0,
                 config: ESubscriptionListConfig.NONE_0,
-            });
+            } as SubscriptionList));
         }
 
     }
@@ -213,9 +215,18 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this._publicationList = publicationList;
     }
 
-    getPublicationList(oi4Id: string, resourceType: Resource, tag: string): PublicationList[] {
-        console.log('getPublicationList called but not yet implemented', oi4Id, resourceType, tag);
-        return [];
+    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
+        return this._publicationList.filter((elem: PublicationList) => {
+            if (elem.oi4Identifier !== oi4Id) return false;
+            if (resourceType !== undefined && elem.resource !== resourceType) return false;
+            if (tag !== undefined && elem.filter !== tag) return false;
+            return true;
+        });
+    }
+
+    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+        console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
+        return this._subscriptionList;
     }
 
     addPublication(publicationObj: PublicationList): void {
@@ -223,13 +234,8 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this.emit('resourceChanged', 'publicationList');
     }
 
-    removePublicationByTag(tag: string): void {
-        this.publicationList = this.publicationList.filter(value => value.tag !== tag);
-        this.emit('resourceChanged', 'publicationList');
-    }
-
     // --- subscriptionList ---
-    get subscriptionList(): ISubscriptionListObject[] {
+    get subscriptionList(): SubscriptionList[] {
         return this._subscriptionList;
     }
 
@@ -237,13 +243,8 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this._subscriptionList = subscriptionList;
     }
 
-    addSubscription(subscriptionObj: ISubscriptionListObject): void {
+    addSubscription(subscriptionObj: SubscriptionList): void {
         this.subscriptionList.push(subscriptionObj);
-        this.emit('resourceChanged', 'subscriptionList');
-    }
-
-    removeSubscriptionByTopic(topic: string): void {
-        this.subscriptionList = this.subscriptionList.filter(value => value.topicPath !== topic);
         this.emit('resourceChanged', 'subscriptionList');
     }
 

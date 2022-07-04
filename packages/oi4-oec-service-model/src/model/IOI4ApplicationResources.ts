@@ -18,6 +18,8 @@ export interface IOI4ApplicationResources extends IOI4Resource{
 
     setHealthState(healthState: number): void;
     setHealth(health: EDeviceHealth): void;
+    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
+} from "./Resource";
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
@@ -39,7 +41,23 @@ export interface IOI4Resource {
     rtLicense: RTLicense;
     config: IContainerConfig;
     publicationList: PublicationList[];
-    subscriptionList: ISubscriptionListObject[];
+    subscriptionList: SubscriptionList[];
+    brokerState: boolean;
+
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUAMetaData>;
+
+    setHealthState(healthState: number): void;
+    setHealth(health: EDeviceHealth): void;
+
+    getLicense(oi4Id: string, licenseId?: string): License[];
+
+    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[];
+
+    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[];
+
+    on(event: string, listener: Function): this;
+
+    // Methods
+    addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }

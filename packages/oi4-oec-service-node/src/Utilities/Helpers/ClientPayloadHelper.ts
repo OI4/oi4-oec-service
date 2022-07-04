@@ -2,19 +2,17 @@ import {ValidatedPayload} from './Types';
 import {
     DataSetWriterIdManager,
     EDeviceHealth,
-    ESyslogEventFilter, getResource,
+    getResource,
     Health,
-    IContainerConfig,
     IEvent,
     IOI4ApplicationResources,
-    ISubscriptionListObject,
     License,
     OI4Payload,
     PublicationList,
     Resource,
+    SubscriptionList,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {LOGGER} from '@oi4/oi4-oec-service-logger';
 
 export class ClientPayloadHelper {
 
@@ -53,7 +51,7 @@ export class ClientPayloadHelper {
     }
 
     createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];;
+        const payload: IOPCUADataSetMessage[] = [];
         if (!applicationResources.licenseText.has(filter)) {
             return {abortSending: true, payload: undefined};
         }
@@ -82,109 +80,86 @@ export class ClientPayloadHelper {
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: string, filter?: string, tag?: string): ValidatedPayload {
         const resourceType = filter !== undefined ? getResource(filter) : undefined;
 
-        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.PUBLICATION_LIST, applicationResources.oi4Id);
         const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
+            const resource = getResource(elem.resource);
+            const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id);
             return {
                 DataSetWriterId: dataSetWriterId,
-                subResource: elem.resourceType(),
+                filter: resource,
+                subResource: applicationResources.oi4Id,
                 Payload: elem,
             } as IOPCUADataSetMessage;
         });
 
-        return {abortSending: false, payload: payload};
+        return {abortSending: payload.length == 0, payload: payload};
     }
 
-    createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, resource: string): ValidatedPayload {
-        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.SUBSCRIPTION_LIST, applicationResources.oi4Id);
-        const payload: IOPCUADataSetMessage[] = [];
+    createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: string, filter?: string, tag?: string): ValidatedPayload {
+        const resourceType = filter !== undefined ? getResource(filter) : undefined;
 
-        if (Number.isNaN(dataSetWriterIdFilter)) { // Try to filter with resource
-            // 7 is resource
-            if (applicationResources.subscriptionList.some((elem: ISubscriptionListObject) => elem.topicPath.split('/')[7] === filter)) { // Does it even make sense to filter?
-                const filteredSubsArr = applicationResources.subscriptionList.filter((elem: ISubscriptionListObject) => {
-                    if (elem.topicPath.split('/')[7] === filter) return elem;
-                });
-                for (const filteredSubs of filteredSubsArr) {
-                    payload.push({
-                        subResource: filteredSubs.topicPath.split('/')[7],
-                        Payload: filteredSubs,
-                        DataSetWriterId: dataSetWriterId,
-                    });
-                }
-                // FIXME According to what I've read, the break is not allowed into if statements. This will raise and error. Maybe better to double check it.
-                //break;
-                return {abortSending: false, payload: payload};
-            }
-        } else if (dataSetWriterIdFilter !== dataSetWriterId) {
-            return this.manageInvaliddataSetWriterIdFilter(resource);
-        }
-
-        for (const subs of applicationResources.subscriptionList) {
-            payload.push({ // TODO: subResource out of topicPath property
-                subResource: subs.topicPath.split('/')[7],
-                Payload: subs,
+        const payload: IOPCUADataSetMessage[] = applicationResources.getSubscriptionList(oi4Id, resourceType, tag).map((elem: SubscriptionList) => {
+            const resource = Resource.SUBSCRIPTION_LIST;
+            const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id);
+            return {
                 DataSetWriterId: dataSetWriterId,
-            })
-        }
+                filter: resource,
+                subResource: applicationResources.oi4Id,
+                Payload: elem,
+            } as IOPCUADataSetMessage;
+        });
 
-        return {abortSending: false, payload: payload};
-    }
-
-    private manageInvaliddataSetWriterIdFilter(resource: string): ValidatedPayload {
-        // We don't need to fill the Payloads in the "else" case. Since there's only one DataSetWriterId in the license Resource, we send all licenses
-        // Whether there's a DataSetWriterId filter, or not we always send all licenses
-        // We only need a check here, if the DataSetWriterId even fits. If not, we just abort sending
-        LOGGER.log(`DataSetWriterId does not fit to ${resource} Resource`, ESyslogEventFilter.warning);
-        return {abortSending: true, payload: undefined};
+        return {abortSending: payload.length == 0, payload: payload};
     }
 
     // TODO this method must be refactored
-    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string, dataSetWriterIdFilter: number, subResource: string): ValidatedPayload {
-        const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
-        const payload: IOPCUADataSetMessage[] = [];
-
-        // Send all configs out
-        if (filter === '') {
-
-            payload.push({
-                subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
-                Payload: actualPayload,
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-            });
-            return {abortSending: false, payload: payload};
-
-            // Send only filtered config out
-        } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
-
-            // Filtered by subResource
-            actualPayload[filter] = applicationResources['config'][filter];
-            payload.push({
-                subResource: filter,
-                Payload: actualPayload,
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-            });
-            return {abortSending: false, payload: payload};
-
-        } else if (Number.isNaN(dataSetWriterIdFilter)) {
-
-            // No subResource filter means we can only filter by DataSetWriterId in this else
-            return {abortSending: true, payload: undefined};
-
-        } else if (dataSetWriterIdFilter === 8) {
-
-            // Filtered by DataSetWriterId
-            const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
-            payload.push({
-                subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
-                Payload: actualPayload,
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-            });
-            return {abortSending: false, payload: payload};
-
-        }
-
-        //FIXME is this needed? I do not fully understand how this method is supposed to behave
+    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: string, filter?: string): ValidatedPayload {
+        console.log(`createConfigSendResourcePayload called with oi4Id: ${oi4Id} and filter: ${filter} from ${applicationResources.oi4Id}`);
         return {abortSending: true, payload: undefined};
+        // const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
+        // const payload: IOPCUADataSetMessage[] = [];
+        //
+        // // Send all configs out
+        // if (filter === '') {
+        //
+        //     payload.push({
+        //         subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
+        //         Payload: actualPayload,
+        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
+        //     });
+        //     return {abortSending: false, payload: payload};
+        //
+        //     // Send only filtered config out
+        // } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
+        //
+        //     // Filtered by subResource
+        //     actualPayload[filter] = applicationResources['config'][filter];
+        //     payload.push({
+        //         subResource: filter,
+        //         Payload: actualPayload,
+        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
+        //     });
+        //     return {abortSending: false, payload: payload};
+        //
+        // } else if (Number.isNaN(dataSetWriterIdFilter)) {
+        //
+        //     // No subResource filter means we can only filter by DataSetWriterId in this else
+        //     return {abortSending: true, payload: undefined};
+        //
+        // } else if (dataSetWriterIdFilter === 8) {
+        //
+        //     // Filtered by DataSetWriterId
+        //     const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
+        //     payload.push({
+        //         subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
+        //         Payload: actualPayload,
+        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
+        //     });
+        //     return {abortSending: false, payload: payload};
+        //
+        // }
+        //
+        // //FIXME is this needed? I do not fully understand how this method is supposed to behave
+        // return {abortSending: true, payload: undefined};
     }
 
     createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
