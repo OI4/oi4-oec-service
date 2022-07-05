@@ -252,18 +252,18 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('extract topic info works - license and licenseText - get', async () => {
         const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
 
-        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE, `${baseFakeTopic}/${ResourceType.LICENSE}`);
         await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}`);
-        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}/${defaultFakeOi4Id}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE, `${baseFakeTopic}/${ResourceType.LICENSE}/${defaultFakeOi4Id}`);
         await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE, `${baseFakeTopic}/${ResourceType.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
         await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
 
         //set LICENSE AND LICENSE TEXT basically does nothing
     });
 
     it('extract topic info - license and licenseText - if licenseId is missing, an error is thrown', async () => {
-        await checkAgainstError(ResourceType.LICENCE, 'Invalid licenseId: ');
+        await checkAgainstError(ResourceType.LICENSE, 'Invalid licenseId: ');
         await checkAgainstError(ResourceType.LICENSE_TEXT ,'Invalid licenseId: ');
     });
 

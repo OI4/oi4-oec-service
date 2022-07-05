@@ -186,7 +186,7 @@ export class MqttMessageProcessor {
             }
 
             case ResourceType.LICENSE_TEXT:
-            case ResourceType.LICENCE: {
+            case ResourceType.LICENSE: {
                 if (this.isStringEmpty(topicArray[12])) {
                     throw new Error(`Invalid licenseId: ${topic}`);
                 }

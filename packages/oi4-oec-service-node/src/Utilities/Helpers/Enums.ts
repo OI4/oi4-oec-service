@@ -12,7 +12,7 @@ export enum AsyncClientEvents {
 export enum ResourceType {
     MAM = 'mam',
     HEALTH = 'health',
-    LICENCE = 'license',
+    LICENSE = 'license',
     LICENSE_TEXT = 'licenseText',
     RT_LICENSE = 'rtLicense',
     PROFILE = 'profile',

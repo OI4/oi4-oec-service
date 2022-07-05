@@ -228,7 +228,7 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter, resource);
                 break;
             }
-            case ResourceType.LICENCE: {
+            case ResourceType.LICENSE: {
                 payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
