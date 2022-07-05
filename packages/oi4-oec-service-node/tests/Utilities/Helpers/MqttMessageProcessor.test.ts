@@ -111,6 +111,14 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0 , 0);
     }
 
+    it('Pub events are ignored', async() => {
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.PUB}/${ResourceType.EVENT}/fakeCategory/${defaultFakeFilter}`;
+
+        await processMessage(jest.fn(), fakeTopic, ResourceType.CONFIG, defaultEmitter);
+
+        expect(fakeLogFile[0]).toBe(`No reaction needed to our own publication messages${fakeTopic.substring(fakeTopic.indexOf(`/${TopicMethods.PUB}/`), fakeTopic.length)}`);
+    });
+
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
@@ -129,21 +137,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         }
     });
 
-    /*
-    PROTOTYPE
-    async function checkForErrorThrown(errorMsg: string, functionCaller: Function) {
-        let errorArrived = false;
-        try {
-            functionCaller();
-        } catch(err: any) {
-            expect(err.message).toBe(errorMsg);
-            errorArrived = true;
-        }
-
-        expect(errorArrived).toBeTruthy();
-    }
-    */
-
+    //FIXME find a better way to check for errors
     it('extract topic info works - if oi4Id is wrong an error is thrown - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         let errorArrived = false;
