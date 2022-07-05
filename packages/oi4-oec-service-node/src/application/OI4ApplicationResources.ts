@@ -107,9 +107,6 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     }
 
-    dataLookup: Record<string, IOPCUANetworkMessage>;
-    metaDataLookup: Record<string, IOPCUADataSetMetaData>;
-
     private static extractMamFile(path: string): MasterAssetModel {
         if (existsSync(path)) {
             return JSON.parse(readFileSync(path).toString());
@@ -136,11 +133,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return this.subResources.delete(oi4Id);
     }
 
-    // Property accessor section
 
-  set brokerState(brokerState: boolean) {
-    this._brokerState = brokerState;
-  }
   // Resource accesor section
   // --- HEALTH ---
 
