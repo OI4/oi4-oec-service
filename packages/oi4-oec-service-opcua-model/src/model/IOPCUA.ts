@@ -23,7 +23,7 @@ export interface IOPCUANetworkMessage {
   MessageType: EOPCUAMessageType;
   PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
   DataSetClassId: GUID;
-  CorrelationId?: MessageId;
+  correlationId?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
 }
 
