@@ -1,4 +1,4 @@
-import {ConfigParser} from '../Utilities/ConfigParser/ConfigParser';
+import { ConfigParser } from '../Utilities/ConfigParser/ConfigParser';
 import {
     Application,
     EDeviceHealth,
@@ -107,6 +107,9 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     }
 
+    dataLookup: Record<string, IOPCUANetworkMessage>;
+    metaDataLookup: Record<string, IOPCUADataSetMetaData>;
+
     private static extractMamFile(path: string): MasterAssetModel {
         if (existsSync(path)) {
             return JSON.parse(readFileSync(path).toString());
@@ -135,8 +138,11 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     // Property accessor section
 
-    // Resource accesor section
-    // --- HEALTH ---
+  set brokerState(brokerState: boolean) {
+    this._brokerState = brokerState;
+  }
+  // Resource accesor section
+  // --- HEALTH ---
 
     get health() {
         return this._health;
