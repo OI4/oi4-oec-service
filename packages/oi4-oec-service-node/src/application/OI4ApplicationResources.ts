@@ -6,7 +6,7 @@ import {
     ESubscriptionListConfig,
     Health,
     IContainerConfig,
-    IOI4ApplicationResources,
+    IOI4ApplicationResources, IOI4Resource,
     License,
     LicenseText,
     MasterAssetModel,
@@ -42,7 +42,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _publicationList: PublicationList[];
     private _subscriptionList: SubscriptionList[];
 
-    readonly subResources: Map<string, IOI4ApplicationResources>;
+    readonly subResources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -64,7 +64,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
         this.oi4Id = this.mam.ProductInstanceUri;
 
-        this.subResources = new Map<string, IOI4ApplicationResources>();
+        this.subResources = new Map<string, IOI4Resource>();
 
         this._profile = new Profile(Application.mandatory);
 
@@ -118,14 +118,14 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return this.subResources.has(oi4Id);
     }
 
-    getSubResource(oi4Id?: string): IOI4ApplicationResources | IterableIterator<IOI4ApplicationResources>{
+    getSubResource(oi4Id?: string): IOI4Resource | IterableIterator<IOI4Resource> {
         if(oi4Id !== undefined) {
             return this.subResources.get(oi4Id);
         }
         return this.subResources.values();
     }
 
-    setSubResource(oi4Id: string, subResource: IOI4ApplicationResources): void {
+    setSubResource(oi4Id: string, subResource: IOI4Resource): void {
         this.subResources.set(oi4Id, subResource);
     }
 
