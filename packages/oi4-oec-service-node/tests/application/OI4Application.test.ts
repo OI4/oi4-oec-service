@@ -63,6 +63,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
     // And harmonize it with the other mocks
     return {
         oi4Id: '1',
+        subResources: new Map<string, IOI4ApplicationResources>(),
         config: {
             registry: {
                 name: {locale: EOPCUALocale.enUS, text: 'reg-01'},

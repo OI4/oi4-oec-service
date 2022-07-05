@@ -93,15 +93,15 @@ class OI4Application extends EventEmitter {
     }
 
     private setOnClientCloseCallback() {
-        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder));
+        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this.client, this.topicPreamble, this.oi4Id, this.builder));
     }
 
     private setOnClientDisconnectCallback() {
-        this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback());
     }
 
     private setOnClientReconnectCallback() {
-        this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback(this.applicationResources));
+        this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback());
     }
 
     private setOnClientConnectCallback() {

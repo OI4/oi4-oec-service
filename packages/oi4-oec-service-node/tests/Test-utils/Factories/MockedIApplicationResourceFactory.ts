@@ -27,7 +27,7 @@ export class MockedIApplicationResourceFactory {
 
     public static getMockedIApplicationResourceInstance = (): IOI4ApplicationResources => {
         return {
-            brokerState: false,
+            subResources: new Map<string, IOI4ApplicationResources>(),
             config: {
                 'group_a': {
                     name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
