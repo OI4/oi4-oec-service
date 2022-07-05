@@ -42,7 +42,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _publicationList: PublicationList[];
     private _subscriptionList: SubscriptionList[];
 
-    subResources: Map<string, IOI4ApplicationResources>;
+    readonly subResources: Map<string, IOI4ApplicationResources>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -63,6 +63,8 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this.mam.ProductInstanceUri = `${this.mam.ManufacturerUri}/${encodeURIComponent(this.mam.Model.text)}/${encodeURIComponent(this.mam.ProductCode)}/${encodeURIComponent(this.mam.SerialNumber)}`;
 
         this.oi4Id = this.mam.ProductInstanceUri;
+
+        this.subResources = new Map<string, IOI4ApplicationResources>();
 
         this._profile = new Profile(Application.mandatory);
 
@@ -110,6 +112,10 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
             return JSON.parse(readFileSync(path).toString());
         }
         return undefined;
+    }
+
+    hasSubResource(oi4Id: string) {
+        return this.subResources.has(oi4Id);
     }
 
     getSubResource(oi4Id?: string): IOI4ApplicationResources | IterableIterator<IOI4ApplicationResources>{
