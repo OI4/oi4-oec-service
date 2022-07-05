@@ -2,7 +2,7 @@ import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/Mocke
 import {MqttMessageProcessor} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+import {ResourceType, TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
@@ -15,9 +15,13 @@ describe('Unit test for MqttMessageProcessor', () => {
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
+    const defaultFakeSubResource = 'fakeSubResource';
+    const defaultTopicPrefix = 'fake/fictitious';
+    const defaultFakeLicenseId = '1234';
+    const defaultFakeFilter = 'oi4_pv';
     const defaultFakeOi4Id = '1/1/1/1';
-    const defaultLicenseId = '1234';
-    const defaultFilter = 'oi4_pv';
+    const defaultFakeTag = 'tag';
+
 
     beforeEach(() => {
         //Flush the messages log
@@ -31,7 +35,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         return {
             fakeOi4Id: defaultFakeAppId,
             fakeServiceType: 'fakeServiceType',
-            fakeTopic: `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/mam/${defaultFilter}`,
+            fakeTopic: `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`,
         }
     }
 
@@ -110,7 +114,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
-            const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resource}`;
+            const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}`;
             await checkResultGet(resource, fakeTopic);
         }
 
@@ -120,7 +124,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('extract topic info works with Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
-            const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/${defaultFakeOi4Id}`;
+            const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/${defaultFakeOi4Id}`;
             await checkResultGet(resource, fakeTopic);
         }
     });
@@ -145,7 +149,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         let errorArrived = false;
 
         for (const resource of resources) {
-            const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/1//1/1`;
+            const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/1//1/1`;
             try {
                 await checkResultGet(resource, fakeTopic);
             } catch(err:any) {
@@ -159,32 +163,30 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - config - get', async() => {
-        const resourceConfig = 'config';
-        let fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}`;
-        await checkResultGet(resourceConfig, fakeTopic);
+        let fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.CONFIG}`;
+        await checkResultGet(ResourceType.CONFIG, fakeTopic);
 
-        fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}`;
-        await checkResultGet(resourceConfig, fakeTopic);
+        fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.CONFIG}/${defaultFakeOi4Id}`;
+        await checkResultGet(ResourceType.CONFIG, fakeTopic);
 
-        fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFilter}`;
-        await checkResultGet(resourceConfig, fakeTopic, defaultFilter);
+        fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
+        await checkResultGet(ResourceType.CONFIG, fakeTopic, defaultFakeFilter);
     });
 
     it('extract topic info works - config - set', async() => {
-        const resourceConfig = 'config';
-        const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFilter}`;
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${ResourceType.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
         const mockedSendMessage = jest.fn();
         const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
-        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter);
+        await processMessage(mockedSendMessage, fakeTopic, ResourceType.CONFIG, defaultEmitter);
 
         expect(spiedEmit).toHaveBeenCalledWith('setConfig', {origin: defaultFakeAppId, number: 0, description: undefined});
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFilter);
-        expect(fakeLogFile[0]).toBe(`Added ${defaultFilter} to config group`);
+        expect(mockedSendMessage).toHaveBeenCalledWith(ResourceType.CONFIG, undefined, defaultFakeFilter);
+        expect(fakeLogFile[0]).toBe(`Added ${defaultFakeFilter} to config group`);
     });
 
-    async function checkAgainstError(resourceConfig: string, errorPrefix: string) {
-        const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/1/1/1/1/`;
+    async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '') {
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/${defaultFakeOi4Id}${topicSuffix}`;
         let errorArrived = false;
 
         try {
@@ -197,45 +199,42 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     it('extract topic info works - config - if the filter is missing an error is thrown', async() => {
-        await checkAgainstError('config', 'Invalid filter: ');
+        await checkAgainstError(ResourceType.CONFIG, 'Invalid filter: ');
     });
 
     async function checkAgainstTopicForData(fakeTopic: string) {
-        const resourceConfig = 'data';
         const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
-        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter);
+        await processMessage(jest.fn(), fakeTopic, ResourceType.DATA, defaultEmitter);
         expect(spiedEmit).toHaveBeenCalledWith('getData', {topic: fakeTopic, message: {Messages: [{Payload: 'fakePayload'}], PublisherId: 'Registry/mymanufacturer.com/1/1/1'}});
     }
 
     it('extract topic info works - data - get', async () => {
-        await checkAgainstTopicForData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/data`);
-        await checkAgainstTopicForData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/data/${defaultFakeOi4Id}`);
-        await checkAgainstTopicForData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/data/${defaultFakeOi4Id}/${defaultFilter}`);
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.DATA}`);
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.DATA}/${defaultFakeOi4Id}`);
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.DATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`);
     });
 
     it('extract topic info works - data - set', async () => {
-        const resourceConfig = 'data';
-        const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFilter}`;
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${ResourceType.DATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
-        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter);
-        expect(fakeLogFile[0]).toBe(`Added ${defaultFilter} to dataLookup`);
+        await processMessage(jest.fn(), fakeTopic, ResourceType.DATA, defaultEmitter);
+        expect(fakeLogFile[0]).toBe(`Added ${defaultFakeFilter} to dataLookup`);
     });
 
     it('extract topic info works - data - if the filter is missing an error is thrown', async() => {
-        await checkAgainstError('data', 'Invalid filter: ');
+        await checkAgainstError(ResourceType.DATA, 'Invalid filter: ');
     });
 
     async function checkAgainstTopicForMetaData(fakeTopic: string, filter: string = undefined) {
-        const resourceConfig = 'METADATA';
         const sendMetaData: Function = jest.fn();
-        await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, sendMetaData);
+        await processMessage(jest.fn(), fakeTopic, ResourceType.METADATA, defaultEmitter, sendMetaData);
         expect(sendMetaData).toHaveBeenCalledWith(filter);
     }
 
     it('extract topic info works - metadata - get', async () => {
-        await checkAgainstTopicForMetaData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/METADATA`);
-        await checkAgainstTopicForMetaData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/METADATA/${defaultFakeOi4Id}`);
-        await checkAgainstTopicForMetaData(`fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/METADATA/${defaultFakeOi4Id}/${defaultFilter}`, defaultFilter);
+        await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.METADATA}`);
+        await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.METADATA}/${defaultFakeOi4Id}`);
+        await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${ResourceType.METADATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`, defaultFakeFilter);
         //set metadata basically does nothing
     });
 
@@ -251,65 +250,46 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     it('extract topic info works - license and licenseText - get', async () => {
-        const resourceConfigLicense = 'license';
-        const resourceConfigLicenseText = 'licenseText';
-        const baseFakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}`;
+        const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
 
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicense, `${baseFakeTopic}/${resourceConfigLicense}`);
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicenseText, `${baseFakeTopic}/${resourceConfigLicenseText}`);
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicense, `${baseFakeTopic}/${resourceConfigLicense}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicenseText, `${baseFakeTopic}/${resourceConfigLicenseText}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicense, `${baseFakeTopic}/${resourceConfigLicense}/${defaultFakeOi4Id}/${defaultLicenseId}`);
-        await testAgainstResourceForLicenseAndLicenseText(resourceConfigLicenseText, `${baseFakeTopic}/${resourceConfigLicenseText}/${defaultFakeOi4Id}/${defaultLicenseId}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}/${defaultFakeOi4Id}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}/${defaultFakeOi4Id}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENCE, `${baseFakeTopic}/${ResourceType.LICENCE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
+        await testAgainstResourceForLicenseAndLicenseText(ResourceType.LICENSE_TEXT, `${baseFakeTopic}/${ResourceType.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
+
+        //set LICENSE AND LICENSE TEXT basically does nothing
     });
 
     it('extract topic info - license and licenseText - if licenseId is missing, an error is thrown', async () => {
-        await checkAgainstError('license', 'Invalid licenseId: ');
-        await checkAgainstError('licenseText' ,'Invalid licenseId: ');
+        await checkAgainstError(ResourceType.LICENCE, 'Invalid licenseId: ');
+        await checkAgainstError(ResourceType.LICENSE_TEXT ,'Invalid licenseId: ');
     });
 
-    // ------------- RICONTROLLARE DA QUA IN SU, CORREGGERE DA QUA IN GIÚ
-
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
-        const subResource = 'myManufacturer.com/myModel/myProductCode/000-555';
-        const fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${subResource}/${defaultFilter}`;
+
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
 
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, subResource, undefined, 0, 0);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, undefined, 0, 0);
     }
 
     it('extract topic info works - publicationList and subscriptionList', async () => {
-        await testAgainstResourceForPublicationAndSubscriptionLists('publicationList');
-        await testAgainstResourceForPublicationAndSubscriptionLists('subscriptionList');
+        await testAgainstResourceForPublicationAndSubscriptionLists(ResourceType.PUBLICATION_LIST);
+        await testAgainstResourceForPublicationAndSubscriptionLists(ResourceType.SUBSCRIPTION_LIST);
         //set publicationList and subscriptionList basically does nothing
         //del subscriptionList basically does nothing
     });
 
-    async function testErrorCaseAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
-        let subResource = 'myManufacturer.com/myModel//000-555';
-        let fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${subResource}/${defaultFilter}`;
-
-        try{
-            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn());
-        } catch(err: any) {
-            expect(err.message).toBe(`Subresource has an invalid value: ${subResource}`);
-        }
-
-        subResource = 'myManufacturer.com/myModel/myProductCode/000-555';
-        fakeTopic = `fake/fictitious/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${subResource}//`;
-
-        try{
-            await processMessage(jest.fn(), fakeTopic, resourceConfig, defaultEmitter, jest.fn());
-        } catch(err: any) {
-            expect(err.message).toBe(`Missing Tag: ${fakeTopic}`);
-        }
-    }
-
     it('extract topic info - publicationList and subscriptionList - if subresource or tag is missing, an error is thrown', async () => {
-        await testErrorCaseAgainstResourceForPublicationAndSubscriptionLists('publicationList');
-        await testErrorCaseAgainstResourceForPublicationAndSubscriptionLists('subscriptionList');
+        await checkAgainstError(ResourceType.PUBLICATION_LIST, 'Invalid resourceType/tag: ', `/${defaultFakeSubResource}/`)
+        await checkAgainstError(ResourceType.PUBLICATION_LIST, 'Invalid resourceType/tag: ', `//${defaultFakeTag}`)
+
+        await checkAgainstError(ResourceType.SUBSCRIPTION_LIST, 'Invalid resourceType/tag: ', `/${defaultFakeSubResource}/`)
+        await checkAgainstError(ResourceType.SUBSCRIPTION_LIST, 'Invalid resourceType/tag: ', `//${defaultFakeTag}`)
     });
 
 });
