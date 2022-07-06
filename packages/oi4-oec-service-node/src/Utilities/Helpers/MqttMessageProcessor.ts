@@ -250,7 +250,7 @@ export class MqttMessageProcessor {
         const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(Resource.CONFIG, config.MessageId, filter, '', 0, 0);
+        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
     }
 
     private async executeDelActions(topicInfo: TopicInfo) {
