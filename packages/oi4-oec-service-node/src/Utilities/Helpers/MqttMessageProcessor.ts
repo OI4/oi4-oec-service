@@ -198,7 +198,7 @@ export class MqttMessageProcessor {
             case Resource.PUBLICATION_LIST:
             case Resource.SUBSCRIPTION_LIST: {
                 if (this.isAtLeastOneStringEmpty([topicArray[12], topicArray[13]])) {
-                    throw new Error(`Invalid resourceType/tag: ${topic}`);
+                    throw new Error(`Invalid Resource/tag: ${topic}`);
                 }
                 topicInfo.subResource = topicArray[12];
                 topicInfo.topicTag = topicArray[13];
