@@ -25,8 +25,8 @@ export class MqttMessageProcessor {
 
     constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emitter: EventEmitter) {
         this.applicationResources = applicationResources;
-        this.sendMetaData = sendMetaData;
-        this.sendResource = sendResource;
+        this.sendMetaData = (): void => {sendMetaData};
+        this.sendResource = (): void => {sendResource};
         this.emitter = emitter;
     }
 
