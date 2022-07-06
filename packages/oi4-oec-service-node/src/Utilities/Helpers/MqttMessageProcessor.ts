@@ -56,6 +56,11 @@ export class MqttMessageProcessor {
             LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
         }
 
+        if(topic.indexOf(`/${TopicMethods.PUB}/`) != -1) {
+            LOGGER.log(`No reaction needed to our own publication messages${topic.substring(topic.indexOf(`/${TopicMethods.PUB}/`), topic.length)}`);
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
+        }
+
         const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
         if (!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
@@ -83,8 +88,7 @@ export class MqttMessageProcessor {
         return {isValid: false, parsedMessage: undefined};
     }
 
-    //FIXME add a return type
-    private async getSchemaResult(builder: OPCUABuilder, parsedMessage: IOPCUANetworkMessage) {
+    private async getSchemaResult(builder: OPCUABuilder, parsedMessage: IOPCUANetworkMessage): Promise<boolean> {
         try {
             return await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
@@ -93,8 +97,7 @@ export class MqttMessageProcessor {
         }
     }
 
-    //FIXME add the type of schema result
-    private areSchemaResultAndBuildValid(schemaResult: any, builder: OPCUABuilder, topic: string): boolean {
+    private areSchemaResultAndBuildValid(schemaResult: Promise<boolean>, builder: OPCUABuilder, topic: string): boolean {
         if (!schemaResult) {
             LOGGER.log('Error in pre-check (crash-safety) schema validation, please run asset through conformity validation or increase logLevel', ESyslogEventFilter.warning);
             return false;
@@ -108,24 +111,116 @@ export class MqttMessageProcessor {
         return true;
     }
 
+    /**
+     Accordingly to the guideline, these are the possible generic requests
+
+     - oi4/<serviceType>/<appId>/get/mam                                /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/health                             /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/rtLicense                          /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/get/profile                            /<oi4Identifier>?
+     - oi4/<serviceType>/<appId>/{get/set/del}/referenceDesignation     /<oi4Identifier>?
+     --- length = 8 -> no oi4Id
+     --- length = 12 -> yes Oi4Id
+
+     - oi4/<serviceType>/<appId>/{get/set}/config                       /<oi4Identifier>?/<filter>?
+     - oi4/<serviceType>/<appId>/{get/set}/data                         /<oi4Identifier>?/<filter>?
+     - oi4/<serviceType>/<appId>/{get/set}/metadata                     /<oi4Identifier>?/<filter>?
+     --- length = 8 -> no oi4Id and no filter
+     --- length = 12 -> yes Oi4Id but no filter
+     --- length = 13 -> yes oi4Id and yes filter
+
+     - oi4/<serviceType>/<appId>/get/license                            /<oi4Identifier>?/<licenseId>?
+     - oi4/<serviceType>/<appId>/get/licenseText                        /<oi4Identifier>?/<licenseId>?
+     --- length = 8 -> no oi4Id and no licenseId
+     --- length = 12 -> yes Oi4Id but no licenseId
+     --- length = 13 -> yes oi4Id and yes licenseId
+
+     - oi4/<serviceType>/<appId>/{get/set}/publicationList              /<oi4Identifier>?/<resourceType>?/<tag>?
+     - oi4/<serviceType>/<appId>/{get/set/del}/subscriptionList         /<oi4Identifier>?/<resourceType>?/<tag>?
+     --- length = 8 -> no oi4Identifier and no resourceType and no tag
+     --- length = 12 -> yes oi4Identifier and no resourceType and no tag
+     --- length = 14 -> yes oi4Identifier and yes resourceType and yes tag
+     */
     private extractTopicInfo(topic: string): TopicInfo {
+        //FIXME Add the parsing of the pub event
+
         const topicArray = topic.split('/');
-        //FIXME can this be removed?
-        //const topicServiceType = topicArray[1];
+        const topicInfo: TopicInfo = this.extractCommonInfo(topic, topicArray);
 
-        const topicAppId = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-        const topicMethod = topicArray[6];
-        const topicResource = topicArray[7];
-        const topicFilter = topicArray.splice(8).join('/');
+        if(topicArray.length > 12) {
+            this.extractResourceSpecificInfo(topic, topicArray, topicInfo);
+        }
 
-        return {
+        return topicInfo;
+    }
+
+    private extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
+        const topicInfo: TopicInfo = {
             topic: topic,
-            appId: topicAppId,
-            method: topicMethod,
-            resource: topicResource,
-            subResource: '',
-            filter: topicFilter
+            appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
+            method: topicArray[6],
+            resource: topicArray[7],
+            oi4Id: undefined,
+            filter: undefined,
+            licenseId: undefined,
+            subResource: undefined,
+            topicTag: undefined,
         };
+
+        if (topicArray.length >= 12) {
+            if(this.isAtLeastOneStringEmpty([topicArray[8], topicArray[9], topicArray[10], topicArray[11]])) {
+                throw new Error(`Malformed Oi4Id : ${topic}`);
+            }
+            topicInfo.oi4Id = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
+        }
+
+        return topicInfo;
+    }
+
+    private extractResourceSpecificInfo(topic: string, topicArray: Array<string>, topicInfo: TopicInfo) {
+        switch (topicInfo.resource) {
+            case Resource.CONFIG:
+            case Resource.DATA:
+            case Resource.METADATA: {
+                if (this.isStringEmpty(topicArray[12])) {
+                    throw new Error(`Invalid filter: ${topic}`);
+                }
+                topicInfo.filter = topicArray[12];
+                break;
+            }
+
+            case Resource.LICENSE_TEXT:
+            case Resource.LICENSE: {
+                if (this.isStringEmpty(topicArray[12])) {
+                    throw new Error(`Invalid licenseId: ${topic}`);
+                }
+                topicInfo.licenseId = topicArray[12];
+                break;
+            }
+
+            case Resource.PUBLICATION_LIST:
+            case Resource.SUBSCRIPTION_LIST: {
+                if (this.isAtLeastOneStringEmpty([topicArray[12], topicArray[13]])) {
+                    throw new Error(`Invalid Resource/tag: ${topic}`);
+                }
+                topicInfo.subResource = topicArray[12];
+                topicInfo.topicTag = topicArray[13];
+                break;
+            }
+        }
+    }
+
+    private isAtLeastOneStringEmpty(strings: Array<string>) {
+        for (const str of strings) {
+            if(this.isStringEmpty(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private isStringEmpty(str: string) {
+        return str === undefined || str === null || str.length == 0;
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
@@ -218,18 +313,18 @@ export class MqttMessageProcessor {
 
     // SET Function section ------//
     private setData(cutTopic: string, data: IOPCUANetworkMessage) {
-        const tagName = cutTopic;
+        const filter = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
-        if (tagName === '') {
+        if (filter === '') {
             return;
         }
-        if (!(tagName in dataLookup)) {
-            this.applicationResources.dataLookup[tagName] = data;
-            LOGGER.log(`Added ${tagName} to dataLookup`);
+        if (!(filter in dataLookup)) {
+            this.applicationResources.dataLookup[filter] = data;
+            LOGGER.log(`Added ${filter} to dataLookup`);
         } else {
-            this.applicationResources.dataLookup[tagName] = data; // No difference if we create the data or just update it with an object
-            LOGGER.log(`${tagName} already exists in dataLookup`);
+            this.applicationResources.dataLookup[filter] = data; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in dataLookup`);
         }
     }
 

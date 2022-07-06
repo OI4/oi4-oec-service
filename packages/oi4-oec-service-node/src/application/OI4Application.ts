@@ -123,7 +123,7 @@ class OI4Application extends EventEmitter {
         await this.ownSubscribe(`${this.topicPreamble}/get/#`);
         await this.ownSubscribe(`${this.topicPreamble}/set/#`);
         await this.ownSubscribe(`${this.topicPreamble}/del/#`);
-        this.client.on(AsyncClientEvents.MESSAGE, this.mqttMessageProcessor.processMqttMessage);
+        this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder));
     }
 
     private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {

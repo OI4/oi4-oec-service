@@ -114,7 +114,7 @@ export class OPCUABuilder {
       DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
       PublisherId: this.publisherId,
       Messages: opcUaDataPayload,
-      CorrelationId: correlationId,
+      correlationId: correlationId,
     };
     if (this.lastMessageId === opcUaDataMessage.MessageId) {
       opcUaDataMessage.MessageId = `OverFlow${opcUaDataMessage.MessageId}`;
