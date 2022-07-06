@@ -74,7 +74,11 @@ class OI4Application extends EventEmitter {
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
         this.on('setConfig', this.sendEventStatus);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        this.mqttMessageProcessor = new MqttMessageProcessor(this.applicationResources, this.sendMetaData, this.sendResource, super.removeListener('', () => {
+        this.mqttMessageProcessor = new MqttMessageProcessor(
+            this.applicationResources,
+            async (cutTopic: string) => {await this.sendMetaData(cutTopic)}, 
+            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {await this.sendResource(resource, messageId, subResource, filter, page, perPage)},  
+            super.removeListener('', () => {
         }));
 
         this.initClientCallbacks();

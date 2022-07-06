@@ -14,19 +14,22 @@ import {TopicMethods, PayloadTypes} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 
+export declare type OnSendResource = (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => Promise<void>;
+export declare type OnSendMetaData = (cutTopic: string) => Promise<void>;
+
 export class MqttMessageProcessor {
-    private readonly sendMetaData: Function;
-    private readonly sendResource: Function;
+    private readonly sendMetaData: OnSendMetaData;
+    private readonly sendResource: OnSendResource;
     private readonly METADATA = 'metadata';
     private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 
     private applicationResources: IOI4ApplicationResources;
 
-    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: Function, sendResource: Function, emitter: EventEmitter) {
+    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: OnSendMetaData, sendResource: OnSendResource, emitter: EventEmitter) {
         this.applicationResources = applicationResources;
-        this.sendMetaData = (): void => {sendMetaData};
-        this.sendResource = (): void => {sendResource};
+        this.sendMetaData = sendMetaData;
+        this.sendResource = sendResource;
         this.emitter = emitter;
     }
 
@@ -247,7 +250,7 @@ export class MqttMessageProcessor {
         const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(Resource.CONFIG, config.MessageId, filter);
+        this.sendResource(Resource.CONFIG, config.MessageId, filter, '', 0, 0);
     }
 
     private async executeDelActions(topicInfo: TopicInfo) {
