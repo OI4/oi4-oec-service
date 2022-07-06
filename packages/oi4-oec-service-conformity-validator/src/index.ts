@@ -303,7 +303,7 @@ export class ConformityValidator extends EventEmitter {
                 let eRes: number;
                 const schemaResult: ISchemaConformity = await this.checkSchemaConformity(resource, parsedMessage);
                 if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
-                    if (parsedMessage.CorrelationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+                    if (parsedMessage.correlationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
                         eRes = EValidity.ok;
                     } else {
                         eRes = EValidity.partial;
