@@ -2,7 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {MqttSettings} from '../src';
 import fs = require('fs'); /*tslint:disable-line*/
 import {OI4Application} from '../src';
-import {EDeviceHealth, IContainerHealth, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, Health, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../src';
@@ -45,7 +45,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
 }
 
 describe('Connection to MQTT with TLS', () => {
-    const onEvent = () => jest.fn(  async (event, cb) => {
+    const onEvent = () => jest.fn(async (event, cb) => {
         await cb(event);
     });
 
@@ -58,7 +58,10 @@ describe('Connection to MQTT with TLS', () => {
         jest.useFakeTimers();
         jest.resetAllMocks();
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-        jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({username:'test-user', password: '1234'});
+        jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({
+            username: 'test-user',
+            password: '1234'
+        });
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
     });
 
@@ -68,7 +71,7 @@ describe('Connection to MQTT with TLS', () => {
         jest.resetAllMocks();
     });
 
-    it('should send birth message on connect',  () => {
+    it('should send birth message on connect', () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -85,7 +88,7 @@ describe('Connection to MQTT with TLS', () => {
         );
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function,ms: number)=>{
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
             cb();
         });
 
@@ -98,7 +101,7 @@ describe('Connection to MQTT with TLS', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
-    it('should send close message on close',  async () => {
+    it('should send close message on close', async () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -115,7 +118,7 @@ describe('Connection to MQTT with TLS', () => {
         );
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function,ms: number)=>{
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
             cb();
         });
 
@@ -124,10 +127,13 @@ describe('Connection to MQTT with TLS', () => {
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
-            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0 } as IContainerHealth)));
+            expect.stringContaining(JSON.stringify({
+                health: EDeviceHealth.NORMAL_0,
+                healthScore: 0
+            } as Health)));
     });
 
-    it('should set will message on create',  () => {
+    it('should set will message on create', () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -140,7 +146,7 @@ describe('Connection to MQTT with TLS', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4Application: OI4Application = new OI4Application(getResourceInfo(), mqttOpts);
         expect(oi4Application.mqttClient.options.will?.payload)
-            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as IContainerHealth));
+            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as Health));
     });
 
 });

@@ -1,22 +1,23 @@
 import {
     DataSetClassIds,
     ESyslogEventFilter,
+    StatusEvent,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
     IOI4ApplicationResources,
-    StatusEvent
+    Resource
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {PayloadTypes, ResourceType, TopicMethods} from './Enums';
+import {TopicMethods, PayloadTypes} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 
 export class MqttMessageProcessor {
     private readonly sendMetaData: Function;
     private readonly sendResource: Function;
-    private readonly METADATA = 'METADATA';
+    private readonly METADATA = 'metadata';
     private readonly emitter: EventEmitter;
     private readonly DATA = 'data';
 
@@ -37,7 +38,7 @@ export class MqttMessageProcessor {
      */
     public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder) => {
         const validatedData: ValidatedIncomingMessageData = this.validateData(topic, message, builder);
-        if(!validatedData.areValid) {
+        if (!validatedData.areValid) {
             return;
         }
 
@@ -46,7 +47,7 @@ export class MqttMessageProcessor {
 
     private validateData(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
         const validateMessage: ValidatedMessage = this.validateIncomingMessage(message);
-        if(!validateMessage.isValid) {
+        if (!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         } else if (validateMessage.parsedMessage.Messages.length === 0) {
             LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
@@ -58,8 +59,8 @@ export class MqttMessageProcessor {
         }
 
         const schemaResult = this.getSchemaResult(builder, validateMessage.parsedMessage);
-        if(!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)){
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
+        if (!this.areSchemaResultAndBuildValid(schemaResult, builder, topic)) {
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
         // Split the topic into its different elements
@@ -68,7 +69,7 @@ export class MqttMessageProcessor {
         // Safety-Check: DataSetClassId
         if (validateMessage.parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
             LOGGER.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};;
+            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
         return {areValid: true, parsedMessage: validateMessage.parsedMessage, topicInfo: topicInfo};
@@ -175,9 +176,9 @@ export class MqttMessageProcessor {
 
     private extractResourceSpecificInfo(topic: string, topicArray: Array<string>, topicInfo: TopicInfo) {
         switch (topicInfo.resource) {
-            case ResourceType.CONFIG:
-            case ResourceType.DATA:
-            case ResourceType.METADATA: {
+            case Resource.CONFIG:
+            case Resource.DATA:
+            case Resource.METADATA: {
                 if (this.isStringEmpty(topicArray[12])) {
                     throw new Error(`Invalid filter: ${topic}`);
                 }
@@ -185,8 +186,8 @@ export class MqttMessageProcessor {
                 break;
             }
 
-            case ResourceType.LICENSE_TEXT:
-            case ResourceType.LICENSE: {
+            case Resource.LICENSE_TEXT:
+            case Resource.LICENSE: {
                 if (this.isStringEmpty(topicArray[12])) {
                     throw new Error(`Invalid licenseId: ${topic}`);
                 }
@@ -194,8 +195,8 @@ export class MqttMessageProcessor {
                 break;
             }
 
-            case ResourceType.PUBLICATION_LIST:
-            case ResourceType.SUBSCRIPTION_LIST: {
+            case Resource.PUBLICATION_LIST:
+            case Resource.SUBSCRIPTION_LIST: {
                 if (this.isAtLeastOneStringEmpty([topicArray[12], topicArray[13]])) {
                     throw new Error(`Invalid resourceType/tag: ${topic}`);
                 }
@@ -289,14 +290,14 @@ export class MqttMessageProcessor {
         this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
     }
 
-    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage){
+    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         switch (topicInfo.resource) {
             case this.DATA: {
                 this.setData(topicInfo.filter, parsedMessage);
                 break;
             }
-            case ResourceType.CONFIG: {
-                if(parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
+            case Resource.CONFIG: {
+                if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
                     this.setConfig(topicInfo.filter, parsedMessage);
                 }
                 break;
@@ -341,10 +342,10 @@ export class MqttMessageProcessor {
         const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(ResourceType.CONFIG,config.MessageId, filter);
+        this.sendResource(Resource.CONFIG, config.MessageId, filter);
     }
 
-    private async executeDelActions(topicInfo: TopicInfo){
+    private async executeDelActions(topicInfo: TopicInfo) {
         switch (topicInfo.resource) {
             case this.DATA: {
                 this.deleteData(topicInfo.filter);

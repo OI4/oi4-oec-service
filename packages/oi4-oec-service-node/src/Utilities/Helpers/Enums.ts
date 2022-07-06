@@ -8,22 +8,6 @@ export enum AsyncClientEvents {
     MESSAGE = 'message',
 }
 
-//FIXME is the name of this enum ok? Or is better something more related to CDataSetWriterIdLookup
-export enum ResourceType {
-    MAM = 'mam',
-    HEALTH = 'health',
-    LICENSE = 'license',
-    LICENSE_TEXT = 'licenseText',
-    RT_LICENSE = 'rtLicense',
-    PROFILE = 'profile',
-    CONFIG = 'config',
-    PUBLICATION_LIST = 'publicationList',
-    SUBSCRIPTION_LIST = 'subscriptionList',
-    EVENT = 'event',
-    DATA = 'data',
-    METADATA = 'METADATA',
-}
-
 export enum TopicMethods {
     GET = 'get',
     PUB = 'pub',

@@ -64,7 +64,6 @@ export {
     referenceDesignationSchemaJson,
     localeSchemaJson,
     paginationSchemaJson,
-
     NetworkMessageSchemaJson,
     ConfigurationVersionDataTypeSchemaJson,
     DataSetMessageSchemaJson,
