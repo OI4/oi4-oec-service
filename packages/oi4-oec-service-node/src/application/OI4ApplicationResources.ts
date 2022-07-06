@@ -109,7 +109,9 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
     private static extractMamFile(path: string): MasterAssetModel {
         if (existsSync(path)) {
-            return JSON.parse(readFileSync(path).toString());
+            const mam = new MasterAssetModel();
+            Object.assign(mam, JSON.parse(readFileSync(path).toString()));
+            return mam;
         }
         return undefined;
     }
