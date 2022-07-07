@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@oi4/oi4-oec-service-logger": "^1.0.0-preview.1",
-    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.1",
+    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.1"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
