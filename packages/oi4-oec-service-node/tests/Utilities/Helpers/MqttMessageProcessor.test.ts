@@ -15,12 +15,10 @@ describe('Unit test for MqttMessageProcessor', () => {
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
-    const defaultFakeSubResource = 'fakeSubResource';
     const defaultTopicPrefix = 'fake/fictitious';
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
     const defaultFakeOi4Id = '1/1/1/1';
-    const defaultFakeTag = 'tag';
 
     beforeEach(() => {
         //Flush the messages log
@@ -104,10 +102,10 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
     }
 
-    async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined, emitter: EventEmitter = defaultEmitter) {
+    async function checkResultGet(resource: string, fakeTopic: string, subResource: string = undefined, filter: string = undefined, emitter: EventEmitter = defaultEmitter) {
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resource, emitter);
-        expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0 , 0);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, subResource, filter, 0 , 0);
     }
 
     it('Pub events are ignored', async() => {
@@ -132,7 +130,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/${defaultFakeOi4Id}`;
-            await checkResultGet(resource, fakeTopic);
+            await checkResultGet(resource, fakeTopic, defaultFakeOi4Id);
         }
     });
 
@@ -160,10 +158,10 @@ describe('Unit test for MqttMessageProcessor', () => {
         await checkResultGet(Resource.CONFIG, fakeTopic);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic);
+        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeFilter);
+        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id, defaultFakeFilter);
     });
 
     it('extract topic info works - config - set', async() => {
@@ -227,11 +225,11 @@ describe('Unit test for MqttMessageProcessor', () => {
         await checkAgainstError(Resource.METADATA, 'Invalid filter: ', '/');
     });
 
-    async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string) {
+    async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string, subResource: string = undefined, filter: string = undefined) {
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, undefined, undefined, 0, 0);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, subResource, filter, 0, 0);
     }
 
     it('extract topic info works - license and licenseText - get', async () => {
@@ -239,27 +237,27 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}`);
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
 
         //set LICENSE AND LICENSE TEXT basically does nothing
     });
 
     it('extract topic info - license and licenseText - if licenseId is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.LICENSE, 'Invalid licenseId: ', '/');
-        await checkAgainstError(Resource.LICENSE_TEXT ,'Invalid licenseId: ', '/');
+        await checkAgainstError(Resource.LICENSE, 'Invalid filter: ', '/');
+        await checkAgainstError(Resource.LICENSE_TEXT ,'Invalid filter: ', '/');
     });
 
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
 
-        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
+        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, undefined, 0, 0);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeOi4Id, defaultFakeFilter, 0, 0);
     }
 
     it('extract topic info works - publicationList and subscriptionList', async () => {
@@ -268,13 +266,4 @@ describe('Unit test for MqttMessageProcessor', () => {
         //set publicationList and subscriptionList basically does nothing
         //del subscriptionList basically does nothing
     });
-
-    it('extract topic info - publicationList and subscriptionList - if subresource or tag is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid Resource/tag: ', `/${defaultFakeSubResource}/`)
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid Resource/tag: ', `//${defaultFakeTag}`)
-
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid Resource/tag: ', `/${defaultFakeSubResource}/`)
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid Resource/tag: ', `//${defaultFakeTag}`)
-    });
-
 });

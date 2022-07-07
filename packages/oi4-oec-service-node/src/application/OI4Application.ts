@@ -205,7 +205,7 @@ class OI4Application extends EventEmitter {
     }
 
     async preparePayload(resource: string, subResource: string, filter: string): Promise<ValidatedPayload> {
-        const validatedFilter: ValidatedFilter = this.validateFilter(filter);
+        const validatedFilter: ValidatedFilter = this.validateFilter(resource, filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
             return {payload: undefined, abortSending: true};
@@ -264,21 +264,29 @@ class OI4Application extends EventEmitter {
         LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
-    private validateFilter(filter: string): ValidatedFilter {
-        // Initialized with -1, so we know when to use string-based filters or not
-        let dswidFilter = -1;
-        try {
-            dswidFilter = parseInt(filter, 10);
-            if (dswidFilter === 0) {
-                LOGGER.log('0 is not a valid DSWID', ESyslogEventFilter.warning);
-                return {isValid: false, dswidFilter: undefined};
+    private validateFilter(resource: string, filter: string): ValidatedFilter {
+
+        if (filter === undefined || filter === null)
+        {
+            // no filter set
+            return {isValid: true, filter: undefined}
             }
-        } catch (err) {
-            LOGGER.log('Error when trying to parse filter as a DSWID, falling back to string-based filters...', ESyslogEventFilter.warning);
-            return {isValid: false, dswidFilter: undefined};
+
+        switch (resource)
+        {
+            case Resource.DATA:
+            case Resource.METADATA:
+            case Resource.PUBLICATION_LIST:
+            case Resource.SUBSCRIPTION_LIST:
+            case Resource.CONFIG:
+            case Resource.LICENSE:
+            case Resource.LICENSE_TEXT:
+            case Resource.EVENT:
+                return {isValid : filter.length > 0, filter: filter }
         }
 
-        return {isValid: true, dswidFilter: dswidFilter};
+        // resource does not allow usage of filters (e.g. mam, health, profile)
+        return {isValid: false, filter: filter};
     }
 
     private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {

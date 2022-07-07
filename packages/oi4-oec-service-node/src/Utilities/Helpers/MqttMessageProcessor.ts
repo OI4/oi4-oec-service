@@ -157,18 +157,20 @@ export class MqttMessageProcessor {
             appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
             method: topicArray[6],
             resource: topicArray[7],
-            oi4Id: undefined,
-            filter: undefined,
-            licenseId: undefined,
             subResource: undefined,
-            topicTag: undefined,
+            filter: undefined,
         };
 
         if (topicArray.length >= 12) {
             if(this.isAtLeastOneStringEmpty([topicArray[8], topicArray[9], topicArray[10], topicArray[11]])) {
                 throw new Error(`Malformed Oi4Id : ${topic}`);
             }
-            topicInfo.oi4Id = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
+            topicInfo.subResource = `${topicArray[8]}/${topicArray[9]}/${topicArray[10]}/${topicArray[11]}`;
+        }
+        else if (topicInfo.resource == Resource.EVENT && topicArray.length >= 9)
+        {
+            // TODO This can be removed for OEC development spec 1.1
+            topicInfo.subResource =  `${topicArray[8]}`; 
         }
 
         return topicInfo;
@@ -176,9 +178,12 @@ export class MqttMessageProcessor {
 
     private extractResourceSpecificInfo(topic: string, topicArray: Array<string>, topicInfo: TopicInfo) {
         switch (topicInfo.resource) {
-            case Resource.CONFIG:
             case Resource.DATA:
-            case Resource.METADATA: {
+            case Resource.METADATA:
+            case Resource.LICENSE:
+            case Resource.LICENSE_TEXT:
+            case Resource.EVENT:
+            case Resource.CONFIG: {
                 if (this.isStringEmpty(topicArray[12])) {
                     throw new Error(`Invalid filter: ${topic}`);
                 }
@@ -186,22 +191,17 @@ export class MqttMessageProcessor {
                 break;
             }
 
-            case Resource.LICENSE_TEXT:
-            case Resource.LICENSE: {
-                if (this.isStringEmpty(topicArray[12])) {
-                    throw new Error(`Invalid licenseId: ${topic}`);
-                }
-                topicInfo.licenseId = topicArray[12];
-                break;
-            }
-
             case Resource.PUBLICATION_LIST:
             case Resource.SUBSCRIPTION_LIST: {
-                if (this.isAtLeastOneStringEmpty([topicArray[12], topicArray[13]])) {
-                    throw new Error(`Invalid Resource/tag: ${topic}`);
+                if (this.isStringEmpty(topicArray[12])) {
+                    throw new Error(`Invalid ResourceType: ${topic}`);
                 }
-                topicInfo.subResource = topicArray[12];
-                topicInfo.topicTag = topicArray[13];
+
+                topicInfo.filter = topicArray[12];
+                if (topicArray.length > 13 && !this.isStringEmpty(topicArray[13]))
+                {
+                    topicInfo.filter = `${topicArray[12]}/${topicArray[13]}`;
+                }
                 break;
             }
         }

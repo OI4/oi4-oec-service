@@ -2,7 +2,7 @@ import {IOPCUADataSetMessage, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-o
 
 export type ValidatedFilter = {
     isValid: boolean;
-    dswidFilter: number;
+    filter: string;
 }
 
 export type ValidatedPayload = {
@@ -28,9 +28,6 @@ export type TopicInfo = {
     appId: string;
     method: string;
     resource: string;
-    oi4Id: string;
-    filter?: string;
-    licenseId?: string;
     subResource?: string;
-    topicTag?: string;
+    filter?: string;
 }
