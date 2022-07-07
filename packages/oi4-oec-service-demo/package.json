@@ -20,6 +20,7 @@
     "url": "git@github.com:OI4/oi4-registry.git"
   },
   "dependencies": {
+    "@oi4/oi4-oec-service-node": "^1.0.0-preview.1",
     "@types/ws": "^8.5.2",
     "ajv": "^6.12.6",
     "async-mqtt": "^2.6.2",

@@ -21,11 +21,9 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "async-mqtt": "^2.5.0"
-  },
-  "devDependencies": {
     "@oi4/oi4-oec-service-logger": "^1.0.0-preview.1",
-    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.1"
+    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.1",
+    "async-mqtt": "^2.5.0"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
