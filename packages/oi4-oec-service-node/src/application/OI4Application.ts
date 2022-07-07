@@ -6,7 +6,7 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    ESubscriptionListConfig,
+    SubscriptionListConfig,
     StatusEvent,
     ESyslogEventFilter,
     IOI4ApplicationResources,
@@ -125,7 +125,7 @@ class OI4Application extends EventEmitter {
     private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
-            config: ESubscriptionListConfig.NONE_0,
+            config: SubscriptionListConfig.NONE_0,
             interval: 0,
         } as SubscriptionList));
         return await this.client.subscribe(topic);

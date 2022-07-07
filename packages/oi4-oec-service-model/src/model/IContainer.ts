@@ -1,4 +1,4 @@
-import { ESubscriptionListConfig } from './EContainer';
+import { SubscriptionListConfig } from './Resource';
 import { EOPCUABaseDataType } from '@oi4/oi4-oec-service-opcua-model';
 import { IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
 
@@ -40,7 +40,7 @@ export interface IContainerConfigValidation {
 export interface ISubscriptionListObject {
   topicPath: string;
   interval?: number;
-  config?: ESubscriptionListConfig;
+  config?: SubscriptionListConfig;
 }
 
 // export interface IPublicationListObject {

@@ -62,6 +62,9 @@
       "@oi4/oi4-oec-service-model": [
         "oi4-oec-service-model/dist"
       ],
+      "@oi4/oi4-oec-service-node": [
+        "oi4-oec-service-node/dist"
+      ],
       "@oi4/oi4-oec-service-opcua-model": [
         "oi4-oec-service-opcua-model/dist"
       ]

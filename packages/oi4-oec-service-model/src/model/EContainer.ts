@@ -48,15 +48,3 @@ export enum EDeviceHealth {
   OFF_SPEC_3 = 'OFF_SPEC_3',
   MAINTENANCE_REQUIRED_4 = 'MAINTENANCE_REQUIRED_4',
 }
-
-export enum EPublicationListConfig {
-  NONE_0 = 'NONE_0',
-  STATUS_1 = 'STATUS_1',
-  INTERVAL_2 = 'INTERVAL_2',
-  STATUS_AND_INTERVAL_3 = 'STATUS_AND_INTERVAL_3',
-}
-
-export enum ESubscriptionListConfig {
-  NONE_0 = 'NONE_0',
-  CONF_1 = 'CONF_1',
-}

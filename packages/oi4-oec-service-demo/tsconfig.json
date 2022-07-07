@@ -11,7 +11,10 @@
     "paths": {
       "@oi4/oi4-oec-service-model": [
         "packages/oi4-oec-service-model"
-      ]
+      ],
+      "@oi4/oi4-oec-service-node": [
+        "packages/oi4-oec-service-node/dist"
+      ],
     }
   },
   "include": [

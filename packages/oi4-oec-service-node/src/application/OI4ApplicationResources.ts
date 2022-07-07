@@ -2,8 +2,8 @@ import { ConfigParser } from '../Utilities/ConfigParser/ConfigParser';
 import {
     Application,
     EDeviceHealth,
-    EPublicationListConfig,
-    ESubscriptionListConfig,
+    PublicationListConfig,
+    SubscriptionListConfig,
     Health,
     IContainerConfig,
     IOI4ApplicationResources, IOI4Resource,
@@ -95,13 +95,13 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
                 DataSetWriterId: 0,
                 oi4Identifier: this.oi4Id,
                 interval: resInterval,
-                config: EPublicationListConfig.NONE_0,
+                config: PublicationListConfig.NONE_0,
             } as PublicationList);
 
             this.addSubscription(SubscriptionList.clone({
                 topicPath: `oi4/${this.mam.DeviceClass}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
                 interval: 0,
-                config: ESubscriptionListConfig.NONE_0,
+                config: SubscriptionListConfig.NONE_0,
             } as SubscriptionList));
         }
 

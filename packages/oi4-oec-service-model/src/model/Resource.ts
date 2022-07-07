@@ -1,5 +1,5 @@
 import {OI4Payload} from './Payload';
-import {EDeviceHealth, EPublicationListConfig, ESubscriptionListConfig} from './EContainer';
+import {EDeviceHealth} from './EContainer';
 import {IMasterAssetModel, IOPCUALocalizedText} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum Resource {
@@ -172,10 +172,10 @@ export class PublicationList implements OI4Payload {
     filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
     oi4Identifier: string;
-    mode: string; // Change me to enum
+    mode: PublicationListMode;
     interval?: number; // UINT32
     precisions?: number; // REAL
-    config?: EPublicationListConfig;
+    config?: PublicationListConfig;
 
     resourceType(): Resource {
         return Resource.PUBLICATION_LIST;
@@ -191,7 +191,7 @@ export class PublicationList implements OI4Payload {
 export class SubscriptionList implements OI4Payload {
     topicPath: string;
     interval: number;
-    config?: ESubscriptionListConfig;
+    config?: SubscriptionListConfig;
 
     resourceType(): Resource {
         return Resource.SUBSCRIPTION_LIST;
@@ -202,6 +202,30 @@ export class SubscriptionList implements OI4Payload {
         Object.assign(copy, source);
         return copy;
     }
+}
+
+export enum PublicationListMode {
+    OFF_0 = 'OFF_0',
+    ON_REQUEST_1 = 'ON_REQUEST_1',
+    APPLICATION_2 = 'APPLICATION_2',
+    SUBRESOURCE_3 = 'SUBRESOURCE_3',
+    FILTER_4 = 'FILTER_4',
+    APPLICATION_SUBRESOURCE_5 = 'APPLICATION_SUBRESOURCE_5',
+    APPLICATION_FILTER_6 = 'APPLICATION_FILTER_6',
+    SUBRESOURCE_FILTER_7 = 'SUBRESOURCE_FILTER_7',
+    APPLICATION_SUBRESOURCE_FILTER_8 = 'APPLICATION_SUBRESOURCE_FILTER_8',
+}
+
+export enum PublicationListConfig {
+    NONE_0 = 'NONE_0',
+    STATUS_1 = 'STATUS_1',
+    INTERVAL_2 = 'INTERVAL_2',
+    STATUS_AND_INTERVAL_3 = 'STATUS_AND_INTERVAL_3',
+}
+
+export enum SubscriptionListConfig {
+    NONE_0 = 'NONE_0',
+    CONF_1 = 'CONF_1',
 }
 
 export interface IComponentObject {
