@@ -6,8 +6,8 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    EPublicationListConfig,
-    ESubscriptionListConfig,
+    PublicationListConfig,
+    SubscriptionListConfig,
     EventCategory,
     Health,
     IOI4ApplicationResources,
@@ -105,19 +105,19 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         publicationList: [
             PublicationList.clone({
                 resource: 'health',
-                config: EPublicationListConfig.INTERVAL_2,
+                config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
             } as PublicationList),
             PublicationList.clone({
                 resource: 'mam',
-                config: EPublicationListConfig.NONE_0,
+                config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
             } as PublicationList),
             PublicationList.clone({
                 resource: 'license',
-                config: EPublicationListConfig.STATUS_1,
+                config: PublicationListConfig.STATUS_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
             } as PublicationList)
@@ -208,9 +208,9 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             }
         },
         subscriptionList: [
-            SubscriptionList.clone({topicPath: 'path-01', config: ESubscriptionListConfig.CONF_1} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-02', config: ESubscriptionListConfig.NONE_0} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0} as SubscriptionList)
+            SubscriptionList.clone({topicPath: 'path-01', config: SubscriptionListConfig.CONF_1} as SubscriptionList),
+            SubscriptionList.clone({topicPath: 'path-02', config: SubscriptionListConfig.NONE_0} as SubscriptionList),
+            SubscriptionList.clone({topicPath: 'path-03', config: SubscriptionListConfig.NONE_0} as SubscriptionList)
         ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -237,7 +237,7 @@ let defaultOi4Application: OI4Application;
 const defaultTopicPrefix = 'oi4/Registry';
 const defaultValidFilter = '1';
 const defaultAppId = '1/1/1/1';
-const defaulti4Id = '1/1/1/1';
+const defaultOi4Id = '1/1/1/1';
 
 function getOi4App(): OI4Application {
     const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -379,18 +379,18 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
     });
 
-    it('should send resource with valid filter', async () => {
-        await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);
-        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`;
+    it('should send resource with valid subResource', async () => {
+        await defaultOi4Application.sendResource(Resource.HEALTH, '', defaultOi4Id, '');
+        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultOi4Id}`;
         expect(publish.mock.calls[2][0]).toBe(expectedAddress);
         expect(publish.mock.calls[2][1]).not.toBeUndefined();
         expect(publish.mock.calls[2][1]).not.toBeNull();
     });
 
-    it('should not send resource with invalid zero filter', async () => {
-        const filter = '0'
+    it('should not send resource with invalid filter', async () => {
+        const filter = '0' // health does not support filter
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', filter);
-        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultOi4Id}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     it('should not send resource if page is out of range', async () => {
@@ -414,23 +414,23 @@ describe('OI4MessageBus test', () => {
         expect(profilePayload.resource.length).toBeGreaterThan(0);
     }
 
-    it('should prepare profile payload when filter !== oi4Id', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), Resource.PROFILE);
+    it('should prepare profile payload when subResource is empty', async () => {
+        const result = await getPayload(undefined, Resource.PROFILE);
         checkProfilePayload(result.payload[0]);
     });
 
-    it('should prepare profile payload when filter === oi4Id', async () => {
-        const result = await getPayload(defaultValidFilter, Resource.PROFILE);
+    it('should prepare profile payload when subResource === oi4Id', async () => {
+        const result = await getPayload(undefined, Resource.PROFILE, defaultValidFilter);
         checkProfilePayload(result.payload[0]);
     });
 
     it('should prepare rt license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.rtLicense.toString(), Resource.RT_LICENSE);
+        const result = await getPayload(undefined, Resource.RT_LICENSE);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
     });
 
     it('should prepare health payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), Resource.HEALTH);
+        const result = await getPayload(undefined, Resource.HEALTH);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
@@ -473,10 +473,9 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should not prepare anything if resource not found', async () => {
-        const filter = CDataSetWriterIdLookup.config.toString();
         const resource = 'invalid resource';
-        const result = await defaultOi4Application.preparePayload(resource, '', filter);
-        expect(result).toBeUndefined();
+        const result = await defaultOi4Application.preparePayload(resource, '', undefined);
+        expect(result.payload).toBeUndefined();
     });
 
     it('should not send resource if error occured in pagination', async () => {
@@ -546,7 +545,7 @@ describe('OI4MessageBus test', () => {
         // @ts-ignore
         const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaulti4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOi4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
 
         expect(sendResourceMock).toBeCalledTimes(1);
         expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
@@ -557,7 +556,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should add new config and send emit status status via mqttprocess', async () => {
-        defaultOi4ApplicationResources.oi4Id = defaulti4Id;
+        defaultOi4ApplicationResources.oi4Id = defaultOi4Id;
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         defaultOi4ApplicationResources.config['group-a'] = {
@@ -580,7 +579,7 @@ describe('OI4MessageBus test', () => {
         // @ts-ignore
         const eventemitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaulti4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOi4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
         expect(sendResourceMock).toBeCalledTimes(1);
         expect(eventemitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);

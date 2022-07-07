@@ -201,7 +201,7 @@ class OI4Application extends EventEmitter {
             return;
         }
 
-        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
+        await this.sendPayload(validatedPayload.payload, resource, messageId, subResource, filter, page, perPage);
     }
 
     async preparePayload(resource: string, subResource: string, filter: string): Promise<ValidatedPayload> {
@@ -252,7 +252,7 @@ class OI4Application extends EventEmitter {
             }
             default: {
                 await this.sendError(`Unknown Resource: ${resource}`);
-                return;
+                return {payload: undefined, abortSending: true};
             }
         }
 
@@ -266,7 +266,7 @@ class OI4Application extends EventEmitter {
 
     private validateFilter(resource: string, filter: string): ValidatedFilter {
 
-        if (filter === undefined || filter === null)
+        if (filter === undefined || filter === null || filter.length == 0)
         {
             // no filter set
             return {isValid: true, filter: undefined}
@@ -289,9 +289,24 @@ class OI4Application extends EventEmitter {
         return {isValid: false, filter: filter};
     }
 
-    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
-        // Don't forget the slash
-        const endTag: string = filter === '' ? filter : `/${filter}`;
+    private isStringEmpty(str: string) {
+        return str === undefined || str === null || str.length == 0;
+    }
+
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) {
+
+        let endTag = '';
+        if (!this.isStringEmpty(subResource))
+        {
+            if (!this.isStringEmpty(filter))
+            {
+                endTag = `/${subResource}/${filter}`;
+            }
+            else
+            {
+                endTag = `/${subResource}`;
+            }
+        }
 
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
