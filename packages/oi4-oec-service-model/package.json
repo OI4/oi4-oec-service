@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-model",
-  "version": "1.0.0",
+  "version": "1.0.0-preview.1",
   "description": "OI4 Open Edge Computing model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -20,9 +20,9 @@
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
   },
-  "dependencies": {
-    "@oi4/oi4-oec-service-opcua-model": "^1.0.0",
-    "@oi4/oi4-oec-json-schemas": "^1.0.0"
+  "devDependencies": {
+    "@oi4/oi4-oec-service-opcua-model": "^1.0.0-preview.1",
+    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.1"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
