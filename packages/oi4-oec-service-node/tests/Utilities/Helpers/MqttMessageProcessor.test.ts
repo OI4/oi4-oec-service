@@ -1,5 +1,5 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {MqttMessageProcessor} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
+import {MqttMessageProcessor, OnSendMetaData, OnSendResource} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
@@ -52,7 +52,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeAppId, info.fakeServiceType);
     }
 
-    function getMqttProcessorAndMockedData(mockedSendData: Function, emitter: EventEmitter = defaultEmitter, sendMetaData: Function = jest.fn()): any {
+    function getMqttProcessorAndMockedData(mockedSendData: OnSendResource, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()): any {
         const mockedData = getMockedData();
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
         applicationResource.oi4Id = defaultFakeAppId;
@@ -92,7 +92,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
 
-    async function processMessage(mockedSendMessage: Function, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: Function = jest.fn()) {
+    async function processMessage(mockedSendMessage: OnSendResource, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()) {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: DataSetClassIds[resource],
@@ -174,7 +174,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processMessage(mockedSendMessage, fakeTopic, Resource.CONFIG, defaultEmitter);
 
         expect(spiedEmit).toHaveBeenCalledWith('setConfig', {origin: defaultFakeAppId, number: 0, description: undefined});
-        expect(mockedSendMessage).toHaveBeenCalledWith(Resource.CONFIG, undefined, defaultFakeFilter);
+        expect(mockedSendMessage).toHaveBeenCalledWith(Resource.CONFIG, undefined, '', defaultFakeFilter, 0, 0);
         expect(fakeLogFile[0]).toBe(`Added ${defaultFakeFilter} to config group`);
     });
 
@@ -211,7 +211,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     async function checkAgainstTopicForMetaData(fakeTopic: string, filter: string = undefined) {
-        const sendMetaData: Function = jest.fn();
+        const sendMetaData: OnSendMetaData = jest.fn();
         await processMessage(jest.fn(), fakeTopic, Resource.METADATA, defaultEmitter, sendMetaData);
         expect(sendMetaData).toHaveBeenCalledWith(filter);
     }
