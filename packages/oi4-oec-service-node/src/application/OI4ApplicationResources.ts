@@ -80,6 +80,8 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
 
         this.subscriptionList = []
 
+        this.license = []
+
         // Fill both pubList and subList
         for (const resources of this.profile.resource) {
             let resInterval = 0;
@@ -175,6 +177,10 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return this._license;
     }
 
+    private set license(license: License[]) {
+        this._license = license
+    }
+
     getLicense(oi4Id: string, licenseId?: string): License[] {
         if (oi4Id === undefined) {
             return this.license;
@@ -189,11 +195,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return this.license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
     }
 
-    private set license(license) {
-        this._license = license
-    }
-
-    // --- LicenseText ---
+     // --- LicenseText ---
     get licenseText(): Map<string, LicenseText> {
         return this._licenseText;
     }
