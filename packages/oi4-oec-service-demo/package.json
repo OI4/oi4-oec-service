@@ -47,6 +47,8 @@
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "package": "echo \"Package not specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:build:local": "docker build -t oi4/oi4-oec-service-demo:${npm_package_version} -t oi4/oi4-oec-service-demo:latest --build-arg PACKAGES_AUTH_TOKEN=${PACKAGES_AUTH_TOKEN} .",
+    "docker:build:snapshot": "docker build -t oi4/oi4-oec-service-demo:${npm_package_version} -t oi4/oi4-oec-service-demo:latest --build-arg PACKAGES_AUTH_TOKEN=${PACKAGES_AUTH_TOKEN} --build-arg BUILD_ENV=snapshot .",
     "linkIt": "yarn link"
   },
   "gitHead": "334eba63fdecdf5c522c3158a96932b4e7d237b5"
