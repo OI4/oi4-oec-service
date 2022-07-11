@@ -1,19 +1,19 @@
 {
-  "Manufacturer":{"locale":"en-US","text":"Hilscher"},
-  "ManufacturerUri":"hilscher.com",
-  "Model":{"locale":"en-US","text":"OEC Registry"},
-  "ProductCode":"OEC-REG",
+  "Manufacturer":{"locale":"en-US","text":"ACME Corporation"},
+  "ManufacturerUri":"acme.com",
+  "Model":{"locale":"en-US","text":"OEC Utility"},
+  "ProductCode":"OEC-ACME-UTILITY",
   "HardwareRevision":"",
   "SoftwareRevision":"0.12.1",
   "DeviceRevision":"1.0.0",
   "DeviceManual":"1.0",
-  "DeviceClass":"Registry",
-  "SerialNumber":"OEC-Registry",
+  "DeviceClass":"Utility",
+  "SerialNumber":"F12AB34",
   "ProductInstanceUri":"oi4/appid/service",
   "RevisionCounter":0,
   "Description":
   {
     "locale":"en-US",
-    "text":"The OEC Registry, an Open Industry 4.0 Alliance application"
+    "text":"An example OI4 service"
   }
 }

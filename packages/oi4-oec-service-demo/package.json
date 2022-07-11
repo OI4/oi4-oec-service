@@ -5,8 +5,8 @@
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
   "private": false,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/app.js",
+  "types": "dist/app.d.ts",
   "keywords": [
     "oi4",
     "service"
@@ -47,8 +47,10 @@
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "package": "echo \"Package not specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:prepare": "docker buildx create --name oi4-builder --driver docker-container --use --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6,linux/386",
     "docker:build:local": "docker build -t oi4/oi4-oec-service-demo:${npm_package_version} -t oi4/oi4-oec-service-demo:latest --build-arg PACKAGES_AUTH_TOKEN=${PACKAGES_AUTH_TOKEN} .",
     "docker:build:snapshot": "docker build -t oi4/oi4-oec-service-demo:${npm_package_version} -t oi4/oi4-oec-service-demo:latest --build-arg PACKAGES_AUTH_TOKEN=${PACKAGES_AUTH_TOKEN} --build-arg BUILD_ENV=snapshot .",
+    "testLocal": "chmod ug+x ./scripts/test-local.sh && ./scripts/test-local.sh",
     "linkIt": "yarn link"
   },
   "gitHead": "334eba63fdecdf5c522c3158a96932b4e7d237b5"

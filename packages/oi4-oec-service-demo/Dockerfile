@@ -1,4 +1,4 @@
-ARG BUILD_ENV=base
+ARG 6=base
 
 FROM node:16-alpine3.15 as build_base
 

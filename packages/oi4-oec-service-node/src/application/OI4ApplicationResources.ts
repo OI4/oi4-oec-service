@@ -23,9 +23,10 @@ import {
     IOPCUAMetaData,
     IOPCUANetworkMessage
 } from '@oi4/oi4-oec-service-opcua-model';
-import os from 'os';
 import {existsSync, readFileSync} from 'fs';
-import {ConfigFiles, MAMPathSettings} from '../Config/MAMPathSettings';
+import os from 'os';
+
+export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
 
 /**
  * class that initializes the container state
@@ -49,13 +50,13 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     /**
      * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
      * */
-    constructor(mamFile = `${MAMPathSettings.CONFIG_DIRECTORY}${ConfigFiles.mam}`) {
+    constructor(mamFile = DEFAULT_MAM_FILE) {
         super();
 
         this._mam = OI4ApplicationResources.extractMamFile(mamFile); // Import MAM from JSON
 
         if (this.mam === undefined) {
-            throw Error('MAM File not found');
+            throw Error(`MAM File not found at ${mamFile}`);
         }
 
         this.mam.Description.locale = EOPCUALocale.enUS; // Fill in container-specific values
