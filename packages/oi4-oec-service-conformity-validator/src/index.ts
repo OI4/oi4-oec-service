@@ -14,7 +14,8 @@ import {
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {MessageBusLookup, IGetRequest} from './Helper/MessageBusLookup';
+import {MessageBusLookup} from './Helper/MessageBusLookup';
+import {IMessageBusLookup, IGetRequest} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
@@ -25,13 +26,13 @@ export * from './model/IConformityValidator';
  */
 export class ConformityValidator {
     private readonly conformityClient: mqtt.AsyncClient;
-    private readonly messageBusLookup: MessageBusLookup;
+    private readonly messageBusLookup: IMessageBusLookup;
     private builder: OPCUABuilder;
     private readonly jsonValidator: Ajv.Ajv;
     static completeProfileList: string[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
-    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, oecJsonValidator = buildOecJsonValidator(), messageBusLookup = new MessageBusLookup(mqttClient)) {
+    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;

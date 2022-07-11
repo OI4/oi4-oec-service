@@ -1,32 +1,30 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
-import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {promiseTimeout} from './Timeout';
-
-export interface IGetRequest {
-    topicPreamble: string;
-    resource: string;
-    subResource? : string;
-    filter?: string;
-    message: IOPCUANetworkMessage;
-  }
-
- export interface IPubResponse
-  {
-    topic: string;
-    rawMessage: Buffer;
-  }
+import {IMessageBusLookup, IPubResponse, IGetRequest} from '../model/IMessageBusLookup';
 
 
-export class MessageBusLookup extends EventEmitter
+export class MessageBusLookup implements IMessageBusLookup
 {
+    private readonly pubMessages: EventEmitter;
     private readonly conformityClient: mqtt.AsyncClient;
     private readonly timeOut: number;
 
     constructor(mqttClient: mqtt.AsyncClient, timeOut = 1000) {
-        super();
+        this.pubMessages = new EventEmitter();
         this.conformityClient = mqttClient;
         this.timeOut = timeOut;
+
+        this.conformityClient.on('message', async (topic, rawMsg) => {
+            if (topic.includes('pub')) {
+                const pubResponse: IPubResponse = {
+                    topic : topic,
+                    rawMessage : rawMsg,
+                };
+    
+                this.pubMessages.emit(topic, pubResponse);
+            }
+        });
     }
 
     private static isNotEmpty(input: string | undefined): boolean {
@@ -51,29 +49,18 @@ export class MessageBusLookup extends EventEmitter
             getTopic = `${getRequest.topicPreamble}/get/${getRequest.resource}/${getRequest.subResource}/${getRequest.filter}`;
         }
 
-        const pubReceivedEventName = `${getRequest.resource}${getRequest.topicPreamble}Success`
         
-        this.conformityClient.on('message', async (topic, rawMsg) => {
-            if (topic === pubTopic) {
-                await this.conformityClient.unsubscribe(pubTopic);
-                const pubResponse: IPubResponse = {
-                    topic : topic,
-                    rawMessage : rawMsg,
-                };
-    
-                this.emit(pubReceivedEventName, pubResponse);
-            }
-        });
         await this.conformityClient.subscribe(pubTopic);
         await this.conformityClient.publish(getTopic, JSON.stringify(getRequest.message));
 
         return await promiseTimeout(new Promise((resolve) => {
-                this.once(pubReceivedEventName, (res) => {
+                this.pubMessages.once(pubTopic, (res) => {
+                    this.conformityClient.unsubscribe(pubTopic);
                     resolve(res);
                 });
             }),
-            this.timeOut, /*tslint:disable-line*/ // 700ms as the timeout
-            `getMessage-${getRequest.resource}Error-onTopic-${getTopic}`, /*tslint:disable-line*/
+            this.timeOut, 
+            `getMessage-${getRequest.resource}Error-onTopic-${getTopic}`, 
         );
     }
 }
