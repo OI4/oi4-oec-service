@@ -7,8 +7,8 @@ import {TopicWrapper} from "./Types";
 export class TopicValidator {
 
     static isMalformedTopic(wrapper: TopicWrapper) {
-        const method: TopicMethods = wrapper.topicInfo.method;
-        const resource: Resource = wrapper.topicInfo.resource;
+        //const method: TopicMethods = wrapper.topicInfo.method;
+        //const resource: Resource = wrapper.topicInfo.resource;
         const topicAttributesNr = wrapper.topicArray.length;
 
         return  (
