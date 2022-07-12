@@ -15,7 +15,7 @@ import Ajv from 'ajv'; /*tslint:disable-line*/
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {MessageBusLookup} from './Helper/MessageBusLookup';
-import {IMessageBusLookup, IGetRequest} from './model/IMessageBusLookup';
+import {IMessageBusLookup, GetRequest} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
@@ -158,7 +158,7 @@ export class ConformityValidator {
             try {
                 if (resource === 'profile') continue; // We already checked profile
                 if (resource === 'license') { // License is a different case. We actually need to parse the return value here
-                    resObj = await this.checkResourceConformity(fullTopic, '', resource) as IValidityDetails;
+                    resObj = await this.checkResourceConformity(fullTopic, resource) as IValidityDetails;
                     for (const payload of resObj.dataSetMessages) {
                         if (typeof payload.Payload.page !== 'undefined') {
                             LOGGER.log('Careful, weve got pagination in license!');
@@ -168,13 +168,13 @@ export class ConformityValidator {
                     }
                 } else if (resource === 'licenseText') {
                     for (const licenses of licenseList) {
-                        resObj = await this.checkResourceConformity(fullTopic, licenses, resource) as IValidityDetails; // here, the oi4ID is the license
+                        resObj = await this.checkResourceConformity(fullTopic, resource, licenses) as IValidityDetails; // here, the oi4ID is the license
                     }
                 } else {
                     if (resource === 'publicationList' || resource === 'subscriptionList' || resource === 'config') {
-                        resObj = await this.checkResourceConformity(fullTopic, '', resource) as IValidityDetails;
+                        resObj = await this.checkResourceConformity(fullTopic, resource) as IValidityDetails;
                     } else {
-                        resObj = await this.checkResourceConformity(fullTopic, oi4Id, resource) as IValidityDetails;
+                        resObj = await this.checkResourceConformity(fullTopic, resource, oi4Id) as IValidityDetails;
                     }
                 }
             } catch (err) {
@@ -243,7 +243,7 @@ export class ConformityValidator {
         let resObj: IValidityDetails;
 
         try {
-            resObj = await this.checkResourceConformity(fullTopic, oi4Id, 'profile');
+            resObj = await this.checkResourceConformity(fullTopic, 'profile', oi4Id);
         } catch (e) {
             LOGGER.log(`Error in checkProfileConformity: ${e}`);
             throw e;
@@ -281,27 +281,25 @@ export class ConformityValidator {
      * If everything matches, an 'OK' response is returned.
      * If we receive an answer, but the payload / correlation ID is not conform, a 'Partial' response is returned.
      * If we don't receive an answer within the given timeframe, an error is returned.
-     * @param fullTopic - the originator oi4Id of the requestor
-     * @param tag - the tag of the requestor, in most cases their oi4Id
+     * @param topicPreamble - the originator oi4Id of the requestor
      * @param resource - the resource that is to be checked (health, license, etc...)
+     * @param subResource - the subResource of the requestor, in most cases their oi4Id
+     * @param filter - the filter (if available)
      */
-    async checkResourceConformity(fullTopic: string, tag: string, resource: string): Promise<IValidityDetails> {
+    async checkResourceConformity(topicPreamble: string, resource: string, subResource?: string, filter?: string): Promise<IValidityDetails> {
         
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
-        const getRequest: IGetRequest = {
-            topicPreamble: fullTopic,
-            resource: resource,
-            subResource: tag === '' ? undefined : tag, // TODO cfz fix subResource and filter
-            message : conformityPayload, 
-        };
+        const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, subResource, filter);
+
+        const getTopic = getRequest.getTopic('get');
+        const pubTopic = getRequest.getTopic('pub');
         
-        // TODO cfz: fix logger message (tag)
-        LOGGER.log(`Trying to validate resource ${resource} on ${fullTopic}/get/${resource}${tag} (Low-Level)`, ESyslogEventFilter.warning);
-        const response = await this.messageBusLookup.getMessage(getRequest); // TODO cfz test error handling
-        LOGGER.log(`Received conformity message on ${resource} from ${tag}`, ESyslogEventFilter.warning);
+        LOGGER.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        const response = await this.messageBusLookup.getMessage(getRequest);
+        LOGGER.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
 
         const errorMsgArr = [];
-        const parsedMessage = JSON.parse(response.rawMessage.toString()) as IOPCUANetworkMessage;
+        const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUANetworkMessage;
         let eRes: number;
         const schemaResult: ISchemaConformity = await this.checkSchemaConformity(resource, parsedMessage);
         if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
@@ -309,11 +307,11 @@ export class ConformityValidator {
                 eRes = EValidity.ok;
             } else {
                 eRes = EValidity.partial;
-                errorMsgArr.push(`CorrelationId did not pass for ${tag} with resource ${resource}`);
-                LOGGER.log(`CorrelationId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
+                errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
+                LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             }
         } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
-            LOGGER.log(`Some errors with schema validation with tag: ${tag}`, ESyslogEventFilter.error);
+            LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
                 LOGGER.log('NetworkMessage wrong', ESyslogEventFilter.warning);
@@ -328,8 +326,8 @@ export class ConformityValidator {
         }
 
         if (!(parsedMessage.DataSetClassId === DataSetClassIds[resource])) { // Check if the dataSetClassId matches our development guideline
-            LOGGER.log(`DataSetClassId did not pass for ${tag} with resource ${resource}`, ESyslogEventFilter.error);
-            errorMsgArr.push(`DataSetClassId did not pass for ${tag} with resource ${resource}`);
+            LOGGER.log(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            errorMsgArr.push(`DataSetClassId did not pass for ${pubTopic}.`);
             eRes = EValidity.partial;
         }
 

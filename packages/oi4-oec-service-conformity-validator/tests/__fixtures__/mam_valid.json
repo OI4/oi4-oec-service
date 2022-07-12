@@ -1,36 +1,36 @@
 {
-  "MessageId": "1639693510094-OTConnector/provider.com/FieldDataService/FDS-001/1200-0345",
+  "MessageId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "MessageType": "ua-data",
-  "PublisherId": "OTConnector/provider.com/FieldDataService/FDS-001/1200-0345",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-  "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 1,
-      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "subResource": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 4,
-      "Timestamp": "2021-12-16T22:25:10.094Z",
+      "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {
         "Manufacturer": {
           "locale": "en-US",
-          "text": "Provider Ltd."
+          "text": "OpenIndustry 4"
         },
-        "ManufacturerUri": "provider.com",
+        "ManufacturerUri": "openindustry4.com",
         "Model": {
           "locale": "en-US",
-          "text": "FieldDataService"
+          "text": "OEC Registry"
         },
-        "ProductCode": "FDS-001",
+        "ProductCode": "nd",
         "HardwareRevision": "",
         "SoftwareRevision": "1.0.1",
         "DeviceRevision": "",
-        "DeviceManual": "https://provider.com/manuals/FDS-001.pdf",
-        "DeviceClass": "OI4.OTConnector",
-        "SerialNumber": "1200-0345",
-        "ProductInstanceUri": "provider.com/FieldDataService/FDS-001/1200-0345",
+        "DeviceManual": "https://openindustry4.com/fileadmin/Dateien/Downloads/2019_11_20_OI4_Whitepaper_General.pdf",
+        "DeviceClass": "OI4.Registry",
+        "SerialNumber": "nd",
+        "ProductInstanceUri": "openindustry4.com/nd/nd/nd",
         "RevisionCounter": 1,
         "Description": {
           "locale": "en-US",
-          "text": "This OT connector provides field data"
+          "text": "This is the Registry"
         }
       }
     }

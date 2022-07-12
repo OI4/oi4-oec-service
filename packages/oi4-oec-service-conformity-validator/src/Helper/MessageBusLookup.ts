@@ -1,7 +1,7 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
 import {promiseTimeout} from './Timeout';
-import {IMessageBusLookup, IPubResponse, IGetRequest} from '../model/IMessageBusLookup';
+import {IMessageBusLookup, PubResponse, GetRequest} from '../model/IMessageBusLookup';
 
 
 export class MessageBusLookup implements IMessageBusLookup
@@ -17,18 +17,10 @@ export class MessageBusLookup implements IMessageBusLookup
 
         this.conformityClient.on('message', async (topic, rawMsg) => {
             if (topic.includes('pub')) {
-                const pubResponse: IPubResponse = {
-                    topic : topic,
-                    rawMessage : rawMsg,
-                };
-    
+                const pubResponse = new PubResponse(topic, rawMsg);
                 this.pubMessages.emit(topic, pubResponse);
             }
         });
-    }
-
-    private static isNotEmpty(input: string | undefined): boolean {
-        return input != undefined && input != null && input.length > 0;
     }
 
     /**
@@ -37,21 +29,13 @@ export class MessageBusLookup implements IMessageBusLookup
      * Returns an error if the resource is not available within a given timeframe.
      * @param getRequest - The asset information and the message that is used to request the resource.
      */
-     async getMessage(getRequest: IGetRequest): Promise<IPubResponse> {
-        let pubTopic = `${getRequest.topicPreamble}/pub/${getRequest.resource}`;
-        let getTopic = `${getRequest.topicPreamble}/get/${getRequest.resource}`;
-        if (MessageBusLookup.isNotEmpty(getRequest.subResource)) {
-            pubTopic = `${getRequest.topicPreamble}/pub/${getRequest.resource}/${getRequest.subResource}`;
-            getTopic = `${getRequest.topicPreamble}/get/${getRequest.resource}/${getRequest.subResource}`;
-        }
-        if (MessageBusLookup.isNotEmpty(getRequest.subResource) && MessageBusLookup.isNotEmpty(getRequest.filter)) {
-            pubTopic = `${getRequest.topicPreamble}/pub/${getRequest.resource}/${getRequest.subResource}/${getRequest.filter}`;
-            getTopic = `${getRequest.topicPreamble}/get/${getRequest.resource}/${getRequest.subResource}/${getRequest.filter}`;
-        }
+     async getMessage(getRequest: GetRequest): Promise<PubResponse> {
+        const pubTopic = getRequest.getTopic('pub');
+        const getTopic = getRequest.getTopic('get');
 
         
         await this.conformityClient.subscribe(pubTopic);
-        await this.conformityClient.publish(getTopic, JSON.stringify(getRequest.message));
+        await this.conformityClient.publish(getTopic, JSON.stringify(getRequest.Message));
 
         return await promiseTimeout(new Promise((resolve) => {
                 this.pubMessages.once(pubTopic, (res) => {
@@ -60,7 +44,7 @@ export class MessageBusLookup implements IMessageBusLookup
                 });
             }),
             this.timeOut, 
-            `getMessage-${getRequest.resource}Error-onTopic-${getTopic}`, 
+            `getMessage-${getRequest.Resource}Error-onTopic-${getTopic}`, 
         );
     }
 }
