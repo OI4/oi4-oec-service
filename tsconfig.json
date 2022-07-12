@@ -51,7 +51,7 @@
     "baseUrl": "packages",                    /* Base directory to resolve non-absolute module names. */
     "paths": {                                /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
       "@oi4-oec-json-schemas": [
-        "oi4-oec-service-conformity-validator/schemas"
+        "oi4-oec-json-schemas/dist"
       ],
       "@oi4-oec-service-conformity-validator": [
         "oi4-oec-service-conformity-validator/dist"

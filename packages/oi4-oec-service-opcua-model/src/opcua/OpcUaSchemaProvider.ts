@@ -1,20 +1,17 @@
-// // Base
-import {oi4IdentifierSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {NetworkMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {ConfigurationVersionDataTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {DataSetMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {LocalizedTextSchemaJson} from '@oi4/oi4-oec-json-schemas';
-
-// Constants
-import {localePatternSchemaJson} from '@oi4/oi4-oec-json-schemas'
-
-// DataTypes
-import {byteSchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {int8SchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {int16SchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {int32SchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {uint16SchemaJson} from '@oi4/oi4-oec-json-schemas';
-import {uint32SchemaJson} from '@oi4/oi4-oec-json-schemas';
+import {
+    byteSchemaJson,
+    ConfigurationVersionDataTypeSchemaJson,
+    DataSetMessageSchemaJson,
+    int16SchemaJson,
+    int32SchemaJson,
+    int8SchemaJson,
+    localePatternSchemaJson,
+    LocalizedTextSchemaJson,
+    NetworkMessageSchemaJson,
+    oi4IdentifierSchemaJson,
+    uint16SchemaJson,
+    uint32SchemaJson
+} from '@oi4/oi4-oec-json-schemas';
 import Ajv from 'ajv';
 
 export const buildOpcUaJsonValidator = () => {
