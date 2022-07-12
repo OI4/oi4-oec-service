@@ -1,7 +1,7 @@
 import {getResource, getServiceType, Resource} from '@oi4/oi4-oec-service-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
-import {TopicValidator} from "./TopicValidator";
+import {TopicValidator} from './TopicValidator';
 
 export class TopicParser {
 
@@ -69,7 +69,7 @@ export class TopicParser {
         return TopicParser.extractResourceSpecificInfo(wrapper);
     }
 
-    private static extractCommonInfo(topic: string, topicArray: Array<string>) : TopicInfo {
+    private static extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
         if(TopicParser.isAtLeastOneStringEmpty([topicArray[2],topicArray[3],topicArray[4],topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
@@ -154,7 +154,7 @@ export class TopicParser {
         wrapper.topicInfo.filter = wrapper.topicInfo.subResource;
         if(wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
-            wrapper.topicInfo.filter += '/' + wrapper.topicInfo.tag;
+            wrapper.topicInfo.filter += `/${wrapper.topicInfo.tag}`;
         }
     }
 
