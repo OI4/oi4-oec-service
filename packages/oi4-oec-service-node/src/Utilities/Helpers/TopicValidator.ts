@@ -1,5 +1,3 @@
-import {Resource} from '@oi4/oi4-oec-service-model';
-import {TopicMethods} from './Enums';
 import {TopicWrapper} from "./Types";
 
 //FIXME: This is just the beginning of a draft, must be evaluated if it is worthy to implement this or not
