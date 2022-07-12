@@ -16,6 +16,12 @@ import profile_device_valid from './__fixtures__/profile_device_valid.json';
 import profile_device_data_valid from './__fixtures__/profile_device_data_valid.json';
 import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.json';
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
+import license_valid from './__fixtures__/license_valid.json';
+import license_invalidDscId from './__fixtures__/license_invalidDscId.json';
+import licenseText_valid from './__fixtures__/licenseText_valid.json';
+import licenseText_invalidDscId from './__fixtures__/licenseText_invalidDscId.json';
+import publicationList_valid from './__fixtures__/publicationList_valid.json';
+import publicationList_invalidDscId from './__fixtures__/publicationList_invalidDscId.json';
 
 
 
@@ -72,7 +78,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(defaultTime);
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(mam_valid));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'mam');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.MAM);
         expect(result.validity).toBe(EValidity.ok);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(2);
@@ -87,7 +93,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(new Date('2010-01-01')); // enforce wrong correlation id
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(mam_valid));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'mam');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.MAM);
         expect(result.validity).toBe(EValidity.partial);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(3);
@@ -103,7 +109,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(defaultTime);
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(mam_invalidDscId));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'mam');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.MAM);
         expect(result.validity).toBe(EValidity.partial);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(3);
@@ -119,7 +125,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(defaultTime);
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(health_valid));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'health');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.HEALTH);
         expect(result.validity).toBe(EValidity.ok);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(2);
@@ -134,7 +140,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(new Date('2010-01-01')); // enforce wrong correlation id
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(health_valid));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'health');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.HEALTH);
         expect(result.validity).toBe(EValidity.partial);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(3);
@@ -150,7 +156,7 @@ describe('Unit test for ConformityValidator ', () => {
         .setSystemTime(defaultTime);
 
         const objectUnderTest = getObjectUnderTest(JSON.stringify(health_invalidDscId));
-        const result = await objectUnderTest.checkResourceConformity(defaultTopic, 'health');
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.HEALTH);
         expect(result.validity).toBe(EValidity.partial);
 
         expect(LOGGER.log).toHaveBeenCalledTimes(3);
@@ -224,6 +230,148 @@ describe('Unit test for ConformityValidator ', () => {
         expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
         expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
     })
+
+    it('should return full resource conformity for license', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(license_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE);
+        expect(result.validity).toBe(EValidity.ok);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(2);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource license on ${defaultTopic}/get/license (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on license from ${defaultTopic}/pub/license.`, ESyslogEventFilter.warning);
+    })
+
+    it('should return partial conformity for license with invalid correlationId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(new Date('2010-01-01')); // enforce wrong correlation id
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(license_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource license on ${defaultTopic}/get/license (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on license from ${defaultTopic}/pub/license.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${defaultTopic}/pub/license.`, ESyslogEventFilter.error);
+    })
+
+    it('should return partial conformity for license with invalid DataSetClassId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(license_invalidDscId));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource license on ${defaultTopic}/get/license (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on license from ${defaultTopic}/pub/license.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${defaultTopic}/pub/license.`, ESyslogEventFilter.error);
+    })
+
+    it('should return full resource conformity for licenseText', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(licenseText_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE_TEXT);
+        expect(result.validity).toBe(EValidity.ok);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(2);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource licenseText on ${defaultTopic}/get/licenseText (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on licenseText from ${defaultTopic}/pub/licenseText.`, ESyslogEventFilter.warning);
+    })
+
+    it('should return partial conformity for licenseText with invalid correlationId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(new Date('2010-01-01')); // enforce wrong correlation id
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(licenseText_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE_TEXT);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource licenseText on ${defaultTopic}/get/licenseText (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on licenseText from ${defaultTopic}/pub/licenseText.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${defaultTopic}/pub/licenseText.`, ESyslogEventFilter.error);
+    })
+
+    it('should return partial conformity for licenseText with invalid DataSetClassId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(licenseText_invalidDscId));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.LICENSE_TEXT);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource licenseText on ${defaultTopic}/get/licenseText (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on licenseText from ${defaultTopic}/pub/licenseText.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${defaultTopic}/pub/licenseText.`, ESyslogEventFilter.error);
+    })
+
+    it('should return full resource conformity for publicationList', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(publicationList_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.PUBLICATION_LIST);
+        expect(result.validity).toBe(EValidity.ok);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(2);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource publicationList on ${defaultTopic}/get/publicationList (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on publicationList from ${defaultTopic}/pub/publicationList.`, ESyslogEventFilter.warning);
+    })
+
+    it('should return partial conformity for publicationList with invalid correlationId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(new Date('2010-01-01')); // enforce wrong correlation id
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(publicationList_valid));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.PUBLICATION_LIST);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource publicationList on ${defaultTopic}/get/publicationList (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on publicationList from ${defaultTopic}/pub/publicationList.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${defaultTopic}/pub/publicationList.`, ESyslogEventFilter.error);
+    })
+
+    it('should return partial conformity for publicationList with invalid DataSetClassId', async ()=> {
+
+        jest
+        .useFakeTimers()
+        .setSystemTime(defaultTime);
+
+        const objectUnderTest = getObjectUnderTest(JSON.stringify(publicationList_invalidDscId));
+        const result = await objectUnderTest.checkResourceConformity(defaultTopic, Resource.PUBLICATION_LIST);
+        expect(result.validity).toBe(EValidity.partial);
+
+        expect(LOGGER.log).toHaveBeenCalledTimes(3);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource publicationList on ${defaultTopic}/get/publicationList (Low-Level).`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on publicationList from ${defaultTopic}/pub/publicationList.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${defaultTopic}/pub/publicationList.`, ESyslogEventFilter.error);
+    })
+
 
 
 
