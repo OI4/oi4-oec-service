@@ -55,11 +55,13 @@ export class MqttMessageProcessor {
         if (!validateMessage.isValid) {
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         } else if (validateMessage.parsedMessage.Messages.length === 0) {
-            LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.informational);
+            LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
         }
 
-        if(topic.indexOf(`/${TopicMethods.PUB}/`) != -1) {
-            LOGGER.log(`No reaction needed to our own publication messages${topic.substring(topic.indexOf(`/${TopicMethods.PUB}/`), topic.length)}`);
+        if(topic.indexOf(validateMessage.parsedMessage.PublisherId) == -1) {
+            LOGGER.log('ServiceType/AppID in topic string are not the equal to the one specified in the Payload', ESyslogEventFilter.warning);
+            LOGGER.log(`Topic: ${topic}`, ESyslogEventFilter.warning);
+            LOGGER.log(`Payload: ${validateMessage.parsedMessage.PublisherId}`, ESyslogEventFilter.warning);
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
         }
 
