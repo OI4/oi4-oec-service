@@ -58,6 +58,7 @@ export class MqttMessageProcessor {
             LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
         }
 
+        //FIXME The PublisherId information is redundant, since it is specified both in the topic string and in the Payload. Is this ok?
         if(topic.indexOf(validateMessage.parsedMessage.PublisherId) == -1) {
             LOGGER.log('ServiceType/AppID in topic string are not the equal to the one specified in the Payload', ESyslogEventFilter.warning);
             LOGGER.log(`Topic: ${topic}`, ESyslogEventFilter.warning);
