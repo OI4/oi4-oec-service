@@ -11,6 +11,7 @@ export enum Resource {
     DATA = 'data',
     RT_LICENSE = 'rtLicense',
     CONFIG = 'config',
+    INTERFACE = 'interface',
     EVENT = 'event',
     METADATA = 'metadata',
     PUBLICATION_LIST = 'publicationList',

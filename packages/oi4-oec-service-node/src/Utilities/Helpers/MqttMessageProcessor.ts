@@ -5,12 +5,12 @@ import {
     IContainerConfigConfigName,
     IContainerConfigGroupName,
     IOI4ApplicationResources,
-    Resource
+    Resource, getResource
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, PayloadTypes} from './Enums';
+import {TopicMethods, PayloadTypes, getTopicMethod} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 
@@ -158,13 +158,15 @@ export class MqttMessageProcessor {
         const topicInfo: TopicInfo = {
             topic: topic,
             appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
-            method: topicArray[6],
-            resource: topicArray[7],
+            method: getTopicMethod(topicArray[6]),
+            resource: getResource(topicArray[7]),
             oi4Id: undefined,
             filter: undefined,
+            category: undefined,
+            serviceType: undefined,
+            tag: undefined,
             licenseId: undefined,
-            subResource: undefined,
-            topicTag: undefined,
+            subResource: undefined
         };
 
         if (topicArray.length >= 12) {
@@ -204,7 +206,7 @@ export class MqttMessageProcessor {
                     throw new Error(`Invalid Resource/tag: ${topic}`);
                 }
                 topicInfo.subResource = topicArray[12];
-                topicInfo.topicTag = topicArray[13];
+                topicInfo.tag = topicArray[13];
                 break;
             }
         }
