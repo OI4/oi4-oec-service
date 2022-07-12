@@ -33,7 +33,8 @@ export const Device = {
     mandatory: [
         Resource.MAM,
         Resource.HEALTH,
-        Resource.PROFILE
+        Resource.PROFILE,
+        Resource.REFERENCE_DESIGNATION
     ],
     full: profileFull,
 };

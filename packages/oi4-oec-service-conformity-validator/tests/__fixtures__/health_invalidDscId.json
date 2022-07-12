@@ -1,0 +1,18 @@
+{
+  "MessageId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "MessageType": "ua-data",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+  "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
+  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "Messages": [{
+      "DataSetWriterId": 3456,
+      "subResource": "openindustry4.com/nd/nd/nd",
+      "SequenceNumber": 57,
+      "Timestamp": "2020-01-01T00:00:00.000Z",
+      "Payload": {
+        "health": "NORMAL_0",
+        "healthScore": 100
+      }
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "MessageId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "MessageType": "ua-data",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+  "DataSetClassId": "d8e7b6df-42ba-448a-975a-199f59e8ffeb",
+  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "Messages": [{
+      "DataSetWriterId": 1,
+      "subResource": "openindustry4.com/nd/nd/nd",
+      "SequenceNumber": 4,
+      "Timestamp": "2020-01-01T00:00:00.000Z",
+      "Payload": {
+        "Manufacturer": {
+          "locale": "en-US",
+          "text": "OpenIndustry 4"
+        },
+        "ManufacturerUri": "openindustry4.com",
+        "Model": {
+          "locale": "en-US",
+          "text": "OEC Registry"
+        },
+        "ProductCode": "nd",
+        "HardwareRevision": "",
+        "SoftwareRevision": "1.0.1",
+        "DeviceRevision": "",
+        "DeviceManual": "https://openindustry4.com/fileadmin/Dateien/Downloads/2019_11_20_OI4_Whitepaper_General.pdf",
+        "DeviceClass": "OI4.Registry",
+        "SerialNumber": "nd",
+        "ProductInstanceUri": "openindustry4.com/nd/nd/nd",
+        "RevisionCounter": 1,
+        "Description": {
+          "locale": "en-US",
+          "text": "This is the Registry"
+        }
+      }
+    }
+  ]
+}

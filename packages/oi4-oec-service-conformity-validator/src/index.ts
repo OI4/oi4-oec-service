@@ -7,7 +7,8 @@ import {
     DataSetClassIds,
     Device,
     EAssetType,
-    ESyslogEventFilter
+    ESyslogEventFilter,
+    Resource
 } from '@oi4/oi4-oec-service-model';
 
 // Resource imports
@@ -73,7 +74,7 @@ export class ConformityValidator {
             assetType = EAssetType.device;
         }
 
-        const mandatoryResourceList = this.getMandatoryResources(assetType);
+        const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
@@ -97,7 +98,7 @@ export class ConformityValidator {
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
 
         try {
-            conformityObject.resource['profile'] = await this.checkProfileConformity(fullTopic, oi4Id, assetType);
+            conformityObject.resource['profile'] = await this.checkProfileConformity(fullTopic, assetType, oi4Id);
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
             conformityObject.resource['profile'] = {
                 dataSetMessages: [{
@@ -233,29 +234,36 @@ export class ConformityValidator {
      * 2) The profile payload should not contain additional resources to the ones specified in the oi4 guideline
      * 3) Every resource that is specified in the profile payload needs to be accessible (exceptions for data, metadata, event)
      * Sidenote: "Custom" Resources will be marked as an error and not checked
-     * @param fullTopic The fullTopic that is used to check the get-route
+     * @param topicPreamble The fullTopic that is used to check the get-route
      * @param oi4Id  The oidId of the tested asset ("tag element")
      * @param assetType The type of asset being tested (device / application)
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
 
-    async checkProfileConformity(fullTopic: string, oi4Id: string, assetType: EAssetType): Promise<IValidityDetails> {
+    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, subResource?: string, filter?: string): Promise<IValidityDetails> {
         let resObj: IValidityDetails;
 
         try {
-            resObj = await this.checkResourceConformity(fullTopic, 'profile', oi4Id);
+            resObj = await this.checkResourceConformity(topicPreamble, 'profile', subResource, filter);
         } catch (e) {
             LOGGER.log(`Error in checkProfileConformity: ${e}`);
             throw e;
         }
 
         const profileDataSetMessage = resObj.dataSetMessages;
-        const mandatoryResourceList = this.getMandatoryResources(assetType);
+        const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         const profilePayload = profileDataSetMessage[0].Payload;
         if (!(mandatoryResourceList.every(i => profilePayload.resource.includes(i)))) {
             resObj.validity = EValidity.partial;
-            resObj.validityErrors.push('Not every mandatory in resource list of profile');
+            resObj.validityErrors.push('Not every mandatory in resource list of profile.');
         }
+
+        if (profilePayload.resource.includes('data') && !profilePayload.resource.includes('metadata'))
+        {
+            resObj.validity = EValidity.partial;
+            resObj.validityErrors.push('Profile contains the resource "data" but not "metadata".');
+        }
+
         return resObj;
     }
 
@@ -264,8 +272,8 @@ export class ConformityValidator {
      * @param assetType The type that is used to retrieve the list of mandatory resources
      * @returns {string[]} A list of mandatory resources
      */
-    getMandatoryResources(assetType: EAssetType): string[] {
-        let mandatoryResources: any[];
+    static getMandatoryResources(assetType: EAssetType): Resource[] {
+        let mandatoryResources: Resource[];
         if (assetType === EAssetType.application) {
             mandatoryResources = Application.mandatory;
         } else {
