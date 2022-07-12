@@ -12,12 +12,13 @@ export class TopicValidator {
         const topicAttributesNr = wrapper.topicArray.length;
 
         return  (
-                    topicAttributesNr < 8 || topicAttributesNr == 9 || topicAttributesNr == 11 || topicAttributesNr > 14 ||
-                    TopicValidator.checkAgainstTopicLength10(method, resource, topicAttributesNr) ||
-                    TopicValidator.checkAgainstTopicLength12(method, resource, topicAttributesNr)
+                    topicAttributesNr < 8 || topicAttributesNr == 9 || topicAttributesNr == 11 || topicAttributesNr > 14
+                    //TopicValidator.checkAgainstTopicLength10(method, resource, topicAttributesNr) ||
+                    //TopicValidator.checkAgainstTopicLength12(method, resource, topicAttributesNr)
                 );
     }
 
+    /*
     static checkAgainstTopicLength10(method: string, resource: Resource, topicAttributesNr: number) {
         return topicAttributesNr != 10 && method === TopicMethods.PUB && resource === Resource.EVENT;
     }
@@ -30,7 +31,6 @@ export class TopicValidator {
                    method === TopicMethods.SET && resource === Resource.CONFIG
                )
     }
-
-
+    */
 
 }

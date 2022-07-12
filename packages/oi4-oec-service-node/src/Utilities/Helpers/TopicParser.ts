@@ -1,6 +1,7 @@
 import {getResource, getServiceType, Resource} from '@oi4/oi4-oec-service-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
+import {TopicValidator} from "./TopicValidator";
 
 export class TopicParser {
 
@@ -54,15 +55,25 @@ export class TopicParser {
          * non-empty values. Quantitative evaluations, such as regarding the proper topic length for
          * a specific method/resource pair, has not been implemented.
          */
-
         const topicArray = topic.split('/');
         const topicInfo: TopicInfo = TopicParser.extractCommonInfo(topic, topicArray);
         const wrapper: TopicWrapper = {topic, topicArray, topicInfo};
+
+        //The purpose of the topic validator is to provide a quantitative check for the topic string
+        //(E.g. If we have pub event, the topic string is composed by 10 parts). For now, the
+        //TopicValidator is just a draft
+        if(TopicValidator.isMalformedTopic(wrapper)) {
+            throw new Error(`Invalid topic string structure ${topic}`);
+        }
 
         return TopicParser.extractResourceSpecificInfo(wrapper);
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>) : TopicInfo {
+        if(TopicParser.isAtLeastOneStringEmpty([topicArray[2],topicArray[3],topicArray[4],topicArray[5]])) {
+            throw new Error(`Invalid App id: ${topic}`);
+        }
+
         return {
             topic: topic,
             appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
