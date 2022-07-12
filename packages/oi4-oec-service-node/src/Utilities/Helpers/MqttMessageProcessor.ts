@@ -1,16 +1,16 @@
 import {
     DataSetClassIds,
     ESyslogEventFilter,
-    StatusEvent,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
     IOI4ApplicationResources,
-    Resource
+    Resource,
+    StatusEvent
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
-import {TopicMethods, PayloadTypes} from './Enums';
+import {PayloadTypes, TopicMethods} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 import {TopicParser} from './TopicParser';
@@ -60,7 +60,7 @@ export class MqttMessageProcessor {
 
         //FIXME The PublisherId information is redundant, since it is specified both in the topic string and in the Payload. Is this ok?
         if(topic.indexOf(validateMessage.parsedMessage.PublisherId) == -1) {
-            LOGGER.log('ServiceType/AppID in topic string are not the equal to the one specified in the Payload', ESyslogEventFilter.warning);
+            LOGGER.log('ServiceType/AppID mismatch with Payload PublisherId', ESyslogEventFilter.warning);
             LOGGER.log(`Topic: ${topic}`, ESyslogEventFilter.warning);
             LOGGER.log(`Payload: ${validateMessage.parsedMessage.PublisherId}`, ESyslogEventFilter.warning);
             return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
@@ -118,6 +118,7 @@ export class MqttMessageProcessor {
                     break;
                 }
                 case TopicMethods.PUB: {
+                    LOGGER.log('No reaction needed to our own publish event', ESyslogEventFilter.informational);
                     break; // Only break here, because we should not react to our own publication messages
                 }
                 case TopicMethods.SET: {

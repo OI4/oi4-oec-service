@@ -16,10 +16,10 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
     const defaultFakeSubResource = 'fakeSubResource';
-    const defaultTopicPrefix = 'fake/fictitious';
+    const defaultTopicPrefix = 'fake/Registry';
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
-    const defaultFakeOi4Id = '1/1/1/1';
+    const defaultFakeOi4Id = '2/2/2/2';
     const defaultFakeTag = 'tag';
 
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         return {
             fakeOi4Id: defaultFakeAppId,
             fakeServiceType: 'fakeServiceType',
-            fakeTopic: `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`,
+            fakeTopic: `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/mam`,
         }
     }
 
@@ -81,15 +81,32 @@ describe('Unit test for MqttMessageProcessor', () => {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: 'Mocked/Fake'
+            PublisherId: `Utility/${defaultFakeAppId}`
         };
 
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
+        processorAndMockedData.mockedData.fakeTopic = `fake/Utility/${defaultFakeAppId}/${TopicMethods.GET}/mam`
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
         expect(fakeLogFile.length).toBe(0);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
+    });
+
+    it('If the serviceType/appID in topic string is not coherent with publisherID in payload, a is not "Registry" the oi4Id is not saved', async () => {
+        const jsonObj = {
+            Messages: [{Payload: 'fakePayload'}],
+            DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
+            PublisherId: `Utility/${defaultFakeAppId}`
+        };
+
+        const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
+        await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+
+        expect(fakeLogFile.length).toBe(3);
+        expect(fakeLogFile[0]).toBe(`ServiceType/AppID mismatch with Payload PublisherId`);
+        expect(fakeLogFile[1]).toBe(`Topic: ${processorAndMockedData.mockedData.fakeTopic}`);
+        expect(fakeLogFile[2]).toBe(`Payload: ${jsonObj.PublisherId}`);
     });
 
     async function processMessage(mockedSendMessage: OnSendResource, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()) {
@@ -113,9 +130,9 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('Pub events are ignored', async() => {
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.PUB}/${Resource.EVENT}/fakeCategory/${defaultFakeFilter}`;
 
-        await processMessage(jest.fn(), fakeTopic, Resource.CONFIG, defaultEmitter);
+        await processMessage(jest.fn(), fakeTopic, Resource.EVENT, defaultEmitter);
 
-        expect(fakeLogFile[0]).toBe(`No reaction needed to our own publication messages${fakeTopic.substring(fakeTopic.indexOf(`/${TopicMethods.PUB}/`), fakeTopic.length)}`);
+        expect(fakeLogFile[0]).toBe(`No reaction needed to our own publish event`);
     });
 
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
@@ -259,7 +276,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const mockedSendMessage = jest.fn();
         await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
 
-        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, undefined, 0, 0);
+        expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, `${defaultFakeSubResource}/${defaultFakeFilter}`, 0, 0);
     }
 
     it('extract topic info works - publicationList and subscriptionList', async () => {
@@ -270,11 +287,11 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info - publicationList and subscriptionList - if subresource or tag is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid Resource/tag: ', `/${defaultFakeSubResource}/`)
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid Resource/tag: ', `//${defaultFakeTag}`)
+        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid tag: ', `/${defaultFakeSubResource}/`)
+        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid subresource: ', `//${defaultFakeTag}`)
 
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid Resource/tag: ', `/${defaultFakeSubResource}/`)
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid Resource/tag: ', `//${defaultFakeTag}`)
+        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid tag: ', `/${defaultFakeSubResource}/`)
+        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid subresource: ', `//${defaultFakeTag}`)
     });
 
 });

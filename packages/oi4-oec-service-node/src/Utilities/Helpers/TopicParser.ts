@@ -150,7 +150,8 @@ export class TopicParser {
     }
 
     private static extractListInfo(wrapper: TopicWrapper) {
-        wrapper.topicInfo.filter = TopicParser.extractItem(wrapper, 12, 'Invalid subresource: ');
+        wrapper.topicInfo.subResource = TopicParser.extractItem(wrapper, 12, 'Invalid subresource: ');
+        wrapper.topicInfo.filter = wrapper.topicInfo.subResource;
         if(wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
             wrapper.topicInfo.filter += '/' + wrapper.topicInfo.tag;
