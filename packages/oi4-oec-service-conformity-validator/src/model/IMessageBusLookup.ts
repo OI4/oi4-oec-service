@@ -1,13 +1,15 @@
 import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {Resource} from '@oi4/oi4-oec-service-model';
+
 
 export class GetRequest {
     TopicPreamble: string;
-    Resource: string;
+    Resource: Resource;
     SubResource? : string;
     Filter?: string;
     Message: IOPCUANetworkMessage;
 
-    constructor(topicPreamble: string, resource: string, message: IOPCUANetworkMessage, subResource?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resource, message: IOPCUANetworkMessage, subResource?: string, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
         this.Message = message;

@@ -65,7 +65,7 @@ export class ConformityValidator {
      * @param subResource - The subResource.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
-    async checkConformity(assetType: EAssetType, topicPreamble: string, subResource: string, resourceList?: Resource[]): Promise<IConformity> {
+    async checkConformity(assetType: EAssetType, topicPreamble: string, subResource?: string, resourceList?: Resource[]): Promise<IConformity> {
         const ignoredResources = ['data', 'metadata', 'event'];
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
@@ -77,7 +77,17 @@ export class ConformityValidator {
         let resObj: IValidityDetails; // Container for validation results
 
         try {
-            oi4Result = await ConformityValidator.checkOI4IDConformity(subResource);
+
+            if (subResource == undefined)
+            {
+                const topicArray = topicPreamble.split('/');
+                const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
+                oi4Result = await ConformityValidator.checkOI4IDConformity(originator);
+            }
+            else
+            {
+                oi4Result = await ConformityValidator.checkOI4IDConformity(subResource);
+            }
         } catch (err) {
             LOGGER.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
             return conformityObject;
