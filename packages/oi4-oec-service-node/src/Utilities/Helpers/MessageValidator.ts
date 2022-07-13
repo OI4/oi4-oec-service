@@ -30,7 +30,7 @@ export class MessageValidator {
         }
 
         if (!builder.checkTopicPath(topic)) {
-            throw new Error('Error in pre-check topic Path, please correct topic Path');
+            throw new Error('Malformed topic Path');
         }
     }
 
@@ -42,7 +42,7 @@ export class MessageValidator {
     private static checkDataSetClassId(wrapper: TopicWrapper, parsedMessage: IOPCUANetworkMessage) {
         // Safety-Check: DataSetClassId
         if (parsedMessage.DataSetClassId !== DataSetClassIds[wrapper.topicInfo.resource]) {
-            throw new Error(`Error in pre-check, dataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[wrapper.topicInfo.resource]}`);
+            throw new Error(`DataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[wrapper.topicInfo.resource]}`);
         }
     }
 

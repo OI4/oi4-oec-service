@@ -51,7 +51,7 @@ export class MqttMessageProcessor {
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
             await this.processMessage(topicInfo, parsedMessage, builder);
         } catch (e) {
-            LOGGER.log(`Error while processing Mqtt Message: ${e}`, ESyslogEventFilter.warning);
+            LOGGER.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
             return;
         }
     }
