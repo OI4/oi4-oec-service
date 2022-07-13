@@ -1,4 +1,4 @@
-import {TopicValidator} from '../../../src/Utilities/Helpers/TopicValidator';
+import {MessageValidator} from '../../../src/Utilities/Helpers/MessageValidator';
 import {TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
 import {TopicInfo} from '../../../src/Utilities/Helpers/Types';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
@@ -28,34 +28,34 @@ describe('Unit test for TopicParser', () => {
 
     it('Wrong topic structures are recognized', async () => {
         defaultTopicWrapper.topicArray = ['', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeTruthy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeTruthy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeTruthy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeTruthy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeTruthy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeTruthy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeTruthy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeTruthy();
     });
 
     it('Proper topic structures are recognized', async () => {
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeFalsy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeFalsy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeFalsy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeFalsy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeFalsy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeFalsy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeFalsy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeFalsy();
 
         defaultTopicWrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-        expect(TopicValidator.isMalformedTopic(defaultTopicWrapper)).toBeFalsy();
+        expect(MessageValidator.checkForMalformedTopic(defaultTopicWrapper)).toBeFalsy();
     });
 
 });
