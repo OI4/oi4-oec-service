@@ -22,6 +22,10 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultFakeOi4Id = '2/2/2/2';
     const defaultFakeTag = 'tag';
 
+    function clearLogFile() {
+        fakeLogFile.splice(0, fakeLogFile.length);
+    }
+
     beforeEach(() => {
         //Flush the messages log
         clearLogFile();
@@ -29,10 +33,6 @@ describe('Unit test for MqttMessageProcessor', () => {
         OI4RegistryManager.resetOI4RegistryManager();
         setLogger(loggerItems.fakeLogger);
     });
-
-    function clearLogFile() {
-        fakeLogFile.splice(0, fakeLogFile.length);
-    }
 
     function getMockedData() {
         return {
