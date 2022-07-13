@@ -24,11 +24,15 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     beforeEach(() => {
         //Flush the messages log
-        fakeLogFile.splice(0, fakeLogFile.length);
+        clearLogFile();
         MockedOPCUABuilderFactory.resetAllMocks();
         OI4RegistryManager.resetOI4RegistryManager();
         setLogger(loggerItems.fakeLogger);
     });
+
+    function clearLogFile() {
+        fakeLogFile.splice(0, fakeLogFile.length);
+    }
 
     function getMockedData() {
         return {
@@ -103,10 +107,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(3);
-        expect(fakeLogFile[0]).toBe(`ServiceType/AppID mismatch with Payload PublisherId`);
-        expect(fakeLogFile[1]).toBe(`Topic: ${processorAndMockedData.mockedData.fakeTopic}`);
-        expect(fakeLogFile[2]).toBe(`Payload: ${jsonObj.PublisherId}`);
+        expect(fakeLogFile.length).toBe(1);
+        expect(fakeLogFile[0]).toBe('Error while processing Mqtt Message: ServiceType/AppID mismatch with Payload PublisherId: [Topic: fake/Registry/mymanufacturer.com/1/1/1/get/mam - Payload: Utility/mymanufacturer.com/1/1/1]');
     });
 
     async function processMessage(mockedSendMessage: OnSendResource, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()) {
@@ -156,19 +158,15 @@ describe('Unit test for MqttMessageProcessor', () => {
     //FIXME find a better way to check for errors
     it('extract topic info works - if oi4Id is wrong an error is thrown - mam, health, rtLicense, profile, referenceDesignation', async () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
-        let errorArrived = false;
 
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/1//1/1`;
             try {
                 await checkResultGet(resource, fakeTopic);
             } catch(err:any) {
-                expect(err.message).toBe(`Malformed Oi4Id : ${fakeTopic}`);
-                errorArrived = true;
+                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : ${fakeTopic}`);
+                clearLogFile();
             }
-
-            expect(errorArrived).toBeTruthy();
-            errorArrived = false;
         }
     });
 
@@ -197,7 +195,10 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '') {
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/${defaultFakeOi4Id}${topicSuffix}`;
-        await expect(processMessage(jest.fn(), fakeTopic, resourceConfig, new EventEmitter())).rejects.toThrowError(`${errorPrefix}${fakeTopic}`);
+        await processMessage(jest.fn(), fakeTopic, resourceConfig, new EventEmitter());
+        expect(fakeLogFile.length).toBe(1);
+        expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: ${errorPrefix}${fakeTopic}`);
+        clearLogFile();
     }
 
     it('extract topic info works - config - if the filter is missing an error is thrown', async() => {
