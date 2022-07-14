@@ -26,7 +26,15 @@ export class MessageValidator {
         try {
             await builder.checkOPCUAJSONValidity(parsedMessage);
         } catch (e) {
-            throw new Error(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`);
+            let errMsg = '';
+            if(typeof e === 'string') {
+                errMsg = e;
+            }  else if(e.message !== undefined) {
+                errMsg = e.message;
+            } else {
+                errMsg = JSON.stringify(e);
+            }
+            throw new Error(`OPC UA validation failed with: ${errMsg}`);
         }
 
         if (!builder.checkTopicPath(topic)) {
