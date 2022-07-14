@@ -1,5 +1,5 @@
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {getServiceType, Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {TopicParser} from '../../../src/Utilities/Helpers/TopicParser';
 import {TopicWrapper} from '../../../src/Utilities/Helpers/Types';
 import {TopicInfo} from '../../../dist/Utilities/Helpers/Types';
