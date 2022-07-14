@@ -33,25 +33,31 @@ class OI4Application extends EventEmitter {
     private readonly client: mqtt.AsyncClient;
 
     private clientCallbacksHelper: ClientCallbacksHelper;
-    private mqttMessageProcessor: MqttMessageProcessor;
+    private readonly mqttMessageProcessor: MqttMessageProcessor;
+
+    static builder(){
+        return new OI4ApplicationBuilder();
+    };
 
     /***
-     * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
-     * @param mqttSettings
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
+     * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
+     * @param mqttSettings
+     * @param opcUaBuilder
+     * @param clientPayloadHelper
+     * @param clientCallbacksHelper
      */
-
-    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings) {
+    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
 
         super();
         this.oi4Id = applicationResources.oi4Id;
         this.serviceType = applicationResources.mam.DeviceClass;
-        this.builder = new OPCUABuilder(this.oi4Id, this.serviceType);
+        this.builder = opcUaBuilder;
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.applicationResources = applicationResources;
 
-        this.clientPayloadHelper = new ClientPayloadHelper();
+        this.clientPayloadHelper = clientPayloadHelper;
 
         mqttSettings.will = {
             topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
@@ -70,14 +76,13 @@ class OI4Application extends EventEmitter {
 
         updateMqttClient(this.client);
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
-        this.clientPayloadHelper = new ClientPayloadHelper();
-        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
+        this.clientCallbacksHelper = clientCallbacksHelper;
         this.on('setConfig', this.sendEventStatus);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.mqttMessageProcessor = new MqttMessageProcessor(
             this.applicationResources,
-            async (cutTopic: string) => {await this.sendMetaData(cutTopic)}, 
-            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {await this.sendResource(resource, messageId, subResource, filter, page, perPage)},  
+            async (cutTopic: string) => {await this.sendMetaData(cutTopic)},
+            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {await this.sendResource(resource, messageId, subResource, filter, page, perPage)},
             super.removeListener('', () => {
         }));
 
@@ -90,6 +95,7 @@ class OI4Application extends EventEmitter {
         this.setOnClientDisconnectCallback();
         this.setOnClientReconnectCallback();
         this.setOnClientConnectCallback();
+        this.setOnClientOfflineCallback();
     }
 
     private setOnClientErrorCallback() {
@@ -116,6 +122,10 @@ class OI4Application extends EventEmitter {
             this.initClientHealthHeartBeat();
             this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
         });
+    }
+
+    private setOnClientOfflineCallback() {
+        this.client.on(AsyncClientEvents.OFFLINE, async () => this.clientCallbacksHelper.onOfflineCallback());
     }
 
     private async initIncomingMessageListeners() {
@@ -352,6 +362,51 @@ class OI4Application extends EventEmitter {
 
     get mqttMessageProcess() {
         return this.mqttMessageProcessor;
+    }
+}
+
+export class OI4ApplicationBuilder{
+    private applicationResources: IOI4ApplicationResources;
+    private mqttSettings: MqttSettings;
+    private opcUaBuilder: OPCUABuilder;
+    private clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
+    private clientCallbacksHelper: ClientCallbacksHelper;
+
+    withApplicationResources(applicationResources: IOI4ApplicationResources) {
+        this.applicationResources = applicationResources;
+        return this;
+    }
+
+    withMqttSettings(mqttSettings: MqttSettings) {
+        this.mqttSettings = mqttSettings;
+        return this;
+    }
+
+    withOPCUABuilder(opcUaBuilder: OPCUABuilder) {
+        this.opcUaBuilder = opcUaBuilder;
+        return this;
+    }
+
+    withClientPayloadHelper(clientPayloadHelper: ClientPayloadHelper) {
+        this.clientPayloadHelper = clientPayloadHelper;
+        return this;
+    }
+
+    withClientCallbacksHelper(clientCallbacksHelper: ClientCallbacksHelper) {
+        this.clientCallbacksHelper = clientCallbacksHelper;
+        return this;
+    }
+
+    build() {
+        const oi4Id = this.applicationResources.oi4Id;
+        const serviceType = this.applicationResources.mam.DeviceClass;
+        if(this.opcUaBuilder === undefined) {
+            this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
+        }
+        if(this.clientCallbacksHelper === undefined) {
+            this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
+        }
+        return new OI4Application(this.applicationResources, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper);
     }
 }
 

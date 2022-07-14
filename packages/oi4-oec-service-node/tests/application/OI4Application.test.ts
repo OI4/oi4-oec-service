@@ -242,7 +242,10 @@ const defaulti4Id = '1/1/1/1';
 function getOi4App(): OI4Application {
     const mqttOpts: MqttSettings = getStandardMqttConfig();
     const resources = getResourceInfo();
-    return new OI4Application(resources, mqttOpts);
+    return OI4Application.builder()
+        .withApplicationResources(resources)
+        .withMqttSettings(mqttOpts)
+        .build()
 }
 
 describe('OI4MessageBus test', () => {
@@ -328,7 +331,10 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         resources.on = onResourceMock;
-        new OI4Application(resources, mqttOpts);
+        OI4Application.builder()
+            .withApplicationResources(resources)
+            .withMqttSettings(mqttOpts)
+            .build()
     });
 
     it('should trigger health from resourceChangedCallback', (done) => {
@@ -345,7 +351,10 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         resources.on = onResourceMock;
-        new OI4Application(resources, mqttOpts);
+        OI4Application.builder()
+            .withApplicationResources(resources)
+            .withMqttSettings(mqttOpts)
+            .build();
     });
 
     it('should send specific metadata by tagname', async () => {
