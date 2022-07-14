@@ -5,12 +5,12 @@ import {TopicInfo, TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
 
 export type MessageItems = {
     serviceType: ServiceTypes;
-    appId: string;
     method: TopicMethods;
     resource: Resource;
+    category: string;
     oi4Id: string;
     topic: string;
-    category: string;
+    appId: string;
     tag: string;
     filter: string;
     licenseId: string;
@@ -18,7 +18,6 @@ export type MessageItems = {
     publisherId: string;
     getTopicPrefix: Function;
     getDefaultTopicInfo: Function;
-    getDefaultCompleteTopicInfo: Function;
     getDefaultTopicWrapper: Function;
 }
 
@@ -40,22 +39,6 @@ export class MessageFactory {
         const publisherId = `${serviceType}/${appId}`;
 
         const getDefaultTopicInfo = (): TopicInfo => {
-            return {
-                topic: topic,
-                appId: appId,
-                method: method,
-                resource: resource,
-                oi4Id: '',
-                category: '',
-                serviceType: serviceType,
-                tag: '',
-                filter: '',
-                licenseId: '',
-                subResource: ''
-            }
-        };
-
-        const getDefaultCompleteTopicInfo = (): TopicInfo => {
             return {
                 topic: topic,
                 appId: appId,
@@ -87,13 +70,13 @@ export class MessageFactory {
         }
 
         return {
+            serviceType,
+            resource,
+            category,
+            oi4Id,
             topic,
             appId,
             method,
-            resource,
-            oi4Id,
-            category,
-            serviceType,
             tag,
             filter,
             licenseId,
@@ -102,7 +85,6 @@ export class MessageFactory {
             getTopicPrefix,
             getDefaultTopicInfo,
             getDefaultTopicWrapper,
-            getDefaultCompleteTopicInfo,
         }
 
     };
