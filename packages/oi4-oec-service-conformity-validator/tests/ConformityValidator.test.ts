@@ -2,9 +2,17 @@ import mqtt = require('async-mqtt');
 import {ConformityValidator, EValidity} from '../src/index';
 import {IMessageBusLookup, PubResponse, GetRequest} from '../src/model/IMessageBusLookup';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {ESyslogEventFilter, EAssetType, Resource, getResource} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, EAssetType, Resource} from '@oi4/oi4-oec-service-model';
 
 
+import mam_valid from './__fixtures__/mam_valid.json';
+import health_valid from './__fixtures__/health_valid.json';
+import license_valid from './__fixtures__/license_valid.json';
+import licenseText_valid from './__fixtures__/licenseText_valid.json';
+import publicationList_valid from './__fixtures__/publicationList_valid.json';
+import data_valid from './__fixtures__/data_valid.json';
+import metadata_valid from './__fixtures__/metadata_valid.json';
+import referenceDesignation_valid from './__fixtures__/referenceDesignation_valid.json';
 
 import profile_app_valid from './__fixtures__/profile_app_valid.json';
 import profile_app_data_valid from './__fixtures__/profile_app_data_valid.json';
@@ -12,9 +20,6 @@ import profile_device_valid from './__fixtures__/profile_device_valid.json';
 import profile_device_data_valid from './__fixtures__/profile_device_data_valid.json';
 import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.json';
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
-
-import networkMessages_valid from './__fixtures__/NetworkMessages_valid.json';
-
 
 
 const publish = jest.fn();
@@ -36,6 +41,7 @@ const getMqttClient = (): mqtt.AsyncClient => {
 }
 
 const defaultAppId = 'openindustry4.com/nd/nd/nd';
+const defaultSubResource = 'vendor.com/a/b/c'
 const defaultTopic = `oi4/Registry/${defaultAppId}`;
 
 function equal(a: string, b: string): boolean {
@@ -47,52 +53,37 @@ function equal(a: string, b: string): boolean {
     return a==b;
 }
 
-function validFixedResponse(getRequest: GetRequest, response: any): PubResponse
-{
-    // fixup correlationId in response:
-    response.correlationId = getRequest.Message.MessageId; 
 
-    return new PubResponse('', Buffer.from(JSON.stringify(response)));
-}
+const allValidNetworkMessages: ITestData[] =[
+        {resource: Resource.MAM, message: mam_valid},
+        {resource: Resource.HEALTH, message: health_valid},
+        {resource: Resource.PROFILE, message: profile_app_valid},
+        {resource: Resource.LICENSE, message: license_valid},
+        {resource: Resource.LICENSE_TEXT, message: licenseText_valid},
+        {resource: Resource.PUBLICATION_LIST, message: publicationList_valid},
+        {resource: Resource.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
+        {resource: Resource.DATA, message: data_valid}];
 
-function responseWrongCorrelationId(getRequest: GetRequest, response: any): PubResponse
-{
-    // set wrong correlationId
-    response.correlationId = `${getRequest.Message.MessageId}abc`;  
-    return new PubResponse('', Buffer.from(JSON.stringify(response)));
-}
+const allValidDeviceResources: ITestData[] = allValidNetworkMessages.concat([
+            {resource: Resource.METADATA, message: metadata_valid}]);
+        
 
-function responseWrongDataSetClassId(getRequest: GetRequest, response: any): PubResponse
-{
-    // set wrong DataSetClassId
-    response.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId 
-    
-    // fixup correlationId
-    response.correlationId = getRequest.Message.MessageId;  
-    return new PubResponse('', Buffer.from(JSON.stringify(response)));
-}
-
-
-function validResponse(getRequest: GetRequest): PubResponse
-{
-    // search a matching response for the request:
-    const responseTestObj = networkMessages_valid.find((entry) => equal(entry[0].resource, getRequest.Resource) && equal(entry[0].subResource, getRequest.SubResource));
-    const responseObj = responseTestObj[1];
-
-    // fixup correlationId in response:
-    responseObj.correlationId = getRequest.Message.MessageId; 
-    
-    return  new PubResponse('', Buffer.from(JSON.stringify(responseObj)));
-}
-
-function getObjectUnderTest(returnFunc: (req: GetRequest) => PubResponse): ConformityValidator
+function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true): ConformityValidator
 {
     const mqttClient = getMqttClient();
 
     publish.mockImplementation(async (request: GetRequest) => {
 
-        const pubResponse = returnFunc(request);
-        return Promise.resolve(pubResponse);
+        const responseEntry = response.find((entry) => entry.resource==request.Resource && equal(entry.subResource, request.SubResource));
+        const message = responseEntry.message;
+
+        if (fixCorrelationId)
+        {
+            message.correlationId = request.Message.MessageId; 
+        }
+
+        return new PubResponse(request.getTopic('pub'), Buffer.from(JSON.stringify(message)));
+
     });
   
     const messageBusLookup: IMessageBusLookup = {
@@ -103,11 +94,11 @@ function getObjectUnderTest(returnFunc: (req: GetRequest) => PubResponse): Confo
 }
 
 
-interface TestData
+interface ITestData
 {
-    resource: string;
-    oi4Identifier: string;
-    subResource: string;
+    resource: Resource;
+    subResource?: string;
+    message: any;
 }
 
 
@@ -120,88 +111,104 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
 
-    it('should return full device conformity' , async ()=> {
+    it('should return full application conformity' , async ()=> {
 
-        const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validResponse(req));
+        const applicationMessages: ITestData[] = [
+            {resource: Resource.MAM, message: mam_valid},
+            {resource: Resource.HEALTH, message: health_valid},
+            {resource: Resource.PROFILE, message: profile_app_valid},
+            {resource: Resource.LICENSE, message: license_valid},
+            {resource: Resource.LICENSE_TEXT, message: licenseText_valid},
+            {resource: Resource.PUBLICATION_LIST, message: publicationList_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(applicationMessages);
         const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
 
         expect(result.validity).toBe(EValidity.ok);
     });
-     
 
-    it.each(networkMessages_valid)(
-        '(%#) should return full resource conformity for -> %j',
-        async (testData: TestData, obj: any) => {
-            const resourceString: string = testData.resource;
-            const resource: Resource = getResource(resourceString);
-            const topicPreamble = `oi4/Registry/${testData.oi4Identifier}`;
-            const subResource: string = testData.subResource; 
 
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
-            const result = await objectUnderTest.checkResourceConformity(topicPreamble, resource, subResource);
+    it('should return full device conformity' , async ()=> {
 
-            const getTopic: string = subResource.length == 0 ? `${topicPreamble}/get/${resourceString}` : `${topicPreamble}/get/${resourceString}/${subResource}`;
-            const pubTopic: string = subResource.length == 0 ? `${topicPreamble}/pub/${resourceString}` : `${topicPreamble}/pub/${resourceString}/${subResource}`;
+        const deviceMessages: ITestData[] = [
+            {resource: Resource.MAM, subResource: defaultSubResource, message: mam_valid},
+            {resource: Resource.HEALTH, subResource: defaultSubResource, message: health_valid},
+            {resource: Resource.PROFILE, subResource: defaultSubResource, message: profile_device_valid},
+            {resource: Resource.REFERENCE_DESIGNATION, subResource: defaultSubResource, message: referenceDesignation_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(deviceMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource);
+
+        expect(result.validity).toBe(EValidity.ok);
+    });
+
+    
+
+    it.each(allValidDeviceResources)(
+        '($#) should return full resource conformity for -> $resource',
+        async (data: ITestData) => {
+
+            const objectUnderTest = getObjectUnderTest([data]);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.subResource);
+
+            const getTopic: string = data.subResource == undefined ? `${defaultTopic}/get/${data.resource}` : `${defaultTopic}/get/${data.resource}/${data.subResource}`;
+            const pubTopic: string = data.subResource == undefined ? `${defaultTopic}/pub/${data.resource}` : `${defaultTopic}/pub/${data.resource}/${data.subResource}`;
 
             expect(result.validity).toBe(EValidity.ok);
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${resourceString} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${resourceString} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
         }
       )
 
-      it.each(networkMessages_valid)(
-        '(%#) should return partial conformity for wrong correlationId -> %j',
-        async (testData: TestData, obj: any) => {
-            const resourceString: string = testData.resource;
-            const resource: Resource = getResource(resourceString);
-            const topicPreamble = `oi4/Registry/${testData.oi4Identifier}`;
-            const subResource: string = testData.subResource; 
+      it.each(allValidDeviceResources)(
+        '($#) should return partial conformity for wrong correlationId -> $resource',
+        async (data: ITestData) => {
 
+            const objectUnderTest = getObjectUnderTest([data], false);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.subResource);
 
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> responseWrongCorrelationId(req, obj));
-            const result = await objectUnderTest.checkResourceConformity(topicPreamble, resource, subResource);
-
-            const getTopic: string = subResource.length == 0 ? `${topicPreamble}/get/${resourceString}` : `${topicPreamble}/get/${resourceString}/${subResource}`;
-            const pubTopic: string = subResource.length == 0 ? `${topicPreamble}/pub/${resourceString}` : `${topicPreamble}/pub/${resourceString}/${subResource}`;
+            const getTopic: string = data.subResource == undefined ? `${defaultTopic}/get/${data.resource}` : `${defaultTopic}/get/${data.resource}/${data.subResource}`;
+            const pubTopic: string = data.subResource == undefined ? `${defaultTopic}/pub/${data.resource}` : `${defaultTopic}/pub/${data.resource}/${data.subResource}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${resourceString} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${resourceString} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
             expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
       )
 
 
-      it.each(networkMessages_valid.filter(m => m[1].MessageType=='ua-data'))(
-        '(%#) should return partial conformity for wrong DataSetId -> %j',
-        async (testData: TestData, obj: any) => {
-            const resourceString: string = testData.resource;
-            const resource: Resource = getResource(resourceString);
-            const topicPreamble = `oi4/Registry/${testData.oi4Identifier}`;
-            const subResource: string = testData.subResource; 
+      it.each(allValidNetworkMessages)(
+        '($#) should return partial conformity for wrong DataSetId -> $resource',
+        async (data: ITestData) => {
 
+            // clone message:
+            const clonedMessage = JSON.stringify(data.message);
+            const message =JSON.parse(clonedMessage);
+            message.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId 
 
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> responseWrongDataSetClassId(req, obj));
-            const result = await objectUnderTest.checkResourceConformity(topicPreamble, resource, subResource);
+            const objectUnderTest = getObjectUnderTest([{resource: data.resource, message: message}]);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.subResource);
 
-            const getTopic: string = subResource.length == 0 ? `${topicPreamble}/get/${resourceString}` : `${topicPreamble}/get/${resourceString}/${subResource}`;
-            const pubTopic: string = subResource.length == 0 ? `${topicPreamble}/pub/${resourceString}` : `${topicPreamble}/pub/${resourceString}/${subResource}`;
+            const getTopic: string = data.subResource == undefined ? `${defaultTopic}/get/${data.resource}` : `${defaultTopic}/get/${data.resource}/${data.subResource}`;
+            const pubTopic: string = data.subResource == undefined ? `${defaultTopic}/pub/${data.resource}` : `${defaultTopic}/pub/${data.resource}/${data.subResource}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${resourceString} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${resourceString} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
             expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
       )
 
-
     it.each([profile_app_valid, profile_app_data_valid])(
-        '(%#) should return full conformity for application profile -> %j',
+        '($#) should return full conformity for application profile',
         async (obj) => {
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
+            const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: obj}]);
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
             expect(result.validity).toBe(EValidity.ok);
     
@@ -211,10 +218,25 @@ describe('Unit test for ConformityValidator ', () => {
         }
       )
 
+      it('foo', async () => {
+          let objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: profile_app_valid}]);
+          let result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
+          expect(result.validity).toBe(EValidity.ok);
+  
+          expect(LOGGER.log).toHaveBeenCalledTimes(2);
+          expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
+          expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
+
+          objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: profile_app_data_valid}]);
+          result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
+          expect(result.validity).toBe(EValidity.ok);
+      }
+    )
+
       it.each([profile_device_valid, profile_device_data_valid])(
-        '(%#) should return full conformity for device profile -> %j',
+        '($#) should return full conformity for device profile',
         async (obj) => {
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
+            const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: obj}]);
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.device);
             expect(result.validity).toBe(EValidity.ok);
     
@@ -226,7 +248,7 @@ describe('Unit test for ConformityValidator ', () => {
 
       it('should return partial conformity for application profile with missing metadata', async ()=> {
 
-        const objectUnderTest = getObjectUnderTest((req: GetRequest) => validFixedResponse(req, profile_app_data_invalid));
+        const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message:  profile_app_data_invalid}]);
         const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
         expect(result.validity).toBe(EValidity.partial);
         expect(result.validityErrors).toContain('Profile contains the resource "data" but not "metadata".');
@@ -238,7 +260,7 @@ describe('Unit test for ConformityValidator ', () => {
 
     it('should return partial conformity for device profile with missing metadata', async ()=> {
 
-        const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, profile_device_data_invalid));
+        const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: profile_device_data_invalid}]);
         const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
         expect(result.validity).toBe(EValidity.partial);
         expect(result.validityErrors).toContain('Profile contains the resource "data" but not "metadata".');
@@ -248,14 +270,11 @@ describe('Unit test for ConformityValidator ', () => {
         expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
     })
 
-    it.each(networkMessages_valid)(
-        '(%#) should return full schema conformity for -> %j',
-        async (testData: TestData, obj: any) => {
-            const resourceString: string = testData.resource;
-            const resource: Resource = getResource(resourceString);
-
-            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
-            const result = await objectUnderTest.checkSchemaConformity(resource, obj);
+    it.each(allValidDeviceResources)(
+        '($#) should return full schema conformity for -> $resource',
+        async (data: ITestData) => {
+            const objectUnderTest = getObjectUnderTest();
+            const result = await objectUnderTest.checkSchemaConformity(data.resource, data.message);
 
             expect(result.schemaResult).toBe(true);
         }

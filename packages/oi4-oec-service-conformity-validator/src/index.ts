@@ -238,16 +238,16 @@ export class ConformityValidator {
      * 3) Every resource that is specified in the profile payload needs to be accessible (exceptions for data, metadata, event)
      * Sidenote: "Custom" Resources will be marked as an error and not checked
      * @param topicPreamble The fullTopic that is used to check the get-route
-     * @param oi4Id  The oidId of the tested asset ("tag element")
-     * @param assetType The type of asset being tested (device / application)
+     * @param assetType  The type of asset being tested (device / application.
+     * @param assetType The (optional) subresource.
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
 
-    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, subResource?: string, filter?: string): Promise<IValidityDetails> {
+    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, subResource?: string): Promise<IValidityDetails> {
         let resObj: IValidityDetails;
 
         try {
-            resObj = await this.checkResourceConformity(topicPreamble, Resource.PROFILE, subResource, filter);
+            resObj = await this.checkResourceConformity(topicPreamble, Resource.PROFILE, subResource);
         } catch (e) {
             LOGGER.log(`Error in checkProfileConformity: ${e}`);
             throw e;
