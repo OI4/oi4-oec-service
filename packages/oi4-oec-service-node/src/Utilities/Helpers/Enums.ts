@@ -6,6 +6,7 @@ export enum AsyncClientEvents {
     CONNECT = 'connect',
     RESOURCE_CHANGED = 'resourceChanged',
     MESSAGE = 'message',
+    OFFLINE = 'offline',
 }
 
 export enum TopicMethods {

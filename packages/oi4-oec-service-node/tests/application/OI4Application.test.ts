@@ -6,8 +6,8 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    EPublicationListConfig,
-    ESubscriptionListConfig,
+    PublicationListConfig,
+    SubscriptionListConfig,
     EventCategory,
     Health,
     IOI4ApplicationResources,
@@ -105,19 +105,19 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         publicationList: [
             PublicationList.clone({
                 resource: 'health',
-                config: EPublicationListConfig.INTERVAL_2,
+                config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
             } as PublicationList),
             PublicationList.clone({
                 resource: 'mam',
-                config: EPublicationListConfig.NONE_0,
+                config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
             } as PublicationList),
             PublicationList.clone({
                 resource: 'license',
-                config: EPublicationListConfig.STATUS_1,
+                config: PublicationListConfig.STATUS_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
             } as PublicationList)
@@ -208,9 +208,9 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             }
         },
         subscriptionList: [
-            SubscriptionList.clone({topicPath: 'path-01', config: ESubscriptionListConfig.CONF_1} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-02', config: ESubscriptionListConfig.NONE_0} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-03', config: ESubscriptionListConfig.NONE_0} as SubscriptionList)
+            SubscriptionList.clone({topicPath: 'path-01', config: SubscriptionListConfig.CONF_1} as SubscriptionList),
+            SubscriptionList.clone({topicPath: 'path-02', config: SubscriptionListConfig.NONE_0} as SubscriptionList),
+            SubscriptionList.clone({topicPath: 'path-03', config: SubscriptionListConfig.NONE_0} as SubscriptionList)
         ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -242,7 +242,10 @@ const defaulti4Id = '1/1/1/1';
 function getOi4App(): OI4Application {
     const mqttOpts: MqttSettings = getStandardMqttConfig();
     const resources = getResourceInfo();
-    return new OI4Application(resources, mqttOpts);
+    return OI4Application.builder()
+        .withApplicationResources(resources)
+        .withMqttSettings(mqttOpts)
+        .build()
 }
 
 describe('OI4MessageBus test', () => {
@@ -328,7 +331,10 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         resources.on = onResourceMock;
-        new OI4Application(resources, mqttOpts);
+        OI4Application.builder()
+            .withApplicationResources(resources)
+            .withMqttSettings(mqttOpts)
+            .build()
     });
 
     it('should trigger health from resourceChangedCallback', (done) => {
@@ -345,7 +351,10 @@ describe('OI4MessageBus test', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         resources.on = onResourceMock;
-        new OI4Application(resources, mqttOpts);
+        OI4Application.builder()
+            .withApplicationResources(resources)
+            .withMqttSettings(mqttOpts)
+            .build();
     });
 
     it('should send specific metadata by tagname', async () => {

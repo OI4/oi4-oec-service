@@ -10,6 +10,9 @@ import {existsSync, readFileSync} from 'fs';
 import {OI4Application} from './OI4Application';
 import {indexOf} from 'lodash';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
+import {OPCUABuilder} from "@oi4/oi4-oec-service-opcua-model";
+import {ClientPayloadHelper} from "../Utilities/Helpers/ClientPayloadHelper";
+import {ClientCallbacksHelper} from "../Utilities/Helpers/ClientCallbacksHelper";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -19,6 +22,11 @@ export interface IOI4MessageBusFactory {
 }
 
 export class OI4ApplicationFactory implements IOI4MessageBusFactory {
+
+    opcUaBuilder: OPCUABuilder;
+    clientPayloadHelper: ClientPayloadHelper;
+    clientCallbacksHelper: ClientCallbacksHelper;
+
 
     private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: IMqttSettingsPaths;
@@ -30,6 +38,10 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
+
+        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.DeviceClass);
+        this.clientPayloadHelper = new ClientPayloadHelper();
+        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
     }
 
     createOI4Application(): OI4Application {
@@ -45,7 +57,13 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
         this.initCredentials(mqttSettings);
-        return new OI4Application(this.resources, mqttSettings);
+        return OI4Application.builder()//
+            .withApplicationResources(this.resources)//
+            .withMqttSettings(mqttSettings)//
+            .withOPCUABuilder(this.opcUaBuilder)//
+            .withClientPayloadHelper(this.clientPayloadHelper)//
+            .withClientCallbacksHelper(this.clientCallbacksHelper)//
+            .build();
     }
 
     private initCredentials(mqttSettings: MqttSettings) {
@@ -76,8 +94,8 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
      * @private
      */
     private static getMaxPacketSize(brokerConfiguration: BrokerConfiguration): number {
-            const maxPacketSize = brokerConfiguration.max_packet_size | 256;
-            return maxPacketSize >= 256 ? maxPacketSize : 256;
+        const maxPacketSize = brokerConfiguration.max_packet_size | 256;
+        return maxPacketSize >= 256 ? maxPacketSize : 256;
     }
 
 }
@@ -97,8 +115,8 @@ export class MqttCredentialsHelper {
 
 
     private static loadAndDecodeSecret(secretFile: string): string {
-        const encodedSecret: string = readFileSync(secretFile,'utf8');
-        if(encodedSecret === '') {
+        const encodedSecret: string = readFileSync(secretFile, 'utf8');
+        if (encodedSecret === '') {
             throw new Error('Empty secret');
         }
         const cleanedSecret = encodedSecret.trim().replace(/(\r\n|\n|\r)/gm, '')
@@ -107,17 +125,17 @@ export class MqttCredentialsHelper {
 
     private static validateAndParseCredentials(decodedCredentials: string): Credentials {
         const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
-        if( decodedCredentials.startsWith(':') ||
+        if (decodedCredentials.startsWith(':') ||
             usernamePasswordSeparatorPosition == -1) {
             throw new Error('Credentials are does not respect the format "username:password"');
         }
 
         const username = decodedCredentials.substring(0, usernamePasswordSeparatorPosition);
-        if(!this.isUsernameValid(username)) {
+        if (!this.isUsernameValid(username)) {
             throw new Error('Invalid username');
         }
 
-        const password = decodedCredentials.substring(usernamePasswordSeparatorPosition+1, decodedCredentials.length);
+        const password = decodedCredentials.substring(usernamePasswordSeparatorPosition + 1, decodedCredentials.length);
 
         return {username: username, password: password}
     }
