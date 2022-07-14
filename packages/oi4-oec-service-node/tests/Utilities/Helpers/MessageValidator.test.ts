@@ -49,13 +49,7 @@ describe('Unit test for TopicParser', () => {
         topicInfo: defaultTopicInfo
     };
 
-    const defaultParsedMessage: IOPCUANetworkMessage = {
-        MessageId: 'fakeMessageId',
-        MessageType: EOPCUAMessageType.uaData,
-        PublisherId: defaultPublisherId,
-        DataSetClassId: DataSetClassIds[defaultResource],
-        Messages: []
-    };
+    let defaultParsedMessage: IOPCUANetworkMessage = undefined;
 
     function getMqttProcessorAndMockedData(mockedSendData: OnSendResource, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()): any {
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
@@ -71,14 +65,8 @@ describe('Unit test for TopicParser', () => {
     }
 
     function getMockedBuilder(info: any): OPCUABuilder {
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
-            return Promise.resolve(true)
-        });
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
             return Promise.resolve(true)
-        });
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
-            return Promise.resolve('FakeType');
         });
 
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeAppId, info.fakeServiceType);
@@ -92,6 +80,14 @@ describe('Unit test for TopicParser', () => {
         clearLogFile();
         MockedOPCUABuilderFactory.resetAllMocks();
         defaultMockedBuilder = getMockedBuilder(processorAndMockedData.mockedData);
+
+        defaultParsedMessage = {
+            MessageId: 'fakeMessageId',
+            MessageType: EOPCUAMessageType.uaData,
+            PublisherId: defaultPublisherId,
+            DataSetClassId: DataSetClassIds[defaultResource],
+            Messages: []
+        };
     });
 
     it('If payload messages is empty a message is written n in the log', async () => {
