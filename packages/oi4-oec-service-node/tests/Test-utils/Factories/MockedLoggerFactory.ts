@@ -8,7 +8,8 @@ import {Logger} from '@oi4/oi4-oec-service-logger';
 
 export type LoggerItems = {
     fakeLogger: Logger;
-    fakeLogFile: Array<string> ;
+    fakeLogFile: Array<string>;
+    clearLogFile: Function;
 }
 
 export class MockedLoggerFactory {
@@ -40,7 +41,11 @@ export class MockedLoggerFactory {
             }
         }));
 
-        return {fakeLogger: fakeLogger, fakeLogFile: fakeLogFile}
+        const clearLogFile = () => {
+            fakeLogFile.splice(0, fakeLogFile.length);
+        }
+
+        return {fakeLogger: fakeLogger, fakeLogFile: fakeLogFile, clearLogFile: clearLogFile}
     }
 
 } 
