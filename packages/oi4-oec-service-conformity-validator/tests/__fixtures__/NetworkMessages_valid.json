@@ -258,5 +258,55 @@
         }
       ]
     }
+  ],
+  [{
+      "resource": "data",
+      "oi4Identifier": "openindustry4.com/nd/nd/nd",
+      "subResource": ""
+    }, {
+      "MessageId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
+      "MessageType": "ua-data",
+      "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+      "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+      "Messages": [{
+          "DataSetWriterId": 93,
+          "filter": "oee",
+          "subResource": "openindustry4.com/nd/nd/nd",
+          "SequenceNumber": 3985,
+          "Timestamp": "2021-12-16T22:25:10.094Z",
+          "Payload": {
+            "availability": 90,
+            "performanceRate": 95,
+            "qualityRate": 98,
+            "product": 84
+          }
+        }
+      ]
+    }
+  ],
+  [{
+      "resource": "metadata",
+      "oi4Identifier": "openindustry4.com/nd/nd/nd",
+      "subResource": ""
+    }, {
+      "MessageId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
+      "MessageType": "ua-metadata",
+      "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+      "DataSetWriterId": 753,
+      "filter": "oee",
+      "subResource": "openindustry4.com/nd/nd/nd",
+      "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+      "MetaData": {
+        "name": "Dataset1",
+        "description": {
+          "text": "Description",
+          "locale": "en-US"
+        },
+        "namespaces": [],
+        "structureDataTypes": [],
+        "enumDataTypes": [],
+        "simpleDataTypes": []
+      }
+    }
   ]
 ]

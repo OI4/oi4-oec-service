@@ -1,4 +1,4 @@
-export * from './validatior/OecSchemaValidator';
+export * from './validator/OecSchemaValidator';
 export * from './model/EContainer';
 export * from './model/DatatSetClassIds';
 export * from './model/Resource';

@@ -15,13 +15,13 @@
       "$ref": "LocalizedText.schema.json"
     },
     "fieldFlags": {
-      "$ref": "dataTypes/uint16.schema.json",
+      "type": "integer",
       "minimum": 0,
-	  "maximum": 1,
-	  "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
+	    "maximum": 1,
+	    "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
     },
     "builtInType": {
-      "$ref": "dataTypes/byte.schema.json",
+      "$type": "integer",
       "minimum": 1,
       "maximum": 25,
       "description": "See https://reference.opcfoundation.org/v104/Core/docs/Part6/5.1.2/"

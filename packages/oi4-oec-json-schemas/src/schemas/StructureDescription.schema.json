@@ -20,12 +20,10 @@
       ],
       "properties": {
         "baseDataType": {
-          "$ref": "NodeId.schema.json",
-          "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+          "$ref": "NodeId.schema.json"
         },
         "defaultEncodingId": {
-          "$ref": "NodeId.schema.json",
-          "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+          "$ref": "NodeId.schema.json"
         },
         "fields": {
           "type": "array",
@@ -49,8 +47,7 @@
                 }
               },
               "datatype": {
-                "$ref": "NodeId.schema.json",
-                "description": "JSON representation of NodeId is defined in OPC UA Part 6-5.4.2.10-Table 23"
+                "$ref": "NodeId.schema.json"
               },
               "description": {
                 "$ref": "LocalizedText.schema.json"
@@ -66,8 +63,7 @@
                 "description": "Unique name for field in StructureDefinition"
               },
               "valueRank": {
-                "$ref": "dataTypes/int32.schema.json",
-                "description": "Scalar (-1) or fixed rank Array (>=1)"
+                "$ref": "dataTypes/int32.schema.json"
               }
             }
           }

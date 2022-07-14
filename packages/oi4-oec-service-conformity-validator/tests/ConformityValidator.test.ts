@@ -64,7 +64,7 @@ function responseWrongCorrelationId(getRequest: GetRequest, response: any): PubR
 
 function responseWrongDataSetClassId(getRequest: GetRequest, response: any): PubResponse
 {
-    // set wrong correlationId
+    // set wrong DataSetClassId
     response.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId 
     
     // fixup correlationId
@@ -130,7 +130,7 @@ describe('Unit test for ConformityValidator ', () => {
      
 
     it.each(networkMessages_valid)(
-        '(%#) should return full conformity for -> %j',
+        '(%#) should return full resource conformity for -> %j',
         async (testData: TestData, obj: any) => {
             const resourceString: string = testData.resource;
             const resource: Resource = getResource(resourceString);
@@ -174,7 +174,7 @@ describe('Unit test for ConformityValidator ', () => {
       )
 
 
-      it.each(networkMessages_valid)(
+      it.each(networkMessages_valid.filter(m => m[1].MessageType=='ua-data'))(
         '(%#) should return partial conformity for wrong DataSetId -> %j',
         async (testData: TestData, obj: any) => {
             const resourceString: string = testData.resource;
@@ -199,7 +199,7 @@ describe('Unit test for ConformityValidator ', () => {
 
 
     it.each([profile_app_valid, profile_app_data_valid])(
-        '(%#) should return full conformity for application profile -> %s',
+        '(%#) should return full conformity for application profile -> %j',
         async (obj) => {
             const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
@@ -212,7 +212,7 @@ describe('Unit test for ConformityValidator ', () => {
       )
 
       it.each([profile_device_valid, profile_device_data_valid])(
-        '(%#) should return full conformity for device profile -> %s',
+        '(%#) should return full conformity for device profile -> %j',
         async (obj) => {
             const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.device);
@@ -247,6 +247,20 @@ describe('Unit test for ConformityValidator ', () => {
         expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
         expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
     })
+
+    it.each(networkMessages_valid)(
+        '(%#) should return full schema conformity for -> %j',
+        async (testData: TestData, obj: any) => {
+            const resourceString: string = testData.resource;
+            const resource: Resource = getResource(resourceString);
+
+            const objectUnderTest = getObjectUnderTest((req: GetRequest)=> validFixedResponse(req, obj));
+            const result = await objectUnderTest.checkSchemaConformity(resource, obj);
+
+            expect(result.schemaResult).toBe(true);
+        }
+      )
+
 
     it('should return mandatory application resources', ()=> {
         const resources = ConformityValidator.getMandatoryResources(EAssetType.application);

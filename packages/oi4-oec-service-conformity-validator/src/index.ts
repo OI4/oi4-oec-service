@@ -30,7 +30,7 @@ export class ConformityValidator {
     private readonly messageBusLookup: IMessageBusLookup;
     private builder: OPCUABuilder;
     private readonly jsonValidator: Ajv.Ajv;
-    static completeProfileList: string[] = Application.full;
+    static completeProfileList: Resource[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
     constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
@@ -365,30 +365,34 @@ export class ConformityValidator {
      * @param payload  The payload that is being checked
      * @returns true, if both the networkmessage and the payload fit the resource, false otherwise
      */
-    async checkSchemaConformity(resource: string, payload: any): Promise<ISchemaConformity> {
-        let networkMessageValidationResult;
+    async checkSchemaConformity(resource: Resource, payload: any): Promise<ISchemaConformity> {
+        let messageValidationResult;
         let payloadValidationResult = false;
 
         const networkMessageResultMsgArr: string[] = [];
         const payloadResultMsgArr: string[] = [];
 
         try {
-            networkMessageValidationResult = await this.jsonValidator.validate('NetworkMessage.schema.json', payload);
+            const schema = resource==Resource.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
+            messageValidationResult = await this.jsonValidator.validate(schema, payload);
         } catch (networkMessageValidationErr) {
             LOGGER.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(JSON.stringify(networkMessageValidationErr));
-            networkMessageValidationResult = false;
+            messageValidationResult = false;
         }
 
-        if (!networkMessageValidationResult) {
+        if (!messageValidationResult) {
             const errText = JSON.stringify(this.jsonValidator.errors);
             LOGGER.log(`AJV: NetworkMessage invalid (${resource}): ${JSON.stringify(errText)}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(errText);
         }
 
-        if (networkMessageValidationResult) {
+        if (messageValidationResult) {
             if (payload.MessageType === 'ua-metadata') {
-                payloadValidationResult = true; // We accept all metadata messages since we cannot check their contents
+                payloadValidationResult = true; // Metadata was already validated by DataSetMetaData.schema.json
+            } else if (resource == Resource.DATA) {
+                payloadValidationResult = true; // Data can be anything and therefore no schema exists
+
             } else { // Since it's a data message, we can check against schemas
                 try {
                     for (const payloads of payload.Messages) {
@@ -415,7 +419,7 @@ export class ConformityValidator {
         const schemaConformity: ISchemaConformity = {
             schemaResult: false,
             networkMessage: {
-                schemaResult: networkMessageValidationResult,
+                schemaResult: messageValidationResult,
                 resultMsgArr: networkMessageResultMsgArr,
             },
             payload: {
@@ -424,7 +428,7 @@ export class ConformityValidator {
             },
         };
 
-        if (networkMessageValidationResult && payloadValidationResult) {
+        if (messageValidationResult && payloadValidationResult) {
             schemaConformity.schemaResult = true;
         } else {
             LOGGER.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
