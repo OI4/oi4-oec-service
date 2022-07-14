@@ -23,7 +23,7 @@ export class MockedOPCUABuilderFactory {
             return Promise.resolve(true)
         });
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
-            return Promise.resolve(true)
+            return true;
         });
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
             return Promise.resolve('FakeType');
