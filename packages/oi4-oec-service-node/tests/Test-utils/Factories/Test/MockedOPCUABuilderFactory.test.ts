@@ -14,7 +14,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
             return Promise.resolve('WTF')
         });
 
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', 'fakeServiceType');
         const valid = await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'});
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).toBe('WTF');
@@ -44,7 +44,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
                     MetaData: {}
             }});
 
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', 'fakeServiceType');
         const valid = await mockedBuilder.buildOPCUAMetaDataMessage(metaDataName, metaDataDescription, fieldProperty, classId, dataSetWriterId, filter, subResource, correlationId);
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).not.toBe(undefined);
@@ -59,7 +59,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
     });
 
     it('The factory works, when a method is not mocked when called undefined is retuned', async () => {
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', 'fakeServiceType');
         const valid = await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'});
         expect(valid).toBe(undefined);
     });

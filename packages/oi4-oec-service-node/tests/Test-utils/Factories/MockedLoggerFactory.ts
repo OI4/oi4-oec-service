@@ -50,7 +50,7 @@ export class MockedLoggerFactory {
         }
 
         const logContainsOnly = (msg: string) => {
-            return fakeLogFile.length == 1 && fakeLogFile[0] == msg;
+            return fakeLogFile.length == 1 && fakeLogFile[0] === msg;
         };
 
         const logContains = (msg: string) => {

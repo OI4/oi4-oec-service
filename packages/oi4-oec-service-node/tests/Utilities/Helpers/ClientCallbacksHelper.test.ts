@@ -15,7 +15,7 @@ describe('Unit test for ClientCallbackHelper', () => {
     const logContains: Function = loggerItems.logContains;
     const getLogSize: Function = loggerItems.getLogSize;
 
-    const mockedBuilder = MockedOPCUABuilderFactory.getMockedOPCUABuilder('fakeOi4Id', 'fakeServiceType');
+    const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', 'fakeServiceType');
     const mockedMqttClient: mqtt.AsyncClient = MockedMqttClientFactory.getMockedClientWithDefaultImplementation();
     const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
 
