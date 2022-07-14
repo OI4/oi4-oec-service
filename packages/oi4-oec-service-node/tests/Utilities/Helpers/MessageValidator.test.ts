@@ -3,7 +3,6 @@ import {DataSetClassIds, Resource, ServiceTypes} from '@oi4/oi4-oec-service-mode
 import {EOPCUAMessageType, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {MessageValidator} from '../../../src/Utilities/Helpers/MessageValidator';
 import {
     MqttMessageProcessor,
@@ -12,13 +11,13 @@ import {
 } from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 import EventEmitter from 'events';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {TopicInfo, TopicWrapper} from "../../../dist/Utilities/Helpers/Types";
+import {TopicInfo, TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
 
 describe('Unit test for TopicParser', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
-    const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const clearLogFile: Function = loggerItems.clearLogFile;
+    const logContainsOnly: Function = loggerItems.logContainsOnly;
 
     const defaultEmitter: EventEmitter = new EventEmitter();
 
@@ -72,8 +71,14 @@ describe('Unit test for TopicParser', () => {
     }
 
     function getMockedBuilder(info: any): OPCUABuilder {
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
+            return Promise.resolve(true)
+        });
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
             return Promise.resolve(true)
+        });
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
+            return Promise.resolve('FakeType');
         });
 
         return MockedOPCUABuilderFactory.getMockedOPCUABuilder(defaultFakeAppId, info.fakeServiceType);
@@ -85,18 +90,13 @@ describe('Unit test for TopicParser', () => {
     beforeEach(() => {
         //Flush the messages log
         clearLogFile();
-        setLogger(loggerItems.fakeLogger);
-        defaultMockedBuilder = getMockedBuilder(processorAndMockedData.mockedData);
-    });
-
-    afterEach(() => {
         MockedOPCUABuilderFactory.resetAllMocks();
+        defaultMockedBuilder = getMockedBuilder(processorAndMockedData.mockedData);
     });
 
     it('If payload messages is empty a message is written n in the log', async () => {
         await MessageValidator.doPreliminaryValidation(defaultTopic, defaultParsedMessage, defaultMockedBuilder);
-        expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe('Messages Array empty in message - check DataSetMessage format');
+        expect(logContainsOnly('Messages Array empty in message - check DataSetMessage format')).toBeTruthy();
     });
 
     async function checkAgainstError(caller: Function, errMsg: string) {

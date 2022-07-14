@@ -1,18 +1,26 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {MqttMessageProcessor, OnSendMetaData, OnSendResource} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
+import {
+    MqttMessageProcessor,
+    OnSendMetaData,
+    OnSendResource
+} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
-import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
-    const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
+    const clearLogFile: Function = loggerItems.clearLogFile;
+    const logContainsOnly: Function = loggerItems.logContainsOnly;
+    const logContains: Function = loggerItems.logContains;
+    const getLogSize: Function = loggerItems.getLogSize;
+    const isLogEmpty: Function = loggerItems.isLogEmpty;
+
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
     const defaultFakeSubResource = 'fakeSubResource';
@@ -22,16 +30,11 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultFakeOi4Id = '2/2/2/2';
     const defaultFakeTag = 'tag';
 
-    function clearLogFile() {
-        fakeLogFile.splice(0, fakeLogFile.length);
-    }
-
     beforeEach(() => {
         //Flush the messages log
         clearLogFile();
         MockedOPCUABuilderFactory.resetAllMocks();
         OI4RegistryManager.resetOI4RegistryManager();
-        setLogger(loggerItems.fakeLogger);
     });
 
     function getMockedData() {
@@ -76,8 +79,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${defaultFakeAppId}`);
+        expect(logContainsOnly(`Saved registry OI4 ID: ${defaultFakeAppId}`)).toBeTruthy();
         expect(OI4RegistryManager.getOi4Id()).toBe(defaultFakeAppId);
     });
 
@@ -92,7 +94,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         processorAndMockedData.mockedData.fakeTopic = `fake/Utility/${defaultFakeAppId}/${TopicMethods.GET}/mam`
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(0);
+        expect(isLogEmpty()).toBeTruthy();
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
@@ -107,8 +109,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
         await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe('Error while processing Mqtt Message: ServiceType/AppID mismatch with Payload PublisherId: [Topic: fake/Registry/mymanufacturer.com/1/1/1/get/mam - Payload: Utility/mymanufacturer.com/1/1/1]');
+        expect(getLogSize()).toBe(1);
+        expect(logContainsOnly('Error while processing Mqtt Message: ServiceType/AppID mismatch with Payload PublisherId: [Topic: fake/Registry/mymanufacturer.com/1/1/1/get/mam - Payload: Utility/mymanufacturer.com/1/1/1]')).toBeTruthy();
     });
 
     async function processMessage(mockedSendMessage: OnSendResource, fakeTopic: string, resource: string, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()) {
@@ -134,7 +136,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         await processMessage(jest.fn(), fakeTopic, Resource.EVENT, defaultEmitter);
 
-        expect(fakeLogFile[0]).toBe(`No reaction needed to our own publish event`);
+        expect(logContainsOnly('No reaction needed to our own publish event')).toBeTruthy();
     });
 
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
@@ -164,7 +166,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             try {
                 await checkResultGet(resource, fakeTopic);
             } catch(err:any) {
-                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : ${fakeTopic}`);
+                expect(logContainsOnly(`Error while processing Mqtt Message: Malformed Oi4Id : ${fakeTopic}`)).toBeTruthy();
                 clearLogFile();
             }
         }
@@ -190,14 +192,14 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         expect(spiedEmit).toHaveBeenCalledWith('setConfig', {origin: defaultFakeAppId, number: 0, description: undefined});
         expect(mockedSendMessage).toHaveBeenCalledWith(Resource.CONFIG, undefined, '', defaultFakeFilter, 0, 0);
-        expect(fakeLogFile[0]).toBe(`Added ${defaultFakeFilter} to config group`);
+        expect(logContains(`Added ${defaultFakeFilter} to config group`)).toBeTruthy();
     });
 
     async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '') {
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${resourceConfig}/${defaultFakeOi4Id}${topicSuffix}`;
         await processMessage(jest.fn(), fakeTopic, resourceConfig, new EventEmitter());
-        expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: ${errorPrefix}${fakeTopic}`);
+        expect(getLogSize()).toBe(1);
+        expect(logContainsOnly(`Error while processing Mqtt Message: ${errorPrefix}${fakeTopic}`)).toBeTruthy();
         clearLogFile();
     }
 
@@ -221,7 +223,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${Resource.DATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
         await processMessage(jest.fn(), fakeTopic, Resource.DATA, defaultEmitter);
-        expect(fakeLogFile[0]).toBe(`Added ${defaultFakeFilter} to dataLookup`);
+        expect(logContainsOnly(`Added ${defaultFakeFilter} to dataLookup`)).toBeTruthy();
     });
 
     it('extract topic info works - data - if the filter is missing an error is thrown', async() => {
@@ -271,7 +273,6 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
-
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
 
         const mockedSendMessage = jest.fn();
