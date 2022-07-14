@@ -16,6 +16,9 @@ export type ProcessorAndMockedData = {
     };
 }
 
+/**
+ * This class is basically a shortcut for getting the MqttMessageProcessor we want to test (or we need for testing other components)
+ */
 export class TestMqttProcessorFactory {
 
     public static getProcessorAndDataWithCustomEmitter(mockedSendResource: OnSendResource, emitter: EventEmitter, appId: string, topicPrefix: string, sendMetaData: OnSendMetaData = jest.fn()): any {
