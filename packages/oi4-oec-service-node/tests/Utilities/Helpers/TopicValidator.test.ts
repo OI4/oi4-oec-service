@@ -21,7 +21,6 @@ describe('Unit test for TopicParser', () => {
     }
 
     const defaultTopicWrapper: TopicWrapper = {
-        topic: '//',
         topicArray: ['', ''],
         topicInfo: defaultTopicInfo
     };
