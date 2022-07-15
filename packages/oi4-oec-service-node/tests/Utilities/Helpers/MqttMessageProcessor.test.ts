@@ -149,15 +149,15 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(logContains(`Added ${defaultMessageItems.filter} to config group`)).toBeTruthy();
     });
 
-    async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '') {
-        const fakeTopic = `${defaultTopicPrefix}/${defaultMessageItems.appId}/${TopicMethods.SET}/${resourceConfig}/${defaultMessageItems.oi4Id}${topicSuffix}`;
+    async function checkAgainstError(expectedErrorPrefix: string, method: TopicMethods = TopicMethods.SET, resourceConfig: string, oi4Id = defaultMessageItems.oi4Id, topicSuffix = '') {
+        const fakeTopic = `${defaultTopicPrefix}/${defaultMessageItems.appId}/${method}/${resourceConfig}/${oi4Id}${topicSuffix}`;
         await processMessage(fakeTopic, resourceConfig);
-        expect(logContainsOnly(`Error while processing Mqtt Message: ${errorPrefix}${fakeTopic}`)).toBeTruthy();
+        expect(logContainsOnly(`Error while processing Mqtt Message: ${expectedErrorPrefix}${fakeTopic}`)).toBeTruthy();
         clearLogFile();
     }
 
     it('extract topic info works - config - if the filter is missing an error is thrown', async() => {
-        await checkAgainstError(Resource.CONFIG, 'Invalid filter: ', '/');
+        await checkAgainstError('Invalid filter: ', TopicMethods.SET, Resource.CONFIG, defaultMessageItems.oi4Id, '/');
     });
 
     async function checkAgainstTopicForData(fakeTopic: string) {
@@ -179,7 +179,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - data - if the filter is missing an error is thrown', async() => {
-        await checkAgainstError(Resource.DATA, 'Invalid filter: ', '/');
+        await checkAgainstError('Invalid filter: ', TopicMethods.SET, Resource.DATA, defaultMessageItems.oi4Id,'/');
     });
 
     async function checkAgainstTopicForMetaData(fakeTopic: string, filter: string = undefined) {
@@ -189,14 +189,15 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     it('extract topic info works - metadata - get', async () => {
-        await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.METADATA}`);
-        await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.METADATA}/${defaultMessageItems.oi4Id}`);
         await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.METADATA}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`, defaultMessageItems.filter);
-        //set metadata basically does nothing
     });
 
-    it('extract topic info - metadata - if filter is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.METADATA, 'Invalid filter: ', '/');
+    it('extract topic info - metadata - topic string has wrong structure, an error is thrown', async () => {
+        await checkAgainstError('Invalid topic string structure ', TopicMethods.GET, Resource.METADATA,  defaultMessageItems.oi4Id, '');
+        await checkAgainstError('Invalid topic string structure ', TopicMethods.PUB, Resource.METADATA, defaultMessageItems.oi4Id, '');
+        await checkAgainstError('Invalid topic string structure ', TopicMethods.GET, Resource.METADATA,'', '');
+        await checkAgainstError('Invalid topic string structure ', TopicMethods.PUB, Resource.METADATA, '', '');
+        await checkAgainstError('Invalid filter: ', TopicMethods.SET, Resource.METADATA, defaultMessageItems.oi4Id, '/');
     });
 
     async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string) {
@@ -220,8 +221,8 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info - license and licenseText - if licenseId is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.LICENSE, 'Invalid licenseId: ', '/');
-        await checkAgainstError(Resource.LICENSE_TEXT ,'Invalid licenseId: ', '/');
+        await checkAgainstError('Invalid licenseId: ', TopicMethods.GET, Resource.LICENSE, defaultMessageItems.oi4Id, '/');
+        await checkAgainstError('Invalid licenseId: ', TopicMethods.GET, Resource.LICENSE_TEXT, defaultMessageItems.oi4Id, '/');
     });
 
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
@@ -241,11 +242,11 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info - publicationList and subscriptionList - if subresource or tag is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid tag: ', `/${defaultMessageItems.subResource}/`)
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid subresource: ', `//${defaultMessageItems.tag}`)
+        await checkAgainstError('Invalid tag: ',  TopicMethods.SET, Resource.PUBLICATION_LIST, defaultMessageItems.oi4Id, `/${defaultMessageItems.subResource}/`)
+        await checkAgainstError('Invalid subresource: ', TopicMethods.SET, Resource.PUBLICATION_LIST, defaultMessageItems.oi4Id, `//${defaultMessageItems.tag}`)
 
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid tag: ', `/${defaultMessageItems.subResource}/`)
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid subresource: ', `//${defaultMessageItems.tag}`)
+        await checkAgainstError('Invalid tag: ', TopicMethods.SET, Resource.SUBSCRIPTION_LIST, defaultMessageItems.oi4Id, `/${defaultMessageItems.subResource}/`)
+        await checkAgainstError('Invalid subresource: ', TopicMethods.SET, Resource.SUBSCRIPTION_LIST, defaultMessageItems.oi4Id, `//${defaultMessageItems.tag}`)
     });
 
 });

@@ -30,7 +30,7 @@ export class MessageFactory {
         const oi4Id = '2/2/2/2';
         const method: TopicMethods = TopicMethods.GET;
         const resource: Resource = Resource.MAM;
-        const topic = `fake/${serviceType}/${appId}/${method}/${resource}`;
+        const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;
         const subResource = 'fakeSubResource';
         const licenseId = '1234';
         const filter = 'oi4_pv';

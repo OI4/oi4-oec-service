@@ -45,6 +45,11 @@ describe('Unit test for TopicParser', () => {
         expect(errorThrown).toBe(true);
     }
 
+    it('If the topic string is fine, no error is thrown', async () => {
+        await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
+        MessageValidator.doTopicDataValidation(defaultMessageItems.getDefaultTopicWrapper(), defaultParsedMessage);
+    });
+
     it('If the publisher ID does not match, an error is thrown', async () => {
         defaultParsedMessage.PublisherId = 'fake/moreFake'
         const errMsg = `ServiceType/AppID mismatch with Payload PublisherId: [Topic: ${defaultMessageItems.topic} - Payload: ${defaultParsedMessage.PublisherId}]`;

@@ -1,7 +1,8 @@
-import {TopicWrapper} from './Types';
+import {TopicInfo, TopicWrapper} from './Types';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, ESyslogEventFilter, Resource} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {TopicMethods} from './Enums';
 
 export class MessageValidator {
 
@@ -53,41 +54,89 @@ export class MessageValidator {
             throw new Error(`DataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[wrapper.topicInfo.resource]}`);
         }
     }
-
-    //TODO refine this method
+    
     private static checkForMalformedTopic(wrapper: TopicWrapper) {
-        //const resource: Resource = wrapper.topicInfo.resource;
-        const topicAttributesNr = wrapper.topicArray.length;
-        //const method: TopicMethods = wrapper.topicInfo.method;
+        const allowedGetResourcesLength8And12 = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.INTERFACE, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        let isTopicStructureMalformed;
 
-        const isTopicStructureMalformed =
-                    MessageValidator.checkTopicLength(topicAttributesNr) ||
-                    //MessageValidator.checkAgainstTopicLength10(method, resource, topicAttributesNr) ||
-                    //MessageValidator.checkAgainstTopicLength12(method, resource, topicAttributesNr)
-                    false;
+        switch(wrapper.topicArray.length) {
+            case 8: {
+                isTopicStructureMalformed = MessageValidator.checkAgainstMalformedTopicLength8(wrapper.topicInfo, allowedGetResourcesLength8And12);
+                break;
+            };
+            case 10: {
+                isTopicStructureMalformed = MessageValidator.checkAgainstMalformedTopicLength10(wrapper.topicInfo);
+                break;
+            };
+            case 12: {
+                isTopicStructureMalformed = MessageValidator.checkAgainstMalformedTopicLength12(wrapper.topicInfo, allowedGetResourcesLength8And12);
+                break;
+            };
+            case 13: {
+                isTopicStructureMalformed = MessageValidator.checkAgainstMalformedTopicLength13(wrapper.topicInfo);
+                break;
+            };
+            case 14: {
+                isTopicStructureMalformed = MessageValidator.checkAgainstMalformedTopicLength14(wrapper.topicInfo);
+                break;
+            };
+            default: {
+                isTopicStructureMalformed = true;
+            }
+        }
 
         if(isTopicStructureMalformed) {
             throw new Error(`Invalid topic string structure ${wrapper.topicInfo.topic}`);
         }
     }
 
-    private static checkTopicLength(topicAttributesNr: number) {
-        return topicAttributesNr < 8 || topicAttributesNr == 9 || topicAttributesNr == 11 || topicAttributesNr > 14;
+    private static checkAgainstMalformedTopicLength8(info: TopicInfo, allowedGetResources: Array<Resource>) {
+        const allowedPubResources = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+
+        return this.checkAgainstResources(info, allowedGetResources, allowedPubResources);
     }
 
-    /*
-    static checkAgainstTopicLength10(method: string, resource: Resource, topicAttributesNr: number) {
-        return topicAttributesNr != 10 && method === TopicMethods.PUB && resource === Resource.EVENT;
+    private static checkAgainstMalformedTopicLength10(info: TopicInfo) {
+        return info.method !== TopicMethods.PUB || info.resource !== Resource.EVENT;
     }
 
-    static checkAgainstTopicLength12(method: string, resource: Resource, topicAttributesNr: number) {
-        return topicAttributesNr != 12 && (
-                   (method === TopicMethods.SET || method === TopicMethods.DEL) && resource === Resource.REFERENCE_DESIGNATION ||
-                   method === TopicMethods.PUB && resource === Resource.INTERFACE ||
-                   method === TopicMethods.SET && resource === Resource.DATA ||
-                   method === TopicMethods.SET && resource === Resource.CONFIG
-               )
+    private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resource>) {
+        const allowedPubResources = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.INTERFACE, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedSetDelResources = [Resource.REFERENCE_DESIGNATION];
+
+        return this.checkAgainstResources(info, allowedGetResources, allowedPubResources, allowedSetDelResources, allowedSetDelResources);
     }
-    */
+
+    private static checkAgainstMalformedTopicLength13(info: TopicInfo) {
+        const allowedGetPubResources = [Resource.CONFIG, Resource.DATA, Resource.METADATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedSetResources = [Resource.CONFIG, Resource.DATA, Resource.METADATA, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedDelResources = [Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+
+        return this.checkAgainstResources(info, allowedGetPubResources, allowedGetPubResources, allowedSetResources, allowedDelResources);
+    }
+
+    private static checkAgainstMalformedTopicLength14(info: TopicInfo) {
+        const allowedGetPubSetDelResources = [Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        
+        return this.checkAgainstResources(info, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources);
+    }
+
+    private static checkAgainstResources(info: TopicInfo, allowedGetResources: Array<Resource>, allowedPubResources: Array<Resource>, allowedSetResources: Array<Resource> = [], allowedDelResources: Array<Resource> = []) {
+        switch(info.method) {
+            case TopicMethods.GET: {
+                return !allowedGetResources.includes(info.resource);
+                break;
+            };case TopicMethods.PUB: {
+                return !allowedPubResources.includes(info.resource);
+                break;
+            };case TopicMethods.SET: {
+                return !allowedSetResources.includes(info.resource);
+                break;
+            };case TopicMethods.DEL: {
+                return !allowedDelResources.includes(info.resource);
+                break;
+            };
+        }
+    }
 
 }
