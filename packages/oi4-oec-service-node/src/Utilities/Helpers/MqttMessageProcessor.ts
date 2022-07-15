@@ -1,5 +1,4 @@
 import {
-    DataSetClassIds,
     ESyslogEventFilter,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
@@ -9,11 +8,12 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {TopicInfo, ValidatedIncomingMessageData, ValidatedMessage} from './Types';
+import {TopicInfo, TopicWrapper} from './Types';
 import {PayloadTypes, TopicMethods} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 import {TopicParser} from './TopicParser';
+import {MessageValidator} from './MessageValidator';
 
 export declare type OnSendResource = (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => Promise<void>;
 export declare type OnSendMetaData = (cutTopic: string) => Promise<void>;
@@ -41,71 +41,19 @@ export class MqttMessageProcessor {
      * @param builder
      */
     public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder) => {
-        const validatedMessageData: ValidatedIncomingMessageData = this.validateMessage(topic, message, builder);
-        if (!validatedMessageData.areValid) {
+        try {
+            const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
+            await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
+
+            const wrapper: TopicWrapper = TopicParser.getTopicWrapperWithCommonInfo(topic);
+            MessageValidator.doTopicDataValidation(wrapper, parsedMessage);
+
+            const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
+            await this.processMessage(topicInfo, parsedMessage, builder);
+        } catch (e) {
+            LOGGER.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
             return;
         }
-
-        await this.processMessage(validatedMessageData.topicInfo, validatedMessageData.parsedMessage, builder);
-    }
-
-    private validateMessage(topic: string, message: Buffer, builder: OPCUABuilder): ValidatedIncomingMessageData {
-        const validateMessage: ValidatedMessage = this.parseMessage(message);
-
-        if (!validateMessage.isValid) {
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
-        } else if (validateMessage.parsedMessage.Messages.length === 0) {
-            LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
-        }
-
-        //FIXME The PublisherId information is redundant, since it is specified both in the topic string and in the Payload. Is this ok?
-        if(topic.indexOf(validateMessage.parsedMessage.PublisherId) == -1) {
-            LOGGER.log('ServiceType/AppID mismatch with Payload PublisherId', ESyslogEventFilter.warning);
-            LOGGER.log(`Topic: ${topic}`, ESyslogEventFilter.warning);
-            LOGGER.log(`Payload: ${validateMessage.parsedMessage.PublisherId}`, ESyslogEventFilter.warning);
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
-        }
-
-        if (!this.areSchemaResultAndBuildValid(validateMessage.parsedMessage, builder, topic)) {
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
-        }
-
-        // Split the topic into its different elements
-        const topicInfo: TopicInfo = TopicParser.parseTopic(topic);
-
-        // Safety-Check: DataSetClassId
-        if (validateMessage.parsedMessage.DataSetClassId !== DataSetClassIds[topicInfo.resource]) {
-            LOGGER.log(`Error in pre-check, dataSetClassId mismatch, got ${validateMessage.parsedMessage.DataSetClassId}, expected ${DataSetClassIds[topicInfo.resource]}`, ESyslogEventFilter.warning);
-            return {areValid: false, parsedMessage: undefined, topicInfo: undefined};
-        }
-
-        return {areValid: true, parsedMessage: validateMessage.parsedMessage, topicInfo: topicInfo};
-    }
-
-    private parseMessage(message: Buffer): ValidatedMessage {
-        // Convert message to JSON, TODO: if this fails, an error is written in the logger
-        try {
-            return {isValid: true, parsedMessage: JSON.parse(message.toString())};
-        } catch (e) {
-            LOGGER.log(`Error when parsing JSON in processMqttMessage: ${e}`, ESyslogEventFilter.warning);
-        }
-        return {isValid: false, parsedMessage: undefined};
-    }
-
-    private async areSchemaResultAndBuildValid(parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, topic: string): Promise<boolean> {
-        try {
-            await builder.checkOPCUAJSONValidity(parsedMessage);
-        } catch (e) {
-            LOGGER.log(`OPC UA validation failed with: ${typeof e === 'string' ? e : JSON.stringify(e)}`, ESyslogEventFilter.warning);
-            return false;
-        }
-
-        if (!builder.checkTopicPath(topic)) {
-            LOGGER.log('Error in pre-check topic Path, please correct topic Path', ESyslogEventFilter.warning);
-            return false;
-        }
-
-        return true;
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {

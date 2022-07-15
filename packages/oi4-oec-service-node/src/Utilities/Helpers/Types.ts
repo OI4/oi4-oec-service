@@ -12,17 +12,11 @@ export type ValidatedPayload = {
     payload: IOPCUADataSetMessage[];
 }
 
-export type ValidatedMessage = {
-    isValid: boolean;
-    parsedMessage: IOPCUANetworkMessage;
-}
-
 //FIXME find a better name
 export type ValidatedIncomingMessageData = {
     areValid: boolean;
     parsedMessage: IOPCUANetworkMessage;
     topicInfo: TopicInfo;
-
 }
 
 export type TopicInfo = {
@@ -40,7 +34,6 @@ export type TopicInfo = {
 }
 
 export type TopicWrapper = {
-    topic: string;
     topicArray: Array<string>;
     topicInfo: TopicInfo;
 }

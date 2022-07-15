@@ -1,8 +1,11 @@
 import {getResource, getServiceType, Resource} from '@oi4/oi4-oec-service-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
-import {TopicValidator} from './TopicValidator';
 
+/**
+    This TopicParser make a qualitative validation of the topic info, for example checking
+    if the TopicInfo attributes components has acceptable values (not null, not empty or undefined)
+ */
 export class TopicParser {
 
     /**
@@ -49,24 +52,10 @@ export class TopicParser {
      --- length = 14 -> yes oi4Identifier, yes resourceType and yes tag
      */
 
-    static parseTopic(topic: string): TopicInfo {
-        /*
-         * This parsing method implements just qualitative check, for example that the fields contains
-         * non-empty values. Quantitative evaluations, such as regarding the proper topic length for
-         * a specific method/resource pair, has not been implemented.
-         */
+    static getTopicWrapperWithCommonInfo(topic: string): TopicWrapper {
         const topicArray = topic.split('/');
         const topicInfo: TopicInfo = TopicParser.extractCommonInfo(topic, topicArray);
-        const wrapper: TopicWrapper = {topic, topicArray, topicInfo};
-
-        //The purpose of the topic validator is to provide a quantitative check for the topic string
-        //(E.g. If we have pub event, the topic string is composed by 10 parts). For now, the
-        //TopicValidator is just a draft
-        if(TopicValidator.isMalformedTopic(wrapper)) {
-            throw new Error(`Invalid topic string structure ${topic}`);
-        }
-
-        return TopicParser.extractResourceSpecificInfo(wrapper);
+        return {topicArray, topicInfo};
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
@@ -89,7 +78,7 @@ export class TopicParser {
         };
     }
 
-    private static extractResourceSpecificInfo(wrapper: TopicWrapper) {
+    static extractResourceSpecificInfo(wrapper: TopicWrapper): TopicInfo {
         if(wrapper.topicInfo.method === TopicMethods.PUB && wrapper.topicInfo.resource === Resource.EVENT) {
             TopicParser.extractPubEventInfo(wrapper);
         } else {
@@ -136,7 +125,7 @@ export class TopicParser {
 
     private static extractOi4Id(wrapper: TopicWrapper) {
         if(TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
-            throw new Error(`Malformed Oi4Id : ${wrapper.topic}`);
+            throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
         }
         wrapper.topicInfo.oi4Id = `${wrapper.topicArray[8]}/${wrapper.topicArray[9]}/${wrapper.topicArray[10]}/${wrapper.topicArray[11]}`;
     }
@@ -160,7 +149,7 @@ export class TopicParser {
 
     private static extractItem(wrapper: TopicWrapper, index: number, errorMsg: string) {
         if (TopicParser.isStringEmpty(wrapper.topicArray[index])) {
-            throw new Error(`${errorMsg}${wrapper.topic}`);
+            throw new Error(`${errorMsg}${wrapper.topicInfo.topic}`);
         }
         return wrapper.topicArray[index];
     }

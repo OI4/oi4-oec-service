@@ -10,12 +10,26 @@ export class MockedOPCUABuilderFactory {
             });
     }
 
-    public static getMockedOPCUABuilder(fakeOi4Id: string, fakeServiceType: string): OPCUABuilder {
+    public static resetAllMocks() {
+        jest.resetAllMocks();
+    }
+
+    public static getMockedBuilderWithoutMockedMethods(fakeOi4Id: string, fakeServiceType: string): OPCUABuilder {
         return new OPCUABuilder(fakeOi4Id, fakeServiceType);
     }
 
-    public static resetAllMocks() {
-        jest.resetAllMocks();
+    static getMockedBuilderWithMockedMethods(info: any, appId: string): OPCUABuilder {
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
+            return Promise.resolve(true)
+        });
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
+            return true;
+        });
+        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
+            return Promise.resolve('FakeType');
+        });
+
+        return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(appId, info.fakeServiceType);
     }
 
 }
