@@ -1,22 +1,25 @@
 import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
-import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ValidatedPayload} from '../../../src/Utilities/Helpers/Types';
 import {
     DataSetWriterIdManager,
     EDeviceHealth,
     Health,
     IOI4ApplicationResources,
-    LicenseText, PublicationList, Resource, SubscriptionList,
+    LicenseText,
+    PublicationList,
+    Resource,
+    SubscriptionList,
     SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for ClientPayloadHelper', () => {
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const OI4_ID = MockedIApplicationResourceFactory.OI4_ID;
-    const OI4_ID_2 = MockedIApplicationResourceFactory.OI4_ID + '_2';
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const OI4_ID_2 = `${MockedIApplicationResourceFactory.OI4_ID}_2`;
 
     const default_payload = [{
         subResource: OI4_ID,
@@ -24,19 +27,13 @@ describe('Unit test for ClientPayloadHelper', () => {
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
 
-    const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
-    const fakeLogFile = loggerItems.fakeLogFile;
-
     let clientPayloadHelper: ClientPayloadHelper;
     let mockedIContainerState: IOI4ApplicationResources;
 
     beforeEach(() => {
         DataSetWriterIdManager.resetDataSetWriterIdManager();
-        //Flush the messages log
-        fakeLogFile.splice(0, fakeLogFile.length);
         clientPayloadHelper = new ClientPayloadHelper();
         mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
-        setLogger(loggerItems.fakeLogger);
     });
 
     afterEach(() => {

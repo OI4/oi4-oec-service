@@ -4,11 +4,16 @@ import * as winston from 'winston';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import {LoggingService} from './logger.service';
-import {Logger} from '@oi4/oi4-oec-service-logger';
+import {Logger, setLogger} from '@oi4/oi4-oec-service-logger';
 
 export type LoggerItems = {
     fakeLogger: Logger;
-    fakeLogFile: Array<string> ;
+    fakeLogFile: Array<string>;
+    clearLogFile: Function;
+    logContainsOnly: Function;
+    logContains: Function;
+    getLogSize: Function;
+    isLogEmpty: Function;
 }
 
 export class MockedLoggerFactory {
@@ -40,7 +45,35 @@ export class MockedLoggerFactory {
             }
         }));
 
-        return {fakeLogger: fakeLogger, fakeLogFile: fakeLogFile}
+        const clearLogFile = () => {
+            fakeLogFile.splice(0, fakeLogFile.length);
+        }
+
+        const logContainsOnly = (msg: string) => {
+            return fakeLogFile.length == 1 && fakeLogFile[0] === msg;
+        };
+
+        const logContains = (msg: string) => {
+            for (const logEntry of fakeLogFile) {
+                if(logEntry === msg) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        const getLogSize = () => {
+            return fakeLogFile.length;
+        };
+
+        const isLogEmpty = () => {
+            return getLogSize() == 0;
+        }
+
+        setLogger(fakeLogger);
+
+        return {fakeLogger, fakeLogFile, clearLogFile, logContains, logContainsOnly, getLogSize, isLogEmpty}
     }
 
 } 
