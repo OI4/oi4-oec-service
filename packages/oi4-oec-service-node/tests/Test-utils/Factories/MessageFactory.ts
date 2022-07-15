@@ -56,7 +56,6 @@ export class MessageFactory {
 
         const getDefaultTopicWrapper = (): TopicWrapper => {
             return {
-                topic: topic,
                 topicArray: topic.split('/'),
                 topicInfo: getDefaultTopicInfo()
             }

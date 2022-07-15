@@ -34,7 +34,6 @@ export type TopicInfo = {
 }
 
 export type TopicWrapper = {
-    topic: string;
     topicArray: Array<string>;
     topicInfo: TopicInfo;
 }

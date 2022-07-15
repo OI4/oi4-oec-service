@@ -54,7 +54,7 @@ export class TopicParser {
     static getTopicWrapperWithCommonInfo(topic: string): TopicWrapper {
         const topicArray = topic.split('/');
         const topicInfo: TopicInfo = TopicParser.extractCommonInfo(topic, topicArray);
-        return {topic, topicArray, topicInfo};
+        return {topicArray, topicInfo};
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
@@ -124,7 +124,7 @@ export class TopicParser {
 
     private static extractOi4Id(wrapper: TopicWrapper) {
         if(TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
-            throw new Error(`Malformed Oi4Id : ${wrapper.topic}`);
+            throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
         }
         wrapper.topicInfo.oi4Id = `${wrapper.topicArray[8]}/${wrapper.topicArray[9]}/${wrapper.topicArray[10]}/${wrapper.topicArray[11]}`;
     }
@@ -148,7 +148,7 @@ export class TopicParser {
 
     private static extractItem(wrapper: TopicWrapper, index: number, errorMsg: string) {
         if (TopicParser.isStringEmpty(wrapper.topicArray[index])) {
-            throw new Error(`${errorMsg}${wrapper.topic}`);
+            throw new Error(`${errorMsg}${wrapper.topicInfo.topic}`);
         }
         return wrapper.topicArray[index];
     }
