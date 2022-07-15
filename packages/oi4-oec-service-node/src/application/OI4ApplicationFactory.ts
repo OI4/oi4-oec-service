@@ -1,9 +1,9 @@
 import {
     BrokerConfiguration,
     MqttSettings,
-    Credentials,
-    DefaultMqttSettingsPaths, IMqttSettingsPaths, IBaseSettingsPaths
+    Credentials
 } from './MqttSettings';
+// @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
@@ -13,6 +13,7 @@ import {BaseCredentialsHelper} from '../Utilities/Helpers/BaseCredentialsHelper'
 import {OPCUABuilder} from "@oi4/oi4-oec-service-opcua-model";
 import {ClientPayloadHelper} from "../Utilities/Helpers/ClientPayloadHelper";
 import {ClientCallbacksHelper} from "../Utilities/Helpers/ClientCallbacksHelper";
+import {DefaultMqttSettingsPaths, IMqttSettingsPaths} from "../Config/SettingsPaths";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -26,7 +27,6 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     opcUaBuilder: OPCUABuilder;
     clientPayloadHelper: ClientPayloadHelper;
     clientCallbacksHelper: ClientCallbacksHelper;
-
 
     private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: IMqttSettingsPaths;
