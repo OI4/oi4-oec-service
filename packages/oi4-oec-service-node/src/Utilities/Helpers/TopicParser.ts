@@ -2,6 +2,10 @@ import {getResource, getServiceType, Resource} from '@oi4/oi4-oec-service-model'
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
 
+/**
+    This TopicParser make a qualitative validation of the topic info, for example checking
+    if the TopicInfo attributes components has acceptable values (not null, not empty or undefined)
+ */
 export class TopicParser {
 
     /**
@@ -48,9 +52,6 @@ export class TopicParser {
      --- length = 14 -> yes oi4Identifier, yes resourceType and yes tag
      */
 
-    /*
-    This class make a qualitative validation of the topi info, for example checking if the topic components has acceptable values (not null, not empty or undefined)
-     */
     static getTopicWrapperWithCommonInfo(topic: string): TopicWrapper {
         const topicArray = topic.split('/');
         const topicInfo: TopicInfo = TopicParser.extractCommonInfo(topic, topicArray);

@@ -4,6 +4,11 @@ import {DataSetClassIds, ESyslogEventFilter, Resource} from '@oi4/oi4-oec-servic
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicMethods} from './Enums';
 
+/**
+ The MessageValidator makes a qualitative validation on the publisherId and on the dataSetClassId,
+ plus a quantitative validation of the TopicInfo (checks if the topic string structure is correct and
+ carries enough information the the requested action)
+ */
 export class MessageValidator {
 
     static async doPreliminaryValidation(topic: string, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {

@@ -1,4 +1,4 @@
-import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
@@ -6,6 +6,7 @@ import {MessageValidator} from '../../../src/Utilities/Helpers/MessageValidator'
 import {MessageFactory, MessageItems} from '../../Test-utils/Factories/MessageFactory';
 import {TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
 import {ProcessorAndMockedData, TestMqttProcessorFactory} from '../../Test-utils/Factories/TestMqttProcessorFactory';
+import {TopicMethods} from '../../../dist/Utilities/Helpers/Enums';
 
 describe('Unit test for TopicParser', () => {
 
@@ -95,24 +96,44 @@ describe('Unit test for TopicParser', () => {
         wrapper.topicArray = ['','','','','','','','','','','','','','','','','','','',''];
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
     });
-/*
+
     async function checkAgainstWrongTopicData(newWrapper: TopicWrapper) {
         const errMsg = `Invalid topic string structure ${newWrapper.topicInfo.topic}`;
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(newWrapper, defaultParsedMessage), errMsg);
     }
 
-    function updateMessageInfo(newTopicString: string, method: TopicMethods) {
+    function createCustomMessageInfo(newTopicString: string, method: TopicMethods, resource: Resource) {
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
         wrapper.topicInfo.method = method;
         wrapper.topicInfo.topic = newTopicString;
+        wrapper.topicInfo.resource = resource;
         wrapper.topicArray = newTopicString.split('/');
         return wrapper;
     }
 
+    async function createCustomMessageInfoAndTestAgainstWrongData(newTopicString: string, method: TopicMethods, resource: Resource) {
+        const wrapper: TopicWrapper = createCustomMessageInfo(newTopicString, method, resource);
+        defaultParsedMessage.DataSetClassId = DataSetClassIds[wrapper.topicInfo.resource];
+        await checkAgainstWrongTopicData(wrapper);
+    }
+
     it('If the topic path is missing some info, an error is thrown', async () => {
         const standardTopicPrefix = `oi4/${ServiceTypes.REGISTRY}/${defaultMessageItems.appId}`;
-        const newWrapper: TopicWrapper = updateMessageInfo(`${standardTopicPrefix}/${TopicMethods.SET}/${Resource.MAM}`, TopicMethods.SET);
-        await checkAgainstWrongTopicData(newWrapper);
+
+        //length = 8
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.SET}/${Resource.MAM}`, TopicMethods.SET, Resource.MAM);
+
+        //length = 10
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.PUB}/${Resource.MAM}//`, TopicMethods.GET, Resource.MAM);
+
+        //length = 12
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.DEL}/${Resource.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}`, TopicMethods.DEL, Resource.SUBSCRIPTION_LIST);
+
+        //length = 13
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.GET}/${Resource.MAM}/${defaultMessageItems.oi4Id}/`, TopicMethods.GET, Resource.MAM);
+
+        //length = 14
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.GET}/${Resource.MAM}/${defaultMessageItems.oi4Id}//`, TopicMethods.GET, Resource.MAM);
     });
-*/
+
 });
