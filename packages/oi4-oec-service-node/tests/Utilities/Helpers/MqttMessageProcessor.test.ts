@@ -15,6 +15,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
+    const registryFakeAppId = 'mymanufacturer.com/1/2/3';
     const defaultFakeSubResource = 'fakeSubResource';
     const defaultTopicPrefix = 'fake/fictitious';
     const defaultFakeLicenseId = '1234';
@@ -54,8 +55,14 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     function getMqttProcessorAndMockedData(mockedSendData: OnSendResource, emitter: EventEmitter = defaultEmitter, sendMetaData: OnSendMetaData = jest.fn()): any {
         const mockedData = getMockedData();
-        const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
-        applicationResource.oi4Id = defaultFakeAppId;
+        const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()
+        mam.ManufacturerUri = 'mymanufacturer.com';
+        mam.Model.text = '1';
+        mam.ProductCode = '1';
+        mam.SerialNumber = '1';
+
+        const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(mam);
+        // applicationResource.oi4Id = defaultFakeAppId;
         return {
             processor: new MqttMessageProcessor(applicationResource, sendMetaData, mockedSendData, emitter),
             mockedData: mockedData,
@@ -66,28 +73,29 @@ describe('Unit test for MqttMessageProcessor', () => {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: `Registry/${defaultFakeAppId}`,
+            PublisherId: `Registry/${registryFakeAppId}`,
         };
-
+        const topic = `oi4/${jsonObj.PublisherId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`;
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
-        await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        await processorAndMockedData.processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${defaultFakeAppId}`);
-        expect(OI4RegistryManager.getOi4Id()).toBe(defaultFakeAppId);
+        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${registryFakeAppId}`);
+        expect(OI4RegistryManager.getOi4Id()).toBe(registryFakeAppId);
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
-            PublisherId: 'Mocked/Fake'
+            PublisherId: `Mocked/${registryFakeAppId}`
         };
+        const topic = `oi4/${jsonObj.PublisherId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`;
 
         const processorAndMockedData = getMqttProcessorAndMockedData(jest.fn());
-        await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        await processorAndMockedData.processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
 
-        expect(fakeLogFile.length).toBe(0);
+        expect(fakeLogFile.length).toBe(1);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
     });
@@ -253,11 +261,10 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
-
-        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
+        const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
 
         const mockedSendMessage = jest.fn();
-        await processMessage(mockedSendMessage, fakeTopic, resourceConfig, defaultEmitter, jest.fn());
+        await processMessage(mockedSendMessage, topic, resourceConfig, defaultEmitter, jest.fn());
 
         expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, undefined, 0, 0);
     }

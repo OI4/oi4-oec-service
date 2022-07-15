@@ -4,14 +4,14 @@ import axios from 'axios';
 import {BASE_URL, WeatherService} from '../../src/weather/WeatherService';
 import {Coordinates} from '../../src/weather/WeatherServiceModel';
 import * as fs from "fs";
-import {WeatherServiceResponse} from "../../dist/weather/WeatherServiceModel";
+import {WeatherServiceResponse} from "../../src/weather/WeatherServiceModel";
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('WeatherService.ts test', () => {
     it('should retrieve weather data', async () => {
-        const responseData = JSON.parse(fs.readFileSync('test/__fixtures__/weatherApiResponse.json', 'utf-8')) as WeatherServiceResponse;
+        const responseData = JSON.parse(fs.readFileSync(`${__dirname}/../__fixtures__/weatherApiResponse.json`, 'utf-8')) as WeatherServiceResponse;
         mockedAxios.get.mockResolvedValueOnce({
             status: 200,
             statusText: 'OK',

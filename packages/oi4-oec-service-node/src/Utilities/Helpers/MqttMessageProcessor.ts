@@ -249,6 +249,8 @@ export class MqttMessageProcessor {
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
+            // Check if message is from the OI4 registry and save it if it is
+            OI4RegistryManager.checkForOi4Registry(parsedMessage);
             LOGGER.log(`Detected Message from: ${topicInfo.appId}`)
         }
     }
@@ -262,8 +264,6 @@ export class MqttMessageProcessor {
             await this.sendMetaData(topicInfo.filter);
             return;
         }
-
-        OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
         let payloadType: string = PayloadTypes.EMPTY;
         let page = 0;
@@ -341,8 +341,7 @@ export class MqttMessageProcessor {
             currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in config group`);
         }
-        OI4RegistryManager.checkForOi4Registry(config);
-        const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
+        const status: StatusEvent = new StatusEvent(this.applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
         this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
