@@ -16,7 +16,7 @@ export interface Credentials {
     password: string;
 }
 
-export interface IMqttSettingsPaths {
+export interface IBaseSettingsPaths {
     brokerConfig: string;
     caCertificate: string;
     privateKey: string;
@@ -24,6 +24,8 @@ export interface IMqttSettingsPaths {
     passphrase: string;
     credentials: string;
 }
+
+export interface IMqttSettingsPaths extends IBaseSettingsPaths {}
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const DefaultMqttSettingsPaths: IMqttSettingsPaths = {
