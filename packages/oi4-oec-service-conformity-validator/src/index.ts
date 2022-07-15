@@ -20,10 +20,15 @@ import {IMessageBusLookup, GetRequest} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
+interface ILicense
+{
+    subResource: string;
+    licenseName: string;
+}
+
 /**
  * Responsible for checking mandatory OI4-conformance.
  * Only checks for response within a certain amount of time, not for 100% payload conformity.
- * TODO: Improve JSON Schema checks!
  */
 export class ConformityValidator {
     private readonly conformityClient: mqtt.AsyncClient;
@@ -72,7 +77,7 @@ export class ConformityValidator {
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
-        const licenseList: string[] = [];
+        const licenseList: ILicense[] = [];
         let oi4Result;
         let resObj: IValidityDetails; // Container for validation results
 
@@ -99,33 +104,32 @@ export class ConformityValidator {
         }
 
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
+        let resourcesFromProfile: Resource[] = [];
 
         try {
             conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, subResource);
+            resourcesFromProfile = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
+            
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
             conformityObject.resource['profile'] = {
-                dataSetMessages: [{
-                    Payload: {
-                        resource: [], // Timeout = no resources
-                    }
-                }],
+                dataSetMessages: [],
                 validity: EValidity.nok,
                 validityErrors: ['Timeout on Resource'],
             };
         }
 
         // First, all mandatories
-        const checkedList: Resource[] = Object.assign([], mandatoryResourceList); // TODO cfz: clone list ok?
+        const checkList: Resource[] = Object.assign([], mandatoryResourceList);
         try {
             // Second, all resources actually stored in the profile (Only oi4-conform profile entries will be checked)
-            for (const resources of conformityObject.resource.profile.dataSetMessages[0].Payload.resource) {
+            for (const resource of resourcesFromProfile) {
                 // The following lines are for checking whether there are some conform entries in the profile *additionally* to the mandatory ones
-                if (!(checkedList.includes(resources))) { // Don't add resources twice
-                    if (ConformityValidator.completeProfileList.includes(resources)) { // Second condition is for checking if the profile event meets OI4-Standards
-                        checkedList.push(resources);
+                if (!(checkList.includes(resource))) { // Don't add resources twice
+                    if (ConformityValidator.completeProfileList.includes(resource)) { // Second condition is for checking if the profile event meets OI4-Standards
+                        checkList.push(resource);
                     } else { // If we find resource which are not part of the oi4 standard, we don't check them but we mark them as an error
-                        conformityObject.resource[resources] = {
-                            dataSetMessages: [{}],
+                        conformityObject.resource[resource] = {
+                            dataSetMessages: [],
                             validity: EValidity.nok,
                             validityErrors: ['Resource is unknown to oi4'],
                         };
@@ -141,52 +145,82 @@ export class ConformityValidator {
         if (resourceList) {
             console.log(`Got ResourceList from Param: ${resourceList}`);
             for (const resources of resourceList) {
-                if (!(checkedList.includes(resources))) {
-                    checkedList.push(resources);
+                if (!(checkList.includes(resources))) {
+                    checkList.push(resources);
                     conformityObject.nonProfileResourceList.push(resources);
                 }
             }
         }
 
-        conformityObject.checkedResourceList = checkedList;
+        if (checkList.includes(Resource.LICENSE_TEXT))
+        {
+            // move 'Resource.LicenseText' to the end of the checklist so that we can ensure that the licenseList is filled
+            checkList.push(checkList.splice(checkList.indexOf(Resource.LICENSE_TEXT), 1)[0]);
+        }
+
+        conformityObject.checkedResourceList = checkList;
 
         resObj = { // ResObj Initialization before checking all Resources
             validity: EValidity.default,
             validityErrors: ['You should not see this in prod, initialization dummy obj'],
-            dataSetMessages: [{}],
+            dataSetMessages: [],
         };
 
         // Actually start checking the resources
-        for (const resource of checkedList) {
+        for (const resource of checkList) {
             LOGGER.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
             try {
-                if (resource === 'profile') continue; // We already checked profile
-                if (resource === 'license') { // License is a different case. We actually need to parse the return value here
-                    resObj = await this.checkResourceConformity(topicPreamble, resource) as IValidityDetails;
-                    for (const payload of resObj.dataSetMessages) {
-                        if (typeof payload.Payload.page !== 'undefined') {
-                            LOGGER.log('Careful, weve got pagination in license!');
-                        } else {
-                            licenseList.push(payload.POI) // With the obtained licenses, we can check the licenseText resource per TC-T6
+                switch (resource)
+                {
+                    case Resource.PROFILE:
+                        // profile was already checked
+                        break;
+
+                    case Resource.LICENSE_TEXT:
+                        if (licenseList.length == 0) {
+                            // just check if there is any license text
+                            resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
                         }
-                    }
-                } else if (resource === 'licenseText') {
-                    for (const licenses of licenseList) {
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, licenses) as IValidityDetails; // here, the oi4ID is the license
-                    }
-                } else {
-                    if (resource === 'publicationList' || resource === 'subscriptionList' || resource === 'config') {
-                        resObj = await this.checkResourceConformity(topicPreamble, resource) as IValidityDetails;
-                    } else {
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource) as IValidityDetails;
-                    }
+                        else
+                        {
+                            for (const license of licenseList) {
+                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.subResource, license.licenseName) as IValidityDetails; // here, the oi4ID is the license
+                                if (resObj.validity != EValidity.ok) {
+                                    // text not valid --> don't continue
+                                    break;
+                                }
+                            }
+                        }
+    
+                        break;
+
+                    case Resource.LICENSE:
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                        for (const dataSetMessage of resObj.dataSetMessages) {
+                            if (typeof dataSetMessage.Payload.page !== 'undefined') {
+                                LOGGER.log('Found pagination in license!');
+                            } else if (dataSetMessage.filter != undefined && dataSetMessage.filter != null && dataSetMessage.filter.length > 0) {
+                                licenseList.push({subResource: dataSetMessage.subResource, licenseName: dataSetMessage.filter}); // With the obtained licenses, we can check the licenseText resource per TC-T6
+                            }
+                        }
+                        break;
+
+                    case Resource.PUBLICATION_LIST:
+                    case Resource.SUBSCRIPTION_LIST:
+                    case Resource.CONFIG:
+                        // TODO cfz no subResource?
+                        resObj = await this.checkResourceConformity(topicPreamble, resource);
+                        break;
+
+                    default:
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
                 }
             } catch (err) {
                 LOGGER.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
                 resObj = {
                     validity: EValidity.nok,
                     validityErrors: [err],
-                    dataSetMessages: [{}],
+                    dataSetMessages: [],
                 };
                 if (!ignoredResources.includes(resource)) {
                     errorSoFar = true;
@@ -342,17 +376,10 @@ export class ConformityValidator {
             eRes = EValidity.partial;
         }
 
-        let resPayloadArr;
-        if (parsedMessage.MessageType === 'ua-data') {
-            resPayloadArr = parsedMessage.Messages;
-        } else {
-            resPayloadArr = ['metadata'];
-        }
-
         const resObj: IValidityDetails = {
             validity: eRes,
             validityErrors: errorMsgArr,
-            dataSetMessages: resPayloadArr, // We add the payload here in case we need to parse it later on (profile, licenseText for exmaple)
+            dataSetMessages: parsedMessage.Messages,
         };
 
         return resObj;

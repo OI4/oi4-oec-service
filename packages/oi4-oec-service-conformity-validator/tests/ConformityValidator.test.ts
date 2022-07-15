@@ -4,7 +4,6 @@ import {IMessageBusLookup, PubResponse, GetRequest} from '../src/model/IMessageB
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {ESyslogEventFilter, EAssetType, Resource} from '@oi4/oi4-oec-service-model';
 
-
 import mam_valid from './__fixtures__/mam_valid.json';
 import health_valid from './__fixtures__/health_valid.json';
 import license_valid from './__fixtures__/license_valid.json';
@@ -14,12 +13,15 @@ import data_valid from './__fixtures__/data_valid.json';
 import metadata_valid from './__fixtures__/metadata_valid.json';
 import referenceDesignation_valid from './__fixtures__/referenceDesignation_valid.json';
 
+import license_with_pagination_valid from './__fixtures__/license_with_pagination_valid.json';
+
 import profile_app_valid from './__fixtures__/profile_app_valid.json';
 import profile_app_data_valid from './__fixtures__/profile_app_data_valid.json';
 import profile_device_valid from './__fixtures__/profile_device_valid.json';
 import profile_device_data_valid from './__fixtures__/profile_device_data_valid.json';
 import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.json';
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
+import profile_device_unknown_resource from './__fixtures__/profile_device_unknown_resource.json';
 
 
 const publish = jest.fn();
@@ -54,17 +56,18 @@ function equal(a: string, b: string): boolean {
 }
 
 
-const allValidNetworkMessages: ITestData[] =[
+const validDeviceTestData: ITestData[] =[
         {resource: Resource.MAM, message: mam_valid},
         {resource: Resource.HEALTH, message: health_valid},
         {resource: Resource.PROFILE, message: profile_app_valid},
         {resource: Resource.LICENSE, message: license_valid},
+        {resource: Resource.LICENSE, message: license_with_pagination_valid},
         {resource: Resource.LICENSE_TEXT, message: licenseText_valid},
         {resource: Resource.PUBLICATION_LIST, message: publicationList_valid},
         {resource: Resource.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
         {resource: Resource.DATA, message: data_valid}];
 
-const allValidDeviceResources: ITestData[] = allValidNetworkMessages.concat([
+const allValidDeviceTestData: ITestData[] = validDeviceTestData.concat([
             {resource: Resource.METADATA, message: metadata_valid}]);
         
 
@@ -74,7 +77,10 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
 
     publish.mockImplementation(async (request: GetRequest) => {
 
-        const responseEntry = response.find((entry) => entry.resource==request.Resource && equal(entry.subResource, request.SubResource));
+        const responseEntry = response.find((entry) => 
+            entry.resource==request.Resource && 
+            equal(entry.subResource, request.SubResource) &&
+            equal(entry.filter, request.Filter));
         const message = responseEntry.message;
 
         if (fixCorrelationId)
@@ -98,6 +104,7 @@ interface ITestData
 {
     resource: Resource;
     subResource?: string;
+    filter?: string;
     message: any;
 }
 
@@ -118,7 +125,8 @@ describe('Unit test for ConformityValidator ', () => {
             {resource: Resource.HEALTH, message: health_valid},
             {resource: Resource.PROFILE, message: profile_app_valid},
             {resource: Resource.LICENSE, message: license_valid},
-            {resource: Resource.LICENSE_TEXT, message: licenseText_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'MIT', message: licenseText_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'Apache%202.0', message: licenseText_valid},
             {resource: Resource.PUBLICATION_LIST, message: publicationList_valid}
         ]
 
@@ -126,7 +134,55 @@ describe('Unit test for ConformityValidator ', () => {
         const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
 
         expect(result.validity).toBe(EValidity.ok);
+        expect(result.resource['mam'].validity).toBe(EValidity.ok);
+        expect(result.resource['health'].validity).toBe(EValidity.ok);
+        expect(result.resource['profile'].validity).toBe(EValidity.ok);
+        expect(result.resource['license'].validity).toBe(EValidity.ok);
+        expect(result.resource['licenseText'].validity).toBe(EValidity.ok);
+        expect(result.resource['publicationList'].validity).toBe(EValidity.ok);
     });
+
+    it('should return full application conformity for license with pagination' , async ()=> {
+
+        const applicationMessages: ITestData[] = [
+            {resource: Resource.MAM, message: mam_valid},
+            {resource: Resource.HEALTH, message: health_valid},
+            {resource: Resource.PROFILE, message: profile_app_valid},
+            {resource: Resource.LICENSE, message: license_with_pagination_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'MIT', message: licenseText_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'Apache%202.0', message: licenseText_valid},
+            {resource: Resource.PUBLICATION_LIST, message: publicationList_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(applicationMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
+
+        expect(result.validity).toBe(EValidity.ok);
+        expect(result.resource['license'].validity).toBe(EValidity.ok);
+        expect(result.resource['licenseText'].validity).toBe(EValidity.ok);
+    });
+
+
+
+    it('should return partial application conformity if license text is missing' , async ()=> {
+
+        // license resource references an "Apache" license but this license is missing in the "LicenseText" resource
+        const applicationMessages: ITestData[] = [
+            {resource: Resource.MAM, message: mam_valid},
+            {resource: Resource.HEALTH, message: health_valid},
+            {resource: Resource.PROFILE, message: profile_app_valid},
+            {resource: Resource.LICENSE, message: license_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'MIT', message: licenseText_valid},
+            {resource: Resource.PUBLICATION_LIST, message: publicationList_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(applicationMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
+
+        expect(result.validity).toBe(EValidity.partial);
+        expect(result.resource['licenseText'].validity).toBe(EValidity.nok);
+    });
+
 
 
     it('should return full device conformity' , async ()=> {
@@ -145,8 +201,25 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     
+    it('should detect unknown resource in profile' , async ()=> {
 
-    it.each(allValidDeviceResources)(
+        const deviceMessages: ITestData[] = [
+            {resource: Resource.MAM, subResource: defaultSubResource, message: mam_valid},
+            {resource: Resource.HEALTH, subResource: defaultSubResource, message: health_valid},
+            {resource: Resource.PROFILE, subResource: defaultSubResource, message: profile_device_unknown_resource},
+            {resource: Resource.REFERENCE_DESIGNATION, subResource: defaultSubResource, message: referenceDesignation_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(deviceMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource);
+
+        expect(result.validity).toBe(EValidity.ok);
+        expect(result.resource['unknown'].validity).toBe(EValidity.nok);
+        expect(result.resource['unknown'].validityErrors).toContain('Resource is unknown to oi4');
+    });
+
+
+    it.each(allValidDeviceTestData)(
         '($#) should return full resource conformity for -> $resource',
         async (data: ITestData) => {
 
@@ -163,7 +236,7 @@ describe('Unit test for ConformityValidator ', () => {
         }
       )
 
-      it.each(allValidDeviceResources)(
+      it.each(allValidDeviceTestData)(
         '($#) should return partial conformity for wrong correlationId -> $resource',
         async (data: ITestData) => {
 
@@ -182,7 +255,7 @@ describe('Unit test for ConformityValidator ', () => {
       )
 
 
-      it.each(allValidNetworkMessages)(
+      it.each(validDeviceTestData)(
         '($#) should return partial conformity for wrong DataSetId -> $resource',
         async (data: ITestData) => {
 
@@ -217,21 +290,6 @@ describe('Unit test for ConformityValidator ', () => {
             expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
         }
       )
-
-      it('foo', async () => {
-          let objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: profile_app_valid}]);
-          let result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
-          expect(result.validity).toBe(EValidity.ok);
-  
-          expect(LOGGER.log).toHaveBeenCalledTimes(2);
-          expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
-          expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
-
-          objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: profile_app_data_valid}]);
-          result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
-          expect(result.validity).toBe(EValidity.ok);
-      }
-    )
 
       it.each([profile_device_valid, profile_device_data_valid])(
         '($#) should return full conformity for device profile',
@@ -270,7 +328,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
     })
 
-    it.each(allValidDeviceResources)(
+    it.each(allValidDeviceTestData)(
         '($#) should return full schema conformity for -> $resource',
         async (data: ITestData) => {
             const objectUnderTest = getObjectUnderTest();
@@ -284,7 +342,6 @@ describe('Unit test for ConformityValidator ', () => {
     it('should return mandatory application resources', ()=> {
         const resources = ConformityValidator.getMandatoryResources(EAssetType.application);
         expect([Resource.MAM, Resource.HEALTH, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PROFILE, Resource.PUBLICATION_LIST].sort()).toEqual(resources.sort());
-
     })
 
     it('should return mandatory device resources', ()=> {

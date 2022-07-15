@@ -39,6 +39,7 @@ export class MessageBusLookup implements IMessageBusLookup
 
         return await promiseTimeout(new Promise((resolve) => {
                 this.pubMessages.once(pubTopic, (res) => {
+                    // TODO: Pagination is currently ignored and only the first response message is returned 
                     this.conformityClient.unsubscribe(pubTopic);
                     resolve(res);
                 });
