@@ -291,6 +291,41 @@ describe('Unit test for ConformityValidator ', () => {
         expect(LOGGER.log).toHaveBeenCalledWith(`Schema validation of message ${defaultTopic}/pub/health/${defaultSubResource} was not successful.`, ESyslogEventFilter.error);
     });
 
+    it('should detect missing meta data' , async ()=> {
+
+        const deviceMessages: ITestData[] = [
+            {resource: Resource.MAM, subResource: defaultSubResource, message: mam_valid},
+            {resource: Resource.HEALTH, subResource: defaultSubResource, message: health_valid},
+            {resource: Resource.PROFILE, subResource: defaultSubResource, message: profile_device_data_valid},
+            {resource: Resource.REFERENCE_DESIGNATION, subResource: defaultSubResource, message: referenceDesignation_valid},
+            {resource: Resource.DATA, subResource: defaultSubResource, message: data_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(deviceMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource);
+
+        expect(result.validity).toBe(EValidity.partial);
+        expect(result.resource['metadata'].validity).toBe(EValidity.nok);
+    });
+
+    it('should evaluate additional resources not included in the profile' , async ()=> {
+
+        const deviceMessages: ITestData[] = [
+            {resource: Resource.MAM, subResource: defaultSubResource, message: mam_valid},
+            {resource: Resource.HEALTH, subResource: defaultSubResource, message: health_valid},
+            {resource: Resource.PROFILE, subResource: defaultSubResource, message: profile_device_valid},
+            {resource: Resource.REFERENCE_DESIGNATION, subResource: defaultSubResource, message: referenceDesignation_valid},
+            {resource: Resource.CONFIG, subResource: defaultSubResource, message: config_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(deviceMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource, [Resource.CONFIG]);
+
+        expect(result.validity).toBe(EValidity.ok);
+        expect(result.profileResourceList.sort()).toEqual([Resource.HEALTH, Resource.MAM, Resource.PROFILE, Resource.REFERENCE_DESIGNATION])
+        expect(result.nonProfileResourceList).toEqual([Resource.CONFIG])
+        expect(result.resource['config'].validity).toBe(EValidity.ok);
+    });
 
     it.each(allValidDeviceTestData)(
         '($#) should return full resource conformity for -> $resource',

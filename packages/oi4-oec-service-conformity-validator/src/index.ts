@@ -533,9 +533,6 @@ export class ConformityValidator {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 LOGGER.log(`Found pagination in ${resource}!`);
             }
-            else if (typeof dataSetMessage.Payload.locale != 'undefined') {
-                LOGGER.log(`Found locale in ${resource}!`)
-            } 
             else if (this.isNotEmpty(dataSetMessage.filter) && this.isNotEmpty(dataSetMessage.subResource)) {
                 result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter}); 
             }
