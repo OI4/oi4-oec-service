@@ -18,6 +18,7 @@ import {healthSchemaJson,
     referenceDesignationSchemaJson,
     localeSchemaJson,
     paginationSchemaJson,
+    interfacesSchemaJson,
     dataPVSchemaJson,    
     DataSetMetaDataSchemaJson,
     DataSetMetaDataTypeSchemaJson,
@@ -59,6 +60,7 @@ export const buildOecJsonValidator = () => {
     jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json');
     jsonValidator.addSchema(localeSchemaJson, 'locale.schema.json');
     jsonValidator.addSchema(paginationSchemaJson, 'pagination.schema.json');
+    jsonValidator.addSchema(interfacesSchemaJson, 'interfaces.schema.json');
 
     jsonValidator.addSchema(dataPVSchemaJson, 'dataPV.schema.json');
     jsonValidator.addSchema(DataSetMetaDataSchemaJson, 'DataSetMetaData.schema.json');

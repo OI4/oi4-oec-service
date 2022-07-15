@@ -21,6 +21,7 @@ import subscriptionListSchemaJson from './schemas/subscriptionList.schema.json';
 import referenceDesignationSchemaJson from './schemas/referenceDesignation.schema.json';
 import localeSchemaJson from './schemas/locale.schema.json';
 import paginationSchemaJson from './schemas/pagination.schema.json';
+import interfacesSchemaJson from './schemas/interfaces.schema.json';
 
 import NetworkMessageSchemaJson from './schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from './schemas/ConfigurationVersionDataType.schema.json';
@@ -82,7 +83,7 @@ export {
     LocalizedTextSchemaJson,
     configPublishSchemaJson,
     configSetSchemaJson,
-
+    interfacesSchemaJson,
     dataPVSchemaJson,
     
     DataSetMetaDataSchemaJson,

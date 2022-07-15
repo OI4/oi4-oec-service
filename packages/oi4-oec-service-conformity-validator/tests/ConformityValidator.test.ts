@@ -9,11 +9,15 @@ import health_valid from './__fixtures__/health_valid.json';
 import license_valid from './__fixtures__/license_valid.json';
 import licenseText_valid from './__fixtures__/licenseText_valid.json';
 import publicationList_valid from './__fixtures__/publicationList_valid.json';
+import subscriptionList_valid from './__fixtures__/subscriptionList_valid.json';
 import data_valid from './__fixtures__/data_valid.json';
 import metadata_valid from './__fixtures__/metadata_valid.json';
 import referenceDesignation_valid from './__fixtures__/referenceDesignation_valid.json';
-
 import license_with_pagination_valid from './__fixtures__/license_with_pagination_valid.json';
+import config_valid from './__fixtures__/config_valid.json';
+import event_valid from './__fixtures__/event_valid.json';
+import interfaces_valid from './__fixtures__/interfaces_valid.json';
+import rtLicense_valid from './__fixtures__/rtLicense_valid.json';
 
 import profile_app_valid from './__fixtures__/profile_app_valid.json';
 import profile_app_data_valid from './__fixtures__/profile_app_data_valid.json';
@@ -22,6 +26,7 @@ import profile_device_data_valid from './__fixtures__/profile_device_data_valid.
 import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.json';
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
 import profile_device_unknown_resource from './__fixtures__/profile_device_unknown_resource.json';
+import profile_full_valid from './__fixtures__/profile_full_valid.json';
 
 
 const publish = jest.fn();
@@ -64,8 +69,13 @@ const validDeviceTestData: ITestData[] =[
         {resource: Resource.LICENSE, message: license_with_pagination_valid},
         {resource: Resource.LICENSE_TEXT, message: licenseText_valid},
         {resource: Resource.PUBLICATION_LIST, message: publicationList_valid},
+        {resource: Resource.SUBSCRIPTION_LIST, message: subscriptionList_valid},
         {resource: Resource.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
-        {resource: Resource.DATA, message: data_valid}];
+        {resource: Resource.DATA, message: data_valid},
+        {resource: Resource.CONFIG, message: config_valid},
+        {resource: Resource.EVENT, message: event_valid},
+        {resource: Resource.INTERFACES, message: interfaces_valid},
+        {resource: Resource.RT_LICENSE, message: rtLicense_valid}];
 
 const allValidDeviceTestData: ITestData[] = validDeviceTestData.concat([
             {resource: Resource.METADATA, message: metadata_valid}]);
@@ -96,7 +106,7 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
         getMessage: publish,
     }
    
-    return new ConformityValidator(defaultAppId, mqttClient, messageBusLookup);
+    return new ConformityValidator(defaultAppId, mqttClient, 'Registry',  messageBusLookup);
 }
 
 
@@ -115,6 +125,50 @@ describe('Unit test for ConformityValidator ', () => {
         jest.resetAllMocks();
         jest.clearAllMocks();
         jest.clearAllTimers();
+    });
+
+
+    it('should return conformity for all types of resources' , async ()=> {
+
+        const applicationMessages: ITestData[] = [
+            {resource: Resource.MAM, message: mam_valid},
+            {resource: Resource.HEALTH, message: health_valid},
+            {resource: Resource.PROFILE, message: profile_full_valid},
+            {resource: Resource.LICENSE, message: license_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'MIT', message: licenseText_valid},
+            {resource: Resource.LICENSE_TEXT, subResource: 'openindustry4.com/nd/nd/nd', filter: 'Apache%202.0', message: licenseText_valid},
+            {resource: Resource.PUBLICATION_LIST, message: publicationList_valid},
+            {resource: Resource.CONFIG, message: config_valid},
+            {resource: Resource.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
+            {resource: Resource.EVENT, message: event_valid},
+            {resource: Resource.RT_LICENSE, message: rtLicense_valid},
+            {resource: Resource.DATA, message: data_valid},
+            {resource: Resource.METADATA, subResource: 'openindustry4.com/nd/nd/nd', filter: 'oee', message: metadata_valid},
+            {resource: Resource.INTERFACES, message: interfaces_valid},
+            {resource: Resource.SUBSCRIPTION_LIST, message: subscriptionList_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(applicationMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
+
+        expect(result.validity).toBe(EValidity.ok);
+        expect(result.resource['mam'].validity).toBe(EValidity.ok);
+        expect(result.resource['health'].validity).toBe(EValidity.ok);
+        expect(result.resource['profile'].validity).toBe(EValidity.ok);
+        expect(result.resource['license'].validity).toBe(EValidity.ok);
+        expect(result.resource['licenseText'].validity).toBe(EValidity.ok);
+        expect(result.resource['publicationList'].validity).toBe(EValidity.ok);
+        expect(result.resource['config'].validity).toBe(EValidity.ok);
+        expect(result.resource['referenceDesignation'].validity).toBe(EValidity.ok);
+        expect(result.resource['event'].validity).toBe(EValidity.default);
+        expect(result.resource['event'].validityErrors).toContain('Resource result ignored, ok');
+        expect(result.resource['rtLicense'].validity).toBe(EValidity.ok);
+        expect(result.resource['data'].validity).toBe(EValidity.ok);
+        expect(result.resource['metadata'].validity).toBe(EValidity.ok);
+        expect(result.resource['interfaces'].validity).toBe(EValidity.default);
+        expect(result.resource['interfaces'].validityErrors).toContain('Resource result ignored, ok');
+        expect(result.resource['subscriptionList'].validity).toBe(EValidity.ok);
+        expect(result.profileResourceList.length).toEqual(14)
     });
 
 
@@ -140,6 +194,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.resource['license'].validity).toBe(EValidity.ok);
         expect(result.resource['licenseText'].validity).toBe(EValidity.ok);
         expect(result.resource['publicationList'].validity).toBe(EValidity.ok);
+        expect(result.profileResourceList.sort()).toEqual([Resource.HEALTH, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.MAM, Resource.PROFILE, Resource.PUBLICATION_LIST])
     });
 
     it('should return full application conformity for license with pagination' , async ()=> {
@@ -182,9 +237,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.partial);
         expect(result.resource['licenseText'].validity).toBe(EValidity.nok);
     });
-
-
-
+    
     it('should return full device conformity' , async ()=> {
 
         const deviceMessages: ITestData[] = [
@@ -198,8 +251,8 @@ describe('Unit test for ConformityValidator ', () => {
         const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource);
 
         expect(result.validity).toBe(EValidity.ok);
+        expect(result.profileResourceList.sort()).toEqual([Resource.HEALTH, Resource.MAM, Resource.PROFILE, Resource.REFERENCE_DESIGNATION])
     });
-
     
     it('should detect unknown resource in profile' , async ()=> {
 
@@ -216,6 +269,26 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.ok);
         expect(result.resource['unknown'].validity).toBe(EValidity.nok);
         expect(result.resource['unknown'].validityErrors).toContain('Resource is unknown to oi4');
+    });
+
+    it('should return partial device conformity if health is wrong' , async ()=> {
+
+        const deviceMessages: ITestData[] = [
+            {resource: Resource.MAM, subResource: defaultSubResource, message: mam_valid},
+            {resource: Resource.HEALTH, subResource: defaultSubResource, message: mam_valid}, // return mam for health
+            {resource: Resource.PROFILE, subResource: defaultSubResource, message: profile_device_valid},
+            {resource: Resource.REFERENCE_DESIGNATION, subResource: defaultSubResource, message: referenceDesignation_valid}
+        ]
+
+        const objectUnderTest = getObjectUnderTest(deviceMessages);
+        const result = await objectUnderTest.checkConformity(EAssetType.device, defaultTopic, defaultSubResource);
+
+        expect(result.validity).toBe(EValidity.partial);
+        expect(result.resource['mam'].validity).toBe(EValidity.ok);
+        expect(result.resource['health'].validity).toBe(EValidity.partial);
+        expect(result.resource['profile'].validity).toBe(EValidity.ok);
+        expect(result.resource['referenceDesignation'].validity).toBe(EValidity.ok);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Schema validation of message ${defaultTopic}/pub/health/${defaultSubResource} was not successful.`, ESyslogEventFilter.error);
     });
 
 
@@ -337,7 +410,6 @@ describe('Unit test for ConformityValidator ', () => {
             expect(result.schemaResult).toBe(true);
         }
       )
-
 
     it('should return mandatory application resources', ()=> {
         const resources = ConformityValidator.getMandatoryResources(EAssetType.application);

@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {
     Application,
     buildOecJsonValidator,
@@ -20,10 +20,10 @@ import {IMessageBusLookup, GetRequest} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
-interface ILicense
+interface ItemRef
 {
     subResource: string;
-    licenseName: string;
+    filter: string;
 }
 
 /**
@@ -38,13 +38,13 @@ export class ConformityValidator {
     static completeProfileList: Resource[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
-    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
+    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, serviceType = 'Registry',  messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;
 
         initializeLogger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
-        this.builder = new OPCUABuilder(oi4Id, 'Registry'); // TODO: Set oi4Id to something useful
+        this.builder = new OPCUABuilder(oi4Id, serviceType);
     }
 
     /**
@@ -71,13 +71,13 @@ export class ConformityValidator {
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
     async checkConformity(assetType: EAssetType, topicPreamble: string, subResource?: string, resourceList?: Resource[]): Promise<IConformity> {
-        const ignoredResources = ['data', 'metadata', 'event'];
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
-        const licenseList: ILicense[] = [];
+        let licenseList: ItemRef[] = [];
+        let dataList: ItemRef[] = [];
         let oi4Result;
         let resObj: IValidityDetails; // Container for validation results
 
@@ -104,11 +104,10 @@ export class ConformityValidator {
         }
 
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
-        let resourcesFromProfile: Resource[] = [];
-
+    
         try {
             conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, subResource);
-            resourcesFromProfile = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
+            conformityObject.profileResourceList = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
             
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
             conformityObject.resource['profile'] = {
@@ -122,7 +121,7 @@ export class ConformityValidator {
         const checkList: Resource[] = Object.assign([], mandatoryResourceList);
         try {
             // Second, all resources actually stored in the profile (Only oi4-conform profile entries will be checked)
-            for (const resource of resourcesFromProfile) {
+            for (const resource of conformityObject.profileResourceList) {
                 // The following lines are for checking whether there are some conform entries in the profile *additionally* to the mandatory ones
                 if (!(checkList.includes(resource))) { // Don't add resources twice
                     if (ConformityValidator.completeProfileList.includes(resource)) { // Second condition is for checking if the profile event meets OI4-Standards
@@ -152,11 +151,9 @@ export class ConformityValidator {
             }
         }
 
-        if (checkList.includes(Resource.LICENSE_TEXT))
-        {
-            // move 'Resource.LicenseText' to the end of the checklist so that we can ensure that the licenseList is filled
-            checkList.push(checkList.splice(checkList.indexOf(Resource.LICENSE_TEXT), 1)[0]);
-        }
+        // move evaluation of some resources to the end to ensure that data for evaluation of these resources was previously read
+        this.moveToEnd(checkList, Resource.LICENSE_TEXT);
+        this.moveToEnd(checkList, Resource.METADATA);
 
         conformityObject.checkedResourceList = checkList;
 
@@ -172,9 +169,47 @@ export class ConformityValidator {
             try {
                 switch (resource)
                 {
+
+                    case Resource.METADATA:
+                        for (const data of dataList) {
+                            resObj = await this.checkResourceConformity(topicPreamble, Resource.METADATA, data.subResource, data.filter);
+                            if (resObj.validity != EValidity.ok) {
+                                // meta data not valid --> don't continue
+                                break;
+                            }
+                        }
+                        break;
+
+                    case Resource.DATA:
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                        dataList = this.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
+                        break;
+   
+
+                    case Resource.INTERFACES:
+                        // TODO Update if specification is released
+                        // INTERFACES are not fully described in specification yet 
+                        // we don't know if INTERFACES support get-requests
+                        resObj = {
+                            validity: EValidity.default,
+                            validityErrors: ['Resource result ignored, ok'],
+                            dataSetMessages: []
+                        }
+                        break;
+
+                    case Resource.EVENT:
+                        // We cannot trigger events by a get-request 
+                        // Therefore we cannot enforce that the tested asset publishes an event for the conformance validateion
+                        resObj = {
+                            validity: EValidity.default,
+                            validityErrors: ['Resource result ignored, ok'],
+                            dataSetMessages: []
+                        }
+                        break;
+
                     case Resource.PROFILE:
                         // profile was already checked
-                        break;
+                        continue;
 
                     case Resource.LICENSE_TEXT:
                         if (licenseList.length == 0) {
@@ -184,7 +219,7 @@ export class ConformityValidator {
                         else
                         {
                             for (const license of licenseList) {
-                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.subResource, license.licenseName) as IValidityDetails; // here, the oi4ID is the license
+                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.subResource, license.filter);
                                 if (resObj.validity != EValidity.ok) {
                                     // text not valid --> don't continue
                                     break;
@@ -196,20 +231,7 @@ export class ConformityValidator {
 
                     case Resource.LICENSE:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
-                        for (const dataSetMessage of resObj.dataSetMessages) {
-                            if (typeof dataSetMessage.Payload.page !== 'undefined') {
-                                LOGGER.log('Found pagination in license!');
-                            } else if (dataSetMessage.filter != undefined && dataSetMessage.filter != null && dataSetMessage.filter.length > 0) {
-                                licenseList.push({subResource: dataSetMessage.subResource, licenseName: dataSetMessage.filter}); // With the obtained licenses, we can check the licenseText resource per TC-T6
-                            }
-                        }
-                        break;
-
-                    case Resource.PUBLICATION_LIST:
-                    case Resource.SUBSCRIPTION_LIST:
-                    case Resource.CONFIG:
-                        // TODO cfz no subResource?
-                        resObj = await this.checkResourceConformity(topicPreamble, resource);
+                        licenseList = this.collectItemReferences(resObj.dataSetMessages, Resource.LICENSE);
                         break;
 
                     default:
@@ -222,27 +244,14 @@ export class ConformityValidator {
                     validityErrors: [err],
                     dataSetMessages: [],
                 };
-                if (!ignoredResources.includes(resource)) {
-                    errorSoFar = true;
-                }
+                
+                errorSoFar = true;
             }
 
             if (resObj.validity === EValidity.ok || resObj.validity === EValidity.default) { // Set the validity according to the results
                 conformityObject.resource[resource] = resObj;
-            } else if (resObj.validity === EValidity.partial) {
-                if (ignoredResources.includes(resource)) {
-                    resObj.validity = EValidity.default;
-                    resObj.validityErrors = ['Resource result ignored, ok'];
-                } else {
-                    errorSoFar = true;
-                }
-            } else if (resObj.validity === EValidity.nok) {
-                if (ignoredResources.includes(resource)) {
-                    resObj.validity = EValidity.default;
-                    resObj.validityErrors = ['Resource result ignored, ok'];
-                } else {
-                    errorSoFar = true;
-                }
+            } else {
+                errorSoFar = true;
             }
 
             // Finally, assign the temporary ResObj to the conformityObject
@@ -423,7 +432,8 @@ export class ConformityValidator {
             } else { // Since it's a data message, we can check against schemas
                 try {
                     for (const payloads of payload.Messages) {
-                        payloadValidationResult = await this.jsonValidator.validate(`${resource}.schema.json`, payloads.Payload);
+                        const schemaName = this.getPubPayloadSchema(resource);
+                        payloadValidationResult = await this.jsonValidator.validate(schemaName, payloads.Payload);
                         if (!payloadValidationResult) {
                             const paginationResult = await this.jsonValidator.validate('pagination.schema.json', payloads.Payload);
                             if (!paginationResult) break; // No need to further check messages, we already have an error
@@ -465,6 +475,18 @@ export class ConformityValidator {
         return schemaConformity;
     }
 
+    private getPubPayloadSchema(resource: Resource): string
+    {
+        switch (resource)
+        {
+            case Resource.CONFIG:
+                return 'configPublish.schema.json';
+
+            default:
+                return `${resource}.schema.json`;
+        }
+    }
+
     /**
      * Checks the full topic (including oi4/... preamble) for conformity.
      * @param topic - the full topic that is checked
@@ -492,5 +514,38 @@ export class ConformityValidator {
         if (oi4RegEx.test(oi4Id)) return true;
         console.log('Error in checkOI4IDConformity!');
         return false;
+    }
+
+    private moveToEnd<Type>(array: Type[], item: Type): void
+    {
+        if (array.includes(item))
+        {
+            // move 'Resource.LicenseText' to the end of the checklist so that we can ensure that the licenseList is filled
+            array.push(array.splice(array.indexOf(item), 1)[0]);
+        }
+    }
+
+    private collectItemReferences(messages: IOPCUADataSetMessage[], resource: Resource): ItemRef[]
+    {
+        const result: ItemRef[] = [];
+
+        for (const dataSetMessage of messages) {
+            if (typeof dataSetMessage.Payload.page !== 'undefined') {
+                LOGGER.log(`Found pagination in ${resource}!`);
+            }
+            else if (typeof dataSetMessage.Payload.locale != 'undefined') {
+                LOGGER.log(`Found locale in ${resource}!`)
+            } 
+            else if (this.isNotEmpty(dataSetMessage.filter) && this.isNotEmpty(dataSetMessage.subResource)) {
+                result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter}); 
+            }
+        }
+
+        return result;
+    } 
+
+    private isNotEmpty(input: string): boolean
+    {
+        return input != undefined && input != null && input.length > 0;
     }
 }

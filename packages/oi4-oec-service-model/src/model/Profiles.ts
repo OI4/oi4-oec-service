@@ -13,7 +13,8 @@ const profileFull: Resource [] = [
     Resource.METADATA,
     Resource.PUBLICATION_LIST,
     Resource.SUBSCRIPTION_LIST,
-    Resource.REFERENCE_DESIGNATION
+    Resource.REFERENCE_DESIGNATION,
+    Resource.INTERFACES
 ];
 
 export const Application = {
