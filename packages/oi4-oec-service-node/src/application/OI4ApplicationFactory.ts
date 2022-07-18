@@ -1,7 +1,8 @@
 import {
     BrokerConfiguration,
     MqttSettings,
-    Credentials
+    Credentials,
+    DefaultMqttSettingsPaths, IMqttSettingsPaths
 } from './MqttSettings';
 // @ts-ignore
 import os from 'os';

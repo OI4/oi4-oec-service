@@ -1,5 +1,4 @@
 import {IClientOptions} from 'async-mqtt';
-import os from 'os';
 
 export interface MqttSettings extends IClientOptions{
     passphrase?: string | Buffer;
