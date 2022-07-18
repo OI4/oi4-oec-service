@@ -78,7 +78,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this.metaDataLookup = {};
         this.publicationList = [];
         this.subscriptionList = [];
-        this._license = [];
+        this.license = [];
 
         // Fill both pubList and subList
         for (const resources of this.profile.resource) {
