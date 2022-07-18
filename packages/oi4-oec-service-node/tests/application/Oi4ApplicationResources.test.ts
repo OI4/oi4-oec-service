@@ -1,6 +1,6 @@
 import {OI4ApplicationResources} from '../../src';
 import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUALocale, IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
 import {EDeviceHealth, Health, IOI4Resource} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');
 
@@ -69,6 +69,16 @@ describe('Test Oi4ApplicationResources', () => {
         expect(subResources.next().value).toEqual(value02);
         expect(subResources.next().value).toEqual(value03);
     });
+
+    it('should raise event when changing config resource', ()=> {
+        
+        let resourceName: string;
+        resources.once('resourceChanged', (rs) => {resourceName = rs})
+        resources.config = {context: {name: {text: 'Context', locale: EOPCUALocale.enUS},}}
+        
+        expect(resources.config.context.name.text).toBe('Context');
+        expect(resourceName).toBe('config');
+    })
 
     it('If oi4Id not valid then error is thrown', () => {
         expect(() => resources.getLicense('123123123123')).toThrow('Sub resources not yet implemented');

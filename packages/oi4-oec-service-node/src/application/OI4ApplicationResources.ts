@@ -1,4 +1,3 @@
-import { ConfigParser } from '../Utilities/ConfigParser/ConfigParser';
 import {
     Application,
     EDeviceHealth,
@@ -25,6 +24,7 @@ import {
 } from '@oi4/oi4-oec-service-opcua-model';
 import {existsSync, readFileSync} from 'fs';
 import os from 'os';
+import { EventEmitter } from 'stream';
 
 export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
 
@@ -32,7 +32,7 @@ export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
-class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationResources {
+class OI4ApplicationResources extends EventEmitter implements IOI4ApplicationResources {
     public oi4Id: string; // TODO: doubling? Not needed here
     private readonly _profile: Profile;
     private readonly _mam: MasterAssetModel;
@@ -42,6 +42,7 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
     private _rtLicense: RTLicense;
     private _publicationList: PublicationList[];
     private _subscriptionList: SubscriptionList[];
+    private _config?: IContainerConfig;
 
     readonly subResources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
@@ -176,6 +177,10 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         return this._license;
     }
 
+    private set license(license) {
+        this._license = license
+    }
+
     getLicense(oi4Id: string, licenseId?: string): License[] {
         if (oi4Id === undefined) {
             return this.license;
@@ -188,10 +193,6 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         }
 
         return this.license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
-    }
-
-    private set license(license) {
-        this._license = license
     }
 
     // --- LicenseText ---
@@ -253,6 +254,16 @@ class OI4ApplicationResources extends ConfigParser implements IOI4ApplicationRes
         this.subscriptionList.push(subscriptionObj);
         this.emit('resourceChanged', 'subscriptionList');
     }
+
+    // --- config ---
+    get config(): IContainerConfig {
+        return this._config;
+    }
+
+    set config(newConfig: IContainerConfig) {
+        this._config = newConfig;
+        this.emit('resourceChanged', 'config');
+      }
 
     /**
      * Add a DataSet to the container, so that it can be sent externally via an application
