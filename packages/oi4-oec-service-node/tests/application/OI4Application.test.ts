@@ -487,6 +487,16 @@ describe('OI4MessageBus test', () => {
         mockOPCUABuilder.mockRestore();
     });
 
+    it.each(['OI4.OTConnector', 'OTConnector'])('%# should extract service type from mam', async(deviceClass: string) => {
+        const res = getResourceInfo();
+        res.mam.DeviceClass = deviceClass;
+
+        const app = new OI4Application(res, getStandardMqttConfig());
+
+        expect(app.serviceType).toBe('OTConnector');
+        expect(app.topicPreamble).toBe(`oi4/${app.serviceType}/1`);
+    })
+
     function createEvent(): NamurNE107Event {
         const event = new NamurNE107Event('fakeOrigin', 0, 'fakeDescription');
         event.details = {

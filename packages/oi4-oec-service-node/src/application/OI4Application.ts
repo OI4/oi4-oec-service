@@ -16,7 +16,7 @@ import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder, IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 
@@ -46,7 +46,7 @@ class OI4Application extends EventEmitter {
 
         super();
         this.oi4Id = applicationResources.oi4Id;
-        this.serviceType = applicationResources.mam.DeviceClass;
+        this.serviceType = this.extractServiceType(applicationResources.mam);
         this.builder = new OPCUABuilder(this.oi4Id, this.serviceType);
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.applicationResources = applicationResources;
@@ -147,6 +147,15 @@ class OI4Application extends EventEmitter {
         if (resource === Resource.HEALTH) {
             this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then();
         }
+    }
+
+    private extractServiceType(mam: IMasterAssetModel): string
+    {
+        if (mam.DeviceClass.startsWith('OI4.')) {
+            return mam.DeviceClass.substring(4);
+        }
+
+        return mam.DeviceClass;
     }
 
     // FIXME: Shall we remove this commented code?
