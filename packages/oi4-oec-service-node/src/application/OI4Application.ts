@@ -29,10 +29,10 @@ class OI4Application extends EventEmitter {
     public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
+    public readonly client: mqtt.AsyncClient;
 
     private readonly clientHealthHeartbeatInterval: number = 60000;
     private readonly clientPayloadHelper: ClientPayloadHelper;
-    private readonly client: mqtt.AsyncClient;
 
     private clientCallbacksHelper: ClientCallbacksHelper;
     private readonly mqttMessageProcessor: MqttMessageProcessor;

@@ -13,7 +13,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 
 export class ClientCallbacksHelper {
 
-    private clientPayloadHelper: ClientPayloadHelper;
+    protected readonly clientPayloadHelper: ClientPayloadHelper;
 
     constructor(clientPayloadHelper: ClientPayloadHelper) {
         this.clientPayloadHelper = clientPayloadHelper;

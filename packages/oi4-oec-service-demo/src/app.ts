@@ -1,30 +1,27 @@
-import {
-    OI4ApplicationFactory,
-    DefaultSettingsPaths,
-    ISettingsPaths,
-} from '@oi4/oi4-oec-service-node';
+import {DefaultSettingsPaths, ISettingsPaths, OI4ApplicationFactory,} from '@oi4/oi4-oec-service-node';
 import {ServiceDemoOI4ApplicationResources} from './application/ServiceDemoOI4ApplicationResources';
+import {AsyncClientEvents} from "@oi4/oi4-oec-service-node/dist/Utilities/Helpers/Enums";
 
 export {WeatherService} from './weather/WeatherService';
 export * from './weather/WeatherServiceModel';
 
 const LocalTestPaths: ISettingsPaths = {
     mqttSettings: {
-        brokerConfig: 'docker_configs/mqtt/broker.json',
-        caCertificate: 'docker_configs/certs/ca.pem',
+        brokerConfig: './docker_configs/mqtt/broker.json',
+        caCertificate: './docker_configs/certs/ca.pem',
         // privateKey: './docker_configs/secrets/mqtt_private_key.pem',
         privateKey: undefined,
         // clientCertificate: `.../docker_configs/certs/oi4-oec-service-demo.pem`,
         clientCertificate: undefined,
         // passphrase: './docker_configs/secrets/mqtt_passphrase',
         passphrase: undefined,
-        credentials: 'docker_configs/secrets/mqtt_credentials'
+        credentials: './docker_configs/secrets/mqtt_credentials'
     },
-    certificateStorage: 'docker_configs/certs/',
-    secretStorage: 'docker_configs/secrets',
+    certificateStorage: './docker_configs/certs/',
+    secretStorage: './docker_configs/secrets',
     applicationSpecificStorages: {
-        configuration: 'docker_configs/app',
-        data: 'docker_configs/app'
+        configuration: './docker_configs/app',
+        data: './docker_configs/app'
     }
 }
 
@@ -34,8 +31,10 @@ const paths: ISettingsPaths = IS_LOCAL ? LocalTestPaths : DefaultSettingsPaths;
 const applicationResources = new ServiceDemoOI4ApplicationResources(IS_LOCAL, paths);
 const applicationFactory = new OI4ApplicationFactory(applicationResources, paths);
 const oi4Application = applicationFactory.createOI4Application();
-applicationResources.subResources.forEach(async resource => {
-    await oi4Application.sendMasterAssetModel(resource.mam);
+oi4Application.client.on(AsyncClientEvents.CONNECT, async () => {
+    for (const resource of applicationResources.subResources.values()) {
+        await oi4Application.sendMasterAssetModel(resource.mam);
+    }
 });
 
-console.log('|===========FINISHED============|');
+console.log('|=========== FINISHED initiating Service Demo ============|');

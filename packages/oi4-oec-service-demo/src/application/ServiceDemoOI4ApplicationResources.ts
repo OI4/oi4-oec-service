@@ -4,7 +4,7 @@ import {Asset} from "./AssetModel";
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {OI4Resource} from '@oi4/oi4-oec-service-node/dist/application/OI4Resource';
 
-const getMamFileLocation = (isLocal: boolean) => isLocal ? '../docker_configs/config/mam.json' : DEFAULT_MAM_FILE;
+const getMamFileLocation = (isLocal: boolean) => isLocal ? './docker_configs/config/mam.json' : DEFAULT_MAM_FILE;
 
 export class ServiceDemoOI4ApplicationResources extends OI4ApplicationResources {
 

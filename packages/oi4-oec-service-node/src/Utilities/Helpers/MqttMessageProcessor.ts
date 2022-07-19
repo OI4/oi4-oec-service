@@ -182,7 +182,7 @@ export class MqttMessageProcessor {
         const status: StatusEvent = new StatusEvent(this.applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
+        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0).then(); // TODO set subResource
     }
 
     private async executeDelActions(topicInfo: TopicInfo) {
