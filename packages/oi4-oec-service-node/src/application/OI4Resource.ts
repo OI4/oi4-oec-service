@@ -36,6 +36,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
 
+        this._license = [];
         this._licenseText = new Map<string, LicenseText>();
         this._rtLicense = new RTLicense();
 
