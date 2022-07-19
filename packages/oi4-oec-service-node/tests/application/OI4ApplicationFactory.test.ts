@@ -4,7 +4,7 @@ import {OI4ApplicationResources, IMqttSettingsPaths, OI4ApplicationFactory} from
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import os = require('os');
-import {ISettingsPaths} from "@oi4/oi4-oec-service-node";
+import {ISettingsPaths} from '@oi4/oi4-oec-service-node';
 
 describe('Test OI4MessageBusFactory', () => {
     let mockConnection: any = jest.fn();

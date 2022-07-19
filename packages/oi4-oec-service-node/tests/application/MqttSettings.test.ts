@@ -1,7 +1,7 @@
 import {MqttCredentialsHelper} from '../../src';
 import {IMqttSettingsPaths} from '../../src';
-import {ISettingsPaths} from "@oi4/oi4-oec-service-node";
-import path from "path";
+import {ISettingsPaths} from '@oi4/oi4-oec-service-node';
+import path from 'path';
 
 const newSettingsPaths = (credentials: string, passphrase = ''): ISettingsPaths => {
     return {

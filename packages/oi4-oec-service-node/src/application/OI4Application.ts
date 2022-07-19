@@ -6,17 +6,19 @@ import {
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
-    SubscriptionListConfig,
-    StatusEvent,
     ESyslogEventFilter,
-    IOI4ApplicationResources,
-    IEvent, Resource, SubscriptionList
+    IEvent,
+    IOI4ApplicationResources, MasterAssetModel,
+    Resource,
+    StatusEvent,
+    SubscriptionList,
+    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 
@@ -35,7 +37,7 @@ class OI4Application extends EventEmitter {
     private clientCallbacksHelper: ClientCallbacksHelper;
     private readonly mqttMessageProcessor: MqttMessageProcessor;
 
-    static builder(){
+    static builder() {
         return new OI4ApplicationBuilder();
     };
 
@@ -81,10 +83,14 @@ class OI4Application extends EventEmitter {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         this.mqttMessageProcessor = new MqttMessageProcessor(
             this.applicationResources,
-            async (cutTopic: string) => {await this.sendMetaData(cutTopic)},
-            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {await this.sendResource(resource, messageId, subResource, filter, page, perPage)},
+            async (cutTopic: string) => {
+                await this.sendMetaData(cutTopic)
+            },
+            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {
+                await this.sendResource(resource, messageId, subResource, filter, page, perPage)
+            },
             super.removeListener('', () => {
-        }));
+            }));
 
         this.initClientCallbacks();
     }
@@ -197,6 +203,16 @@ class OI4Application extends EventEmitter {
             await this.client.publish(`${this.topicPreamble}/pub/${type}/${tagName}`, JSON.stringify(information[tagName]));
             LOGGER.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
         }
+    }
+
+    /**
+     * Send a Master Asset Model to the bus
+     * All relevant topic elements are filled from the MAM information
+     * @param mam - the MAM to send
+     * @param messageId - original messageId used as correlation ID
+     */
+    async sendMasterAssetModel(mam: MasterAssetModel, messageId?: string) {
+        await this.sendResource(Resource.MAM, messageId, mam.getOI4Id(), '', 0, 0);
     }
 
     /**
@@ -365,12 +381,12 @@ class OI4Application extends EventEmitter {
     }
 }
 
-export class OI4ApplicationBuilder{
-    private applicationResources: IOI4ApplicationResources;
-    private mqttSettings: MqttSettings;
-    private opcUaBuilder: OPCUABuilder;
-    private clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
-    private clientCallbacksHelper: ClientCallbacksHelper;
+export class OI4ApplicationBuilder {
+    protected applicationResources: IOI4ApplicationResources;
+    protected mqttSettings: MqttSettings;
+    protected opcUaBuilder: OPCUABuilder;
+    protected clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
+    protected clientCallbacksHelper: ClientCallbacksHelper;
 
     withApplicationResources(applicationResources: IOI4ApplicationResources) {
         this.applicationResources = applicationResources;
@@ -400,12 +416,16 @@ export class OI4ApplicationBuilder{
     build() {
         const oi4Id = this.applicationResources.oi4Id;
         const serviceType = this.applicationResources.mam.DeviceClass;
-        if(this.opcUaBuilder === undefined) {
+        if (this.opcUaBuilder === undefined) {
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
         }
-        if(this.clientCallbacksHelper === undefined) {
+        if (this.clientCallbacksHelper === undefined) {
             this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
         }
+        return this.newOI4Application();
+    }
+
+    protected newOI4Application() {
         return new OI4Application(this.applicationResources, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper);
     }
 }

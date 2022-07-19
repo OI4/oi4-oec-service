@@ -44,7 +44,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
         this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
     }
 
-    createOI4Application(): OI4Application {
+    createOI4Application(builder = OI4Application.builder()): OI4Application {
         // TODO handle missing files
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
@@ -57,7 +57,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
         this.initCredentials(mqttSettings);
-        return OI4Application.builder()//
+        return builder//
             .withApplicationResources(this.resources)//
             .withMqttSettings(mqttSettings)//
             .withOPCUABuilder(this.opcUaBuilder)//

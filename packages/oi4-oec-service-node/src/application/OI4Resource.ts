@@ -30,7 +30,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         super();
 
         this._mam = mam;
-        this._mam.ProductInstanceUri = `${this._mam.ManufacturerUri}/${encodeURIComponent(this._mam.Model.text)}/${encodeURIComponent(this._mam.ProductCode)}/${encodeURIComponent(this._mam.SerialNumber)}`;
+        this._mam.ProductInstanceUri = mam.getOI4Id();
 
         this._profile = new Profile(Application.mandatory);
 

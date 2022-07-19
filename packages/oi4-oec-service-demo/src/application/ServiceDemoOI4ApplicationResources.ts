@@ -1,7 +1,8 @@
 import {OI4ApplicationResources, DEFAULT_MAM_FILE, ISettingsPaths} from '@oi4/oi4-oec-service-node';
-import fs from "fs";
+import fs from 'fs';
 import {Asset} from "./AssetModel";
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {OI4Resource} from '@oi4/oi4-oec-service-node/dist/application/OI4Resource';
 
 const getMamFileLocation = (isLocal: boolean) => isLocal ? '../docker_configs/config/mam.json' : DEFAULT_MAM_FILE;
 
@@ -32,9 +33,9 @@ export class ServiceDemoOI4ApplicationResources extends OI4ApplicationResources 
         }).filter(asset => asset !== undefined);
 
         console.log(this.assets.length);
-        // this.assets.map(asset => {
-        //     const masterAssetModel = asset.toMasterAssetModel();
-        //     const subResources = new Sub
-        // }
+        this.assets.map(asset => {
+            const masterAssetModel = asset.toMasterAssetModel();
+           this.setSubResource(new OI4Resource(masterAssetModel));
+        });
     }
 }

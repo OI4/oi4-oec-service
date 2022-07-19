@@ -13,6 +13,7 @@ import {
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource} from "./OI4Resource";
 import os from "os";
+import path = require('path');
 
 export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
 
@@ -37,13 +38,13 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         this.metaDataLookup = {};
     }
 
-    private static extractMamFile(path: string): MasterAssetModel {
-        if (existsSync(path)) {
-            const mam = MasterAssetModel.clone(JSON.parse(readFileSync(path, 'utf8')));
+    private static extractMamFile(filePath: string): MasterAssetModel {
+        if (existsSync(filePath)) {
+            const mam = MasterAssetModel.clone(JSON.parse(readFileSync(filePath, 'utf8')));
             mam.SerialNumber = os.hostname();
             return mam;
         }
-        return undefined;
+        throw new Error(`MAM file ${path.resolve(filePath)} does not exist`);
     }
 
     hasSubResource(oi4Id: string) {
@@ -57,8 +58,8 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return this.subResources.values();
     }
 
-    setSubResource(oi4Id: string, subResource: IOI4Resource): void {
-        this.subResources.set(oi4Id, subResource);
+    setSubResource(subResource: IOI4Resource): void {
+        this.subResources.set(subResource.oi4Id, subResource);
     }
 
     deleteSubResource(oi4Id: string): boolean {
