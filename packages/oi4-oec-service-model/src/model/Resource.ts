@@ -168,7 +168,7 @@ export class Profile implements OI4Payload {
 }
 
 export class PublicationList implements OI4Payload {
-    resource: string;
+    resource: Resource;
     subResource?: string;
     filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
@@ -219,9 +219,9 @@ export enum PublicationListMode {
 
 export enum PublicationListConfig {
     NONE_0 = 'NONE_0',
-    STATUS_1 = 'STATUS_1',
+    MODE_1 = 'MODE_1',
     INTERVAL_2 = 'INTERVAL_2',
-    STATUS_AND_INTERVAL_3 = 'STATUS_AND_INTERVAL_3',
+    MODE_AND_INTERVAL_3 = 'MODE_AND_INTERVAL_3',
 }
 
 export enum SubscriptionListConfig {

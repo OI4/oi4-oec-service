@@ -1,7 +1,7 @@
 import {OI4ApplicationResources} from '../../src';
 import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth, Health, IOI4Resource} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, Health, IOI4Resource, PublicationList, PublicationListMode, PublicationListConfig, Resource} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
@@ -83,5 +83,21 @@ describe('Test Oi4ApplicationResources', () => {
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
         expect(resources.getLicense(resources.oi4Id)).toBe(undefined);
     });
+
+    it('should filter publicationList', ()=> {
+        const publicationList = new PublicationList();
+        publicationList.resource = Resource.DATA;
+        publicationList.oi4Identifier = resources.oi4Id;
+        publicationList.filter = 'oee';
+        publicationList.mode = PublicationListMode.APPLICATION_SUBRESOURCE_FILTER_8;
+        publicationList.config = PublicationListConfig.MODE_AND_INTERVAL_3;
+        resources.publicationList.push(publicationList);
+
+        expect(resources.getPublicationList()).toContain(publicationList);
+        expect(resources.getPublicationList('unknown.com/1/2/3')).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.EVENT)).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'wrong')).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'oee')).toContain(publicationList);
+});
 
 });
