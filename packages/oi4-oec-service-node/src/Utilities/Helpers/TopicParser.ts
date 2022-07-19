@@ -155,12 +155,7 @@ export class TopicParser {
     }
 
     private static isAtLeastOneStringEmpty(strings: Array<string>) {
-        for (const str of strings) {
-            if(TopicParser.isStringEmpty(str)) {
-                return true;
-            }
-        }
-        return false;
+       return strings.filter(str => TopicParser.isStringEmpty(str)).length > 0;
     }
 
     private static isStringEmpty(string: string) {

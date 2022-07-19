@@ -1,7 +1,18 @@
 import {MqttCredentialsHelper} from '../../src';
 import {IMqttSettingsPaths} from '../../src';
+import {ISettingsPaths} from "@oi4/oi4-oec-service-node";
+import path from "path";
 
-const newSettingsPaths = (credentials: string, passphrase = ''): IMqttSettingsPaths => {
+const newSettingsPaths = (credentials: string, passphrase = ''): ISettingsPaths => {
+    return {
+        mqttSettings: newMqttSettingsPaths(credentials, passphrase),
+        applicationSpecificStorages: undefined,
+        certificateStorage: '',
+        secretStorage: '',
+    };
+}
+
+const newMqttSettingsPaths = (credentials: string, passphrase = ''): IMqttSettingsPaths => {
     return {
         brokerConfig: '',
         caCertificate: '',
@@ -32,7 +43,8 @@ describe('Unit test for MqttCredentialsHelper', () => {
     });
 
     it('If the credential file is not found an error is thrown', async () => {
-        testAgainstCredentialFile(`${__dirname}/../__fixtures__/secrets/credentials_fake.txt`, 'Credentials file not found');
+        const file = `${__dirname}/../__fixtures__/secrets/credentials_fake.txt`;
+        testAgainstCredentialFile(file, `Credentials file not found at ${path.resolve(file)}`);
     });
 
     it('If the credential file is empty an error is thrown', async () => {
