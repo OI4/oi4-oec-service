@@ -43,15 +43,16 @@ class OI4Application extends EventEmitter {
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
+     * @param serviceType - The service type (e.g. OTConnector, ITConnector, Registry)
      * @param mqttSettings
      * @param opcUaBuilder
      * @param clientPayloadHelper
      * @param clientCallbacksHelper
      */
-    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
+    constructor(applicationResources: IOI4ApplicationResources, serviceType: string, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
         super();
         this.oi4Id = applicationResources.oi4Id;
-        this.serviceType = this.extractServiceType(applicationResources.mam);
+        this.serviceType = serviceType;
         this.builder = opcUaBuilder;
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.applicationResources = applicationResources;
@@ -141,15 +142,6 @@ class OI4Application extends EventEmitter {
         if (resource === Resource.HEALTH) {
             this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then();
         }
-    }
-
-    private extractServiceType(mam: IMasterAssetModel): string
-    {
-        if (mam.DeviceClass.startsWith('OI4.')) {
-            return mam.DeviceClass.substring(4);
-        }
-
-        return mam.DeviceClass;
     }
 
     // FIXME: Shall we remove this commented code?
@@ -379,6 +371,7 @@ export class OI4ApplicationBuilder {
     protected opcUaBuilder: OPCUABuilder;
     protected clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
     protected clientCallbacksHelper: ClientCallbacksHelper;
+    protected serviceType: string;
 
     withApplicationResources(applicationResources: IOI4ApplicationResources) {
         this.applicationResources = applicationResources;
@@ -407,9 +400,9 @@ export class OI4ApplicationBuilder {
 
     build() {
         const oi4Id = this.applicationResources.oi4Id;
-        const serviceType = this.applicationResources.mam.DeviceClass;
+        this.serviceType =  this.extractServiceType(this.applicationResources.mam);
         if (this.opcUaBuilder === undefined) {
-            this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
+            this.opcUaBuilder = new OPCUABuilder(oi4Id, this.serviceType);
         }
         if (this.clientCallbacksHelper === undefined) {
             this.clientCallbacksHelper = new ClientCallbacksHelper();
@@ -418,7 +411,15 @@ export class OI4ApplicationBuilder {
     }
 
     protected newOI4Application() {
-        return new OI4Application(this.applicationResources, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper);
+        return new OI4Application(this.applicationResources, this.serviceType, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper);
+    }
+
+    private extractServiceType(mam: IMasterAssetModel): string {
+        if (mam.DeviceClass.startsWith('OI4.')) {
+            return mam.DeviceClass.substring(4);
+        }
+
+        return mam.DeviceClass;
     }
 }
 
