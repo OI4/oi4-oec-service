@@ -23,7 +23,6 @@ export class MqttMessageProcessor {
     private readonly sendResource: OnSendResource;
     private readonly METADATA = 'metadata';
     private readonly emitter: EventEmitter;
-    private readonly DATA = 'data';
 
     private applicationResources: IOI4ApplicationResources;
 
@@ -57,6 +56,9 @@ export class MqttMessageProcessor {
     }
 
     private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+        // Check if message is from the OI4 registry and save it if it is
+        OI4RegistryManager.checkForOi4Registry(parsedMessage);
+
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
         if (topicInfo.appId === this.applicationResources.oi4Id) {
@@ -83,21 +85,23 @@ export class MqttMessageProcessor {
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
-            LOGGER.log(`Detected Message from: ${topicInfo.appId}`)
+            this.handleForeignMessage(topicInfo, parsedMessage);
         }
+    }
+
+    protected handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
-        if (topicInfo.resource === this.DATA) {
+        if (topicInfo.resource === Resource.DATA) {
             this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);
             return;
         }
-
-        OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
         let payloadType: string = PayloadTypes.EMPTY;
         let page = 0;
@@ -129,7 +133,7 @@ export class MqttMessageProcessor {
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         switch (topicInfo.resource) {
-            case this.DATA: {
+            case Resource.DATA: {
                 this.setData(topicInfo.filter, parsedMessage);
                 break;
             }
@@ -175,16 +179,15 @@ export class MqttMessageProcessor {
             currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in config group`);
         }
-        OI4RegistryManager.checkForOi4Registry(config);
-        const status: StatusEvent = new StatusEvent(OI4RegistryManager.getOi4Id(), EOPCUAStatusCode.Good);
+        const status: StatusEvent = new StatusEvent(this.applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
         this.emitter.emit('setConfig', status);
-        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
+        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0).then(); // TODO set subResource
     }
 
     private async executeDelActions(topicInfo: TopicInfo) {
         switch (topicInfo.resource) {
-            case this.DATA: {
+            case Resource.DATA: {
                 this.deleteData(topicInfo.filter);
                 break;
             }

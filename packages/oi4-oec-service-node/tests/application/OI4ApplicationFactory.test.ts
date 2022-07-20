@@ -4,6 +4,7 @@ import {OI4ApplicationResources, IMqttSettingsPaths, OI4ApplicationFactory} from
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import os = require('os');
+import {ISettingsPaths} from '@oi4/oi4-oec-service-node';
 
 describe('Test OI4MessageBusFactory', () => {
     let mockConnection: any = jest.fn();
@@ -37,13 +38,18 @@ describe('Test OI4MessageBusFactory', () => {
     });
 
     it('test mqtt connection with only certificate auth and encrypted private key', () => {
-        const settingsPaths: IMqttSettingsPaths = {
-            brokerConfig: `${__dirname}/../__fixtures__/mqtt/broker.json`,
-            caCertificate: `${__dirname}/../__fixtures__/certs/ca-root-cert.crt`,
-            clientCertificate: '',
-            credentials: `${__dirname}/../__fixtures__/secrets/correct_credentials.txt`,
-            passphrase: '',
-            privateKey: ''
+        const settingsPaths: ISettingsPaths = {
+            mqttSettings: {
+                brokerConfig: `${__dirname}/../__fixtures__/mqtt/broker.json`,
+                caCertificate: `${__dirname}/../__fixtures__/certs/ca-root-cert.crt`,
+                clientCertificate: '',
+                credentials: `${__dirname}/../__fixtures__/secrets/correct_credentials.txt`,
+                passphrase: '',
+                privateKey: ''
+            },
+            applicationSpecificStorages: undefined,
+            certificateStorage: "",
+            secretStorage: "",
         };
 
         const resources: OI4ApplicationResources = new OI4ApplicationResources(`${__dirname}/../__fixtures__/mam.json`);

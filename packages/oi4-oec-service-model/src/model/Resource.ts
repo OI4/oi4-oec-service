@@ -85,6 +85,10 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
         return Resource.MAM;
     }
 
+    getOI4Id(): string {
+        return `${this.ManufacturerUri}/${encodeURIComponent(this.Model.text)}/${encodeURIComponent(this.ProductCode)}/${encodeURIComponent(this.SerialNumber)}`;
+    }
+
     static clone(source: MasterAssetModel): MasterAssetModel {
         const copy = new MasterAssetModel();
         Object.assign(copy, source);

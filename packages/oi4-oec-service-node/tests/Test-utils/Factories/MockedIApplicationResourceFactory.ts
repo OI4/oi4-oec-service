@@ -20,12 +20,13 @@ import {
     Resource,
     RTLicense, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
+import {extractProductInstanceUri} from "../../../src/application/OI4Resource";
 
 export class MockedIApplicationResourceFactory {
 
-    public static OI4_ID = 'fakeOi4Id';
+    public static OI4_ID = 'fakeManufacturerUri/fakeModel/fakeProductCode/fakeSerialNumber';
 
-    public static getMockedIApplicationResourceInstance = (): IOI4ApplicationResources => {
+    public static getMockedIApplicationResourceInstance = (mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()): IOI4ApplicationResources => {
         return {
             subResources: new Map<string, IOI4ApplicationResources>(),
             config: {
@@ -67,9 +68,9 @@ export class MockedIApplicationResourceFactory {
                 licAddText: 'fakeLicence'
             }])],
             licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
-            mam: MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel(),
+            mam: mam,
             metaDataLookup: MockedIApplicationResourceFactory.getMockedDefaultIContainerMetaData(),
-            oi4Id: this.OI4_ID,
+            oi4Id: extractProductInstanceUri(mam),
             profile: new Profile(Application.mandatory), //,
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: new RTLicense(),
@@ -135,7 +136,7 @@ export class MockedIApplicationResourceFactory {
         return licenseText;
     }
 
-    private static getMockedDefaultMasterAssetModel(): MasterAssetModel {
+    static getMockedDefaultMasterAssetModel(): MasterAssetModel {
         return MasterAssetModel.clone({
             ManufacturerUri: 'fakeManufacturerUri',
             Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel'),

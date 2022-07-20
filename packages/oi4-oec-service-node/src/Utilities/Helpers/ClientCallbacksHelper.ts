@@ -13,7 +13,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 
 export class ClientCallbacksHelper {
 
-    private clientPayloadHelper: ClientPayloadHelper;
+    protected readonly clientPayloadHelper: ClientPayloadHelper;
 
     constructor(clientPayloadHelper: ClientPayloadHelper) {
         this.clientPayloadHelper = clientPayloadHelper;
@@ -57,5 +57,8 @@ export class ClientCallbacksHelper {
         LOGGER.log(`Published birth message on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.warning);
     };
 
+    public async onOfflineCallback() {
+        LOGGER.log('Broker went offline or failed to connect');
+    }
 
 }

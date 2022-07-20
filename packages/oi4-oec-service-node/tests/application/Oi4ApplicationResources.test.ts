@@ -22,7 +22,7 @@ describe('Test Oi4ApplicationResources', () => {
     it('should be able to set sub resource', () => {
         const oi4Id = 'registry.com/1';
         const value = {oi4Id:oi4Id, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-       resources.setSubResource(oi4Id, value);
+       resources.setSubResource(value);
        expect(resources.subResources.has(oi4Id)).toBeTruthy();
        expect(resources.subResources.get(oi4Id)).toEqual(value);
     });
