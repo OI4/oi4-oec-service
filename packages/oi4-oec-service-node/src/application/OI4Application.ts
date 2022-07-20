@@ -107,9 +107,9 @@ class OI4Application extends EventEmitter {
 
     private async initClientConnectCallback() {
         await this.clientCallbacksHelper.onClientConnectCallback(this);
-            await this.initIncomingMessageListeners();
-            this.initClientHealthHeartBeat();
-            this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
+        await this.initIncomingMessageListeners();
+        this.initClientHealthHeartBeat();
+        this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
     }
 
     private async initIncomingMessageListeners() {
