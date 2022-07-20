@@ -9,6 +9,7 @@ export interface IDataSetClassIds extends Record<string, string> {
     config: string;
     publicationList: string;
     subscriptionList: string;
+    interfaces: string;
 }
 
 export const DataSetClassIds: IDataSetClassIds = {
@@ -22,5 +23,6 @@ export const DataSetClassIds: IDataSetClassIds = {
     config: '9d5983db-440d-4474-9fd7-1cd7a6c8b6c2',
     publicationList: '217434d6-6e1e-4230-b907-f52bc9ffe152',
     subscriptionList: 'e5d68c47-c276-4929-8ab9-4c1090cac785',
-    referenceDesignation: '27a75019-164a-496d-a38b-90e8a55c2cfa'
+    referenceDesignation: '27a75019-164a-496d-a38b-90e8a55c2cfa',
+    interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54'
 }
