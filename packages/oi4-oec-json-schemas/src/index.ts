@@ -21,6 +21,7 @@ import subscriptionListSchemaJson from './schemas/subscriptionList.schema.json';
 import referenceDesignationSchemaJson from './schemas/referenceDesignation.schema.json';
 import localeSchemaJson from './schemas/locale.schema.json';
 import paginationSchemaJson from './schemas/pagination.schema.json';
+import interfacesSchemaJson from './schemas/interfaces.schema.json';
 
 import NetworkMessageSchemaJson from './schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from './schemas/ConfigurationVersionDataType.schema.json';
@@ -28,6 +29,18 @@ import DataSetMessageSchemaJson from './schemas/DataSetMessage.schema.json';
 import LocalizedTextSchemaJson from './schemas/LocalizedText.schema.json';
 import configPublishSchemaJson from './schemas/configPublish.schema.json';
 import configSetSchemaJson from './schemas/configSet.schema.json';
+import dataPVSchemaJson from './schemas/dataPV.schema.json';
+
+import DataSetMetaDataSchemaJson from './schemas/DataSetMetaData.schema.json';
+import DataSetMetaDataTypeSchemaJson from './schemas/DataSetMetaDataType.schema.json';
+import FieldMetaDataSchemaJson from './schemas/FieldMetaData.schema.json';
+import EnumDescriptionSchemaJson from './schemas/EnumDescription.schema.json';
+import StructureDescriptionSchemaJson from './schemas/StructureDescription.schema.json';
+import SimpleTypeDescriptionSchemaJson from './schemas/SimpleTypeDescription.schema.json';
+import KeyValuePairSchemaJson from './schemas/KeyValuePair.schema.json';
+import NodeIdSchemaJson from './schemas/NodeId.schema.json';
+import QualifiedNameSchemaJson from './schemas/QualifiedName.schema.json';
+import BaseDataTypeSchemaJson from './schemas/BaseDataType.schema.json';
 
 // Constants
 import localePatternSchemaJson from './schemas/constants/locale.pattern.schema.json'
@@ -70,6 +83,19 @@ export {
     LocalizedTextSchemaJson,
     configPublishSchemaJson,
     configSetSchemaJson,
+    interfacesSchemaJson,
+    dataPVSchemaJson,
+    
+    DataSetMetaDataSchemaJson,
+    DataSetMetaDataTypeSchemaJson,
+    FieldMetaDataSchemaJson, 
+    EnumDescriptionSchemaJson,
+    StructureDescriptionSchemaJson,
+    SimpleTypeDescriptionSchemaJson,
+    KeyValuePairSchemaJson,
+    NodeIdSchemaJson,
+    QualifiedNameSchemaJson,
+    BaseDataTypeSchemaJson,
 
     localePatternSchemaJson,
     byteSchemaJson,

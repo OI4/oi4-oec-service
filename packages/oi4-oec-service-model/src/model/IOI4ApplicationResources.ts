@@ -13,6 +13,9 @@ import {
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 
+    dataLookup: Record<string, IOPCUANetworkMessage>;
+    metaDataLookup: Record<string, IOPCUAMetaData>;
+
     subResources: Map<string, IOI4Resource>;
 
     setHealthState(healthState: number): void;
@@ -32,17 +35,14 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 }
 
 export interface IOI4Resource {
-    oi4Id: string;
+    readonly oi4Id: string;
+    readonly profile: Profile;
+    readonly mam: MasterAssetModel;
     health: Health;
-    profile: Profile;
-    mam: MasterAssetModel;
     license: License[];
     licenseText: Map<string, LicenseText>;
     rtLicense: RTLicense;
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
-
-    dataLookup: Record<string, IOPCUANetworkMessage>;
-    metaDataLookup: Record<string, IOPCUAMetaData>;
 }

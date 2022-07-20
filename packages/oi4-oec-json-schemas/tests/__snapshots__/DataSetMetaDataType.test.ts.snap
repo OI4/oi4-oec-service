@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataSetMetaDataType schema (0) match fails for invalid config -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'name'
+    Path:     DataSetMetaDataType.schema.json#/required
+  must have required property 'namespaces'
+    Path:     DataSetMetaDataType.schema.json#/required
+  must have required property 'enumDataTypes'
+    Path:     DataSetMetaDataType.schema.json#/required
+  must have required property 'structureDataTypes'
+    Path:     DataSetMetaDataType.schema.json#/required
+  must have required property 'simpleDataTypes'
+    Path:     DataSetMetaDataType.schema.json#/required
+"
+`;

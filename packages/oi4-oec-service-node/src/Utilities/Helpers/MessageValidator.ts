@@ -17,15 +17,7 @@ export class MessageValidator {
         }
 
         //If a check fails, an error is thrown
-        MessageValidator.isPublisherIdMatching(topic, parsedMessage);
         await MessageValidator.areSchemaResultAndBuildValid(parsedMessage, builder, topic);
-    }
-
-    private static isPublisherIdMatching(topic: string, parsedMessage: IOPCUANetworkMessage) {
-        //FIXME The PublisherId information is redundant, since it is specified both in the topic string and in the Payload. Is this ok?
-        if(topic.indexOf(parsedMessage.PublisherId) == -1) {
-            throw new Error(`ServiceType/AppID mismatch with Payload PublisherId: [Topic: ${topic} - Payload: ${parsedMessage.PublisherId}]`);
-        }
     }
 
     private static async areSchemaResultAndBuildValid(parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, topic: string) {
@@ -59,7 +51,7 @@ export class MessageValidator {
             throw new Error(`DataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[wrapper.topicInfo.resource]}`);
         }
     }
-    
+
     private static checkForMalformedTopic(wrapper: TopicWrapper) {
         const allowedGetResourcesLength8And12 = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.INTERFACE, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
         let isTopicStructureMalformed;
@@ -122,7 +114,7 @@ export class MessageValidator {
 
     private static checkAgainstMalformedTopicLength14(info: TopicInfo) {
         const allowedGetPubSetDelResources = [Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
-        
+
         return this.checkAgainstResources(info, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources);
     }
 

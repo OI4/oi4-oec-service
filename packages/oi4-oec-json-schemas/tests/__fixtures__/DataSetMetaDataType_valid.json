@@ -1,0 +1,103 @@
+[
+  [
+    "DataSetMetaDataType Example", {
+      "name": "Dataset1",
+      "description": {
+        "text": "Description",
+        "locale": "en-US"
+      },
+      "fields": [{
+          "name": "temperature",
+          "description": {
+            "text": "The main temperature",
+            "locale": "en-US"
+          },
+          "fieldFlags": 1,
+          "builtInType": 6,
+          "dataType": {
+            "IdType": 1,
+            "Id": "SomeId",
+            "Namespace": 1
+          },
+          "valueRank": 5,
+          "arrayDimensions": [5, 3],
+          "maxStringLength": 5,
+          "dataSetFieldId": "FB8B6B28-B2F7-4E26-99F5-16D89BDF3D29",
+          "properties": [{
+              "key": {
+                "namespaceIndex": 1,
+                "name": "temp"
+              },
+              "value": 15
+            }
+          ]
+        }
+      ],
+      "dataSetClassId": "3E213A2F-CB6F-45D3-A6B8-01B9DFCEFEC7",
+      "configurationVersion": {
+        "majorVersion": 3,
+        "minorVersion": 1
+      },
+      "namespaces": [
+        "Namespace 1",
+        "Namespace 2"
+      ],
+      "structureDataTypes": [{
+          "structureDefinition": {
+            "defaultEncodingId": {
+              "Id": 21
+            },
+            "baseDataType": {
+              "IdType": 1,
+              "Id": "BaseId",
+              "Namespace": 3
+            },
+            "structureType": "StructureWithOptionalFields_1",
+            "fields": [{
+                "name": "Field1",
+                "description": {
+                  "text": "Description 1",
+                  "locale": "en-US"
+                },
+                "datatype": {
+                  "Id": 42
+                },
+                "valueRank": 2,
+                "arrayDimensions": [1, 2],
+                "maxStringLength": 5,
+                "isOptional": true
+              }
+            ]
+          }
+        }
+      ],
+      "enumDataTypes": [{
+          "enumDefinition": {
+            "fields": [{
+                "name": "Field 1"
+              }, {
+                "name": "Field 2"
+              }
+            ]
+          },
+          "builtInType": 6
+        }
+      ],
+      "simpleDataTypes": [{
+          "BaseDataType": {
+            "Id": 21,
+            "Namespace": 2
+          },
+          "BuiltInType": 3,
+          "DataTypeId": {
+            "Id": 42
+          },
+          "Name": {
+            "namespaceIndex": 1,
+            "name": "temp"
+          }
+        }
+      ]
+    }
+  ]
+]
