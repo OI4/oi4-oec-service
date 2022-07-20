@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`publicationList schema (0) match fails for invalid publicationList -> empty: empty 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'resource'
+    Path:     publicationList.schema.json#/required
+  must have required property 'DataSetWriterId'
+    Path:     publicationList.schema.json#/required
+  must have required property 'oi4Identifier'
+    Path:     publicationList.schema.json#/required
+"
+`;
+
+exports[`publicationList schema (1) match fails for invalid publicationList -> publicationList with unknown resource: publicationList with unknown resource 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /resource must be equal to one of the allowed values
+    Expected: [\\"mam\\",\\"health\\",\\"config\\",\\"license\\",\\"licenseText\\",\\"rtLicense\\",\\"data\\",\\"metadata\\",\\"event\\",\\"profile\\",\\"publicationList\\",\\"subscriptionList\\",\\"referenceDesignation\\"]
+    Received: <string> unknown
+    Path:     publicationList.schema.jsonconstants/resources.schema.json/enum
+"
+`;
+
+exports[`publicationList schema (2) match fails for invalid publicationList -> publicationList with missing resource: publicationList with missing resource 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'resource'
+    Path:     publicationList.schema.json#/required
+"
+`;
+
+exports[`publicationList schema (3) match fails for invalid publicationList -> publicationList with missing DataSetWriterId: publicationList with missing DataSetWriterId 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'DataSetWriterId'
+    Path:     publicationList.schema.json#/required
+"
+`;
+
+exports[`publicationList schema (4) match fails for invalid publicationList -> publicationList with missing oi4Identifier: publicationList with missing oi4Identifier 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must have required property 'oi4Identifier'
+    Path:     publicationList.schema.json#/required
+"
+`;
+
+exports[`publicationList schema (5) match fails for invalid publicationList -> publicationList with invalid oi4Identifier: publicationList with invalid oi4Identifier 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /resource must be equal to one of the allowed values
+    Expected: [\\"mam\\",\\"health\\",\\"config\\",\\"license\\",\\"licenseText\\",\\"rtLicense\\",\\"data\\",\\"metadata\\",\\"event\\",\\"profile\\",\\"publicationList\\",\\"subscriptionList\\",\\"referenceDesignation\\"]
+    Received: <string> unknown
+    Path:     publicationList.schema.jsonconstants/resources.schema.json/enum
+  /oi4Identifier must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^
+]+){3})$\\"
+    Received: <string> provider.com
+    Path:     publicationList.schema.jsonoi4Identifier.schema.json/pattern
+"
+`;

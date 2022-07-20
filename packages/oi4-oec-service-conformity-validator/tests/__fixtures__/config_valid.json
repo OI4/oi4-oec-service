@@ -1,0 +1,81 @@
+{
+  "MessageId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
+  "MessageType": "ua-data",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+  "DataSetClassId": "9d5983db-440d-4474-9fd7-1cd7a6c8b6c2",
+  "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "Messages": [
+    {
+      "DataSetWriterId": 42,
+      "filter": "Network%20settings",
+      "subResource": "openindustry4.com/nd/nd/nd",
+      "Timestamp": "2021-12-16T22:25:10.094Z",
+      "Payload": {
+        "network": {
+          "name": {
+            "locale": "en-US",
+            "text": "Network"
+          },
+          "description": {
+            "locale": "en-US",
+            "text": "Describes the network configuration of this service"
+          },
+          "ip_address": {
+            "description": {
+              "locale": "en-US",
+              "text": "IP address of Network DNS server"
+            },
+            "name": {
+              "locale": "en-US",
+              "text": "IP Address"
+            },
+            "type": "String",
+            "validation": {
+              "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+            },
+            "value": ""
+          },
+          "subnet-mask": {
+            "description": {
+              "locale": "en-US",
+              "text": "Subnetmask of Network"
+            },
+            "name": {
+              "locale": "en-US",
+              "text": "Subnetmask"
+            },
+            "type": "String",
+            "validation": {
+              "pattern": "^(((255\\.){3}(255|254|252|248|240|224|192|128|0+))|((255\\.){2}(255|254|252|248|240|224|192|128|0+)\\.0)|((255\\.)(255|254|252|248|240|224|192|128|0+)(\\.0+){2})|((255|254|252|248|240|224|192|128|0+)(\\.0+){3}))$"
+            },
+            "value": ""
+          },
+          "port": {
+            "defaultValue": "80",
+            "mandatory": false,
+            "name": {
+              "locale": "en-US",
+              "text": "Port"
+            },
+            "type": "Number",
+            "validation": {
+              "min": 0,
+              "max": 65535
+            },
+            "value": ""
+          }
+        },
+        "context": {
+          "name": {
+            "locale": "en-US",
+            "text": "Network settings"
+          },
+          "description": {
+            "locale": "en-US",
+            "text": "Settings of all network interfaces"
+          }
+        }
+      }
+    }
+  ]
+}
