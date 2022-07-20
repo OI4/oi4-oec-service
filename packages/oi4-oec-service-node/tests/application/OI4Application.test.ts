@@ -500,10 +500,14 @@ describe('OI4MessageBus test', () => {
         const res = getResourceInfo();
         res.mam.DeviceClass = deviceClass;
 
-        const app = new OI4Application(res, getStandardMqttConfig());
+        const mqttOpts: MqttSettings = getStandardMqttConfig();
+        const app = OI4Application.builder()
+            .withApplicationResources(res)
+            .withMqttSettings(mqttOpts)
+            .build();
 
         expect(app.serviceType).toBe('OTConnector');
-        expect(app.topicPreamble).toBe(`oi4/${app.serviceType}/1`);
+        expect(app.topicPreamble).toBe(`oi4/${app.serviceType}/1/1/1/1`);
     })
 
     function createEvent(): NamurNE107Event {
