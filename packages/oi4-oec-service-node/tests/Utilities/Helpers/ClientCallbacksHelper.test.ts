@@ -1,31 +1,42 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../../../src/Utilities/Helpers/ClientCallbacksHelper';
-import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
 import mqtt from 'async-mqtt';
-import {MockedMqttClientFactory} from '../../Test-utils/Factories/MockedMqttClientFactory';
-import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
+import {getOi4App} from "../../application/OI4Application.test";
+import {setLogger} from "@oi4/oi4-oec-service-logger";
 
 describe('Unit test for ClientCallbackHelper', () => {
 
-    const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
-    const clearLogFile: Function = loggerItems.clearLogFile;
-    const logContainsOnly: Function = loggerItems.logContainsOnly;
-    const logContains: Function = loggerItems.logContains;
-    const getLogSize: Function = loggerItems.getLogSize;
+    const publish = jest.fn();
 
-    const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', 'fakeServiceType');
-    const mockedMqttClient: mqtt.AsyncClient = MockedMqttClientFactory.getMockedClientWithDefaultImplementation();
-    const clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
+    jest.spyOn(mqtt, 'connect').mockImplementation(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        () => {
+            return {
+                connected: true,
+                reconnecting: false,
+                publish: publish,
+                subscribe: jest.fn(),
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                on: jest.fn(),
+            }
+        }
+    );
+
+    const mockOi4Application = getOi4App();
+    const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
+    const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
+    const logContainsOnly: Function = loggerItems.logContainsOnly;
 
     let clientCallbackHelper: ClientCallbacksHelper;
-    let mockedClient: IOI4ApplicationResources;
 
     beforeEach(() => {
-        clearLogFile();
-        clientCallbackHelper = new ClientCallbacksHelper(clientPayloadHelper);
-        mockedClient = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        //Flush the messages log
+        fakeLogFile.splice(0, fakeLogFile.length);
+        setLogger(loggerItems.fakeLogger);
+        clientCallbackHelper = new ClientCallbacksHelper();
+        // resources = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
     });
 
     it('onErrorCallback works', async () => {
@@ -35,8 +46,9 @@ describe('Unit test for ClientCallbackHelper', () => {
     });
 
     it('onCloseCallback works', async () => {
-        await clientCallbackHelper.onCloseCallback(mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
-        expect(mockedMqttClient.publish).toHaveBeenCalled();
+        await clientCallbackHelper.onCloseCallback(mockOi4Application); //mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
+        expect(publish).toHaveBeenCalled();
+        // expect(mockedMqttClient.publish).toHaveBeenCalled();
         expect(logContainsOnly('Connection to mqtt broker closed')).toBeTruthy();
     });
 
@@ -51,10 +63,10 @@ describe('Unit test for ClientCallbackHelper', () => {
     });
 
     it('onClientConnectCallback works', async () => {
-        await clientCallbackHelper.onClientConnectCallback(mockedClient, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
-        expect(logContains('Connected successfully')).toBeTruthy();
-        expect(logContains('Published birth message on fakePreamble/pub/mam/fakeOi4Id')).toBeTruthy();
-        expect(getLogSize()).toBe(2);
+        await clientCallbackHelper.onClientConnectCallback(mockOi4Application); // resources, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
+        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile[0]).toBe('Connected successfully');
+        expect(fakeLogFile[1]).toBe('Published birth message on oi4/oi4/1/1/1/1/pub/mam/1/1/1/1');
     });
 
 });

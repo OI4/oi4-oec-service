@@ -16,7 +16,7 @@ import Ajv from 'ajv'; /*tslint:disable-line*/
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {MessageBusLookup} from './Helper/MessageBusLookup';
-import {IMessageBusLookup, GetRequest} from './model/IMessageBusLookup';
+import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
@@ -43,7 +43,10 @@ export class ConformityValidator {
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;
 
-        initializeLogger(true, 'ConformityValidator-App', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, this.conformityClient, oi4Id, 'Registry');
+        const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
+        const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
+
+        initializeLogger(true, 'ConformityValidator-App', logLevel, publishingLevel, this.conformityClient, oi4Id, 'Registry');
         this.builder = new OPCUABuilder(oi4Id, serviceType);
     }
 
@@ -65,7 +68,7 @@ export class ConformityValidator {
     /**
      * Check conformity of every resource in the variable resourceList.
      * If a resource passes, its entry in the conformity Object is set to 'OK', otherwise, the initialized 'NOK' values persist.
-     * @param topicPreamble - The entire topic used to check conformity. 
+     * @param topicPreamble - The entire topic used to check conformity.
      * @param assetType - Determines whether the asset is an application or an device.
      * @param subResource - The subResource.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
@@ -104,11 +107,11 @@ export class ConformityValidator {
         }
 
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
-    
+
         try {
             conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, subResource);
             conformityObject.profileResourceList = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
-            
+
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
             conformityObject.resource['profile'] = {
                 dataSetMessages: [],
@@ -184,11 +187,11 @@ export class ConformityValidator {
                         resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
                         dataList = this.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
                         break;
-   
+
 
                     case Resource.INTERFACES:
                         // TODO Update if specification is released
-                        // INTERFACES are not fully described in specification yet 
+                        // INTERFACES are not fully described in specification yet
                         // we don't know if INTERFACES support get-requests
                         resObj = {
                             validity: EValidity.default,
@@ -198,7 +201,7 @@ export class ConformityValidator {
                         break;
 
                     case Resource.EVENT:
-                        // We cannot trigger events by a get-request 
+                        // We cannot trigger events by a get-request
                         // Therefore we cannot enforce that the tested asset publishes an event for the conformance validateion
                         resObj = {
                             validity: EValidity.default,
@@ -226,7 +229,7 @@ export class ConformityValidator {
                                 }
                             }
                         }
-    
+
                         break;
 
                     case Resource.LICENSE:
@@ -244,7 +247,7 @@ export class ConformityValidator {
                     validityErrors: [err],
                     dataSetMessages: [],
                 };
-                
+
                 errorSoFar = true;
             }
 
@@ -341,13 +344,13 @@ export class ConformityValidator {
      * @param filter - the filter (if available)
      */
     async checkResourceConformity(topicPreamble: string, resource: Resource, subResource?: string, filter?: string): Promise<IValidityDetails> {
-        
+
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
         const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, subResource, filter);
 
         const getTopic = getRequest.getTopic('get');
         const pubTopic = getRequest.getTopic('pub');
-        
+
         LOGGER.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
         const response = await this.messageBusLookup.getMessage(getRequest);
         LOGGER.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
@@ -534,12 +537,12 @@ export class ConformityValidator {
                 LOGGER.log(`Found pagination in ${resource}!`);
             }
             else if (this.isNotEmpty(dataSetMessage.filter) && this.isNotEmpty(dataSetMessage.subResource)) {
-                result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter}); 
+                result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter});
             }
         }
 
         return result;
-    } 
+    }
 
     private isNotEmpty(input: string): boolean
     {

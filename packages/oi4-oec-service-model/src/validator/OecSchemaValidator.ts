@@ -1,10 +1,25 @@
 // Constants
-import {resourcesSchemaJson, 
+import {
+    resourcesSchemaJson,
     topicPathSchemaJson,
-    DeviceHealthEnumerationSchemaJson} from '@oi4/oi4-oec-json-schemas';
+    DeviceHealthEnumerationSchemaJson,
+    interfacesSchemaJson,
+    DataSetMetaDataSchemaJson,
+    DataSetMetaDataTypeSchemaJson,
+    dataPVSchemaJson,
+    FieldMetaDataSchemaJson,
+    EnumDescriptionSchemaJson,
+    StructureDescriptionSchemaJson,
+    SimpleTypeDescriptionSchemaJson,
+    KeyValuePairSchemaJson,
+    NodeIdSchemaJson,
+    QualifiedNameSchemaJson,
+    BaseDataTypeSchemaJson
+} from '@oi4/oi4-oec-json-schemas';
 
 // Payloads
-import {healthSchemaJson,
+import {
+    healthSchemaJson,
     mamSchemaJson,
     licenseSchemaJson,
     licenseTextSchemaJson,
@@ -18,18 +33,6 @@ import {healthSchemaJson,
     referenceDesignationSchemaJson,
     localeSchemaJson,
     paginationSchemaJson,
-    interfacesSchemaJson,
-    dataPVSchemaJson,    
-    DataSetMetaDataSchemaJson,
-    DataSetMetaDataTypeSchemaJson,
-    FieldMetaDataSchemaJson, 
-    EnumDescriptionSchemaJson,
-    StructureDescriptionSchemaJson,
-    SimpleTypeDescriptionSchemaJson,
-    KeyValuePairSchemaJson,
-    NodeIdSchemaJson,
-    QualifiedNameSchemaJson,
-    BaseDataTypeSchemaJson
 } from '@oi4/oi4-oec-json-schemas';
 
 import {buildOpcUaJsonValidator} from '@oi4/oi4-oec-service-opcua-model';

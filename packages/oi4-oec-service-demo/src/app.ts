@@ -1,6 +1,6 @@
 import {DefaultSettingsPaths, ISettingsPaths, OI4ApplicationFactory,} from '@oi4/oi4-oec-service-node';
 import {ServiceDemoOI4ApplicationResources} from './application/ServiceDemoOI4ApplicationResources';
-import {AsyncClientEvents} from "@oi4/oi4-oec-service-node/dist/Utilities/Helpers/Enums";
+import {ServiceDemoClientCallbacksHelper} from "./application/ServiceDemoClientCallbacksHelper";
 
 export {WeatherService} from './weather/WeatherService';
 export * from './weather/WeatherServiceModel';
@@ -29,12 +29,9 @@ export const IS_LOCAL = process.argv.length > 2 && process.argv[2] === 'local';
 
 const paths: ISettingsPaths = IS_LOCAL ? LocalTestPaths : DefaultSettingsPaths;
 const applicationResources = new ServiceDemoOI4ApplicationResources(IS_LOCAL, paths);
-const applicationFactory = new OI4ApplicationFactory(applicationResources, paths);
-const oi4Application = applicationFactory.createOI4Application();
-oi4Application.client.on(AsyncClientEvents.CONNECT, async () => {
-    for (const resource of applicationResources.subResources.values()) {
-        await oi4Application.sendMasterAssetModel(resource.mam);
-    }
-});
+const applicationFactory = new OI4ApplicationFactory(applicationResources, paths).initialize();
+applicationFactory.builder.withClientCallbacksHelper(new ServiceDemoClientCallbacksHelper());
+
+applicationFactory.createOI4Application();
 
 console.log('|=========== FINISHED initiating Service Demo ============|');
