@@ -19,8 +19,6 @@ import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUANetworkMessage, IOPCUADataSetMessage, OPCUABuilder, IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
-import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 
 class OI4Application extends EventEmitter {
 
@@ -30,9 +28,9 @@ class OI4Application extends EventEmitter {
     public topicPreamble: string;
     public builder: OPCUABuilder;
     public readonly client: mqtt.AsyncClient;
+    public readonly clientPayloadHelper: ClientPayloadHelper;
 
     private readonly clientHealthHeartbeatInterval: number = 60000;
-    private readonly clientPayloadHelper: ClientPayloadHelper;
 
     private clientCallbacksHelper: ClientCallbacksHelper;
     private readonly mqttMessageProcessor: MqttMessageProcessor;
@@ -51,7 +49,6 @@ class OI4Application extends EventEmitter {
      * @param clientCallbacksHelper
      */
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
-
         super();
         this.oi4Id = applicationResources.oi4Id;
         this.serviceType = this.extractServiceType(applicationResources.mam);
@@ -72,12 +69,15 @@ class OI4Application extends EventEmitter {
             retain: false,
         }
 
-        initializeLogger(true, mqttSettings.clientId, process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, this.serviceType);
+        const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
+        const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
+
+        initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, undefined, this.oi4Id, this.serviceType);
         LOGGER.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);
 
         updateMqttClient(this.client);
-        LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.warning);
+        LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
         this.on('setConfig', this.sendEventStatus);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -90,48 +90,26 @@ class OI4Application extends EventEmitter {
                 await this.sendResource(resource, messageId, subResource, filter, page, perPage)
             },
             super.removeListener('', () => {
-        }));
+            }));
 
         this.initClientCallbacks();
     }
 
     private initClientCallbacks() {
-        this.setOnClientErrorCallback();
-        this.setOnClientCloseCallback();
-        this.setOnClientDisconnectCallback();
-        this.setOnClientReconnectCallback();
-        this.setOnClientConnectCallback();
-        this.setOnClientOfflineCallback();
-    }
-
-    private setOnClientErrorCallback() {
         this.client.on(AsyncClientEvents.ERROR, async (err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
-    }
-
-    private setOnClientCloseCallback() {
-        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this.client, this.topicPreamble, this.oi4Id, this.builder));
-    }
-
-    private setOnClientDisconnectCallback() {
+        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this));
         this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback());
-    }
-
-    private setOnClientReconnectCallback() {
         this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback());
+        this.client.on(AsyncClientEvents.OFFLINE, async () => this.clientCallbacksHelper.onOfflineCallback());
+        // Publish Birth Message and start listening to topics
+        this.client.on(AsyncClientEvents.CONNECT, async () => this.initClientConnectCallback());
     }
 
-    private setOnClientConnectCallback() {
-        // Publish Birth Message and start listening to topics
-        this.client.on(AsyncClientEvents.CONNECT, async () => {
-            await this.clientCallbacksHelper.onClientConnectCallback(this.applicationResources, this.client, this.topicPreamble, this.oi4Id, this.builder);
+    private async initClientConnectCallback() {
+        await this.clientCallbacksHelper.onClientConnectCallback(this);
             await this.initIncomingMessageListeners();
             this.initClientHealthHeartBeat();
             this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
-        });
-    }
-
-    private setOnClientOfflineCallback() {
-        this.client.on(AsyncClientEvents.OFFLINE, async () => this.clientCallbacksHelper.onOfflineCallback());
     }
 
     private async initIncomingMessageListeners() {
@@ -154,7 +132,7 @@ class OI4Application extends EventEmitter {
     private initClientHealthHeartBeat() {
         setInterval(() => {
             this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then(() => {
-                //No actual actions are needed here
+
             });
         }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
     }
@@ -221,7 +199,8 @@ class OI4Application extends EventEmitter {
      * @param messageId - original messageId used as correlation ID
      */
     async sendMasterAssetModel(mam: MasterAssetModel, messageId?: string) {
-        await this.sendResource(Resource.MAM, messageId, mam.getOI4Id(), '', 0, 0);
+        const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id())];
+        await this.sendPayload(payload, Resource.MAM, messageId, 0, 0, mam.getOI4Id());
     }
 
     /**
@@ -333,7 +312,7 @@ class OI4Application extends EventEmitter {
                 await this.client.publish(
                     `${this.topicPreamble}/pub/${resource}${endTag}`,
                     JSON.stringify(networkMessages));
-                LOGGER.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`);
+                LOGGER.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`, ESyslogEventFilter.informational);
             }
         } catch {
             console.log('Error in building paginated NMA');
@@ -390,6 +369,10 @@ class OI4Application extends EventEmitter {
     }
 }
 
+import {MqttSettings} from './MqttSettings';
+
+import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
+
 export class OI4ApplicationBuilder {
     protected applicationResources: IOI4ApplicationResources;
     protected mqttSettings: MqttSettings;
@@ -429,7 +412,7 @@ export class OI4ApplicationBuilder {
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
         }
         if (this.clientCallbacksHelper === undefined) {
-            this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
+            this.clientCallbacksHelper = new ClientCallbacksHelper();
         }
         return this.newOI4Application();
     }

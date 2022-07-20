@@ -16,7 +16,7 @@ import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 export class ClientPayloadHelper {
 
-    private createPayload(payload: OI4Payload, subResource: string): IOPCUADataSetMessage {
+    createPayload(payload: OI4Payload, subResource: string): IOPCUADataSetMessage {
         return {
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), subResource),
             subResource: subResource,
