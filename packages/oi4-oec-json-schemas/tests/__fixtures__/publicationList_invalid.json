@@ -1,0 +1,35 @@
+[
+  ["empty", {}],
+  [
+    "publicationList with unknown resource", {
+      "resource": "unknown",
+      "DataSetWriterId": 1,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+    }
+  ],
+    [
+    "publicationList with missing resource", {
+      "DataSetWriterId": 1,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+    }
+  ],
+    [
+    "publicationList with missing DataSetWriterId", {
+      "resource": "mam",
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+    }
+  ],
+    [
+    "publicationList with missing oi4Identifier", {
+      "resource": "mam",
+      "DataSetWriterId": 1
+    }
+  ],
+    [
+    "publicationList with invalid oi4Identifier", {
+      "resource": "unknown",
+      "DataSetWriterId": 1,
+      "oi4Identifier": "provider.com"
+    }
+  ]
+]

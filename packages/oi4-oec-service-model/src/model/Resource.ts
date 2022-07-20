@@ -16,7 +16,8 @@ export enum Resource {
     METADATA = 'metadata',
     PUBLICATION_LIST = 'publicationList',
     SUBSCRIPTION_LIST = 'subscriptionList',
-    REFERENCE_DESIGNATION = 'referenceDesignation'
+    REFERENCE_DESIGNATION = 'referenceDesignation',
+    INTERFACES = 'interfaces'
 }
 
 export function getResource(resource: string): Resource {
@@ -47,6 +48,8 @@ export function getResource(resource: string): Resource {
             return Resource.SUBSCRIPTION_LIST;
         case Resource.REFERENCE_DESIGNATION:
             return Resource.REFERENCE_DESIGNATION;
+        case Resource.INTERFACES:
+            return Resource.INTERFACES;
         default:
             throw new Error(`Unknown resource: ${resource}`);
     }
@@ -64,6 +67,7 @@ export const CDataSetWriterIdLookup: Record<string, number> = {
     config: 8,
     publicationList: 9,
     subscriptionList: 10,
+    interfaces: 11
 }
 
 export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
@@ -83,6 +87,10 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
 
     resourceType(): Resource {
         return Resource.MAM;
+    }
+
+    getOI4Id(): string {
+        return `${this.ManufacturerUri}/${encodeURIComponent(this.Model.text)}/${encodeURIComponent(this.ProductCode)}/${encodeURIComponent(this.SerialNumber)}`;
     }
 
     static clone(source: MasterAssetModel): MasterAssetModel {

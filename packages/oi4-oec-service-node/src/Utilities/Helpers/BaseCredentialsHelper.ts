@@ -1,12 +1,14 @@
-import {Credentials, IBaseSettingsPaths} from '../../application/MqttSettings';
+import {Credentials} from '../../application/MqttSettings';
 import {existsSync, readFileSync} from 'fs';
 import {indexOf} from 'lodash';
+import {DefaultMqttSettingsPaths, IMqttSettingsPaths} from "../../Config/SettingsPaths";
+import * as path from "path";
 
 export class BaseCredentialsHelper {
 
-    protected readonly settingsPaths: IBaseSettingsPaths;
+    protected readonly settingsPaths: IMqttSettingsPaths;
 
-    constructor(settingsPaths: IBaseSettingsPaths) {
+    constructor(settingsPaths = DefaultMqttSettingsPaths) {
         this.settingsPaths = settingsPaths;
     }
 
@@ -60,7 +62,7 @@ export class BaseCredentialsHelper {
     loadUserCredentials(): Credentials {
         const credentials = this.settingsPaths.credentials;
         if (!existsSync(credentials)) {
-            throw new Error('Credentials file not found');
+            throw new Error(`Credentials file not found at ${path.resolve(credentials)}`);
         }
 
         const cleanedEncodedCredentials: string = BaseCredentialsHelper.loadAndDecodeSecret(credentials);

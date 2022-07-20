@@ -1,0 +1,23 @@
+{
+  "Manufacturer":{"locale":"en-US","text":"ACME Corporation"},
+  "ManufacturerUri":"acme.com",
+  "Model":{"locale":"en-US","text":"rock_solid_weather_sensor"},
+  "ProductCode":"OEC-ACME-UTILITY",
+  "HardwareRevision":"",
+  "SoftwareRevision":"0.12.1",
+  "DeviceRevision":"1.0.0",
+  "DeviceManual":"1.0",
+  "DeviceClass":"WeatherSensor",
+  "SerialNumber":"F12SN894",
+  "ProductInstanceUri":"oi4/appid/service",
+  "RevisionCounter":0,
+  "Description":
+  {
+    "locale":"en-US",
+    "text":"Rock solid weather sensor"
+  },
+  "location": {
+    "longitude": 7.8522,
+    "latitude": 47.9959
+  }
+}

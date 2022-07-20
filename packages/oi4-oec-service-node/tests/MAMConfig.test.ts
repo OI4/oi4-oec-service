@@ -20,7 +20,7 @@ describe('Unit test for MAMStorage reading', () => {
             .mockReturnValueOnce(mam)
             .mockReturnValueOnce(mam);
         const expectedMAM = JSON.parse(mam.toString()) as IMasterAssetModel;
-        const resources = new OI4ApplicationResources();
+        const resources = new OI4ApplicationResources(`${__dirname}/__fixtures__/mam.json`);
         expect(resources.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
         expect(resources.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
         expect(resources.mam.Model).toEqual(expectedMAM.Model);

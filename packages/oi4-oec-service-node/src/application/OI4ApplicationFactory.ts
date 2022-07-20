@@ -2,14 +2,18 @@ import {
     BrokerConfiguration,
     MqttSettings,
     Credentials,
-    DefaultMqttSettingsPaths, IMqttSettingsPaths, IBaseSettingsPaths
 } from './MqttSettings';
+// @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application} from './OI4Application';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {BaseCredentialsHelper} from '../Utilities/Helpers/BaseCredentialsHelper';
+import {OPCUABuilder} from "@oi4/oi4-oec-service-opcua-model";
+import {ClientPayloadHelper} from "../Utilities/Helpers/ClientPayloadHelper";
+import {ClientCallbacksHelper} from "../Utilities/Helpers/ClientCallbacksHelper";
+import {DefaultSettingsPaths, ISettingsPaths} from "../Config/SettingsPaths";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -20,21 +24,29 @@ export interface IOI4MessageBusFactory {
 
 export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
+    opcUaBuilder: OPCUABuilder;
+    clientPayloadHelper: ClientPayloadHelper;
+    clientCallbacksHelper: ClientCallbacksHelper;
+
     private readonly resources: IOI4ApplicationResources;
-    private readonly settingsPaths: IMqttSettingsPaths;
+    private readonly settingsPaths: ISettingsPaths;
     private readonly mqttSettingsHelper: MqttCredentialsHelper;
 
-    constructor(resources: IOI4ApplicationResources, settingsPaths: IMqttSettingsPaths = DefaultMqttSettingsPaths) {
+    constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = DefaultSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
+
+        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.DeviceClass);
+        this.clientPayloadHelper = new ClientPayloadHelper();
+        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
     }
 
-    createOI4Application(): OI4Application {
+    createOI4Application(builder = OI4Application.builder()): OI4Application {
         // TODO handle missing files
-        const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.brokerConfig, 'utf8'));
+        const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
             host: brokerConfiguration.address,
@@ -45,15 +57,22 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
         this.initCredentials(mqttSettings);
-        return new OI4Application(this.resources, mqttSettings);
+        return builder//
+            .withApplicationResources(this.resources)//
+            .withMqttSettings(mqttSettings)//
+            .withOPCUABuilder(this.opcUaBuilder)//
+            .withClientPayloadHelper(this.clientPayloadHelper)//
+            .withClientCallbacksHelper(this.clientCallbacksHelper)//
+            .build();
     }
 
     private initCredentials(mqttSettings: MqttSettings) {
         if (this.hasRequiredCertCredentials()) {
             LOGGER.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
-            mqttSettings.ca = readFileSync(this.settingsPaths.caCertificate);
-            mqttSettings.cert = readFileSync(this.settingsPaths.clientCertificate);
-            mqttSettings.key = readFileSync(this.settingsPaths.privateKey);
+            const mqttSettingsPaths = this.settingsPaths.mqttSettings;
+            mqttSettings.ca = readFileSync(mqttSettingsPaths.caCertificate);
+            mqttSettings.cert = readFileSync(mqttSettingsPaths.clientCertificate);
+            mqttSettings.key = readFileSync(mqttSettingsPaths.privateKey);
             mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
         } else {
             LOGGER.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
@@ -65,9 +84,10 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     }
 
     private hasRequiredCertCredentials(): boolean {
-        return existsSync(this.settingsPaths.clientCertificate) &&
-            existsSync(this.settingsPaths.caCertificate) &&
-            existsSync(this.settingsPaths.privateKey)
+        const mqttSettingsPaths = this.settingsPaths.mqttSettings;
+        return existsSync(mqttSettingsPaths.clientCertificate) &&
+            existsSync(mqttSettingsPaths.caCertificate) &&
+            existsSync(mqttSettingsPaths.privateKey)
     }
 
     /**
@@ -76,17 +96,14 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
      * @private
      */
     private static getMaxPacketSize(brokerConfiguration: BrokerConfiguration): number {
-            const maxPacketSize = brokerConfiguration.max_packet_size | 256;
-            return maxPacketSize >= 256 ? maxPacketSize : 256;
+        const maxPacketSize = brokerConfiguration.max_packet_size | 256;
+        return maxPacketSize >= 256 ? maxPacketSize : 256;
     }
 
 }
 
 export class MqttCredentialsHelper extends BaseCredentialsHelper {
-    constructor(settingsPaths: IBaseSettingsPaths) {
-        super(settingsPaths);
+    constructor(settingsPaths: ISettingsPaths) {
+        super(settingsPaths.mqttSettings);
     }
 }
-
-
-

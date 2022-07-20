@@ -23,7 +23,7 @@ export class TestMqttProcessorFactory {
 
     public static getProcessorAndDataWithCustomEmitter(mockedSendResource: OnSendResource, emitter: EventEmitter, appId: string, topicPrefix: string, sendMetaData: OnSendMetaData = jest.fn()): any {
         const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
-        applicationResource.oi4Id = appId;
+        // applicationResource.oi4Id = appId;
         return {
             processor: new MqttMessageProcessor(applicationResource, sendMetaData, mockedSendResource, emitter),
             mockedData: {

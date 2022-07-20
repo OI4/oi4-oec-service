@@ -44,6 +44,7 @@ describe('Unit test for TopicParser', () => {
         expect(loggerItems.isLogEmpty()).toBeTruthy();
     });
 
+    // TODO refactor to Jest exception assertion
     async function checkAgainstError(caller: Function, errMsg: string) {
         let errorThrown = false;
         try {
@@ -58,12 +59,6 @@ describe('Unit test for TopicParser', () => {
     it('If the topic string is fine, no error is thrown', async () => {
         await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
         MessageValidator.doTopicDataValidation(defaultMessageItems.getDefaultTopicWrapper(), defaultParsedMessage);
-    });
-
-    it('If the publisher ID does not match, an error is thrown', async () => {
-        defaultParsedMessage.PublisherId = 'fake/moreFake'
-        const errMsg = `ServiceType/AppID mismatch with Payload PublisherId: [Topic: ${defaultMessageItems.topic} - Payload: ${defaultParsedMessage.PublisherId}]`;
-        await checkAgainstError(async () => await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder), errMsg);
     });
 
     it('If the parsed message has the wrong structure, an error is thrown', async () => {

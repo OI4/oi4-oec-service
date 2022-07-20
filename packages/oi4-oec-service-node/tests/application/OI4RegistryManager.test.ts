@@ -1,7 +1,7 @@
 import {OI4RegistryManager} from '../../src';
-import {IOPCUANetworkMessage} from "@oi4/oi4-oec-service-opcua-model";
-import {initializeLogger} from "@oi4/oi4-oec-service-logger";
-import {ESyslogEventFilter, ServiceTypes} from "@oi4/oi4-oec-service-model";
+import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {initializeLogger} from '@oi4/oi4-oec-service-logger';
+import {ESyslogEventFilter, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 const parsedMessage: IOPCUANetworkMessage = {
     MessageId: '',
