@@ -77,11 +77,11 @@ describe('Test Oi4ApplicationResources', () => {
     it('If oi4Id undefined all licenses are returned', () => {
         console.log('Wait for it...');
         const license = resources.getLicense(undefined);
-        expect(license).toBe(undefined);
+        expect(license).toEqual([]);
     });
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
-        expect(resources.getLicense(resources.oi4Id)).toBe(undefined);
+        expect(resources.getLicense(resources.oi4Id)).toEqual([]);
     });
 
     it('should filter publicationList', ()=> {

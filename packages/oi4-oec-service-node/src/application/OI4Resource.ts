@@ -169,7 +169,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
     getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
         return this._publicationList.filter((elem: PublicationList) => {
-            if (elem.oi4Identifier !== oi4Id) return false;
+            if (oi4Id !== undefined && elem.oi4Identifier !== oi4Id) return false;
             if (resourceType !== undefined && elem.resource !== resourceType) return false;
             if (tag !== undefined && elem.filter !== tag) return false;
             return true;
