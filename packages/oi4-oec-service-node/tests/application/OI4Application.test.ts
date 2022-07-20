@@ -63,7 +63,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    // TODO refactor, this is not solved in a good way. Implent a class with OI4ApplicationResources as parent and overwrite what is needed.
+    // TODO refactor, this is not solved in a good way. Implement a class with OI4ApplicationResources as parent and overwrite what is needed.
     // And harmonize it with the other mocks
     return {
         oi4Id: defaultAppId,
@@ -239,7 +239,7 @@ const defaultValidFilter = '1';
 const defaultAppId = '1/1/1/1';
 const defaultOI4Id = defaultAppId;
 
-function getOi4App(): OI4Application {
+export function getOi4App(): OI4Application {
     const mqttOpts: MqttSettings = getStandardMqttConfig();
     const resources = getResourceInfo();
     return OI4Application.builder()

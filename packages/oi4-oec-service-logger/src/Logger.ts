@@ -28,6 +28,7 @@ class Logger {
     private _winstonLogger: WinstonLogger;
     private _enabled: boolean; /*tslint:disable-line*/
     private _level: ESyslogEventFilter; /*tslint:disable-line*/
+    private _publishLevel: ESyslogEventFilter; /*tslint:disable-line*/
     private _name: string; /*tslint:disable-line*/
     private _mqttClient?: mqtt.AsyncClient;
     private readonly _oi4Id?: string;
@@ -60,17 +61,24 @@ class Logger {
         CAT_GENERIC_99: 'generic',
     }
 
-    constructor(enabled = true, name: string, level: ESyslogEventFilter = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string) {
+    constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string) {
         /**
          * Enables or disables the logging. Default: `true`
          * @type {boolean}
          */
         this._enabled = enabled;
+
         /**
          * The minimum level needed for the log to appear on the console.
          * @type {number}
          */
         this._level = level;
+
+        /**
+         * The minimum level needed for the log to appear on the console.
+         * @type {number}
+         */
+        this._publishLevel = publishLevel;
 
         /**
          * The name of the logger
@@ -149,27 +157,39 @@ class Logger {
         this._level = lvl;
     }
 
+    get publishLevel() {
+        return this._publishLevel;
+    }
+
+    set publishLevel(lvl) {
+        if (typeof lvl !== 'string') throw new Error('publishing level must be of type string/ESyslogLevel String');
+        console.log(`Set logger publishing level of ${this._name} level to: ${lvl}`);
+        this._publishLevel = lvl;
+    }
+
     get name() {
         return this._level;
     }
 
-    set name(newname) {
-        if (typeof newname !== 'string') throw new Error('name must be of type string');
-        this._name = newname;
+    set name(name) {
+        if (typeof name !== 'string') throw new Error('name must be of type string');
+        this._name = name;
     }
 
     set mqttClient(client: mqtt.AsyncMqttClient) {
         this._mqttClient = client;
     }
 
-    log(logstring: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
+    log(logString: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
         if (this.enabled) {
             if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.level]) {
-                console.log(logstring);
-                this._winstonLogger.log(this.syslogToWinston[level], `${this._name}: ${logstring}`);
+                console.log(logString);
+            }
+            if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.publishLevel]) {
+                this._winstonLogger.log(this.syslogToWinston[level], `${this._name}: ${logString}`);
             }
         }
-        return logstring;
+        return logString;
     }
 
     /**
@@ -210,8 +230,8 @@ class Logger {
 let log: Logger;
 let LOGGER: Readonly<Logger> = log;
 
-function initializeLogger(enabled = true, name: string, level: ESyslogEventFilter = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string): void {
-    log = new Logger(enabled, name, level, mqttClient, oi4Id, serviceType);
+function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string): void {
+    log = new Logger(enabled, name, level, publishLevel, mqttClient, oi4Id, serviceType);
     LOGGER = log;
 }
 

@@ -6,11 +6,11 @@ import {
 // @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {existsSync, readFileSync} from 'fs';
-import {OI4Application} from './OI4Application';
+import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
+import {existsSync, readFileSync} from 'fs';
+import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
 import {BaseCredentialsHelper} from '../Utilities/Helpers/BaseCredentialsHelper';
-import {OPCUABuilder} from "@oi4/oi4-oec-service-opcua-model";
 import {ClientPayloadHelper} from "../Utilities/Helpers/ClientPayloadHelper";
 import {ClientCallbacksHelper} from "../Utilities/Helpers/ClientCallbacksHelper";
 import {DefaultSettingsPaths, ISettingsPaths} from "../Config/SettingsPaths";
@@ -20,9 +20,13 @@ const MQTTS = 'mqtts';
 
 export interface IOI4MessageBusFactory {
     createOI4Application: () => OI4Application;
+    initialize: () => IOI4MessageBusFactory;
+    builder: OI4ApplicationBuilder;
 }
 
 export class OI4ApplicationFactory implements IOI4MessageBusFactory {
+
+    builder: OI4ApplicationBuilder;
 
     opcUaBuilder: OPCUABuilder;
     clientPayloadHelper: ClientPayloadHelper;
@@ -41,11 +45,17 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
         this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.DeviceClass);
         this.clientPayloadHelper = new ClientPayloadHelper();
-        this.clientCallbacksHelper = new ClientCallbacksHelper(this.clientPayloadHelper);
+        this.clientCallbacksHelper = new ClientCallbacksHelper();
     }
 
-    createOI4Application(builder = OI4Application.builder()): OI4Application {
-        // TODO handle missing files
+    createOI4Application(): OI4Application {
+        if(this.builder === undefined) {
+            this.initialize();
+        }
+        return this.builder.build();
+    }
+
+    initialize() {
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
@@ -57,13 +67,14 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
         this.initCredentials(mqttSettings);
-        return builder//
+        this.builder = OI4Application.builder()//
             .withApplicationResources(this.resources)//
             .withMqttSettings(mqttSettings)//
             .withOPCUABuilder(this.opcUaBuilder)//
             .withClientPayloadHelper(this.clientPayloadHelper)//
             .withClientCallbacksHelper(this.clientCallbacksHelper)//
-            .build();
+
+        return this;
     }
 
     private initCredentials(mqttSettings: MqttSettings) {

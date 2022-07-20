@@ -29,8 +29,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     constructor(mam: MasterAssetModel) {
         super();
 
-        this._mam = mam;
-        this._mam.ProductInstanceUri = mam.getOI4Id();
+        this._mam = mam;;
 
         this._profile = new Profile(Application.mandatory);
 

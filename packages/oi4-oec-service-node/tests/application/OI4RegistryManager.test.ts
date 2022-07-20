@@ -14,7 +14,8 @@ const parsedMessage: IOPCUANetworkMessage = {
 describe('Unit test for OI4RegistryManager', () => {
 
     beforeEach(() => {
-        initializeLogger(true, 'HereIam', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, '', '');
+        const level = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter;
+        initializeLogger(true, 'HereIam', level, level, undefined, '', '');
         OI4RegistryManager.resetOI4RegistryManager();
         OI4RegistryManager.getEmitter().removeAllListeners();
     });

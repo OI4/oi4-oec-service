@@ -77,11 +77,11 @@ describe('Test Oi4ApplicationResources', () => {
     it('If oi4Id undefined all licenses are returned', () => {
         console.log('Wait for it...');
         const license = resources.getLicense(undefined);
-        expect(license).toEqual([]);
+        expect(license.length).toBe(0);
     });
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
-        expect(resources.getLicense(resources.oi4Id)).toEqual([]);
+        expect(resources.getLicense(resources.oi4Id).length).toBe(0);
     });
 
     it('should filter publicationList', ()=> {
@@ -98,6 +98,6 @@ describe('Test Oi4ApplicationResources', () => {
         expect(resources.getPublicationList(resources.oi4Id, Resource.EVENT)).toEqual([]);
         expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'wrong')).toEqual([]);
         expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'oee')).toContain(publicationList);
-});
+    });
 
 });
