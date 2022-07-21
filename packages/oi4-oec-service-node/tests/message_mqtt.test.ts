@@ -2,7 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {MqttSettings} from '../src';
 import fs = require('fs'); /*tslint:disable-line*/
 import {OI4Application} from '../src';
-import {EDeviceHealth, Health, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, Health, IOI4ApplicationResources, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MqttCredentialsHelper} from '../src';
@@ -21,7 +21,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
     return {
         oi4Id: '1',
         mam: {
-            DeviceClass: 'oi4',
+            DeviceClass: 'OI4.OTConnector',
             ManufacturerUri: 'test',
             Model: {locale: EOPCUALocale.enUS, text: 'text'},
             Description: {locale: EOPCUALocale.enUS, text: 'text'},
@@ -33,7 +33,8 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             SerialNumber: '23kl41oßmß132',
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
-            ProductInstanceUri: 'wo/'
+            ProductInstanceUri: 'wo/',
+            getServiceType(): ServiceTypes {return ServiceTypes.OT_CONNECTOR},
         },
         subscriptionList: [],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -100,7 +101,7 @@ describe('Connection to MQTT with TLS', () => {
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
@@ -132,7 +133,7 @@ describe('Connection to MQTT with TLS', () => {
             .build();
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify({
                 health: EDeviceHealth.NORMAL_0,
                 healthScore: 0

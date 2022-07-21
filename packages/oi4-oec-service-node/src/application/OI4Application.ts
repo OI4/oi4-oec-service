@@ -12,7 +12,8 @@ import {
     Resource,
     StatusEvent,
     SubscriptionList,
-    SubscriptionListConfig
+    SubscriptionListConfig,
+    ServiceTypes
 } from '@oi4/oi4-oec-service-model';
 import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
@@ -23,7 +24,7 @@ import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4
 class OI4Application extends EventEmitter {
 
     public oi4Id: string;
-    public serviceType: string;
+    public serviceType: ServiceTypes;
     public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
@@ -51,7 +52,7 @@ class OI4Application extends EventEmitter {
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
         super();
         this.oi4Id = applicationResources.oi4Id;
-        this.serviceType = applicationResources.mam.DeviceClass;
+        this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.applicationResources = applicationResources;
@@ -398,7 +399,7 @@ export class OI4ApplicationBuilder {
 
     build() {
         const oi4Id = this.applicationResources.oi4Id;
-        const serviceType = this.applicationResources.mam.DeviceClass;
+        const serviceType = this.applicationResources.mam.getServiceType();
         if (this.opcUaBuilder === undefined) {
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
         }

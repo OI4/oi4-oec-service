@@ -66,7 +66,7 @@ describe('Unit test for ClientCallbackHelper', () => {
         await clientCallbackHelper.onClientConnectCallback(mockOi4Application); // resources, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[0]).toBe('Connected successfully');
-        expect(fakeLogFile[1]).toBe('Published birth message on oi4/oi4/1/1/1/1/pub/mam/1/1/1/1');
+        expect(fakeLogFile[1]).toBe('Published birth message on oi4/OTConnector/1/1/1/1/pub/mam/1/1/1/1');
     });
 
 });

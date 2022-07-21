@@ -43,7 +43,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
 
-        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.DeviceClass);
+        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.getServiceType());
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper();
     }

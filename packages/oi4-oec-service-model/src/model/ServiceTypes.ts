@@ -8,7 +8,7 @@ export enum ServiceTypes {
     IT_CONNECTOR = 'ITConnector'
 }
 
-export function getServiceType(type: string) : ServiceTypes{
+export function getServiceType(type: string): ServiceTypes{
     switch (type) {
         case ServiceTypes.REGISTRY:
             return ServiceTypes.REGISTRY;
