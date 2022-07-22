@@ -9,7 +9,7 @@ import {
     ESyslogEventFilter,
     IEvent,
     IOI4ApplicationResources, MasterAssetModel,
-    Resource,
+    Resource, ServiceTypes,
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig
@@ -117,6 +117,8 @@ class OI4Application extends EventEmitter {
         await this.ownSubscribe(`${this.topicPreamble}/get/#`);
         await this.ownSubscribe(`${this.topicPreamble}/set/#`);
         await this.ownSubscribe(`${this.topicPreamble}/del/#`);
+        await this.ownSubscribe(`${this.oi4Id}/${ServiceTypes.OT_CONNECTOR}/+/+/+/+/pub/data`);
+        await this.ownSubscribe(`${this.oi4Id}/${ServiceTypes.OT_CONNECTOR}/+/+/+/+/pub/data/*`);
         this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder));
     }
 

@@ -68,7 +68,9 @@ export class MqttMessageProcessor {
                     break;
                 }
                 case TopicMethods.PUB: {
-                    LOGGER.log('No reaction needed to our own publish event', ESyslogEventFilter.informational);
+                    if(topicInfo.resource === Resource.DATA) {
+                        this.setData(topicInfo.filter, parsedMessage);
+                    }
                     break; // Only break here, because we should not react to our own publication messages
                 }
                 case TopicMethods.SET: {
@@ -96,7 +98,7 @@ export class MqttMessageProcessor {
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === Resource.DATA) {
-            this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emitter.emit('setData', {topicInfo: topicInfo, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await this.sendMetaData(topicInfo.filter);

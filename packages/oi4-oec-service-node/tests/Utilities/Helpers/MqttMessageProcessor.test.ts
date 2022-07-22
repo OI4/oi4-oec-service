@@ -11,7 +11,7 @@ import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {OI4RegistryManager} from '../../../src';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
-import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -137,6 +137,24 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[1]).toBe('No reaction needed to our own publish event');
+    });
+
+    it('Pub event should be listened on resource data with filter', async () => {
+        const filter = 'measurements';
+        const fakeTopic = `oi4/${ServiceTypes.OT_CONNECTOR}/${defaultFakeAppId}/${TopicMethods.PUB}/${Resource.DATA}/${defaultFakeOi4Id}/${filter}`;
+
+        await processMessage(jest.fn(), fakeTopic, Resource.DATA, defaultEmitter);
+        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile[1]).toBe(`Added ${filter} to dataLookup`);
+    });
+
+    it('Pub event should be listened on resource data with wildcard filter', async () => {
+        const filter = '*';
+        const fakeTopic = `oi4/${ServiceTypes.OT_CONNECTOR}/${defaultFakeAppId}/${TopicMethods.PUB}/${Resource.DATA}/${defaultFakeOi4Id}/${filter}`;
+
+        await processMessage(jest.fn(), fakeTopic, Resource.DATA, defaultEmitter);
+        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile[1]).toBe(`Added ${filter} to dataLookup`);
     });
 
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
