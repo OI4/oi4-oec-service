@@ -62,7 +62,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
             } as PublicationList);
 
             this._subscriptionList.push(SubscriptionList.clone({
-                topicPath: `oi4/${this.mam.DeviceClass}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
+                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
                 interval: 0,
                 config: SubscriptionListConfig.NONE_0,
             } as SubscriptionList));
