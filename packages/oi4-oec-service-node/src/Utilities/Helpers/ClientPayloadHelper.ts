@@ -25,14 +25,18 @@ export class ClientPayloadHelper {
     };
 
 
-    getDefaultHealthStatePayload(oi4Id: string): ValidatedPayload {
-        const healthState: Health = this.createHealthStatePayload(EDeviceHealth.NORMAL_0, 100);
-        const payload: IOPCUADataSetMessage[] = [this.createPayload(healthState, oi4Id)];
+    getHealthPayload(applicationResources: IOI4ApplicationResources, oi4Id: string): ValidatedPayload {
+        const health = applicationResources.getHealth(oi4Id);
+        if(health === undefined) {
+            return {abortSending: true, payload: undefined};
+        }
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(health, oi4Id)];
         return {abortSending: false, payload: payload};
     }
 
     createMamResourcePayload(applicationResources: IOI4ApplicationResources, subResource: string): ValidatedPayload {
-        const payload = [this.createPayload(applicationResources.mam, subResource)];
+        const mam = applicationResources.getMasterAssetModel(subResource);
+        const payload = [this.createPayload(mam, subResource)];
         return {abortSending: false, payload: payload};
     }
 

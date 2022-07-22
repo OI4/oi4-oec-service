@@ -1,5 +1,4 @@
 import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth} from './EContainer';
 import {
     IContainerConfig
 } from './IContainer';
@@ -18,9 +17,9 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     subResources: Map<string, IOI4Resource>;
 
-    setHealthState(healthState: number): void;
+    getMasterAssetModel(oi4Id: string): MasterAssetModel;
 
-    setHealth(health: EDeviceHealth): void;
+    getHealth(oi4Id: string): Health;
 
     getLicense(oi4Id: string, licenseId?: string): License[];
 
