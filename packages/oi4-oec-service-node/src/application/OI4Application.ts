@@ -112,21 +112,28 @@ class OI4Application extends EventEmitter {
         this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
     }
 
-    private async initIncomingMessageListeners() {
-        // Listen to own routes
-        await this.ownSubscribe(`${this.topicPreamble}/get/#`);
-        await this.ownSubscribe(`${this.topicPreamble}/set/#`);
-        await this.ownSubscribe(`${this.topicPreamble}/del/#`);
-        this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder));
-    }
-
-    private async ownSubscribe(topic: string): Promise<mqtt.ISubscriptionGrant[]> {
+    async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval: number = 0) {
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
-            config: SubscriptionListConfig.NONE_0,
-            interval: 0,
+            config: config,
+            interval: interval,
         } as SubscriptionList));
         return await this.client.subscribe(topic);
+    }
+
+    async removeSubscription(topic: string) {
+        return this.client.unsubscribe(topic).then(() => {
+            this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(subscription => subscription.topicPath !== topic);
+            return true;
+        });
+    }
+
+    private async initIncomingMessageListeners() {
+        // Listen to own routes
+        await this.addSubscription(`${this.topicPreamble}/get/#`);
+        await this.addSubscription(`${this.topicPreamble}/set/#`);
+        await this.addSubscription(`${this.topicPreamble}/del/#`);
+        this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder));
     }
 
     private initClientHealthHeartBeat() {
