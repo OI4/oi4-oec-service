@@ -274,7 +274,7 @@ class OI4Application extends EventEmitter {
                 LOGGER.log('Resource not implemented yet, abort sending...');
                 return {payload: undefined, abortSending: true};
                 break;
-    
+
             default: {
                 await this.sendError(`Unknown Resource: ${resource}`);
                 return;
