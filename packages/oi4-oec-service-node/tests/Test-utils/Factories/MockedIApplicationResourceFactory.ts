@@ -97,14 +97,12 @@ export class MockedIApplicationResourceFactory {
             getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
                 console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.subscriptionList;
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            setHealth(_: EDeviceHealth): void {
-                console.log('Called mocked setHealth. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            setHealthState(_: number): void {
-                console.log('Called mocked setHealthState. Do nothing....');
+            }, getHealth(oi4Id: string): Health {
+                console.log(`Called mocked getHealth with params ${oi4Id}`);
+                return this.health;
+            }, getMasterAssetModel(oi4Id: string): MasterAssetModel {
+                console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
+                return this.mam;
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             on(_: string, __: Function): IOI4ApplicationResources {

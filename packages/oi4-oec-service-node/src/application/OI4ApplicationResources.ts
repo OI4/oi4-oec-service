@@ -1,6 +1,8 @@
 import {
+    Health,
     IContainerConfig,
-    IOI4ApplicationResources, IOI4Resource,
+    IOI4ApplicationResources,
+    IOI4Resource,
     MasterAssetModel,
     RTLicense,
 } from '@oi4/oi4-oec-service-model';
@@ -11,7 +13,7 @@ import {
     IOPCUANetworkMessage
 } from '@oi4/oi4-oec-service-opcua-model';
 import {existsSync, readFileSync} from 'fs';
-import {OI4Resource} from "./OI4Resource";
+import {OI4Resource, OI4ResourceEvent} from "./OI4Resource";
 import os from "os";
 import path = require('path');
 
@@ -49,6 +51,24 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         throw new Error(`MAM file ${path.resolve(filePath)} does not exist`);
     }
 
+    get oi4Id(): string {
+        return this.mam.ProductInstanceUri;
+    }
+
+    public getMasterAssetModel(oi4Id: string): MasterAssetModel {
+        if(oi4Id === this.oi4Id) {
+            return this.mam;
+        }
+        return this.subResources.get(oi4Id).mam;
+    }
+
+    public getHealth(oi4Id: string): Health {
+        if(oi4Id === this.oi4Id) {
+            return this.health;
+        }
+        return this.subResources.get(oi4Id).health;
+    }
+
     hasSubResource(oi4Id: string) {
         return this.subResources.has(oi4Id);
     }
@@ -60,12 +80,14 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return this.subResources.values();
     }
 
-    setSubResource(subResource: IOI4Resource): void {
+    addSubResource(subResource: IOI4Resource): void {
         this.subResources.set(subResource.oi4Id, subResource);
+        this.emit(OI4ResourceEvent.RESOURCE_ADDED, subResource.oi4Id);
     }
 
-    deleteSubResource(oi4Id: string): boolean {
+    removeSubResource(oi4Id: string): boolean {
         return this.subResources.delete(oi4Id);
+        this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
     }
 
     /**

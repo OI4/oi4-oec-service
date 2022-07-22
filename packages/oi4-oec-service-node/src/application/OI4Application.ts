@@ -19,6 +19,9 @@ import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {MqttSettings} from './MqttSettings';
+import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
+import {OI4ResourceEvent} from "./OI4Resource";
 
 class OI4Application extends EventEmitter {
 
@@ -86,7 +89,7 @@ class OI4Application extends EventEmitter {
             async (cutTopic: string) => {
                 await this.sendMetaData(cutTopic)
             },
-            async (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {
+            async (resource: Resource, messageId: string, subResource: string, filter: string, page: number, perPage: number) => {
                 await this.sendResource(resource, messageId, subResource, filter, page, perPage)
             },
             super.removeListener('', () => {
@@ -109,7 +112,8 @@ class OI4Application extends EventEmitter {
         await this.clientCallbacksHelper.onClientConnectCallback(this);
         await this.initIncomingMessageListeners();
         this.initClientHealthHeartBeat();
-        this.applicationResources.on(AsyncClientEvents.RESOURCE_CHANGED, this.resourceChangeCallback.bind(this));
+        this.applicationResources.on(OI4ResourceEvent.RESOURCE_CHANGED, this.resourceChangedCallback.bind(this));
+        this.applicationResources.on(OI4ResourceEvent.RESOURCE_ADDED, this.resourceAddedCallback.bind(this));
     }
 
     private async initIncomingMessageListeners() {
@@ -130,25 +134,23 @@ class OI4Application extends EventEmitter {
     }
 
     private initClientHealthHeartBeat() {
-        setInterval(() => {
-            this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then(() => {
-
-            });
-        }, this.clientHealthHeartbeatInterval); // send our own health every 60 seconds!
+        setInterval(async () => {
+            await this.sendResource(Resource.HEALTH, '', this.oi4Id, this.oi4Id).then();
+            for(const resource of this.applicationResources.subResources.values()){
+                await this.sendResource(Resource.HEALTH, '', resource.oi4Id, resource.oi4Id).then();
+            }
+        }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
-    private resourceChangeCallback(resource: string) {
+    private resourceChangedCallback(oi4Id: string, resource: Resource) {
         if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', '', this.oi4Id).then();
+            this.sendResource(Resource.HEALTH, '', oi4Id, oi4Id).then();
         }
     }
 
-    // FIXME: Shall we remove this commented code?
-    // private async ownUnsubscribe(topic: string) {
-    //   // Remove from subscriptionList
-    //   this.applicationResources.subscriptionList.subscriptionList = this.applicationResources.subscriptionList.subscriptionList.filter(value => value.topicPath !== topic);
-    //   return await this.client.unsubscribe(topic);
-    // }
+    private resourceAddedCallback(oi4Id: string) {
+        this.sendResource(Resource.MAM, '', oi4Id, oi4Id).then();
+    }
 
     // GET SECTION ----------------//
     /**
@@ -203,7 +205,7 @@ class OI4Application extends EventEmitter {
      * @param page
      * @param perPage
      */
-    async sendResource(resource: string, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
+    async sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
         const validatedPayload: ValidatedPayload = await this.preparePayload(resource, subResource, filter);
 
         if (validatedPayload.abortSending) {
@@ -213,7 +215,7 @@ class OI4Application extends EventEmitter {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
     }
 
-    async preparePayload(resource: string, subResource: string, filter: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: Resource, subResource: string, filter: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = this.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -235,7 +237,7 @@ class OI4Application extends EventEmitter {
                 break;
             }
             case Resource.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getDefaultHealthStatePayload(this.oi4Id);
+                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, subResource);
                 break;
             }
             case Resource.LICENSE_TEXT: {
@@ -359,10 +361,6 @@ class OI4Application extends EventEmitter {
         return this.mqttMessageProcessor;
     }
 }
-
-import {MqttSettings} from './MqttSettings';
-
-import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 
 export class OI4ApplicationBuilder {
     protected applicationResources: IOI4ApplicationResources;

@@ -35,13 +35,15 @@ export class ServiceDemoOI4ApplicationResources extends OI4ApplicationResources 
 
         this.assets.map(asset => {
             const masterAssetModel = asset.toMasterAssetModel();
-            this.setSubResource(new OI4Resource(masterAssetModel));
+            this.addSubResource(new OI4Resource(masterAssetModel));
         });
     }
 
     initializeLogger(): void {
         if(LOGGER === undefined) {
-            initializeLogger(true, undefined, process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, undefined, this.oi4Id, undefined);
+            const publishingLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
+            const logLevel = process.env.OI4_EDGE_LOG_LEVEL ? process.env.OI4_EDGE_LOG_LEVEL as ESyslogEventFilter : publishingLevel;
+            initializeLogger(true, undefined, logLevel, publishingLevel, undefined, this.oi4Id, undefined);
         }
     }
 }
