@@ -28,12 +28,12 @@ describe('Unit test for ClientPayloadHelper', () => {
     }];
 
     let clientPayloadHelper: ClientPayloadHelper;
-    let mockedIContainerState: IOI4ApplicationResources;
+    let mockedOI4ApplicationResources: IOI4ApplicationResources;
 
     beforeEach(() => {
         DataSetWriterIdManager.resetDataSetWriterIdManager();
         clientPayloadHelper = new ClientPayloadHelper();
-        mockedIContainerState = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
+        mockedOI4ApplicationResources = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
     });
 
     afterEach(() => {
@@ -46,7 +46,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('getDefaultHealthStatePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.getDefaultHealthStatePayload(mockedIContainerState.oi4Id);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.getHealthPayload(mockedOI4ApplicationResources, mockedOI4ApplicationResources.oi4Id);
         checkAgainstDefaultPayload(validatedPayload);
     });
 
@@ -68,7 +68,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedIContainerState, 'whatever');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'whatever');
         checkForUndefinedPayload(validatedPayload);
     });
 
@@ -81,13 +81,13 @@ describe('Unit test for ClientPayloadHelper', () => {
     };
 
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedIContainerState, 'fakeKey');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'fakeKey');
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText')));
     });
 
     it('createLicenseSendResourcePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedIContainerState, '2', 'license');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedOI4ApplicationResources, '2', 'license');
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
     });
@@ -120,33 +120,33 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createPublicationListSendResourcePayload works when matching OI4 Id is supplied', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID);
         checkAgainstPublicationPayload(validatedPayload, 0);
     });
 
     it('createPublicationListSendResourcePayload works when matching resource is supplied', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID, Resource.HEALTH);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resource.HEALTH);
         checkAgainstPublicationPayload(validatedPayload, 0);
     });
 
     it('createPublicationListSendResourcePayload works when matching filter is supplied', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID_2, Resource.EVENT, 'fakeFilter');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID_2, Resource.EVENT, 'fakeFilter');
         checkAgainstPublicationPayload(validatedPayload, 0, Resource.EVENT, 43, OI4_ID_2, 'fakeFilter');
     });
 
     it('createPublicationListSendResourcePayload return undefined payload when OI4 Id does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, `not_there_${OI4_ID}`);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, `not_there_${OI4_ID}`);
         checkForEmptyPayload(validatedPayload);
     });
 
     it('createPublicationListSendResourcePayload return undefined when resource does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID, Resource.LICENSE);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resource.LICENSE);
         checkForEmptyPayload(validatedPayload);
     });
 
 
     it('createPublicationListSendResourcePayload return undefined when filter does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedIContainerState, OI4_ID, Resource.HEALTH, '');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resource.HEALTH, '');
         checkForEmptyPayload(validatedPayload);
     });
 
@@ -164,7 +164,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createSubscriptionListSendResourcePayload works when OI4 ID matches', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedIContainerState, 'oi4Id');
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, 'oi4Id');
         checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', OI4_ID);
     });
 
@@ -189,27 +189,27 @@ describe('Unit test for ClientPayloadHelper', () => {
     // }
 
     // it('createConfigSendResourcePayload works when filter is empty ', async () => {
-    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, '', NaN, 'fakeOi4Id');
+    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedOI4ApplicationResources, '', NaN, 'fakeOi4Id');
     //     checkAgainstConfigPayload(validatedPayload);
     // });
     //
     // it('createConfigSendResourcePayload works when filter is equal to Payload.context.name', async () => {
-    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'fakecontext', 42, 'fakeOi4Id');
+    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedOI4ApplicationResources, 'fakecontext', 42, 'fakeOi4Id');
     //     checkAgainstConfigPayload(validatedPayload);
     // });
     //
     // it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is NaN', async () => {
-    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', NaN, 'config');
+    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedOI4ApplicationResources, 'whatever', NaN, 'config');
     //     checkForUndefinedPayload(validatedPayload);
     // });
     //
     // it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is 8', async () => {
-    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 8, 'config');
+    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedOI4ApplicationResources, 'whatever', 8, 'config');
     //     checkAgainstConfigPayload(validatedPayload);
     // });
     //
     // it('createConfigSendResourcePayload works when filter is not equal to Payload.context.name and datasetWriterId is invalid', async () => {
-    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedIContainerState, 'whatever', 9, 'config');
+    //     const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(mockedOI4ApplicationResources, 'whatever', 9, 'config');
     //     checkForUndefinedPayload(validatedPayload);
     // });
 
