@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttCredentialsHelper, MqttSettings, OI4Application, OI4ApplicationResources} from '../../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../../src';
 import {
     Application,
     CDataSetWriterIdLookup,
@@ -567,7 +567,7 @@ describe('OI4MessageBus test', () => {
         // @ts-ignore
         const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
         expect(sendResourceMock).toBeCalledTimes(1);
         expect(eventEmitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
