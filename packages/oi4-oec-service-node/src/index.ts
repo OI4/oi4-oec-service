@@ -8,3 +8,4 @@ export {FileLogger} from './Utilities/FileLogger/FileLogger';
 export * from './Utilities/Helpers/TopicParser';
 export {TopicInfo, TopicWrapper} from './Utilities/Helpers/Types';
 export {TopicMethods, getTopicMethod} from './Utilities/Helpers/Enums';
+export {MqttMessageProcessor} from './Utilities/Helpers/MqttMessageProcessor';
