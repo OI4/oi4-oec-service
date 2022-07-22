@@ -290,6 +290,7 @@ export class OPCUABuilder {
     }
   }
 
+
   async checkPayloadType(payload: any): Promise<string> {
     let payloadMessageValidation = false;
     try {

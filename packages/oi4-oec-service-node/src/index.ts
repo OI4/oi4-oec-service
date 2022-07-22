@@ -5,3 +5,5 @@ export * from './application/MqttSettings';
 export * from './application/OI4ApplicationFactory';
 export * from './Config/SettingsPaths';
 export {FileLogger} from './Utilities/FileLogger/FileLogger';
+export {MqttMessageProcessor} from './Utilities/Helpers/MqttMessageProcessor';
+export * from './Utilities/Helpers/Types';

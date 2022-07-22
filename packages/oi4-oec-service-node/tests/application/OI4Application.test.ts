@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttCredentialsHelper, MqttSettings, OI4Application, OI4ApplicationResources} from '../../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../../src';
 import {
     Application,
     CDataSetWriterIdLookup,
@@ -26,7 +26,7 @@ import {
     EOPCUABaseDataType,
     EOPCUALocale,
     EOPCUAMessageType,
-    EOPCUAStatusCode,
+    EOPCUAStatusCode, IOPCUAMetaData,
     IOPCUANetworkMessage,
     OPCUABuilder
 } from '@oi4/oi4-oec-service-opcua-model';
@@ -235,11 +235,14 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
             console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
             return this.subscriptionList;
+        },
+        addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void {
+            console.log(`function addDataSet called with ${dataSetName} ${data} ${metadata}`);
         }
     }
 }
 
-let defaultOi4ApplicationResources: OI4ApplicationResources;
+let defaultOi4ApplicationResources: IOI4ApplicationResources;
 let defaultOi4Application: OI4Application;
 
 const defaultTopicPrefix = 'oi4/Registry';
@@ -294,7 +297,7 @@ describe('OI4MessageBus test', () => {
             }
         );
         defaultOi4Application = getOi4App();
-        defaultOi4ApplicationResources = defaultOi4Application.applicationResources as OI4ApplicationResources;
+        defaultOi4ApplicationResources = defaultOi4Application.applicationResources as IOI4ApplicationResources;
     });
 
     afterAll(() => {
@@ -560,7 +563,7 @@ describe('OI4MessageBus test', () => {
         // @ts-ignore
         const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
         expect(sendResourceMock).toBeCalledTimes(1);
         expect(eventEmitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
@@ -594,7 +597,7 @@ describe('OI4MessageBus test', () => {
         // @ts-ignore
         const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
         expect(sendResourceMock).toBeCalledTimes(1);
         expect(eventEmitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
