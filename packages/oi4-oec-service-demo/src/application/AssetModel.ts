@@ -1,4 +1,4 @@
-import {MasterAssetModel} from "@oi4/oi4-oec-service-model";
+import {MasterAssetModel} from '@oi4/oi4-oec-service-model';
 
 export class Asset extends MasterAssetModel {
 
