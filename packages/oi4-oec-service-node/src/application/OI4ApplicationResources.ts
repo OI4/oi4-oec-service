@@ -32,8 +32,6 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = DEFAULT_MAM_FILE) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this._mam.ProductInstanceUri = this._mam.getOI4Id()
-
         this.subResources = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
@@ -44,6 +42,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (existsSync(filePath)) {
             const mam = MasterAssetModel.clone(JSON.parse(readFileSync(filePath, 'utf8')));
             mam.SerialNumber = os.hostname();
+            mam.ProductInstanceUri = mam.getOI4Id()
             return mam;
         }
         throw new Error(`MAM file ${path.resolve(filePath)} does not exist`);
