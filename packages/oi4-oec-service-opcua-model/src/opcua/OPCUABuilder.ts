@@ -289,25 +289,4 @@ export class OPCUABuilder {
       throw `Validation failed with: ${validateErr.message}`
     }
   }
-
-  async checkPayloadType(payload: any): Promise<string> {
-    let payloadMessageValidation = false;
-    try {
-      payloadMessageValidation = await this.jsonValidator.validate('pagination.schema.json', payload);
-    } catch (validateErr) {
-      payloadMessageValidation = false;
-    }
-    if (payloadMessageValidation === true) {
-      return 'pagination';
-    }
-    try {
-      payloadMessageValidation = await this.jsonValidator.validate('locale.schema.json', payload);
-    } catch (validateErr) {
-      payloadMessageValidation = false;
-    }
-    if (payloadMessageValidation === true) {
-      return 'locale';
-    }
-    return 'none';
-  }
 }
