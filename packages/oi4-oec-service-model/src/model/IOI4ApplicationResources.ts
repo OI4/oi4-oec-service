@@ -30,7 +30,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
     on(event: string, listener: Function): this;
 
     // Methods
-    addDataSet(dataname: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
+    addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }
 
 export interface IOI4Resource {
