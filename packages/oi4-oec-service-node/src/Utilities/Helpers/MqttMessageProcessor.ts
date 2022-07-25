@@ -9,7 +9,7 @@ import {
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from './Types';
-import {PayloadTypes, TopicMethods} from './Enums';
+import {TopicMethods} from './Enums';
 import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 import {TopicParser} from './TopicParser';
@@ -93,6 +93,8 @@ export class MqttMessageProcessor {
         LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
 
         if (topicInfo.resource === Resource.DATA) {
@@ -103,29 +105,13 @@ export class MqttMessageProcessor {
             return;
         }
 
-        let payloadType: string = PayloadTypes.EMPTY;
         let page = 0;
         let perPage = 0;
 
-        if (parsedMessage.Messages.length !== 0) {
-            for (const messages of parsedMessage.Messages) {
-                payloadType = await builder.checkPayloadType(messages.Payload);
-                if (payloadType === PayloadTypes.LOCALE) {
-                    LOGGER.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
-                }
-                if (payloadType === PayloadTypes.PAGINATION) {
-                    page = messages.Payload.page;
-                    perPage = messages.Payload.perPage;
-                    if (page === 0 || perPage === 0) {
-                        LOGGER.log('Pagination requested either page or perPage 0, aborting send...');
-                        return;
-                    }
-                }
-                if (payloadType === PayloadTypes.NONE) { // Not empty, locale or pagination
-                    LOGGER.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
-                    return;
-                }
-            }
+        if(parsedMessage.Messages.length > 0 ) {
+            const payload = parsedMessage.Messages[0].Payload;
+            page = payload.page !== undefined ? payload.page : 0;
+            perPage = payload.perPage !== undefined ? payload.perPage : 0;
         }
 
         this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)

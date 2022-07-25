@@ -25,9 +25,6 @@ export class MockedOPCUABuilderFactory {
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
             return true;
         });
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
-            return Promise.resolve('FakeType');
-        });
 
         return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(appId, info.fakeServiceType);
     }
