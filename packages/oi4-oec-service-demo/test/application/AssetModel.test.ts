@@ -9,6 +9,7 @@ describe('AssetModel.ts test', () => {
 
         const mam = Object.keys(file).reduce((object, key) => {
             if (key !== 'location') {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
                 object[key]= file[key]
             }

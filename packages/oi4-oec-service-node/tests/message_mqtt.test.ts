@@ -1,17 +1,16 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {MqttSettings} from '../src';
 import fs = require('fs'); /*tslint:disable-line*/
-import {OI4Application} from '../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../src';
 import {
     EDeviceHealth,
     Health,
     IOI4ApplicationResources,
     IOI4Resource,
-    MasterAssetModel
+    MasterAssetModel,
+    Resource,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../src';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -26,6 +25,11 @@ const getStandardMqttConfig = (): MqttSettings => {
 const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
         oi4Id: '1',
+        getHealth(_: string): Health {
+            return {
+                resourceType(): Resource {return Resource.HEALTH},
+                health: EDeviceHealth.NORMAL_0, healthScore: 0}
+        },
         mam: MasterAssetModel.clone({
             DeviceClass: 'oi4',
             ManufacturerUri: 'test',
@@ -99,7 +103,6 @@ describe('Connection to MQTT with TLS', () => {
             cb();
         });
 
-
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4Application: OI4Application = OI4Application.builder()
             .withApplicationResources(getOi4ApplicationResources())
@@ -108,7 +111,7 @@ describe('Connection to MQTT with TLS', () => {
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.DeviceClass}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
-            expect.stringContaining(JSON.stringify(getOi4ApplicationResources().mam)));
+            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0})));
     });
 
     it('should send close message on close', async () => {

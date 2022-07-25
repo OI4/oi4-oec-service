@@ -33,7 +33,7 @@ import {
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
-import {OI4ResourceEvent} from "../../dist/application/OI4Resource";
+import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -332,13 +332,12 @@ describe('OI4MessageBus test', () => {
         }
     });
 
-    it('should trigger resourceChanged', (done) => {
+    it('should trigger resourceChanged', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const onResourceMock = jest.fn((event, cb) => {
             cb(event);
             expect(event).toBe(OI4ResourceEvent.RESOURCE_CHANGED);
-            done()
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -349,16 +348,15 @@ describe('OI4MessageBus test', () => {
             .build()
     });
 
-    it('should trigger health from resourceChangedCallback', (done) => {
+    it('should trigger health from resourceChangedCallback', () => {
         const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const onResourceMock = jest.fn((_, cb) => {
-            cb(Resource.HEALTH);
-            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', '', resources.oi4Id);
-            mockSendResource.mockRestore();
-            done();
+            cb(resources.oi4Id, Resource.HEALTH);
+            expect(mockSendResource).toHaveBeenCalled();
+            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', resources.oi4Id, resources.oi4Id);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -402,10 +400,8 @@ describe('OI4MessageBus test', () => {
 
     it('should send resource with valid filter', async () => {
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);
-        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`;
-        expect(publish.mock.calls[2][0]).toBe(expectedAddress);
-        expect(publish.mock.calls[2][1]).not.toBeUndefined();
-        expect(publish.mock.calls[2][1]).not.toBeNull();
+        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
+        expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
