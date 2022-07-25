@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "rootDir": "../",
+    "resolveJsonModule": true,
+    "sourceMap": true
+  },
+  "include": [
+    "**/*",
+    "**/__fixtures__/*.json",
+    "../../../node_modules/@types/jest/index.d.ts"
+  ],
+  "references": [
+    {
+      "path": ".."
+    }
+  ]
+}

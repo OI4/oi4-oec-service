@@ -45,7 +45,6 @@ export interface IOI4Application extends EventEmitter {
 
 class OI4Application extends EventEmitter implements IOI4Application {
 
-    public oi4Id: string;
     public serviceType: string;
     public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
@@ -73,7 +72,6 @@ class OI4Application extends EventEmitter implements IOI4Application {
      */
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
         super();
-        this.oi4Id = applicationResources.oi4Id;
         this.serviceType = applicationResources.mam.DeviceClass;
         this.builder = opcUaBuilder;
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
@@ -106,6 +104,10 @@ class OI4Application extends EventEmitter implements IOI4Application {
         this.mqttMessageProcessor =  mqttMessageProcessor;
 
         this.initClientCallbacks();
+    }
+
+    get oi4Id() {
+        return this.applicationResources.oi4Id;
     }
 
     private initClientCallbacks() {
