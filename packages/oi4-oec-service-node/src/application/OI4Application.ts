@@ -266,6 +266,13 @@ class OI4Application extends EventEmitter {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, subResource, filter);
                 break;
             }
+
+            case Resource.REFERENCE_DESIGNATION:
+            case Resource.INTERFACES:
+                LOGGER.log('Resource not implemented yet, abort sending...');
+                return {payload: undefined, abortSending: true};
+                break;
+    
             default: {
                 await this.sendError(`Unknown Resource: ${resource}`);
                 return;
