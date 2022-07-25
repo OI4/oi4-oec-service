@@ -24,7 +24,7 @@ export class MqttMessageProcessor extends EventEmitter {
      * @param message - the entire binary message from the messagebus
      * @param builder
      */
-    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder, IOI4Application: IOI4Application) => {
+    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application) => {
         try {
             const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
             await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
@@ -33,7 +33,7 @@ export class MqttMessageProcessor extends EventEmitter {
             MessageValidator.doTopicDataValidation(wrapper, parsedMessage);
 
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
-            await this.processMessage(topicInfo, parsedMessage, builder, IOI4Application);
+            await this.processMessage(topicInfo, parsedMessage, builder, oi4Application);
         } catch (e) {
             LOGGER.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
             return;
@@ -46,7 +46,7 @@ export class MqttMessageProcessor extends EventEmitter {
 
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo.appId === oi4Application.applicationResources.oi4Id) {
+        if (topicInfo.appId === oi4Application.oi4Id) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
                     await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);
@@ -70,11 +70,11 @@ export class MqttMessageProcessor extends EventEmitter {
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
-            this.handleForeignMessage(topicInfo, parsedMessage);
+            await this.handleForeignMessage(topicInfo, parsedMessage);
         }
     }
 
-    protected handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 

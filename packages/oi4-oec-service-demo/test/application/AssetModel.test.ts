@@ -1,7 +1,6 @@
 import fs from 'fs';
-// @ts-ignore
 import {Asset} from '../../src/application/AssetModel';
-import {Resource} from "@oi4/oi4-oec-service-model";
+import {Resource} from '@oi4/oi4-oec-service-model';
 
 describe('AssetModel.ts test', () => {
     it('should return MasterAssetModel', async () => {
