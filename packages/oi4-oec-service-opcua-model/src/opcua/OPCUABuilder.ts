@@ -24,6 +24,7 @@ export class OPCUABuilder {
   lastMessageId: string;
   private topicRex: RegExp;
   private readonly msgSizeOffset: number;
+  private overflowCounter = 0;
 
   constructor(oi4Id: string, serviceType: string, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
@@ -36,6 +37,13 @@ export class OPCUABuilder {
     this.topicRex = new RegExp(topicPathSchemaJson.pattern);
   }
 
+  public getCountedOverflows(): number {
+    return this.overflowCounter;
+  }
+
+  private incrementOverflowCounter(): void {
+     this.overflowCounter++;
+  }
 
   buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
     const networkMessageArray: IOPCUANetworkMessage[] = [];
@@ -117,7 +125,8 @@ export class OPCUABuilder {
       correlationId: correlationId,
     };
     if (this.lastMessageId === opcUaDataMessage.MessageId) {
-      opcUaDataMessage.MessageId = `OverFlow${opcUaDataMessage.MessageId}`;
+      opcUaDataMessage.MessageId = `${this.getCountedOverflows()}${opcUaDataMessage.MessageId}`;
+      this.incrementOverflowCounter();
     } else {
       this.lastMessageId = opcUaDataMessage.MessageId;
     }
@@ -148,7 +157,8 @@ export class OPCUABuilder {
       MetaData: opcUaMetaDataPayload,
     };
     if (this.lastMessageId === opcUaMetaDataMessage.MessageId) {
-      opcUaMetaDataMessage.MessageId = `OverFlow${opcUaMetaDataMessage.MessageId}`;
+      opcUaMetaDataMessage.MessageId = `${this.getCountedOverflows()}${opcUaMetaDataMessage.MessageId}`;
+      this.incrementOverflowCounter();
     } else {
       this.lastMessageId = opcUaMetaDataMessage.MessageId;
     }
