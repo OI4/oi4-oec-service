@@ -15,16 +15,31 @@ import {TopicParser} from './TopicParser';
 import {MessageValidator} from './MessageValidator';
 import {IOI4Application} from '../../application/OI4Application';
 
-export class MqttMessageProcessor extends EventEmitter {
+export enum MqttMessageProcessorEventStatus {
+    GET_DATA = 'getData',
+    SET_CONFIG = 'setConfig',
+}
+
+export interface IMqttMessageProcessor extends EventEmitter {
+    processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
+    handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void>;
+}
+
+export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
     private readonly METADATA = 'metadata';
+
+    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
+    }
 
     /**
      * Processes the incoming mqtt message by parsing the different elements of the topic and reacting to it
      * @param topic - the incoming topic from the messagebus
      * @param message - the entire binary message from the messagebus
      * @param builder
+     * @param oi4Application
      */
-    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application) => {
+    public async processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application) {
         try {
             const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
             await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
@@ -74,14 +89,10 @@ export class MqttMessageProcessor extends EventEmitter {
         }
     }
 
-    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
-        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
-    }
-
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
 
         if (topicInfo.resource === Resource.DATA) {
-            this.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emit(MqttMessageProcessorEventStatus.GET_DATA, {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
@@ -168,7 +179,7 @@ export class MqttMessageProcessor extends EventEmitter {
         }
         const status: StatusEvent = new StatusEvent(applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
-        this.emit('setConfig', status);
+        this.emit(MqttMessageProcessorEventStatus.SET_CONFIG, status);
         await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
     }
 

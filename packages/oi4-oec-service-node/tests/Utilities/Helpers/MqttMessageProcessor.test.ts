@@ -1,15 +1,14 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {
-    MqttMessageProcessor,
-} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
-import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {MqttMessageProcessor, OI4RegistryManager} from '../../../src';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {OI4RegistryManager} from '../../../src';
+import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
+import {MockOi4Application} from '../../Test-utils/Factories/MockedOi4Application';
+import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {MqttMessageProcessorEventStatus} from "../../../dist/Utilities/Helpers/MqttMessageProcessor";
 
 describe('Unit test for MqttMessageProcessor', () => {
 
@@ -25,6 +24,10 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultFakeOi4Id = '1/1/1/1';
     const defaultFakeTag = 'tag';
 
+    const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel('mymanufacturer.com', '1', '1', '1');
+    const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(mam);
+    const oi4Application = new MockOi4Application(applicationResource, ServiceTypes.AGGREGATION);
+
     beforeEach(() => {
         //Flush the messages log
         fakeLogFile.splice(0, fakeLogFile.length);
@@ -35,13 +38,13 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     function getMockedData() {
         return {
-            fakeOi4Id: defaultFakeAppId,
-            fakeServiceType: 'fakeServiceType',
-            fakeTopic: `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`,
+            oi4Id: defaultFakeAppId,
+            serviceType: ServiceTypes.AGGREGATION,
+            topic: `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`,
         }
     }
 
-    function mockBuilder(info: any): OPCUABuilder {
+    function mockBuilder(serviceType: ServiceTypes): OPCUABuilder {
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
             return Promise.resolve(true)
         });
@@ -52,41 +55,27 @@ describe('Unit test for MqttMessageProcessor', () => {
             return Promise.resolve('FakeType');
         });
 
-        return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(defaultFakeAppId, info.fakeServiceType);
+        return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(defaultFakeAppId, serviceType);
     }
 
-    function getMqttProcessorAndMockedData(): any {
-        const mockedData = getMockedData();
-        const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()
-        mam.ManufacturerUri = 'mymanufacturer.com';
-        mam.Model.text = '1';
-        mam.ProductCode = '1';
-        mam.SerialNumber = '1';
-
-        // const applicationResource = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance(mam);
-        // applicationResource.oi4Id = defaultFakeAppId;
-        return {
-            processor: new MqttMessageProcessor(),
-            mockedData: mockedData,
-        }
-    }
-
-    async function processMessage(fakeTopic: string, resource: string ) { //, emitter: EventEmitter = defaultEmitter) {
+    async function processMessage(fakeTopic: string, resource: string, processor = new MqttMessageProcessor()) { //, emitter: EventEmitter = defaultEmitter) {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: DataSetClassIds[resource],
             PublisherId: `Registry/${defaultFakeAppId}`,
         };
 
-        const processorAndMockedData = getMqttProcessorAndMockedData();
-        processorAndMockedData.mockedData.fakeTopic = fakeTopic;
-        await processorAndMockedData.processor.processMqttMessage(processorAndMockedData.mockedData.fakeTopic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        const mockedData = getMockedData();
+        mockedData.topic = fakeTopic;
+        await processor.processMqttMessage(mockedData.topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
     }
 
-    async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined, ) { //emitter: EventEmitter = defaultEmitter) {
+    async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined) {
         const mockedSendMessage = jest.fn();
-        await processMessage(fakeTopic, resource);
-        // TODO handle event emitter
+        const processor = new MqttMessageProcessor();
+        processor.on(MqttMessageProcessorEventStatus.GET_DATA, mockedSendMessage);
+        await processMessage(fakeTopic, resource, processor);
+
         expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0, 0);
     }
 
@@ -105,8 +94,9 @@ describe('Unit test for MqttMessageProcessor', () => {
             PublisherId: `Registry/${registryFakeAppId}`,
         };
         const topic = `oi4/${jsonObj.PublisherId}/${TopicMethods.GET}/mam/${defaultFakeOi4Id}`;
-        const processorAndMockedData = getMqttProcessorAndMockedData();
-        await processorAndMockedData.processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        const mockedData = getMockedData();
+        const processor = new MqttMessageProcessor();
+        await processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
 
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${registryFakeAppId}`);
@@ -121,8 +111,9 @@ describe('Unit test for MqttMessageProcessor', () => {
         };
         const topic = `oi4/${jsonObj.PublisherId}/${TopicMethods.GET}/mam/${defaultFakeFilter}`;
 
-        const processorAndMockedData = getMqttProcessorAndMockedData();
-        await processorAndMockedData.processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(processorAndMockedData.mockedData));
+        const mockedData = getMockedData();
+        const processor = new MqttMessageProcessor();
+        await processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
 
         expect(fakeLogFile.length).toBe(1);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
@@ -145,7 +136,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             await checkResultGet(resource, fakeTopic);
         }
 
-        //Set e Del for referenceDesignation basically do nothing
+        //Set and Del for referenceDesignation basically do nothing
     });
 
     it('extract topic info works with Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {

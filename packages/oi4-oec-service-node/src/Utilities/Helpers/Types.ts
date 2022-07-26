@@ -1,5 +1,5 @@
-import {IOPCUADataSetMessage, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {Resource, ServiceTypes} from "@oi4/oi4-oec-service-model";
+import {IOPCUADataSetMessage, IOPCUANetworkMessage, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Resource} from "@oi4/oi4-oec-service-model";
 import {TopicMethods} from "./Enums";
 
 export type ValidatedFilter = {

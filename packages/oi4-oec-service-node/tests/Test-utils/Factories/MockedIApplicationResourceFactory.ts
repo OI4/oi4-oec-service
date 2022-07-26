@@ -134,17 +134,17 @@ export class MockedIApplicationResourceFactory {
         return licenseText;
     }
 
-    static getMockedDefaultMasterAssetModel(): MasterAssetModel {
+    static getMockedDefaultMasterAssetModel(manufacturerUri = 'fakeManufacturerUri', modelText = '1', productCode = 'fakeProductCode', serialNumber = 'fakeSerialNumber'): MasterAssetModel {
         return MasterAssetModel.clone({
-            ManufacturerUri: 'fakeManufacturerUri',
-            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel'),
-            ProductCode: 'fakeProductCode',
+            ManufacturerUri: manufacturerUri,
+            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText(modelText),
+            ProductCode: productCode,
             HardwareRevision: 'fakeHardwareRevision',
             SoftwareRevision: 'fakeSoftwareRevision',
             DeviceRevision: 'fakeDeviceRevision',
             DeviceManual: 'fakeDeviceManual',
             DeviceClass: 'fakeDeviceClass',
-            SerialNumber: 'fakeSerialNumber',
+            SerialNumber: serialNumber,
             ProductInstanceUri: 'fakeProductInstanceURI',
             RevisionCounter: -1,
             Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),

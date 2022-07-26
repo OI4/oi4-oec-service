@@ -1,4 +1,5 @@
-import {getResource, getServiceType, Resource} from '@oi4/oi4-oec-service-model';
+import {getResource, Resource} from '@oi4/oi4-oec-service-model';
+import {getServiceType} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
 

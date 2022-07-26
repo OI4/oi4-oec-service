@@ -1,5 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {
     ESyslogEventFilter, EventCategory,
     IEvent,
@@ -61,7 +61,7 @@ class Logger {
         CAT_GENERIC_99: 'generic',
     }
 
-    constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string) {
+    constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: string, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
         /**
          * Enables or disables the logging. Default: `true`
          * @type {boolean}
@@ -89,13 +89,11 @@ class Logger {
         if (mqttClient) {
             this._mqttClient = mqttClient;
         }
-        if (oi4Id) {
-            this._oi4Id = oi4Id;
-            this._builder = new OPCUABuilder(oi4Id, 'Registry');
-        }
-        if (serviceType) {
-            this._serviceType = serviceType;
-        }
+
+        this._builder = new OPCUABuilder(oi4Id, serviceType);
+        this._oi4Id = oi4Id;
+        this._serviceType = serviceType;
+
         this._syslogTransport = new Syslog({type: '5424'});
         this._winstonLogger = winston.createLogger({
             //levels: winston.config.syslog.levels,
@@ -230,8 +228,8 @@ class Logger {
 let log: Logger;
 let LOGGER: Readonly<Logger> = log;
 
-function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, mqttClient?: mqtt.AsyncClient, oi4Id?: string, serviceType?: string): void {
-    log = new Logger(enabled, name, level, publishLevel, mqttClient, oi4Id, serviceType);
+function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: string, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient): void {
+    log = new Logger(enabled, name, level, publishLevel, oi4Id, serviceType, mqttClient);
     LOGGER = log;
 }
 

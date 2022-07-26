@@ -1,9 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import * as winston from 'winston';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import {LoggingService} from './logger.service';
 import {Logger, setLogger} from '@oi4/oi4-oec-service-logger';
 
 export type LoggerItems = {
@@ -76,4 +73,4 @@ export class MockedLoggerFactory {
         return {fakeLogger, fakeLogFile, clearLogFile, logContains, logContainsOnly, getLogSize, isLogEmpty}
     }
 
-} 
+}
