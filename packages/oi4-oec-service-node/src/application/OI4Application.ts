@@ -18,7 +18,13 @@ import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
 import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
-import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    getServiceType,
+    IOPCUADataSetMessage,
+    IOPCUANetworkMessage,
+    OPCUABuilder,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 import {OI4ResourceEvent} from "./OI4Resource";
@@ -43,9 +49,9 @@ export interface IOI4Application extends EventEmitter {
     getConfig(): Promise<void>;
 }
 
-class OI4Application extends EventEmitter implements IOI4Application {
+export class OI4Application extends EventEmitter implements IOI4Application {
 
-    public serviceType: string;
+    public serviceType: ServiceTypes;
     public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
@@ -73,10 +79,10 @@ class OI4Application extends EventEmitter implements IOI4Application {
      */
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper, mqttMessageProcessor: MqttMessageProcessor) {
         super();
-        this.serviceType = applicationResources.mam.DeviceClass;
+        this.serviceType = getServiceType(applicationResources.mam.DeviceClass);
         this.builder = opcUaBuilder;
-        this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
         this.applicationResources = applicationResources;
+        this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
 
         this.clientPayloadHelper = clientPayloadHelper;
 
@@ -94,7 +100,7 @@ class OI4Application extends EventEmitter implements IOI4Application {
         const publishingLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
         const logLevel = process.env.OI4_EDGE_LOG_LEVEL ? process.env.OI4_EDGE_LOG_LEVEL as ESyslogEventFilter : publishingLevel;
 
-        initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, undefined, this.oi4Id, this.serviceType);
+        initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, this.oi4Id, this.serviceType);
         LOGGER.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
         this.client = mqtt.connect(mqttSettings);
 
@@ -422,7 +428,7 @@ export class OI4ApplicationBuilder {
 
     build() {
         const oi4Id = this.applicationResources.oi4Id;
-        const serviceType = this.applicationResources.mam.DeviceClass;
+        const serviceType = getServiceType(this.applicationResources.mam.DeviceClass);
         if (this.opcUaBuilder === undefined) {
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
         }
@@ -433,6 +439,4 @@ export class OI4ApplicationBuilder {
         return new OI4Application(this.applicationResources, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper, this.mqttMessageProcessor);
     }
 }
-
-export {OI4Application};
 

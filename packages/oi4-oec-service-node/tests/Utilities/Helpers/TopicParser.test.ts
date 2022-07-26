@@ -1,8 +1,9 @@
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {Resource} from '@oi4/oi4-oec-service-model';
+import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicParser} from '../../../src/Utilities/Helpers/TopicParser';
-import {TopicWrapper} from '../../../src/Utilities/Helpers/Types';
-import {TopicInfo} from '../../../dist/Utilities/Helpers/Types';
+import {TopicWrapper} from '../../../src';
+import {TopicInfo} from '@oi4/oi4-oec-service-node';
 import {MessageFactory, MessageItems} from '../../Test-utils/Factories/MessageFactory';
 
 describe('Unit test for TopicParser', () => {
@@ -16,7 +17,9 @@ describe('Unit test for TopicParser', () => {
 
     it('If the appId is invalid an error is thrown', async () => {
         const topic = `${topicPrefix}/mymanufacturer.com//1/1/${defaultMessageItems.method}/${defaultMessageItems.resource}`;
-        expect(() => {TopicParser.getTopicWrapperWithCommonInfo(topic);}).toThrowError(`Invalid App id: ${topic}`);
+        expect(() => {
+            TopicParser.getTopicWrapperWithCommonInfo(topic);
+        }).toThrowError(`Invalid App id: ${topic}`);
     });
 
     it('Common information are properly extracted', async () => {
@@ -38,7 +41,9 @@ describe('Unit test for TopicParser', () => {
 
     function checkAgainstErrorForPubEvent(topic: string, errMsg: string) {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
-        expect(() => {TopicParser.extractResourceSpecificInfo(wrapper);}).toThrowError(errMsg);
+        expect(() => {
+            TopicParser.extractResourceSpecificInfo(wrapper);
+        }).toThrowError(errMsg);
     }
 
     it('Invalid info for Pub event generate an error', async () => {
@@ -52,7 +57,9 @@ describe('Unit test for TopicParser', () => {
     it('Malformed Oi4Id generate an error', async () => {
         const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}////`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
-        expect(() => {TopicParser.extractResourceSpecificInfo(wrapper);}).toThrowError(`Malformed Oi4Id : ${topic}`);
+        expect(() => {
+            TopicParser.extractResourceSpecificInfo(wrapper);
+        }).toThrowError(`Malformed Oi4Id : ${topic}`);
     });
 
     it('Oi4Id is properly extracted', async () => {
@@ -76,7 +83,9 @@ describe('Unit test for TopicParser', () => {
 
     function checkFilterWithError(topic: string) {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
-        expect(() => {TopicParser.extractResourceSpecificInfo(wrapper)}).toThrowError('Invalid filter: ');
+        expect(() => {
+            TopicParser.extractResourceSpecificInfo(wrapper)
+        }).toThrowError('Invalid filter: ');
     }
 
     it('In case of config, data and metadata, invalid filter generates error', async () => {
@@ -98,7 +107,9 @@ describe('Unit test for TopicParser', () => {
 
     function checkLicenseWithError(topic: string) {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
-        expect(() => {TopicParser.extractResourceSpecificInfo(wrapper)}).toThrowError('Invalid licenseId: ');
+        expect(() => {
+            TopicParser.extractResourceSpecificInfo(wrapper)
+        }).toThrowError('Invalid licenseId: ');
     }
 
     it('In case of config, data and metadata, invalid filter generates error', async () => {
@@ -110,7 +121,7 @@ describe('Unit test for TopicParser', () => {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.subResource).toStrictEqual(defaultMessageItems.subResource);
-        if(withTag) {
+        if (withTag) {
             expect(info.filter).toStrictEqual(`${defaultMessageItems.subResource}/${defaultMessageItems.tag}`);
             expect(info.tag).toStrictEqual(defaultMessageItems.tag);
         } else {
@@ -128,10 +139,14 @@ describe('Unit test for TopicParser', () => {
 
     function checkListWithError(topic: string, withTag = false) {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
-        if(withTag) {
-            expect(() => {TopicParser.extractResourceSpecificInfo(wrapper)}).toThrowError('Invalid tag: ');
+        if (withTag) {
+            expect(() => {
+                TopicParser.extractResourceSpecificInfo(wrapper)
+            }).toThrowError('Invalid tag: ');
         } else {
-            expect(() => {TopicParser.extractResourceSpecificInfo(wrapper)}).toThrowError('Invalid subresource: ');
+            expect(() => {
+                TopicParser.extractResourceSpecificInfo(wrapper)
+            }).toThrowError('Invalid subresource: ');
         }
     }
 

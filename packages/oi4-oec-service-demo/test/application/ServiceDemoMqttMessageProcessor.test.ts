@@ -1,12 +1,11 @@
 import {LoggerItems, MockedLoggerFactory} from '../mock/MockedLoggerFactory';
-import {ServiceDemoMqttMessageProcessor} from "../../dist/application/ServiceDemoMqttMessageProcessor";
+import {ServiceDemoMqttMessageProcessor} from '../../src/application/ServiceDemoMqttMessageProcessor';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import { Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
-import {TopicMethods} from '@oi4/oi4-oec-service-node/dist/Utilities/Helpers/Enums';
-import fs from "fs";
-import {IOI4Application} from '@oi4/oi4-oec-service-node/dist/application/OI4Application';
-import {TopicInfo} from "@oi4/oi4-oec-service-node";
+import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Resource} from '@oi4/oi4-oec-service-model';
+import {IOI4Application, TopicMethods} from '@oi4/oi4-oec-service-node';
+import {TopicInfo} from '@oi4/oi4-oec-service-node';
+import fs from 'fs';
 
 describe('ServiceDemoMqttMessageProcessor.ts test', () => {
 
