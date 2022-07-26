@@ -8,12 +8,14 @@ import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
 import {MockOi4Application} from '../../Test-utils/Factories/MockedOi4Application';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {MqttMessageProcessorEventStatus} from "../../../dist/Utilities/Helpers/MqttMessageProcessor";
+import {MqttMessageProcessorEventStatus} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
     const registryFakeAppId = 'mymanufacturer.com/1/2/3';
@@ -71,12 +73,12 @@ describe('Unit test for MqttMessageProcessor', () => {
     }
 
     async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined) {
-        const mockedSendMessage = jest.fn();
+        oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
-        processor.on(MqttMessageProcessorEventStatus.GET_DATA, mockedSendMessage);
+        processor.on(MqttMessageProcessorEventStatus.GET_DATA, oi4Application.sendResource);
         await processMessage(fakeTopic, resource, processor);
 
-        expect(mockedSendMessage).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0, 0);
+        expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0, 0);
     }
 
     async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '', method = TopicMethods.SET) {
@@ -175,18 +177,18 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('extract topic info works - config - set', async () => {
         const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
-        const mockedSendMessage = jest.fn();
-        const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
-        await processMessage(fakeTopic, Resource.CONFIG);
-
-        // TODO handle event emitter
+        oi4Application.sendResource = jest.fn();
+        const processor = new MqttMessageProcessor();
+        const spiedEmit = jest.spyOn(processor, 'emit');
+        await processMessage(fakeTopic, Resource.CONFIG, processor);
 
         expect(spiedEmit).toHaveBeenCalledWith('setConfig', {
             origin: defaultFakeAppId,
             number: 0,
             description: undefined
         });
-        expect(mockedSendMessage).toHaveBeenCalledWith(Resource.CONFIG, undefined, '', defaultFakeFilter, 0, 0);
+
+        expect(oi4Application.sendResource).toHaveBeenCalledWith(Resource.CONFIG, undefined, '', defaultFakeFilter, 0, 0);
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[1]).toBe(`Added ${defaultFakeFilter} to config group`);
     });
@@ -198,8 +200,9 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     it('extract topic info works - data - get', async () => {
         async function checkAgainstTopicForData(fakeTopic: string) {
-            const spiedEmit = jest.spyOn(defaultEmitter, 'emit');
-            await processMessage(fakeTopic, Resource.DATA);
+            const processor = new MqttMessageProcessor();
+            const spiedEmit = jest.spyOn(processor, 'emit');
+            await processMessage(fakeTopic, Resource.DATA,processor);
             expect(spiedEmit).toHaveBeenCalledWith('getData', {
                 topic: fakeTopic,
                 message: {Messages: [{Payload: 'fakePayload'}], PublisherId: 'Registry/mymanufacturer.com/1/1/1'}
@@ -224,11 +227,12 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - metadata - get', async () => {
-        // TODO check the ignore flag
-        // @ts-ignore
+       oi4Application.sendMetaData = jest.fn()
+
         async function checkAgainstTopicForMetaData(fakeTopic: string) {
             await processMessage(fakeTopic, Resource.METADATA);
-            return sendMetaData;
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            return oi4Application.sendMetaData;
         }
 
         await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.METADATA}`);
@@ -240,9 +244,8 @@ describe('Unit test for MqttMessageProcessor', () => {
         expect(fakeLogFile.length).toBe(1);
         expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Invalid topic string structure ${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.METADATA}/${defaultFakeOi4Id}`);
 
-        // TODO check the ignore flag
-        // @ts-ignore
         const sendMetaData = await checkAgainstTopicForMetaData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.METADATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`);
+
         expect(sendMetaData).toHaveBeenCalledWith(defaultFakeFilter);
     });
 
@@ -252,12 +255,12 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     it('extract topic info works - license and licenseText - get', async () => {
         async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string) {
-            const mockedSendMessage = jest.fn();
+            oi4Application.sendResource = jest.fn();
             await processMessage(fakeTopic, resourceConfig);
 
             // TODO handle event emitter
 
-            expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, undefined, undefined, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, undefined, undefined, 0, 0);
         }
 
         const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
@@ -281,13 +284,9 @@ describe('Unit test for MqttMessageProcessor', () => {
     it('extract topic info works - publicationList and subscriptionList', async () => {
         async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
             const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
-
-            const mockedSendMessage = jest.fn();
+            oi4Application.sendResource = jest.fn();
             await processMessage(topic, resourceConfig);
-
-            // TODO handle event emitter
-
-            expect(mockedSendMessage).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, `${defaultFakeSubResource}/${defaultFakeFilter}`, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, `${defaultFakeSubResource}/${defaultFakeFilter}`, 0, 0);
         }
 
         await testAgainstResourceForPublicationAndSubscriptionLists(Resource.PUBLICATION_LIST);

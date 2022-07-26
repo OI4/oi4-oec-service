@@ -9,7 +9,7 @@ import {
     MasterAssetModel,
     Resource,
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUALocale, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 
 const getStandardMqttConfig = (): MqttSettings => {
@@ -27,11 +27,14 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         oi4Id: '1',
         getHealth(_: string): Health {
             return {
-                resourceType(): Resource {return Resource.HEALTH},
-                health: EDeviceHealth.NORMAL_0, healthScore: 0}
+                resourceType(): Resource {
+                    return Resource.HEALTH;
+                },
+                health: EDeviceHealth.NORMAL_0, healthScore: 0
+            };
         },
         mam: MasterAssetModel.clone({
-            DeviceClass: 'oi4',
+            DeviceClass: ServiceTypes.REGISTRY,
             ManufacturerUri: 'test',
             Model: {locale: EOPCUALocale.enUS, text: 'text'},
             Description: {locale: EOPCUALocale.enUS, text: 'text'},
@@ -52,7 +55,7 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         on(event: string, listener: Function) {
             return this;
         }
-    } as IOI4ApplicationResources;
+    } as unknown as IOI4ApplicationResources;
 }
 
 describe('Connection to MQTT with TLS', () => {

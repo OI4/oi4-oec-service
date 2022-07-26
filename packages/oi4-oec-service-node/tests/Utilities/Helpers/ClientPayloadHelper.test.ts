@@ -46,7 +46,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('getDefaultHealthStatePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.getHealthPayload(mockedOI4ApplicationResources, mockedOI4ApplicationResources.oi4Id);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.getHealthPayload(mockedOI4ApplicationResources, OI4_ID);
         checkAgainstDefaultPayload(validatedPayload);
     });
 
@@ -72,9 +72,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         checkForUndefinedPayload(validatedPayload);
     });
 
-    function createLicenseMockedPayload(dataSetWriterId: number, payload: any) {
+    function createLicenseMockedPayload(dataSetWriterId: number, payload: any, oi4Id = OI4_ID) {
         return [{
-            subResource: OI4_ID,
+            subResource: oi4Id,
             DataSetWriterId: dataSetWriterId,
             Payload: payload
         }];
@@ -83,7 +83,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'fakeKey');
         expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText')));
+        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText'), mockedOI4ApplicationResources.oi4Id));
     });
 
     it('createLicenseSendResourcePayload works', async () => {
@@ -109,29 +109,31 @@ describe('Unit test for ClientPayloadHelper', () => {
         }];
     }
 
-    function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number, resource = Resource.HEALTH, itemDataSetWriterId = 42, subOI4Id = OI4_ID, filter?: string) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number, resource = Resource.HEALTH, itemDataSetWriterId = 42, subOI4Id = OI4_ID, filter?: string, oi4Id = OI4_ID) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createPublicationMockedPayload(resource, itemDataSetWriterId, subOI4Id);
         if (filter !== undefined) {
             expectedInnerPayload.filter = filter;
         }
-        const expectedPayload = createMockedPayloadWithSubresource(OI4_ID, dataSetWriterId, expectedInnerPayload, resource);
+        const expectedPayload = createMockedPayloadWithSubresource(oi4Id, dataSetWriterId, expectedInnerPayload, resource);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
     it('createPublicationListSendResourcePayload works when matching OI4 Id is supplied', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID);
-        checkAgainstPublicationPayload(validatedPayload, 0);
+        checkAgainstPublicationPayload(validatedPayload, 0, Resource.HEALTH, 42, OI4_ID, undefined, mockedOI4ApplicationResources.oi4Id);
     });
 
     it('createPublicationListSendResourcePayload works when matching resource is supplied', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resource.HEALTH);
-        checkAgainstPublicationPayload(validatedPayload, 0);
+        checkAgainstPublicationPayload(validatedPayload, 0, Resource.HEALTH, 42, OI4_ID, undefined, mockedOI4ApplicationResources.oi4Id);
     });
 
     it('createPublicationListSendResourcePayload works when matching filter is supplied', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID_2, Resource.EVENT, 'fakeFilter');
-        checkAgainstPublicationPayload(validatedPayload, 0, Resource.EVENT, 43, OI4_ID_2, 'fakeFilter');
+        checkAgainstPublicationPayload(validatedPayload, 0, Resource.EVENT, 43, OI4_ID_2, 'fakeFilter', mockedOI4ApplicationResources.oi4Id);
     });
 
     it('createPublicationListSendResourcePayload return undefined payload when OI4 Id does not match', async () => {
@@ -165,7 +167,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     it('createSubscriptionListSendResourcePayload works when OI4 ID matches', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, 'oi4Id');
-        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', OI4_ID);
+        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', mockedOI4ApplicationResources.oi4Id);
     });
 
     // function checkAgainstConfigPayload(validatedPayload: ValidatedPayload) {
