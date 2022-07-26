@@ -27,7 +27,7 @@ import {
 } from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
 import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
-import {OI4ResourceEvent} from "./OI4Resource";
+import {OI4ResourceEvent} from './OI4Resource';
 
 export interface IOI4Application extends EventEmitter {
 
@@ -134,7 +134,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         this.applicationResources.on(OI4ResourceEvent.RESOURCE_ADDED, this.resourceAddedCallback.bind(this));
     }
 
-    async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval: number = 0) {
+    async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0) {
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
             config: config,
