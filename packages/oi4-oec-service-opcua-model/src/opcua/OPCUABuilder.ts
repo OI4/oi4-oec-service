@@ -24,7 +24,6 @@ export class OPCUABuilder {
   lastMessageId: string;
   private topicRex: RegExp;
   private readonly msgSizeOffset: number;
-  private overflowCounter = 0;
 
   constructor(oi4Id: string, serviceType: string, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
@@ -37,12 +36,12 @@ export class OPCUABuilder {
     this.topicRex = new RegExp(topicPathSchemaJson.pattern);
   }
 
-  public getCountedOverflows(): number {
-    return this.overflowCounter;
-  }
-
-  private incrementOverflowCounter(): void {
-     this.overflowCounter++;
+  private setAtomarLastMessageId(opcUaDataMessage: IOPCUANetworkMessage | IOPCUAMetaData) {
+    for(let counter = 0; this.lastMessageId === opcUaDataMessage.MessageId; counter++) {
+        opcUaDataMessage.MessageId = `${counter}${opcUaDataMessage.MessageId}`;
+        return;
+    }
+    this.lastMessageId =  opcUaDataMessage.MessageId;
   }
 
   buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
@@ -124,12 +123,7 @@ export class OPCUABuilder {
       Messages: opcUaDataPayload,
       correlationId: correlationId,
     };
-    if (this.lastMessageId === opcUaDataMessage.MessageId) {
-      opcUaDataMessage.MessageId = `${this.getCountedOverflows()}${opcUaDataMessage.MessageId}`;
-      this.incrementOverflowCounter();
-    } else {
-      this.lastMessageId = opcUaDataMessage.MessageId;
-    }
+    this.setAtomarLastMessageId(opcUaDataMessage);
     return opcUaDataMessage;
   }
 
@@ -156,12 +150,7 @@ export class OPCUABuilder {
       correlationId: correlationId,
       MetaData: opcUaMetaDataPayload,
     };
-    if (this.lastMessageId === opcUaMetaDataMessage.MessageId) {
-      opcUaMetaDataMessage.MessageId = `${this.getCountedOverflows()}${opcUaMetaDataMessage.MessageId}`;
-      this.incrementOverflowCounter();
-    } else {
-      this.lastMessageId = opcUaMetaDataMessage.MessageId;
-    }
+    this.setAtomarLastMessageId(opcUaMetaDataMessage);
     return opcUaMetaDataMessage;
   }
 

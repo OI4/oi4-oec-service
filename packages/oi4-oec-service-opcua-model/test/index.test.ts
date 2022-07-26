@@ -44,7 +44,7 @@ test('should fail on on json schema validation problem', async () => {
     }
 });
 
-test('default over flow counter must be set to 0 when building network message', () => {
+test('should increase over flow counter when last message equals actual message id when building network message', () => {
     const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
     const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -55,21 +55,7 @@ test('default over flow counter must be set to 0 when building network message',
     dateMock.mockRestore();
 });
 
-test('should increase over flow counter when last message equals actual message id when building network message', () => {
-    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
-    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const dateMock = jest.spyOn(Date, 'now').mockImplementation(()=>sameMessageIdPrefix);
-    for(let i = 0; i < 3; i++) {
-        const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0',undefined);
-        expect(msg.MessageId.charAt(0)).toEqual(i.toString());
-    }
-    dateMock.mockRestore();
-});
-
-
-test('default over flow counter must be set to 0 when building meta data message', () => {
+test('should increase over flow counter when last message equals actual message id when building metada message', () => {
     const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
     const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -80,16 +66,16 @@ test('default over flow counter must be set to 0 when building meta data message
     dateMock.mockRestore();
 });
 
-
-test('should increase over flow counter when last message equals actual message id when building metada message', () => {
+test('should update last message when building metadata message', () => {
     const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
     const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const dateMock = jest.spyOn(Date, 'now').mockImplementation(()=>sameMessageIdPrefix);
-    for(let i = 0; i < 3; i++) {
-        const msg = builder.buildOPCUAMetaDataMessage('metadata','meda description', {}, '0',0,'0','sub');
-        expect(msg.MessageId.charAt(0)).toEqual(i.toString());
-    }
-    dateMock.mockRestore();
+    const msg = builder.buildOPCUAMetaDataMessage('metadata','meda description', {}, '0',0,'0','sub');
+    expect(msg.MessageId).toEqual(builder.lastMessageId);
+});
+
+test('should update last message when building network  message', () => {
+    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
+    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
+    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0',undefined);
+    expect(msg.MessageId).toEqual(builder.lastMessageId);
 });
