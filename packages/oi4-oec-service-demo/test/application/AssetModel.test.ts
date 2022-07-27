@@ -1,7 +1,8 @@
 import fs from 'fs';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import {Asset} from '../../src/application/AssetModel';
-import {Resource} from "@oi4/oi4-oec-service-model";
+import {Resource} from '@oi4/oi4-oec-service-model';
 
 describe('AssetModel.ts test', () => {
     it('should return MasterAssetModel', async () => {
@@ -10,6 +11,7 @@ describe('AssetModel.ts test', () => {
 
         const mam = Object.keys(file).reduce((object, key) => {
             if (key !== 'location') {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
                 // @ts-ignore
                 object[key]= file[key]
             }

@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttCredentialsHelper, MqttSettings, OI4Application, OI4ApplicationResources} from '../../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../../src';
 import {
     Application,
     CDataSetWriterIdLookup,
@@ -20,20 +20,21 @@ import {
     Resource,
     RTLicense,
     StatusEvent,
-    SubscriptionList,
+    SubscriptionList, getResource,
 } from '@oi4/oi4-oec-service-model';
 import {
     EOPCUABaseDataType,
     EOPCUALocale,
     EOPCUAMessageType,
-    EOPCUAStatusCode,
+    EOPCUAStatusCode, IOPCUAMetaData,
     IOPCUANetworkMessage,
     OPCUABuilder
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {AsyncClientEvents} from '../../src/Utilities/Helpers/Enums';
 import EventEmitter from 'events';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
+import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
+import {MqttMessageProcessorEventStatus} from "../../src/Utilities/Helpers/MqttMessageProcessor";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -104,20 +105,20 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         },
         publicationList: [
             PublicationList.clone({
-                resource: 'health',
+                resource: Resource.HEALTH,
                 config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
             } as PublicationList),
             PublicationList.clone({
-                resource: 'mam',
+                resource: Resource.MAM,
                 config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
             } as PublicationList),
             PublicationList.clone({
-                resource: 'license',
-                config: PublicationListConfig.STATUS_1,
+                resource: Resource.LICENSE,
+                config: PublicationListConfig.MODE_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
             } as PublicationList)
@@ -141,7 +142,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         rtLicense: new RTLicense(),
         health: new Health(EDeviceHealth.NORMAL_0, 100),
         mam: MasterAssetModel.clone({
-            DeviceClass: 'OI4.OTConnector',
+            DeviceClass: 'OI4.Aggregation',
             ManufacturerUri: 'test',
             Model: {
                 locale: EOPCUALocale.enUS,
@@ -215,6 +216,14 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on: jest.fn(),
+        getMasterAssetModel(oi4Id: string): MasterAssetModel {
+            console.log(`Returning health for ${oi4Id}`);
+            return this.mam;
+        },
+        getHealth(oi4Id: string): Health {
+            console.log(`Returning health for ${oi4Id}`);
+            return this.health;
+        },
         getLicense(oi4Id: string, licenseId?: string): License[] {
             console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
             return this.license;
@@ -227,11 +236,14 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
             console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
             return this.subscriptionList;
+        },
+        addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void {
+            console.log(`function addDataSet called with ${dataSetName} ${data} ${metadata}`);
         }
     }
 }
 
-let defaultOi4ApplicationResources: OI4ApplicationResources;
+let defaultOi4ApplicationResources: IOI4ApplicationResources;
 let defaultOi4Application: OI4Application;
 
 const defaultTopicPrefix = 'oi4/Registry';
@@ -286,7 +298,7 @@ describe('OI4MessageBus test', () => {
             }
         );
         defaultOi4Application = getOi4App();
-        defaultOi4ApplicationResources = defaultOi4Application.applicationResources as OI4ApplicationResources;
+        defaultOi4ApplicationResources = defaultOi4Application.applicationResources as IOI4ApplicationResources;
     });
 
     afterAll(() => {
@@ -312,21 +324,21 @@ describe('OI4MessageBus test', () => {
         );
 
         const events = onMock.mock.calls.map(keyPair => keyPair[0]);
-        const setOfEvents = new Set<string>(Object.values(AsyncClientEvents)
-            .filter(event => event !== AsyncClientEvents.MESSAGE && event !== AsyncClientEvents.RESOURCE_CHANGED));
+        const setOfEvents = new Set<string>(Object.values(OI4ResourceEvent)
+            // .filter(event => event !== AsyncClientEvents.MESSAGE && event !== OI4ResourceEvent.RESOURCE_CHANGED));
+            .filter(event => event !== OI4ResourceEvent.RESOURCE_CHANGED));
 
         for (const event of events) {
             expect(setOfEvents.has(event)).toBeTruthy();
         }
     });
 
-    it('should trigger resourceChanged', (done) => {
+    it('should trigger resourceChanged', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const onResourceMock = jest.fn((event, cb) => {
             cb(event);
-            expect(event).toBe(AsyncClientEvents.RESOURCE_CHANGED);
-            done()
+            expect(event).toBe(OI4ResourceEvent.RESOURCE_CHANGED);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -337,16 +349,15 @@ describe('OI4MessageBus test', () => {
             .build()
     });
 
-    it('should trigger health from resourceChangedCallback', (done) => {
+    it('should trigger health from resourceChangedCallback', () => {
         const mockSendResource = jest.spyOn(OI4Application.prototype, 'sendResource').mockResolvedValue(undefined);
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const onResourceMock = jest.fn((_, cb) => {
-            cb(Resource.HEALTH);
-            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', '', resources.oi4Id);
-            mockSendResource.mockRestore();
-            done();
+            cb(resources.oi4Id, Resource.HEALTH);
+            expect(mockSendResource).toHaveBeenCalled();
+            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', resources.oi4Id, resources.oi4Id);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -390,10 +401,8 @@ describe('OI4MessageBus test', () => {
 
     it('should send resource with valid filter', async () => {
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);
-        const expectedAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`;
-        expect(publish.mock.calls[2][0]).toBe(expectedAddress);
-        expect(publish.mock.calls[2][1]).not.toBeUndefined();
-        expect(publish.mock.calls[2][1]).not.toBeNull();
+        const expectedAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
+        expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
@@ -408,7 +417,7 @@ describe('OI4MessageBus test', () => {
     });
 
     async function getPayload(filter: string, resource: string, subResource?: string, oi4Application: OI4Application = defaultOi4Application) {
-        return await oi4Application.preparePayload(resource, subResource, filter);
+        return await oi4Application.preparePayload(getResource(resource), subResource, filter);
     }
 
     it('should prepare mam payload', async () => {
@@ -481,12 +490,12 @@ describe('OI4MessageBus test', () => {
         //    .toBe(JSON.stringify(getResourceInfo().config));
     });
 
-    it('should not prepare anything if resource not found', async () => {
-        const filter = CDataSetWriterIdLookup.config.toString();
-        const resource = 'invalid resource';
-        const result = await defaultOi4Application.preparePayload(resource, '', filter);
-        expect(result).toBeUndefined();
-    });
+    // it('should not prepare anything if resource not found', async () => {
+    //     const filter = CDataSetWriterIdLookup.config.toString();
+    //     const resource = 'invalid resource';
+    //     const result = await defaultOi4Application.preparePayload(Resource.MAM, '', filter);
+    //     expect(result).toBeUndefined();
+    // });
 
     it('should not send resource if error occured in pagination', async () => {
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
@@ -543,30 +552,21 @@ describe('OI4MessageBus test', () => {
         }
     }
 
-    it('should replace old config with new config and emit status status via mqttprocess', async () => {
-        // defaultOi4ApplicationResources.oi4Id = defaultAppId;
+    it('should replace old config with new config and emit status status via mqtt process', async () => {
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        const sendResourceMock = jest.spyOn(defaultOi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(sendResourceMock).toBeCalledTimes(1);
-        expect(eventEmitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(eventEmitMock).toHaveBeenCalledWith(MqttMessageProcessorEventStatus.SET_CONFIG, new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
         mock.mockRestore();
         eventEmitMock.mockClear();
-        sendResourceMock.mockRestore();
     });
 
-    it('should add new config and send emit status status via mqttprocess', async () => {
-        // defaultOi4ApplicationResources.oi4Id = defaultOI4Id;
+    it('should add new config and send emit status status via mqtt process', async () => {
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         defaultOi4ApplicationResources.config['group-a'] = {
@@ -582,18 +582,13 @@ describe('OI4MessageBus test', () => {
         };
         jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        const sendResourceMock = jest.spyOn(defaultOi4Application.mqttMessageProcess, 'sendResource').mockImplementation();
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder);
-        expect(sendResourceMock).toBeCalledTimes(1);
-        expect(eventEmitMock).toHaveBeenCalledWith('setConfig', new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
+
+        expect(eventEmitMock).toHaveBeenCalledWith(MqttMessageProcessorEventStatus.SET_CONFIG, new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
-        sendResourceMock.mockRestore();
+
         eventEmitMock.mockClear();
     });
 

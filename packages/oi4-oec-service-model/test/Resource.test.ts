@@ -1,4 +1,6 @@
-import {MasterAssetModel, ServiceTypes} from '../src';
+import {MasterAssetModel} from '../src';
+import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+
 
 describe('Unit tests for Resources', () => {
 

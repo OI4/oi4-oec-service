@@ -1,8 +1,8 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {ClientCallbacksHelper} from '../../../src/Utilities/Helpers/ClientCallbacksHelper';
 import mqtt from 'async-mqtt';
-import {getOi4App} from "../../application/OI4Application.test";
-import {setLogger} from "@oi4/oi4-oec-service-logger";
+import {getOi4App} from '../../application/OI4Application.test';
+import {setLogger} from '@oi4/oi4-oec-service-logger';
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -64,9 +64,10 @@ describe('Unit test for ClientCallbackHelper', () => {
 
     it('onClientConnectCallback works', async () => {
         await clientCallbackHelper.onClientConnectCallback(mockOi4Application); // resources, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
-        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile.length).toBe(3);
         expect(fakeLogFile[0]).toBe('Connected successfully');
-        expect(fakeLogFile[1]).toBe('Published birth message on oi4/OTConnector/1/1/1/1/pub/mam/1/1/1/1');
+        expect(fakeLogFile[1]).toBe('Published mam Pagination: 0 of 1 on oi4/Aggregation/1/1/1/1/pub/mam/test/text/213dq/23kl41o%C3%9Fm%C3%9F132');
+        expect(fakeLogFile[2]).toBe('Published birth message');
     });
 
 });

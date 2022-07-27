@@ -1,7 +1,7 @@
 import {OI4RegistryManager} from '../../src';
-import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger} from '@oi4/oi4-oec-service-logger';
-import {ESyslogEventFilter, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 
 const parsedMessage: IOPCUANetworkMessage = {
     MessageId: '',
@@ -15,7 +15,7 @@ describe('Unit test for OI4RegistryManager', () => {
 
     beforeEach(() => {
         const level = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter;
-        initializeLogger(true, 'HereIam', level, level, undefined, '', '');
+        initializeLogger(true, 'HereIam', level, level, undefined, ServiceTypes.AGGREGATION);
         OI4RegistryManager.resetOI4RegistryManager();
         OI4RegistryManager.getEmitter().removeAllListeners();
     });

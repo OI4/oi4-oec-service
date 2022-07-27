@@ -2,7 +2,6 @@ import {
     ESyslogEventFilter,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
-    IOI4ApplicationResources,
     Resource,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
@@ -14,23 +13,23 @@ import {OI4RegistryManager} from '../../application/OI4RegistryManager';
 import EventEmitter from 'events';
 import {TopicParser} from './TopicParser';
 import {MessageValidator} from './MessageValidator';
+import {IOI4Application} from '../../application/OI4Application';
 
-export declare type OnSendResource = (resource: string, messageId: string, subResource: string, filter: string, page: number, perPage: number) => Promise<void>;
-export declare type OnSendMetaData = (cutTopic: string) => Promise<void>;
+export enum MqttMessageProcessorEventStatus {
+    GET_DATA = 'getData',
+    SET_CONFIG = 'setConfig',
+}
 
-export class MqttMessageProcessor {
-    private readonly sendMetaData: OnSendMetaData;
-    private readonly sendResource: OnSendResource;
+export interface IMqttMessageProcessor extends EventEmitter {
+    processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
+    handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void>;
+}
+
+export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
     private readonly METADATA = 'metadata';
-    private readonly emitter: EventEmitter;
 
-    private applicationResources: IOI4ApplicationResources;
-
-    constructor(applicationResources: IOI4ApplicationResources, sendMetaData: OnSendMetaData, sendResource: OnSendResource, emitter: EventEmitter) {
-        this.applicationResources = applicationResources;
-        this.sendMetaData = sendMetaData;
-        this.sendResource = sendResource;
-        this.emitter = emitter;
+    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 
     /**
@@ -38,8 +37,9 @@ export class MqttMessageProcessor {
      * @param topic - the incoming topic from the messagebus
      * @param message - the entire binary message from the messagebus
      * @param builder
+     * @param oi4Application
      */
-    public processMqttMessage = async (topic: string, message: Buffer, builder: OPCUABuilder) => {
+    public async processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application) {
         try {
             const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
             await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
@@ -48,23 +48,23 @@ export class MqttMessageProcessor {
             MessageValidator.doTopicDataValidation(wrapper, parsedMessage);
 
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
-            await this.processMessage(topicInfo, parsedMessage, builder);
+            await this.processMessage(topicInfo, parsedMessage, builder, oi4Application);
         } catch (e) {
             LOGGER.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
             return;
         }
     }
 
-    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
         // Check if message is from the OI4 registry and save it if it is
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo.appId === this.applicationResources.oi4Id) {
+        if (topicInfo.appId === oi4Application.oi4Id) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
-                    await this.executeGetActions(topicInfo, parsedMessage, builder)
+                    await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);
                     break;
                 }
                 case TopicMethods.PUB: {
@@ -72,11 +72,11 @@ export class MqttMessageProcessor {
                     break; // Only break here, because we should not react to our own publication messages
                 }
                 case TopicMethods.SET: {
-                    await this.executeSetActions(topicInfo, parsedMessage);
+                    await this.executeSetActions(topicInfo, parsedMessage, oi4Application);
                     break;
                 }
                 case TopicMethods.DEL: {
-                    await this.executeDelActions(topicInfo);
+                    await this.executeDelActions(topicInfo, oi4Application);
                     break;
                 }
                 default: {
@@ -85,21 +85,17 @@ export class MqttMessageProcessor {
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
-            this.handleForeignMessage(topicInfo, parsedMessage);
+            await this.handleForeignMessage(topicInfo, parsedMessage);
         }
     }
 
-    protected handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
-        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
-    }
-
-    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
 
         if (topicInfo.resource === Resource.DATA) {
-            this.emitter.emit('getData', {topic: topicInfo.topic, message: parsedMessage});
+            this.emit(MqttMessageProcessorEventStatus.GET_DATA, {topic: topicInfo.topic, message: parsedMessage});
             return;
         } else if (topicInfo.resource === this.METADATA) {
-            await this.sendMetaData(topicInfo.filter);
+            await oi4Application.sendMetaData(topicInfo.filter);
             return;
         }
 
@@ -128,18 +124,18 @@ export class MqttMessageProcessor {
             }
         }
 
-        this.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
+        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
     }
 
-    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {
             case Resource.DATA: {
-                this.setData(topicInfo.filter, parsedMessage);
+                this.setData(topicInfo.filter, parsedMessage, oi4Application);
                 break;
             }
             case Resource.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
-                    this.setConfig(topicInfo.filter, parsedMessage);
+                    await this.setConfig(topicInfo.filter, parsedMessage, oi4Application);
                 }
                 break;
             }
@@ -150,24 +146,26 @@ export class MqttMessageProcessor {
     }
 
     // SET Function section ------//
-    private setData(cutTopic: string, data: IOPCUANetworkMessage) {
+    private setData(cutTopic: string, data: IOPCUANetworkMessage, oi4Application: IOI4Application) {
+        const applicationResources = oi4Application.applicationResources;
         const filter = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.applicationResources.dataLookup;
+        const dataLookup = applicationResources.dataLookup;
         if (filter === '') {
             return;
         }
         if (!(filter in dataLookup)) {
-            this.applicationResources.dataLookup[filter] = data;
+            applicationResources.dataLookup[filter] = data;
             LOGGER.log(`Added ${filter} to dataLookup`);
         } else {
-            this.applicationResources.dataLookup[filter] = data; // No difference if we create the data or just update it with an object
+            applicationResources.dataLookup[filter] = data; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in dataLookup`);
         }
     }
 
-    private setConfig(filter: string, config: IOPCUANetworkMessage): void {
-        const currentConfig = this.applicationResources.config;
+    private async setConfig(filter: string, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
+        const applicationResources = oi4Application.applicationResources;
+        const currentConfig = applicationResources.config;
         const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
         if (filter === '') {
             return;
@@ -179,16 +177,16 @@ export class MqttMessageProcessor {
             currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in config group`);
         }
-        const status: StatusEvent = new StatusEvent(this.applicationResources.oi4Id, EOPCUAStatusCode.Good);
+        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
-        this.emitter.emit('setConfig', status);
-        this.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
+        this.emit(MqttMessageProcessorEventStatus.SET_CONFIG, status);
+        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
     }
 
-    private async executeDelActions(topicInfo: TopicInfo) {
+    private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {
             case Resource.DATA: {
-                this.deleteData(topicInfo.filter);
+                this.deleteData(topicInfo.filter, oi4Application);
                 break;
             }
             default: {
@@ -201,16 +199,17 @@ export class MqttMessageProcessor {
      * Legacy: TODO: This is not specified by the specification yet
      * @param cutTopic - todo
      */
-    private deleteData(cutTopic: string) {
+    private deleteData(cutTopic: string, oi4Application: IOI4Application) {
+        const applicationResources = oi4Application.applicationResources;
         // ONLY SPECIFIC DATA CAN BE DELETED. WILDCARD DOES NOT DELETE EVERYTHING
         const tagName = cutTopic;
         // This topicObject is also specific to the resource. The data resource will include the TagName!
-        const dataLookup = this.applicationResources.dataLookup;
+        const dataLookup = applicationResources.dataLookup;
         if (tagName === '') {
             return;
         }
         if ((tagName in dataLookup)) {
-            delete this.applicationResources.dataLookup[tagName];
+            delete applicationResources.dataLookup[tagName];
             LOGGER.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
         } else {
             LOGGER.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);

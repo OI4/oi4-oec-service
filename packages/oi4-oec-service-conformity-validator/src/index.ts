@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
-import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {
     Application,
     buildOecJsonValidator,
@@ -38,7 +38,7 @@ export class ConformityValidator {
     static completeProfileList: Resource[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
-    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, serviceType = 'Registry',  messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
+    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes,  messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;
@@ -46,7 +46,7 @@ export class ConformityValidator {
         const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
         const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
 
-        initializeLogger(true, 'ConformityValidator-App', logLevel, publishingLevel, this.conformityClient, oi4Id, 'Registry');
+        initializeLogger(true, 'ConformityValidator-App', logLevel, publishingLevel, oi4Id, serviceType, this.conformityClient);
         this.builder = new OPCUABuilder(oi4Id, serviceType);
     }
 

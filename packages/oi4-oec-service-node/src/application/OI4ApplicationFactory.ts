@@ -11,9 +11,10 @@ import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
 import {BaseCredentialsHelper} from '../Utilities/Helpers/BaseCredentialsHelper';
-import {ClientPayloadHelper} from "../Utilities/Helpers/ClientPayloadHelper";
-import {ClientCallbacksHelper} from "../Utilities/Helpers/ClientCallbacksHelper";
-import {DefaultSettingsPaths, ISettingsPaths} from "../Config/SettingsPaths";
+import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
+import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
+import {DefaultSettingsPaths, ISettingsPaths} from '../Config/SettingsPaths';
+import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -31,6 +32,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     opcUaBuilder: OPCUABuilder;
     clientPayloadHelper: ClientPayloadHelper;
     clientCallbacksHelper: ClientCallbacksHelper;
+    mqttMessageProcessor: MqttMessageProcessor;
 
     private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: ISettingsPaths;
@@ -39,13 +41,15 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = DefaultSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
+        const serviceType = this.resources.mam.getServiceType();
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
-        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter);
+        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, serviceType);
 
-        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.resources.mam.getServiceType());
+        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, serviceType);
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper();
+        this.mqttMessageProcessor = new MqttMessageProcessor();
     }
 
     createOI4Application(): OI4Application {
@@ -73,7 +77,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             .withOPCUABuilder(this.opcUaBuilder)//
             .withClientPayloadHelper(this.clientPayloadHelper)//
             .withClientCallbacksHelper(this.clientCallbacksHelper)//
-
+            .withMqttMessageProcessor(this.mqttMessageProcessor)//
         return this;
     }
 

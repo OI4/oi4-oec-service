@@ -15,20 +15,21 @@ import { buildOpcUaJsonValidator } from './OpcUaSchemaProvider';
 
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from '../model/EOPCUA';
+import {ServiceTypes} from '../model/ServiceTypes';
 
 export class OPCUABuilder {
   oi4Id: string;
-  serviceType: string;
+  serviceType: ServiceTypes;
   publisherId: string;
   jsonValidator: Ajv.Ajv;
   lastMessageId: string;
   private topicRex: RegExp;
   private readonly msgSizeOffset: number;
 
-  constructor(oi4Id: string, serviceType: string, uaJsonValidator = buildOpcUaJsonValidator()) {
+  constructor(oi4Id: string, serviceTypes: ServiceTypes, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
-    this.serviceType = serviceType;
-    this.publisherId = `${serviceType}/${oi4Id}`;
+    this.serviceType = serviceTypes;
+    this.publisherId = `${serviceTypes}/${oi4Id}`;
     this.jsonValidator = uaJsonValidator;
     this.lastMessageId = '';
     this.msgSizeOffset = 1000;
@@ -289,6 +290,7 @@ export class OPCUABuilder {
       throw `Validation failed with: ${validateErr.message}`
     }
   }
+
 
   async checkPayloadType(payload: any): Promise<string> {
     let payloadMessageValidation = false;
