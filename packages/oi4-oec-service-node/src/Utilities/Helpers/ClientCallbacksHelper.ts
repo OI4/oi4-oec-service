@@ -38,20 +38,14 @@ export class ClientCallbacksHelper {
     };
 
     async onClientConnectCallback(oi4application: OI4Application) {
-        const oi4Id = oi4application.oi4Id;
-        const topicPreamble = oi4application.topicPreamble;
-
         LOGGER.log('Connected successfully', ESyslogEventFilter.informational);
 
-        await oi4application.client.publish(
-            `${topicPreamble}/pub/mam/${oi4Id}`,
-            JSON.stringify(oi4application.builder.buildOPCUANetworkMessage([{
-                subResource: oi4Id,
-                Payload: oi4application.applicationResources.mam,
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.MAM, oi4Id),
-            }], new Date(), DataSetClassIds.mam)),
-        );
-        LOGGER.log(`Published birth message on ${topicPreamble}/pub/mam/${oi4Id}`, ESyslogEventFilter.informational);
+        const applicationResources = oi4application.applicationResources;
+        await oi4application.sendMasterAssetModel(applicationResources.mam).then();
+        LOGGER.log('Published birth message', ESyslogEventFilter.informational);
+        for(const resource of applicationResources.subResources.values()){
+            await oi4application.sendMasterAssetModel(resource.mam).then();
+        }
     };
 
     async onOfflineCallback() {

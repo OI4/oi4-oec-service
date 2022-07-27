@@ -1,11 +1,16 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {MqttSettings} from '../src';
 import fs = require('fs'); /*tslint:disable-line*/
-import {OI4Application} from '../src';
-import {EDeviceHealth, Health, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
+import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../src';
+import {
+    EDeviceHealth,
+    Health,
+    IOI4ApplicationResources,
+    IOI4Resource,
+    MasterAssetModel,
+    Resource,
+} from '@oi4/oi4-oec-service-model';
+import {EOPCUALocale, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {MqttCredentialsHelper} from '../src';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -17,11 +22,19 @@ const getStandardMqttConfig = (): MqttSettings => {
     };
 }
 
-const getResourceInfo = (): IOI4ApplicationResources => {
+const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
         oi4Id: '1',
-        mam: {
-            DeviceClass: 'oi4',
+        getHealth(_: string): Health {
+            return {
+                resourceType(): Resource {
+                    return Resource.HEALTH;
+                },
+                health: EDeviceHealth.NORMAL_0, healthScore: 0
+            };
+        },
+        mam: MasterAssetModel.clone({
+            DeviceClass: ServiceTypes.REGISTRY,
             ManufacturerUri: 'test',
             Model: {locale: EOPCUALocale.enUS, text: 'text'},
             Description: {locale: EOPCUALocale.enUS, text: 'text'},
@@ -34,14 +47,15 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
-        },
+        } as MasterAssetModel),
         subscriptionList: [],
+        subResources: new Map<string, IOI4Resource>(),
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on(event: string, listener: Function) {
             return this;
         }
-    } as IOI4ApplicationResources;
+    } as unknown as IOI4ApplicationResources;
 }
 
 describe('Connection to MQTT with TLS', () => {
@@ -92,16 +106,15 @@ describe('Connection to MQTT with TLS', () => {
             cb();
         });
 
-
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4Application: OI4Application = OI4Application.builder()
-            .withApplicationResources(getResourceInfo())
+            .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
-            expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
+            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.DeviceClass}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0})));
     });
 
     it('should send close message on close', async () => {
@@ -127,12 +140,12 @@ describe('Connection to MQTT with TLS', () => {
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4Application: OI4Application = OI4Application.builder()
-            .withApplicationResources(getResourceInfo())
+            .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
             .build();
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/mam/${getResourceInfo().oi4Id}`),
+            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.DeviceClass}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({
                 health: EDeviceHealth.NORMAL_0,
                 healthScore: 0
@@ -151,7 +164,7 @@ describe('Connection to MQTT with TLS', () => {
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const oi4Application: OI4Application = OI4Application.builder()
-            .withApplicationResources(getResourceInfo())
+            .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
             .build();
         expect(oi4Application.mqttClient.options.will?.payload)

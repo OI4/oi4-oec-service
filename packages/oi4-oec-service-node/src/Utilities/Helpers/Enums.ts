@@ -4,7 +4,6 @@ export enum AsyncClientEvents {
     DISCONNECT = 'disconnect',
     RECONNECT = 'reconnect',
     CONNECT = 'connect',
-    RESOURCE_CHANGED = 'resourceChanged',
     MESSAGE = 'message',
     OFFLINE = 'offline',
 }

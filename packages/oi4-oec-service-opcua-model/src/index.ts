@@ -1,4 +1,5 @@
 export * from './opcua/OpcUaSchemaProvider'
 export * from './model/IOPCUA'
 export * from './model/EOPCUA'
+export * from './model/ServiceTypes'
 export * from './opcua/OPCUABuilder'

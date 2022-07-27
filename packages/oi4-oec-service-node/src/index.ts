@@ -1,10 +1,12 @@
-export {OI4Application} from './application/OI4Application';
+export {IOI4Application, OI4Application} from './application/OI4Application';
 export {OI4ApplicationResources, DEFAULT_MAM_FILE} from './application/OI4ApplicationResources';
 export {OI4RegistryManager} from './application/OI4RegistryManager';
 export * from './application/MqttSettings';
 export * from './application/OI4ApplicationFactory';
 export * from './Config/SettingsPaths';
 export {FileLogger} from './Utilities/FileLogger/FileLogger';
-export * from './Utilities/Helpers/TopicParser';
-export {TopicInfo, TopicWrapper} from './Utilities/Helpers/Types';
 export {TopicMethods, getTopicMethod} from './Utilities/Helpers/Enums';
+export {MqttMessageProcessor} from './Utilities/Helpers/MqttMessageProcessor';
+export * from './Utilities/Helpers/TopicParser';
+export * from './Utilities/Helpers/Enums';
+export * from './Utilities/Helpers/Types';
