@@ -104,20 +104,20 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         },
         publicationList: [
             PublicationList.clone({
-                resource: 'health',
+                resource: Resource.HEALTH,
                 config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 oi4Identifier: '1'
             } as PublicationList),
             PublicationList.clone({
-                resource: 'mam',
+                resource: Resource.MAM,
                 config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 oi4Identifier: '2'
             } as PublicationList),
             PublicationList.clone({
-                resource: 'license',
-                config: PublicationListConfig.STATUS_1,
+                resource: Resource.LICENSE,
+                config: PublicationListConfig.MODE_1,
                 DataSetWriterId: 3,
                 oi4Identifier: '3'
             } as PublicationList)
