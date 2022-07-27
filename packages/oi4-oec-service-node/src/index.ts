@@ -5,3 +5,6 @@ export * from './application/MqttSettings';
 export * from './application/OI4ApplicationFactory';
 export * from './Config/SettingsPaths';
 export {FileLogger} from './Utilities/FileLogger/FileLogger';
+export * from './Utilities/Helpers/TopicParser';
+export {TopicInfo, TopicWrapper} from './Utilities/Helpers/Types';
+export {TopicMethods, getTopicMethod} from './Utilities/Helpers/Enums';
