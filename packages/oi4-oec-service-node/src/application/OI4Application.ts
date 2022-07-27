@@ -75,8 +75,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param opcUaBuilder
      * @param clientPayloadHelper
      * @param clientCallbacksHelper
+     * @param mqttMessageProcessor
      */
-    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper) {
+    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper, mqttMessageProcessor: MqttMessageProcessor) {
         super();
         this.serviceType = getServiceType(applicationResources.mam.DeviceClass);
         this.builder = opcUaBuilder;
