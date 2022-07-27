@@ -3,7 +3,8 @@ import {NetworkMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import mam from './__fixtures__/mam_network_message.json';
 import invalidMam from './__fixtures__/invalid_mam_network_message.json';
-import {DataSetClassIds, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
+import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 function createOPCUABuilderWithLastMessageId(prefix: string): OPCUABuilder {
     const pubId = 'pubId';
