@@ -23,7 +23,6 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
 
         expect(await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'})).toBe(true);
         expect(mockedBuilder.checkTopicPath('path')).toBe(true);
-        expect(await mockedBuilder.checkPayloadType({payload: 'payload'})).toBe('FakeType');
     });
 
     it('The factory works, a method with several parameter is mocked and the parameters are passed successfully', async () => {

@@ -37,6 +37,12 @@ export class OPCUABuilder {
     this.topicRex = new RegExp(topicPathSchemaJson.pattern);
   }
 
+  private getUniqueMessageId(messageId: string): string {
+    for(let counter = 0; this.lastMessageId === messageId; counter++) {
+        messageId = `${counter}${messageId}`;
+    }
+    return messageId;
+  }
 
   buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
     const networkMessageArray: IOPCUANetworkMessage[] = [];
@@ -109,19 +115,21 @@ export class OPCUABuilder {
     for (const payloads of dataSetPayloads) {
       opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.Payload, timestamp, payloads.DataSetWriterId, payloads.subResource, payloads.Status, filter, metaDataVersion));
     }
+    const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
     const opcUaDataMessage: IOPCUANetworkMessage = {
-      MessageId: `${Date.now().toString()}-${this.publisherId}`,
+      MessageId: this.getUniqueMessageId(proposedMessageId),
       MessageType: EOPCUAMessageType.uaData,
       DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
       PublisherId: this.publisherId,
       Messages: opcUaDataPayload,
       correlationId: correlationId,
     };
-    if (this.lastMessageId === opcUaDataMessage.MessageId) {
-      opcUaDataMessage.MessageId = `OverFlow${opcUaDataMessage.MessageId}`;
-    } else {
+
+    // change last message only when there wasn't any conflict
+    if(proposedMessageId === opcUaDataMessage.MessageId) {
       this.lastMessageId = opcUaDataMessage.MessageId;
     }
+
     return opcUaDataMessage;
   }
 
@@ -138,8 +146,9 @@ export class OPCUABuilder {
    */
   buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, subResource: string, correlationId = ''): IOPCUAMetaData {
     const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
+    const proposedMessageId =`${Date.now().toString()}-${this.publisherId}`;
     const opcUaMetaDataMessage: IOPCUAMetaData = {
-      MessageId: `${Date.now().toString()}-${this.publisherId}`,
+      MessageId: this.getUniqueMessageId(proposedMessageId),
       MessageType: EOPCUAMessageType.uaMetadata,
       PublisherId: this.publisherId,
       DataSetWriterId: dataSetWriterId,
@@ -148,9 +157,8 @@ export class OPCUABuilder {
       correlationId: correlationId,
       MetaData: opcUaMetaDataPayload,
     };
-    if (this.lastMessageId === opcUaMetaDataMessage.MessageId) {
-      opcUaMetaDataMessage.MessageId = `OverFlow${opcUaMetaDataMessage.MessageId}`;
-    } else {
+    // change only last message if there wasn't any conflict
+    if(proposedMessageId === opcUaMetaDataMessage.MessageId) {
       this.lastMessageId = opcUaMetaDataMessage.MessageId;
     }
     return opcUaMetaDataMessage;
