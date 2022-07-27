@@ -1,6 +1,7 @@
 import {DefaultSettingsPaths, ISettingsPaths, OI4ApplicationFactory,} from '@oi4/oi4-oec-service-node';
 import {ServiceDemoOI4ApplicationResources} from './application/ServiceDemoOI4ApplicationResources';
 import {ServiceDemoClientCallbacksHelper} from "./application/ServiceDemoClientCallbacksHelper";
+import {ServiceDemoMqttMessageProcessor} from "./application/ServiceDemoMqttMessageProcessor";
 
 export {WeatherService} from './weather/WeatherService';
 export * from './weather/WeatherServiceModel';
@@ -30,7 +31,9 @@ export const IS_LOCAL = process.argv.length > 2 && process.argv[2] === 'local';
 const paths: ISettingsPaths = IS_LOCAL ? LocalTestPaths : DefaultSettingsPaths;
 const applicationResources = new ServiceDemoOI4ApplicationResources(IS_LOCAL, paths);
 const applicationFactory = new OI4ApplicationFactory(applicationResources, paths).initialize();
-applicationFactory.builder.withClientCallbacksHelper(new ServiceDemoClientCallbacksHelper());
+applicationFactory.builder//
+    .withClientCallbacksHelper(new ServiceDemoClientCallbacksHelper())//
+    .withMqttMessageProcessor(new ServiceDemoMqttMessageProcessor());
 
 applicationFactory.createOI4Application();
 

@@ -15,6 +15,12 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
 
+export enum OI4ResourceEvent {
+    RESOURCE_CHANGED = 'resourceChanged',
+    RESOURCE_ADDED = 'resourceChanged',
+    RESOURCE_REMOVED = 'resourceRemoved',
+}
+
 export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected readonly _profile: Profile;
     protected readonly _mam: MasterAssetModel;
@@ -70,7 +76,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     }
 
     get oi4Id(): string {
-        return this.mam.ProductInstanceUri;
+        return this.mam.getOI4Id();
     }
 
     // Resource accessor section
@@ -91,18 +97,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     set health(health: Health) {
         if (health.healthScore >= 100 && health.healthScore <= 0) throw new RangeError('healthState out of range');
         this._health = health;
-        this.emit('resourceChanged', 'health');
-    }
-
-    setHealthState(healthState: number) {
-        if (healthState >= 100 && healthState <= 0) throw new RangeError('healthState out of range');
-        this._health = new Health(this._health.health, healthState)
-        this.emit('resourceChanged', 'health');
-    }
-
-    setHealth(health: EDeviceHealth) {
-        this._health = new Health(health, this._health.healthScore);
-        this.emit('resourceChanged', 'health');
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.HEALTH);
     }
 
     // --- MAM ---
@@ -168,7 +163,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
     getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
         return this._publicationList.filter((elem: PublicationList) => {
-            if (elem.oi4Identifier !== oi4Id) return false;
+            if (oi4Id !== undefined && elem.oi4Identifier !== oi4Id) return false;
             if (resourceType !== undefined && elem.resource !== resourceType) return false;
             if (tag !== undefined && elem.filter !== tag) return false;
             return true;
@@ -182,7 +177,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
     addPublication(publicationObj: PublicationList): void {
         this.publicationList.push(publicationObj);
-        this.emit('resourceChanged', 'publicationList');
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.PUBLICATION_LIST);
     }
 
     // --- subscriptionList ---
@@ -196,7 +191,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
     addSubscription(subscriptionObj: SubscriptionList): void {
         this.subscriptionList.push(subscriptionObj);
-        this.emit('resourceChanged', 'subscriptionList');
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.SUBSCRIPTION_LIST);
     }
 
 }

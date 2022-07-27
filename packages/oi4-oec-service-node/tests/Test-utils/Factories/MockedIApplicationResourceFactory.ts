@@ -97,14 +97,12 @@ export class MockedIApplicationResourceFactory {
             getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
                 console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.subscriptionList;
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            setHealth(_: EDeviceHealth): void {
-                console.log('Called mocked setHealth. Do nothing....');
-            },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            setHealthState(_: number): void {
-                console.log('Called mocked setHealthState. Do nothing....');
+            }, getHealth(oi4Id: string): Health {
+                console.log(`Called mocked getHealth with params ${oi4Id}`);
+                return this.health;
+            }, getMasterAssetModel(oi4Id: string): MasterAssetModel {
+                console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
+                return this.mam;
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             on(_: string, __: Function): IOI4ApplicationResources {
@@ -136,17 +134,17 @@ export class MockedIApplicationResourceFactory {
         return licenseText;
     }
 
-    static getMockedDefaultMasterAssetModel(): MasterAssetModel {
+    static getMockedDefaultMasterAssetModel(manufacturerUri = 'fakeManufacturerUri', modelText = '1', productCode = 'fakeProductCode', serialNumber = 'fakeSerialNumber'): MasterAssetModel {
         return MasterAssetModel.clone({
-            ManufacturerUri: 'fakeManufacturerUri',
-            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeModel'),
-            ProductCode: 'fakeProductCode',
+            ManufacturerUri: manufacturerUri,
+            Model: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText(modelText),
+            ProductCode: productCode,
             HardwareRevision: 'fakeHardwareRevision',
             SoftwareRevision: 'fakeSoftwareRevision',
             DeviceRevision: 'fakeDeviceRevision',
             DeviceManual: 'fakeDeviceManual',
             DeviceClass: 'fakeDeviceClass',
-            SerialNumber: 'fakeSerialNumber',
+            SerialNumber: serialNumber,
             ProductInstanceUri: 'fakeProductInstanceURI',
             RevisionCounter: -1,
             Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),

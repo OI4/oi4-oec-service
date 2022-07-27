@@ -1,8 +1,8 @@
-import mqtt = require('async-mqtt'); 
+import mqtt = require('async-mqtt');
 import {ConformityValidator, EValidity} from '../src/index';
-import {IMessageBusLookup, PubResponse, GetRequest} from '../src/model/IMessageBusLookup';
+import {GetRequest, IMessageBusLookup, PubResponse} from '../src/model/IMessageBusLookup';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {ESyslogEventFilter, EAssetType, Resource} from '@oi4/oi4-oec-service-model';
+import {EAssetType, ESyslogEventFilter, Resource} from '@oi4/oi4-oec-service-model';
 
 import mam_valid from './__fixtures__/mam_valid.json';
 import health_valid from './__fixtures__/health_valid.json';
@@ -27,6 +27,7 @@ import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.js
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
 import profile_device_unknown_resource from './__fixtures__/profile_device_unknown_resource.json';
 import profile_full_valid from './__fixtures__/profile_full_valid.json';
+import {ServiceTypes} from "@oi4/oi4-oec-service-opcua-model";
 
 
 const publish = jest.fn();
@@ -36,7 +37,7 @@ jest.mock('@oi4/oi4-oec-service-logger', () => ({
             log:jest.fn(),
         },
         initializeLogger: jest.fn(),
-    }) 
+    })
 )
 
 
@@ -52,7 +53,7 @@ const defaultSubResource = 'vendor.com/a/b/c'
 const defaultTopic = `oi4/Registry/${defaultAppId}`;
 
 function equal(a: string, b: string): boolean {
-    if ((a == undefined|| a== null|| a.length==0) && (b==undefined || b==null|| b.length==0))
+    if ((a == undefined || a.length == 0) && (b == undefined || b.length == 0))
     {
         return true;
     }
@@ -79,7 +80,7 @@ const validDeviceTestData: ITestData[] =[
 
 const allValidDeviceTestData: ITestData[] = validDeviceTestData.concat([
             {resource: Resource.METADATA, message: metadata_valid}]);
-        
+
 
 function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true): ConformityValidator
 {
@@ -87,26 +88,26 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
 
     publish.mockImplementation(async (request: GetRequest) => {
 
-        const responseEntry = response.find((entry) => 
-            entry.resource==request.Resource && 
+        const responseEntry = response.find((entry) =>
+            entry.resource==request.Resource &&
             equal(entry.subResource, request.SubResource) &&
             equal(entry.filter, request.Filter));
         const message = responseEntry.message;
 
         if (fixCorrelationId)
         {
-            message.correlationId = request.Message.MessageId; 
+            message.correlationId = request.Message.MessageId;
         }
 
         return new PubResponse(request.getTopic('pub'), Buffer.from(JSON.stringify(message)));
 
     });
-  
+
     const messageBusLookup: IMessageBusLookup = {
         getMessage: publish,
     }
-   
-    return new ConformityValidator(defaultAppId, mqttClient, 'Registry',  messageBusLookup);
+
+    return new ConformityValidator(defaultAppId, mqttClient, ServiceTypes.REGISTRY,  messageBusLookup);
 }
 
 
@@ -237,7 +238,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.partial);
         expect(result.resource['licenseText'].validity).toBe(EValidity.nok);
     });
-    
+
     it('should return full device conformity' , async ()=> {
 
         const deviceMessages: ITestData[] = [
@@ -253,7 +254,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.ok);
         expect(result.profileResourceList.sort()).toEqual([Resource.HEALTH, Resource.MAM, Resource.PROFILE, Resource.REFERENCE_DESIGNATION])
     });
-    
+
     it('should detect unknown resource in profile' , async ()=> {
 
         const deviceMessages: ITestData[] = [
@@ -370,7 +371,7 @@ describe('Unit test for ConformityValidator ', () => {
             // clone message:
             const clonedMessage = JSON.stringify(data.message);
             const message =JSON.parse(clonedMessage);
-            message.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId 
+            message.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId
 
             const objectUnderTest = getObjectUnderTest([{resource: data.resource, message: message}]);
             const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.subResource);
@@ -392,7 +393,7 @@ describe('Unit test for ConformityValidator ', () => {
             const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: obj}]);
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
             expect(result.validity).toBe(EValidity.ok);
-    
+
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
             expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
             expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);
@@ -405,7 +406,7 @@ describe('Unit test for ConformityValidator ', () => {
             const objectUnderTest = getObjectUnderTest([{resource: Resource.PROFILE, message: obj}]);
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.device);
             expect(result.validity).toBe(EValidity.ok);
-    
+
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
             expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/get/profile (Low-Level).`, ESyslogEventFilter.warning);
             expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/pub/profile.`, ESyslogEventFilter.warning);

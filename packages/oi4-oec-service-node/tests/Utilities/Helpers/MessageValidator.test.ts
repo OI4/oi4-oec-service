@@ -1,12 +1,11 @@
-import {DataSetClassIds, Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
+import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {MessageValidator} from '../../../src/Utilities/Helpers/MessageValidator';
 import {MessageFactory, MessageItems} from '../../Test-utils/Factories/MessageFactory';
-import {TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
-import {ProcessorAndMockedData, TestMqttProcessorFactory} from '../../Test-utils/Factories/TestMqttProcessorFactory';
-import {TopicMethods} from '../../../dist/Utilities/Helpers/Enums';
+import {TopicWrapper} from '@oi4/oi4-oec-service-node';
+import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 
 describe('Unit test for TopicParser', () => {
 
@@ -14,7 +13,6 @@ describe('Unit test for TopicParser', () => {
     const logContainsOnly: Function = loggerItems.logContainsOnly;
     const clearLogFile: Function = loggerItems.clearLogFile;
 
-    let processorAndMockedData: ProcessorAndMockedData = undefined;
     let defaultParsedMessage: IOPCUANetworkMessage = undefined;
     let defaultMockedBuilder: OPCUABuilder = undefined;
     let defaultMessageItems: MessageItems = undefined;
@@ -24,10 +22,9 @@ describe('Unit test for TopicParser', () => {
         defaultMessageItems = MessageFactory.getDefaultMessageItems();
 
         defaultParsedMessage = MessageFactory.getDefaultParsedMessage(defaultMessageItems.publisherId);
-        processorAndMockedData = TestMqttProcessorFactory.getProcessorAndDataWithDefaultEmitter(jest.fn(), defaultMessageItems.appId, defaultMessageItems.getTopicPrefix());
 
         MockedOPCUABuilderFactory.resetAllMocks();
-        defaultMockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithMockedMethods(processorAndMockedData.mockedData, defaultMessageItems.appId)
+        defaultMockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithMockedMethods(defaultMessageItems.appId, ServiceTypes.AGGREGATION);
     });
 
     it('If payload messages is empty a message is written n in the log', async () => {
@@ -39,7 +36,8 @@ describe('Unit test for TopicParser', () => {
         defaultParsedMessage.Messages = [{
             DataSetWriterId: 1,
             subResource: 'asd',
-            Payload: {}}]
+            Payload: {}
+        }]
         await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
         expect(loggerItems.isLogEmpty()).toBeTruthy();
     });
@@ -79,16 +77,16 @@ describe('Unit test for TopicParser', () => {
     it('If topic string is malformed, an error is thrown', async () => {
         const errMsg = `Invalid topic string structure ${defaultMessageItems.topic}`;
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
-        wrapper.topicArray = ['',''];
+        wrapper.topicArray = ['', ''];
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
-        wrapper.topicArray = ['','','','','','','','', ''];
+        wrapper.topicArray = ['', '', '', '', '', '', '', '', ''];
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
-        wrapper.topicArray = ['','','','','','','','','','', ''];
+        wrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', ''];
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
-        wrapper.topicArray = ['','','','','','','','','','','','','','','','','','','',''];
+        wrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
         await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
     });
 

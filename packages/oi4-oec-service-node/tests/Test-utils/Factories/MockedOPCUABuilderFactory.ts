@@ -1,11 +1,11 @@
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 export class MockedOPCUABuilderFactory {
 
     public static mockOPCUABuilderMethod(methodName: any, mockedImplementation: Function) {
         return jest
             .spyOn(OPCUABuilder.prototype, methodName)
-            .mockImplementation((... args: any) => {
+            .mockImplementation((...args: any) => {
                 return mockedImplementation.call(args);
             });
     }
@@ -14,11 +14,11 @@ export class MockedOPCUABuilderFactory {
         jest.resetAllMocks();
     }
 
-    public static getMockedBuilderWithoutMockedMethods(fakeOi4Id: string, fakeServiceType: string): OPCUABuilder {
-        return new OPCUABuilder(fakeOi4Id, fakeServiceType);
+    public static getMockedBuilderWithoutMockedMethods(oi4Id: string, serviceType: ServiceTypes): OPCUABuilder {
+        return new OPCUABuilder(oi4Id, serviceType);
     }
 
-    static getMockedBuilderWithMockedMethods(info: any, appId: string): OPCUABuilder {
+    static getMockedBuilderWithMockedMethods(appId: string, serviceType: ServiceTypes): OPCUABuilder {
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkOPCUAJSONValidity', () => {
             return Promise.resolve(true)
         });
@@ -26,7 +26,7 @@ export class MockedOPCUABuilderFactory {
             return true;
         });
 
-        return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(appId, info.fakeServiceType);
+        return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(appId, serviceType);
     }
 
 }

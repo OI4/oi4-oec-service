@@ -1,8 +1,9 @@
 import {TopicValidator} from '../../../src/Utilities/Helpers/TopicValidator';
-import {TopicWrapper} from '../../../dist/Utilities/Helpers/Types';
-import {TopicInfo} from '../../../src/Utilities/Helpers/Types';
+import {TopicInfo} from '../../../src';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {Resource, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {TopicWrapper} from '@oi4/oi4-oec-service-node';
+import {Resource} from '@oi4/oi4-oec-service-model';
+import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for TopicParser', () => {
 

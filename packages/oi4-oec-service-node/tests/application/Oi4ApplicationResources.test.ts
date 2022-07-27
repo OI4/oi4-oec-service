@@ -1,7 +1,7 @@
 import {OI4ApplicationResources} from '../../src';
 import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth, Health, IOI4Resource} from '@oi4/oi4-oec-service-model';
+import {EDeviceHealth, Health, IOI4Resource, PublicationList, PublicationListMode, PublicationListConfig, Resource} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
@@ -22,7 +22,7 @@ describe('Test Oi4ApplicationResources', () => {
     it('should be able to set sub resource', () => {
         const oi4Id = 'registry.com/1';
         const value = {oi4Id:oi4Id, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-       resources.setSubResource(value);
+       resources.addSubResource(value);
        expect(resources.subResources.has(oi4Id)).toBeTruthy();
        expect(resources.subResources.get(oi4Id)).toEqual(value);
     });
@@ -47,8 +47,8 @@ describe('Test Oi4ApplicationResources', () => {
         const value = {oi4Id:oi4Id, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
         resources.subResources.set(oi4Id, value);
         expect(resources.hasSubResource(oi4Id)).toBeTruthy();
-        expect(resources.deleteSubResource(oi4Id)).toBeTruthy();
-        expect(resources.deleteSubResource(oi4Id)).toBeFalsy();
+        expect(resources.removeSubResource(oi4Id)).toBeTruthy();
+        expect(resources.removeSubResource(oi4Id)).toBeFalsy();
     });
 
     it('should be able to get all sub resources if oi4id not specified', () => {
@@ -82,6 +82,22 @@ describe('Test Oi4ApplicationResources', () => {
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
         expect(resources.getLicense(resources.oi4Id).length).toBe(0);
+    });
+
+    it('should filter publicationList', ()=> {
+        const publicationList = new PublicationList();
+        publicationList.resource = Resource.DATA;
+        publicationList.oi4Identifier = resources.oi4Id;
+        publicationList.filter = 'oee';
+        publicationList.mode = PublicationListMode.APPLICATION_SUBRESOURCE_FILTER_8;
+        publicationList.config = PublicationListConfig.MODE_AND_INTERVAL_3;
+        resources.publicationList.push(publicationList);
+
+        expect(resources.getPublicationList()).toContain(publicationList);
+        expect(resources.getPublicationList('unknown.com/1/2/3')).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.EVENT)).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'wrong')).toEqual([]);
+        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'oee')).toContain(publicationList);
     });
 
 });
