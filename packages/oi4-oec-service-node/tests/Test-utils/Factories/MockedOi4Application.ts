@@ -27,6 +27,10 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
         this.topicPreamble = `${this.serviceType}/${this.applicationResources.oi4Id}`;
     }
 
+    sendData(_: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
     get oi4Id(){
         return this.applicationResources.oi4Id;
     }

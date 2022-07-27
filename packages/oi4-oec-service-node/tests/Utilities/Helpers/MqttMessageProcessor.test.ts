@@ -179,10 +179,12 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
-        const spiedEmit = jest.spyOn(processor, 'emit');
+
+        oi4Application.sendEventStatus = jest.fn();
+
         await processMessage(fakeTopic, Resource.CONFIG, processor);
 
-        expect(spiedEmit).toHaveBeenCalledWith('setConfig', {
+        expect(oi4Application.sendEventStatus).toHaveBeenCalledWith( {
             origin: defaultFakeAppId,
             number: 0,
             description: undefined
@@ -199,19 +201,16 @@ describe('Unit test for MqttMessageProcessor', () => {
 
 
     it('extract topic info works - data - get', async () => {
-        async function checkAgainstTopicForData(fakeTopic: string) {
+        async function checkAgainstTopicForData(fakeTopic: string, filter: string) {
             const processor = new MqttMessageProcessor();
-            const spiedEmit = jest.spyOn(processor, 'emit');
-            await processMessage(fakeTopic, Resource.DATA,processor);
-            expect(spiedEmit).toHaveBeenCalledWith('getData', {
-                topic: fakeTopic,
-                message: {Messages: [{Payload: 'fakePayload'}], PublisherId: 'Registry/mymanufacturer.com/1/1/1'}
-            });
+            await processMessage(fakeTopic, Resource.DATA, processor);
+            expect(oi4Application.sendData).toHaveBeenCalledWith(filter);
         }
 
-        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}`);
-        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}/${defaultFakeOi4Id}`);
-        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`);
+        oi4Application.sendData = jest.fn();
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}`, undefined);
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}/${defaultFakeOi4Id}`, undefined);
+        await checkAgainstTopicForData(`${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.DATA}/${defaultFakeOi4Id}/${defaultFakeFilter}`,defaultFakeFilter);
     });
 
     it('extract topic info works - data - set', async () => {
