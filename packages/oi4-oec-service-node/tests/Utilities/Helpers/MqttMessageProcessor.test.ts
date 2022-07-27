@@ -53,9 +53,6 @@ describe('Unit test for MqttMessageProcessor', () => {
         MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkTopicPath', () => {
             return Promise.resolve(true)
         });
-        MockedOPCUABuilderFactory.mockOPCUABuilderMethod('checkPayloadType', () => {
-            return Promise.resolve('FakeType');
-        });
 
         return MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(defaultFakeAppId, serviceType);
     }
