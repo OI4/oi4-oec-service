@@ -160,21 +160,21 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resource.HEALTH, '', this.oi4Id, this.oi4Id).then();
+            await this.sendResource(Resource.HEALTH, '', this.oi4Id, '').then();
             for(const resource of this.applicationResources.subResources.values()){
-                await this.sendResource(Resource.HEALTH, '', resource.oi4Id, resource.oi4Id).then();
+                await this.sendResource(Resource.HEALTH, '', resource.oi4Id, '').then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
     private resourceChangedCallback(oi4Id: string, resource: Resource) {
         if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', oi4Id, oi4Id).then();
+            this.sendResource(Resource.HEALTH, '', oi4Id, '').then();
         }
     }
 
     private resourceAddedCallback(oi4Id: string) {
-        this.sendResource(Resource.MAM, '', oi4Id, oi4Id).then();
+        this.sendResource(Resource.MAM, '', oi4Id, '').then();
     }
 
     // GET SECTION ----------------//
@@ -236,7 +236,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             return;
         }
 
-        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, filter);
+        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, subResource, filter);
     }
 
     async preparePayload(resource: Resource, subResource: string, filter: string): Promise<ValidatedPayload> {
@@ -316,10 +316,16 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         return {isValid: true, dswidFilter: dswidFilter};
     }
 
-    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, filter: string) {
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, subResource: string, filter?: string): Promise<void> {
         // Don't forget the slash
-        const endTag: string = filter === '' ? filter : `/${filter}`;
-
+        let endTag = '';
+        if (subResource && subResource.length > 0){
+            endTag = `/${subResource}`;
+        }
+        if (filter && filter.length > 0 && endTag.length > 0) {
+            endTag = `/${subResource}/${filter}`;
+        }
+        
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
