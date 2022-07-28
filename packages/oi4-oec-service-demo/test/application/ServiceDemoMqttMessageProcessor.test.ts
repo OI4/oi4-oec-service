@@ -32,6 +32,7 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
         sendMasterAssetModel: undefined,
         sendEvent: undefined,
         sendEventStatus: undefined,
+        sendData: undefined,
         getConfig: undefined,
         addListener: undefined,
         on: undefined,

@@ -31,10 +31,8 @@ import {
     OPCUABuilder, ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import EventEmitter from 'events';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
 import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
-import {MqttMessageProcessorEventStatus} from "../../src/Utilities/Helpers/MqttMessageProcessor";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -556,14 +554,13 @@ describe('OI4MessageBus test', () => {
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
-        const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
+        defaultOi4Application.sendEventStatus = jest.fn();
 
         await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(eventEmitMock).toHaveBeenCalledWith(MqttMessageProcessorEventStatus.SET_CONFIG, new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
         mock.mockRestore();
-        eventEmitMock.mockClear();
     });
 
     it('should add new config and send emit status status via mqtt process', async () => {
@@ -582,14 +579,12 @@ describe('OI4MessageBus test', () => {
         };
         jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
-        const eventEmitMock = jest.spyOn(EventEmitter.prototype, 'emit');
+        defaultOi4Application.sendEventStatus = jest.fn();
 
         await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(eventEmitMock).toHaveBeenCalledWith(MqttMessageProcessorEventStatus.SET_CONFIG, new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
-
-        eventEmitMock.mockClear();
     });
 
     it('should send config with get request', async () => {

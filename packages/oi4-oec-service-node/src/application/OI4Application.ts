@@ -43,6 +43,7 @@ export interface IOI4Application extends EventEmitter {
     removeSubscription(topic: string): Promise<boolean>;
     sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page: number, perPage: number): Promise<void>;
     sendMetaData(cutTopic: string): Promise<void>;
+    sendData(cutTopic: string): Promise<void>;
     sendMasterAssetModel(mam: MasterAssetModel, messageId?: string): Promise<void>;
     sendEvent(event: IEvent, filter: string): Promise<void>;
     sendEventStatus(status: StatusEvent): Promise<void>;
@@ -107,7 +108,6 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         updateMqttClient(this.client);
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
-        this.on('setConfig', this.sendEventStatus);
         this.mqttMessageProcessor =  mqttMessageProcessor;
 
         this.initClientCallbacks();
@@ -187,12 +187,11 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         await this.send(cutTopic, 'metadata', this.applicationResources.metaDataLookup);
     }
 
-    //FIXME is this sendData even used somewhere?
     /**
      * Sends all available data of the applicationResources to the bus
      * @param cutTopic - the cuttopic, containing only the tag-element
      */
-    async sendData(cutTopic: string) {
+    public async sendData(cutTopic: string) {
         await this.send(cutTopic, 'data', this.applicationResources.dataLookup);
     }
 
@@ -355,7 +354,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     }
 
 
-    async sendEventStatus(status: StatusEvent) {
+    public async sendEventStatus(status: StatusEvent) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
             subResource: 'status',

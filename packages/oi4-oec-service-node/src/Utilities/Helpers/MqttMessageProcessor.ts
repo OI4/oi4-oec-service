@@ -92,7 +92,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
 
         if (topicInfo.resource === Resource.DATA) {
-            this.emit(MqttMessageProcessorEventStatus.GET_DATA, {topic: topicInfo.topic, message: parsedMessage});
+            await oi4Application.sendData(topicInfo.filter);
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
@@ -179,7 +179,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
         const status: StatusEvent = new StatusEvent(applicationResources.oi4Id, EOPCUAStatusCode.Good);
 
-        this.emit(MqttMessageProcessorEventStatus.SET_CONFIG, status);
+        await oi4Application.sendEventStatus(status);
         await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
     }
 
