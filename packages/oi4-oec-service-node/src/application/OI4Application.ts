@@ -19,7 +19,6 @@ import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {
-    getServiceType,
     IOPCUADataSetMessage,
     IOPCUANetworkMessage,
     OPCUABuilder,
@@ -32,7 +31,7 @@ import {OI4ResourceEvent} from './OI4Resource';
 export interface IOI4Application extends EventEmitter {
 
     oi4Id: string;
-    serviceType: string;
+    serviceType: ServiceTypes;
     applicationResources: IOI4ApplicationResources;
     topicPreamble: string;
     builder: OPCUABuilder;
@@ -80,7 +79,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      */
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper, mqttMessageProcessor: MqttMessageProcessor) {
         super();
-        this.serviceType = getServiceType(applicationResources.mam.DeviceClass);
+        this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
         this.applicationResources = applicationResources;
         this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
@@ -427,7 +426,7 @@ export class OI4ApplicationBuilder {
 
     build() {
         const oi4Id = this.applicationResources.oi4Id;
-        const serviceType = getServiceType(this.applicationResources.mam.DeviceClass);
+        const serviceType = this.applicationResources.mam.getServiceType();
         if (this.opcUaBuilder === undefined) {
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
         }

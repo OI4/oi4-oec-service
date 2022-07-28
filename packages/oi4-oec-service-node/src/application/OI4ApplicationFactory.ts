@@ -6,7 +6,7 @@ import {
 // @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {getServiceType, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
@@ -41,7 +41,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = DefaultSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
-        const serviceType = getServiceType(this.resources.mam.DeviceClass);
+        const serviceType = this.resources.mam.getServiceType();
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
         initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, serviceType);

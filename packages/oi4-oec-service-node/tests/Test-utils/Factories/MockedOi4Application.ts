@@ -6,7 +6,7 @@ import {
     StatusEvent,
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {ClientPayloadHelper} from '../../../dist/Utilities/Helpers/ClientPayloadHelper';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
@@ -17,10 +17,10 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
     builder: OPCUABuilder;
     client: mqtt.AsyncClient;
     clientPayloadHelper: ClientPayloadHelper;
-    serviceType: string;
+    serviceType: ServiceTypes;
     topicPreamble: string;
 
-    constructor(applicationResources: IOI4ApplicationResources, serviceType: string) {
+    constructor(applicationResources: IOI4ApplicationResources, serviceType: ServiceTypes) {
         super();
         this.applicationResources = applicationResources;
         this.serviceType = serviceType;

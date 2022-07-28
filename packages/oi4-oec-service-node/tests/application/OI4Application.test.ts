@@ -28,7 +28,7 @@ import {
     EOPCUAMessageType,
     EOPCUAStatusCode, IOPCUAMetaData,
     IOPCUANetworkMessage,
-    OPCUABuilder, ServiceTypes
+    OPCUABuilder
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
@@ -140,7 +140,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         rtLicense: new RTLicense(),
         health: new Health(EDeviceHealth.NORMAL_0, 100),
         mam: MasterAssetModel.clone({
-            DeviceClass: ServiceTypes.AGGREGATION,
+            DeviceClass: 'OI4.Aggregation',
             ManufacturerUri: 'test',
             Model: {
                 locale: EOPCUALocale.enUS,
@@ -370,14 +370,14 @@ describe('OI4MessageBus test', () => {
         const tagName = 'tag-01';
         await defaultOi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}/${tagName}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}/${tagName}`),
             expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.metaDataLookup[tagName])));
     });
 
     it('should send all metadata if tagname not specified', async () => {
         await defaultOi4Application.sendMetaData('');
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}`),
             expect.stringContaining(JSON.stringify(getResourceInfo().metaDataLookup)));
     });
 
@@ -385,7 +385,7 @@ describe('OI4MessageBus test', () => {
         const tagName = 'tag-01'
         await defaultOi4Application.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}/${tagName}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}/${tagName}`),
             expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.dataLookup[tagName])));
     });
 
@@ -393,25 +393,25 @@ describe('OI4MessageBus test', () => {
         const tagName = ''
         await defaultOi4Application.sendData(tagName);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}`),
+            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}`),
             expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
     });
 
     it('should send resource with valid filter', async () => {
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);
-        const expectedAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
+        const expectedAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
         expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
         const filter = '0'
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', filter);
-        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     it('should not send resource if page is out of range', async () => {
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter, 20, 20);
-        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     async function getPayload(filter: string, resource: string, subResource?: string, oi4Application: OI4Application = defaultOi4Application) {
@@ -517,7 +517,7 @@ describe('OI4MessageBus test', () => {
         jest.clearAllMocks();
         await defaultOi4Application.sendEvent(event, defaultValidFilter);
 
-        const expectedPublishAddress = `oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/pub/event/${event.subResource()}/${defaultValidFilter}`;
+        const expectedPublishAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/pub/event/${event.subResource()}/${defaultValidFilter}`;
         expect(publish).toHaveBeenCalled();
         expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
     });
@@ -526,7 +526,7 @@ describe('OI4MessageBus test', () => {
         const status: StatusEvent = new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good, 'fake');
         await defaultOi4Application.sendEventStatus(status);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.EVENT}/status/${encodeURI(`${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}`)}`),
+            expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.EVENT}/status/${encodeURI(`${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}`)}`),
             expect.stringContaining(JSON.stringify(status)));
     });
 
@@ -590,7 +590,7 @@ describe('OI4MessageBus test', () => {
     it('should send config with get request', async () => {
         await defaultOi4Application.getConfig();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringMatching(`oi4/${getResourceInfo().mam.DeviceClass}/${getResourceInfo().oi4Id}/${TopicMethods.GET}/${Resource.CONFIG}/${getResourceInfo().oi4Id}`),
+            expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.GET}/${Resource.CONFIG}/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.config)));
     });
 

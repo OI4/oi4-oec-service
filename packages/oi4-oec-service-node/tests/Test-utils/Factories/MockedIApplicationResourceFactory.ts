@@ -143,7 +143,7 @@ export class MockedIApplicationResourceFactory {
             SoftwareRevision: 'fakeSoftwareRevision',
             DeviceRevision: 'fakeDeviceRevision',
             DeviceManual: 'fakeDeviceManual',
-            DeviceClass: 'fakeDeviceClass',
+            DeviceClass: 'OI4.OTConnector',
             SerialNumber: serialNumber,
             ProductInstanceUri: 'fakeProductInstanceURI',
             RevisionCounter: -1,

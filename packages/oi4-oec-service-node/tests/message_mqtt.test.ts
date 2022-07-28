@@ -34,7 +34,7 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
             };
         },
         mam: MasterAssetModel.clone({
-            DeviceClass: ServiceTypes.REGISTRY,
+            DeviceClass: 'OI4.Registry',
             ManufacturerUri: 'test',
             Model: {locale: EOPCUALocale.enUS, text: 'text'},
             Description: {locale: EOPCUALocale.enUS, text: 'text'},
@@ -46,7 +46,8 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
             SerialNumber: '23kl41oßmß132',
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
-            ProductInstanceUri: 'wo/'
+            ProductInstanceUri: 'wo/',
+			getServiceType(): ServiceTypes {return ServiceTypes.REGISTRY}
         } as MasterAssetModel),
         subscriptionList: [],
         subResources: new Map<string, IOI4Resource>(),
@@ -113,7 +114,7 @@ describe('Connection to MQTT with TLS', () => {
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.DeviceClass}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0})));
     });
 
@@ -145,7 +146,7 @@ describe('Connection to MQTT with TLS', () => {
             .build();
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.DeviceClass}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({
                 health: EDeviceHealth.NORMAL_0,
                 healthScore: 0

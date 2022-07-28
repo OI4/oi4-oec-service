@@ -1,6 +1,6 @@
 import {OI4Payload} from './Payload';
 import {EDeviceHealth} from './EContainer';
-import {IMasterAssetModel, IOPCUALocalizedText} from '@oi4/oi4-oec-service-opcua-model';
+import {IMasterAssetModel, IOPCUALocalizedText, ServiceTypes, getServiceType} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum Resource {
     MAM = 'mam',
@@ -91,6 +91,11 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
 
     getOI4Id(): string {
         return `${this.ManufacturerUri}/${encodeURIComponent(this.Model.text)}/${encodeURIComponent(this.ProductCode)}/${encodeURIComponent(this.SerialNumber)}`;
+    }
+
+    getServiceType(): ServiceTypes {
+        const serviceType = this.DeviceClass.startsWith('OI4.') ? this.DeviceClass.substring(4) : this.DeviceClass;
+        return getServiceType(serviceType);
     }
 
     static clone(source: MasterAssetModel): MasterAssetModel {
