@@ -20,7 +20,7 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
     const application: IOI4Application = {
         oi4Id: OI4_ID,
         applicationResources: undefined,
-        serviceType: '',
+        serviceType: undefined,
         topicPreamble: '',
         builder: undefined,
         client: undefined,
