@@ -90,6 +90,8 @@ describe('Unit test for ClientPayloadHelper', () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedOI4ApplicationResources, '2', 'license');
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
+        expect(validatedPayload.payload[0].subResource).toBe('2');
+        expect(validatedPayload.payload[0].filter).toBe('1');
     });
 
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: string) {
