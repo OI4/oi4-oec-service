@@ -44,14 +44,14 @@ export class OPCUABuilder {
     return messageId;
   }
 
-  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0, filter?: string, metadataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage[] {
+  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0): IOPCUANetworkMessage[] {
     const networkMessageArray: IOPCUANetworkMessage[] = [];
-    networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId, filter, metadataVersion));
+    networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId));
     let currentNetworkMessageIndex = 0;
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
       if (wholeMsgLengthBytes + this.msgSizeOffset < parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10) && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
-        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.subResource, remainingPayloads.Status, filter, metadataVersion));
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.subResource, remainingPayloads.Status, remainingPayloads.filter, remainingPayloads.MetaDataVersion));
       } else {
         // This is the paginationObject
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
@@ -68,7 +68,7 @@ export class OPCUABuilder {
           }
           break; // If we request a certain page, there's no need to build more than necessary
         }
-        networkMessageArray.push(this.buildOPCUANetworkMessage([remainingPayloads], timestamp, dataSetClassId, correlationId, filter, metadataVersion));
+        networkMessageArray.push(this.buildOPCUANetworkMessage([remainingPayloads], timestamp, dataSetClassId, correlationId));
         currentNetworkMessageIndex++;
       }
     }
@@ -104,7 +104,7 @@ export class OPCUABuilder {
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUANetworkMessage(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUANetworkMessage {
+  buildOPCUANetworkMessage(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = ''): IOPCUANetworkMessage {
     const opcUaDataPayload: IOPCUADataSetMessage[] = [];
     // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
     // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
@@ -112,8 +112,8 @@ export class OPCUABuilder {
     // } else {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
-    for (const payloads of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payloads.Payload, timestamp, payloads.DataSetWriterId, payloads.subResource, payloads.Status, filter, metaDataVersion));
+    for (const payload of dataSetPayloads) {
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.subResource, payload.Status, payload.filter, payload.MetaDataVersion));
     }
     const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
     const opcUaDataMessage: IOPCUANetworkMessage = {

@@ -4,7 +4,7 @@ import Ajv from 'ajv'; /*tslint:disable-line*/
 import mam from './__fixtures__/mam_network_message.json';
 import invalidMam from './__fixtures__/invalid_mam_network_message.json';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {ServiceTypes, IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 function createOPCUABuilderWithLastMessageId(prefix: string): OPCUABuilder {
     const pubId = 'pubId';
@@ -51,7 +51,7 @@ test('should increase over flow counter when last message equals actual message 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const dateMock = jest.spyOn(Date, 'now').mockImplementation(()=>sameMessageIdPrefix);
-    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0',undefined);
+    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0');
     expect(msg.MessageId.charAt(0)).toEqual('0');
     dateMock.mockRestore();
 });
@@ -78,6 +78,30 @@ test('should update last message when building metadata message', () => {
 test('should update last message when building network  message', () => {
     const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
     const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0',undefined);
+    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0');
     expect(msg.MessageId).toEqual(builder.lastMessageId);
 });
+
+test('builds paginated message', () => {
+    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY);
+
+    const messages: IOPCUADataSetMessage[] = [{
+        DataSetWriterId: 1,
+        subResource: 'a/b/c/d',
+        filter: 'filter',
+        Payload: [],
+        Timestamp: '2022-01-01T12:00:00.000'
+    }]
+
+    const timeStamp = new Date(2022, 1, 2);
+    const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd'); 
+
+    expect(paginatedMessages.length).toEqual(1);
+    expect(paginatedMessages[0].Messages.length).toEqual(2);
+    expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
+    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
+    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
+    expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+    expect(paginatedMessages[0].Messages[1].Payload.page).toBe(1);
+})
