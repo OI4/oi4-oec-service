@@ -1,6 +1,12 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
-import {IOPCUADataSetMessage, IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    IOPCUADataSetMessage,
+    IOPCUANetworkMessage,
+    Oi4Identifier,
+    OPCUABuilder,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-opcua-model';
 import {
     Application,
     buildOecJsonValidator,
@@ -20,8 +26,7 @@ import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
 
 export * from './model/IConformityValidator';
 
-interface ItemRef
-{
+interface ItemRef {
     subResource: string;
     filter: string;
 }
@@ -38,7 +43,7 @@ export class ConformityValidator {
     static completeProfileList: Resource[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
-    constructor(oi4Id: string, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes,  messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
+    constructor(oi4Id: Oi4Identifier, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;
@@ -86,14 +91,11 @@ export class ConformityValidator {
 
         try {
 
-            if (subResource == undefined)
-            {
+            if (subResource == undefined) {
                 const topicArray = topicPreamble.split('/');
                 const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
                 oi4Result = await ConformityValidator.checkOI4IDConformity(originator);
-            }
-            else
-            {
+            } else {
                 oi4Result = await ConformityValidator.checkOI4IDConformity(subResource);
             }
         } catch (err) {
@@ -155,8 +157,8 @@ export class ConformityValidator {
         }
 
         // move evaluation of some resources to the end to ensure that data for evaluation of these resources was previously read
-        this.moveToEnd(checkList, Resource.LICENSE_TEXT);
-        this.moveToEnd(checkList, Resource.METADATA);
+        ConformityValidator.moveToEnd(checkList, Resource.LICENSE_TEXT);
+        ConformityValidator.moveToEnd(checkList, Resource.METADATA);
 
         conformityObject.checkedResourceList = checkList;
 
@@ -170,8 +172,7 @@ export class ConformityValidator {
         for (const resource of checkList) {
             LOGGER.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
             try {
-                switch (resource)
-                {
+                switch (resource) {
 
                     case Resource.METADATA:
                         for (const data of dataList) {
@@ -185,7 +186,7 @@ export class ConformityValidator {
 
                     case Resource.DATA:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
-                        dataList = this.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
+                        dataList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
                         break;
 
 
@@ -218,9 +219,7 @@ export class ConformityValidator {
                         if (licenseList.length == 0) {
                             // just check if there is any license text
                             resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
-                        }
-                        else
-                        {
+                        } else {
                             for (const license of licenseList) {
                                 resObj = await this.checkResourceConformity(topicPreamble, resource, license.subResource, license.filter);
                                 if (resObj.validity != EValidity.ok) {
@@ -234,7 +233,7 @@ export class ConformityValidator {
 
                     case Resource.LICENSE:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
-                        licenseList = this.collectItemReferences(resObj.dataSetMessages, Resource.LICENSE);
+                        licenseList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.LICENSE);
                         break;
 
                     default:
@@ -285,6 +284,7 @@ export class ConformityValidator {
      * Sidenote: "Custom" Resources will be marked as an error and not checked
      * @param topicPreamble The fullTopic that is used to check the get-route
      * @param assetType  The type of asset being tested (device / application.
+     * @param subResource
      * @param assetType The (optional) subresource.
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
@@ -307,8 +307,7 @@ export class ConformityValidator {
             resObj.validityErrors.push('Not every mandatory in resource list of profile.');
         }
 
-        if (profilePayload.resource.includes('data') && !profilePayload.resource.includes('metadata'))
-        {
+        if (profilePayload.resource.includes('data') && !profilePayload.resource.includes('metadata')) {
             resObj.validity = EValidity.partial;
             resObj.validityErrors.push('Profile contains the resource "data" but not "metadata".');
         }
@@ -388,13 +387,11 @@ export class ConformityValidator {
             eRes = EValidity.partial;
         }
 
-        const resObj: IValidityDetails = {
+        return {
             validity: eRes,
             validityErrors: errorMsgArr,
             dataSetMessages: parsedMessage.Messages,
         };
-
-        return resObj;
     }
 
     /**
@@ -412,7 +409,7 @@ export class ConformityValidator {
         const payloadResultMsgArr: string[] = [];
 
         try {
-            const schema = resource==Resource.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
+            const schema = resource == Resource.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
             messageValidationResult = await this.jsonValidator.validate(schema, payload);
         } catch (networkMessageValidationErr) {
             LOGGER.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
@@ -435,7 +432,7 @@ export class ConformityValidator {
             } else { // Since it's a data message, we can check against schemas
                 try {
                     for (const payloads of payload.Messages) {
-                        const schemaName = this.getPubPayloadSchema(resource);
+                        const schemaName = ConformityValidator.getPubPayloadSchema(resource);
                         payloadValidationResult = await this.jsonValidator.validate(schemaName, payloads.Payload);
                         if (!payloadValidationResult) {
                             const paginationResult = await this.jsonValidator.validate('pagination.schema.json', payloads.Payload);
@@ -478,10 +475,8 @@ export class ConformityValidator {
         return schemaConformity;
     }
 
-    private getPubPayloadSchema(resource: Resource): string
-    {
-        switch (resource)
-        {
+    private static getPubPayloadSchema(resource: Resource): string {
+        switch (resource) {
             case Resource.CONFIG:
                 return 'configPublish.schema.json';
 
@@ -519,24 +514,20 @@ export class ConformityValidator {
         return false;
     }
 
-    private moveToEnd<Type>(array: Type[], item: Type): void
-    {
-        if (array.includes(item))
-        {
+    private static moveToEnd<Type>(array: Type[], item: Type): void {
+        if (array.includes(item)) {
             // move 'Resource.LicenseText' to the end of the checklist so that we can ensure that the licenseList is filled
             array.push(array.splice(array.indexOf(item), 1)[0]);
         }
     }
 
-    private collectItemReferences(messages: IOPCUADataSetMessage[], resource: Resource): ItemRef[]
-    {
+    private static collectItemReferences(messages: IOPCUADataSetMessage[], resource: Resource): ItemRef[] {
         const result: ItemRef[] = [];
 
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 LOGGER.log(`Found pagination in ${resource}!`);
-            }
-            else if (this.isNotEmpty(dataSetMessage.filter) && this.isNotEmpty(dataSetMessage.subResource)) {
+            } else if (ConformityValidator.isNotEmpty(dataSetMessage.filter) && ConformityValidator.isNotEmpty(dataSetMessage.subResource)) {
                 result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter});
             }
         }
@@ -544,8 +535,7 @@ export class ConformityValidator {
         return result;
     }
 
-    private isNotEmpty(input: string): boolean
-    {
-        return input != undefined && input != null && input.length > 0;
+    private static isNotEmpty(input: string): boolean {
+        return input != undefined && true && input.length > 0;
     }
 }

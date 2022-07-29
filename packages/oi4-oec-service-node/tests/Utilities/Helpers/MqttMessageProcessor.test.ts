@@ -2,7 +2,7 @@ import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/Mocke
 import {MqttMessageProcessor, OI4RegistryManager} from '../../../src';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
@@ -17,13 +17,13 @@ describe('Unit test for MqttMessageProcessor', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const defaultEmitter: EventEmitter = new EventEmitter();
-    const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
-    const registryFakeAppId = 'mymanufacturer.com/1/2/3';
+    const defaultFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
+    const registryFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/2/3');
     const defaultFakeSubResource = 'fakeSubResource';
     const defaultTopicPrefix = 'oi4/Aggregation';
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
-    const defaultFakeOi4Id = '1/1/1/1';
+    const defaultFakeOi4Id = Oi4Identifier.fromString('1/1/1/1');
     const defaultFakeTag = 'tag';
 
     const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel('mymanufacturer.com', '1', '1', '1');
@@ -102,7 +102,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${registryFakeAppId}`);
-        expect(OI4RegistryManager.getOi4Id()).toBe(registryFakeAppId);
+        expect(OI4RegistryManager.getOi4Id().toString()).toBe(registryFakeAppId.toString());
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {

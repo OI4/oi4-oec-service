@@ -1,7 +1,7 @@
 import {LoggerItems, MockedLoggerFactory} from '../mock/MockedLoggerFactory';
 import {ServiceDemoMqttMessageProcessor} from '../../src/application/ServiceDemoMqttMessageProcessor';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
-import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Resource} from '@oi4/oi4-oec-service-model';
 import {IOI4Application, TopicMethods} from '@oi4/oi4-oec-service-node';
 import {TopicInfo} from '@oi4/oi4-oec-service-node';
@@ -12,7 +12,7 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
 
-    const OI4_ID = 'uri/model/productCode/serialNumber';
+    const OI4_ID = Oi4Identifier.fromString('uri/model/productCode/serialNumber');
     const message = fs.readFileSync(`${__dirname}/../__fixtures__/mamNetworkMessage.json`, 'utf-8');
     const topic = `oi4/${ServiceTypes.OT_CONNECTOR}/acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device/${TopicMethods.PUB}/${Resource.MAM}/acme.com/rock_solid_weather_sensor/OEC-ACME-UTILITY/F12SN894`;
     const processor = new ServiceDemoMqttMessageProcessor();
@@ -67,7 +67,7 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
 
         const topicInfo: TopicInfo = {
             topic: topic,
-            appId: 'acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device',
+            appId: Oi4Identifier.fromString('acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device'),
             method: TopicMethods.PUB,
             resource: Resource.MAM,
             oi4Id: 'acme.com/rock_solid_weather_sensor/OEC-ACME-UTILITY/F12SN894',

@@ -14,6 +14,7 @@ import {
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
+import {Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum OI4ResourceEvent {
     RESOURCE_CHANGED = 'resourceChanged',
@@ -60,7 +61,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
             this._publicationList.push({
                 resource: resources,
-                subResource: this.oi4Id,
+                subResource: this.oi4Id.toString(),
                 DataSetWriterId: 0,
                 oi4Identifier: this.oi4Id,
                 interval: resInterval,
@@ -75,7 +76,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         }
     }
 
-    get oi4Id(): string {
+    get oi4Id(): Oi4Identifier {
         return this.mam.getOI4Id();
     }
 
@@ -116,10 +117,10 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         return this._license;
     }
 
-    getLicense(oi4Id: string, licenseId?: string): License[] {
+    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
         if (oi4Id === undefined) {
             return this.license;
-        } else if (oi4Id !== this.oi4Id) {
+        } else if (oi4Id.equals(this.oi4Id)) {
             throw new Error('Sub resources not yet implemented');
         }
 
@@ -161,7 +162,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = publicationList;
     }
 
-    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
+    getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
         return this._publicationList.filter((elem: PublicationList) => {
             if (oi4Id !== undefined && elem.oi4Identifier !== oi4Id) return false;
             if (resourceType !== undefined && elem.resource !== resourceType) return false;
@@ -170,7 +171,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         });
     }
 
-    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
         console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
         return this._subscriptionList;
     }

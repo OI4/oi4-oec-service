@@ -1,4 +1,4 @@
-import {OPCUABuilder} from '../src';
+import {Oi4Identifier, OPCUABuilder} from '../src';
 import {NetworkMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import mam from './__fixtures__/mam_network_message.json';
@@ -7,15 +7,17 @@ import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for MAMStorage reading', () => {
 
+    const oi4Identifier = new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber');
+
     it('checks OPC UA JSON validity', async () => {
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION);
+        const builder = new OPCUABuilder(oi4Identifier, ServiceTypes.AGGREGATION);
         return builder.checkOPCUAJSONValidity(mam).then(result => {
             expect(result).toBe(true);
         });
     });
 
     it('should fail on invalid network message', () => {
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION);
+        const builder = new OPCUABuilder(oi4Identifier, ServiceTypes.AGGREGATION);
         return builder.checkOPCUAJSONValidity(invalidMam).then(result => {
             expect(result).toBe(false);
         });
@@ -25,7 +27,7 @@ describe('Unit test for MAMStorage reading', () => {
         const jsonValidator = new Ajv();
         jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
 
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION, jsonValidator);
+        const builder = new OPCUABuilder(oi4Identifier, ServiceTypes.AGGREGATION, jsonValidator);
 
         expect.assertions(1);
         try {
