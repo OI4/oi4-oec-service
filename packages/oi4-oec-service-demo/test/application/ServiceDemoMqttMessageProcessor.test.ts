@@ -81,6 +81,6 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
 
     const assertLogs = () => {
         expect(fakeLogFile.length).toBe(1);
-        expect(fakeLogFile[0]).toBe(`Foreign message from: acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device with messageId: 1658730472036-Utility/acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device`);
+        expect(fakeLogFile[0]).toBe(`Foreign message from: acme.com/OEC%2520Utility/OEC-ACME-UTILITY/my-device with messageId: 1658730472036-Utility/acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device`);
     };
 });

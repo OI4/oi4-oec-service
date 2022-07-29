@@ -339,7 +339,7 @@ describe('OI4MessageBus test', () => {
         const mqttOpts: MqttSettings = getStandardMqttConfig();
         const resources = getResourceInfo();
         const onResourceMock = jest.fn((event, cb) => {
-            cb(event);
+            cb(resources.oi4Id.toString(), event);
             expect(event).toBe(OI4ResourceEvent.RESOURCE_CHANGED);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -423,7 +423,7 @@ describe('OI4MessageBus test', () => {
     }
 
     it('should prepare mam payload', async () => {
-        const result = await getPayload('', Resource.MAM);
+        const result = await getPayload('', Resource.MAM, defaultAppId.toString());
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
@@ -450,7 +450,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare health payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), Resource.HEALTH);
+        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), Resource.HEALTH, defaultOI4Id.toString());
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
@@ -461,7 +461,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.license.toString(), Resource.LICENSE);
+        const result = await getPayload(CDataSetWriterIdLookup.license.toString(), Resource.LICENSE, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({components: getResourceInfo().license[i].components}));
@@ -469,7 +469,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare publicationList  payload', async () => {
-        const result = await getPayload(Resource.PUBLICATION_LIST, Resource.PUBLICATION_LIST);
+        const result = await getPayload(Resource.PUBLICATION_LIST, Resource.PUBLICATION_LIST, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
@@ -477,7 +477,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare subscriptionList  payload', async () => {
-        const result = await getPayload(Resource.SUBSCRIPTION_LIST, Resource.SUBSCRIPTION_LIST);
+        const result = await getPayload(Resource.SUBSCRIPTION_LIST, Resource.SUBSCRIPTION_LIST, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             const resourceInfo = defaultOi4ApplicationResources.subscriptionList[i];
             expect(JSON.stringify(result.payload[i].Payload)).toBe(JSON.stringify(resourceInfo));

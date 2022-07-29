@@ -185,7 +185,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processMessage(fakeTopic, Resource.CONFIG, processor);
 
         expect(oi4Application.sendEventStatus).toHaveBeenCalledWith( {
-            origin: defaultFakeAppId,
+            origin: defaultFakeAppId.toString(),
             number: 0,
             description: undefined
         });
