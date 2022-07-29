@@ -119,43 +119,54 @@ export class ClientPayloadHelper {
 
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: string, filter?: string): ValidatedPayload {
         
-        function createDataSetMessages(config: IContainerConfig, oi4Id: string, filter?: string): IOPCUADataSetMessage[] {
-            const result: IOPCUADataSetMessage[] = [];
-            if (config) {
-                for (const c in config) {
-                    if (filter && c !== filter) {
-                        continue;
-                    }
-
-                    result.push({
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4Id),
-                        filter: c,
-                        subResource: oi4Id,
-                        Payload: config[c]
-                    })
-                }
+        function getFilter(config: IContainerConfig): string | undefined {
+            if (config?.['context']?.name) {
+                return encodeURI(config['context'].name.text)
             }
-            return result;
+        }
+
+        function createDataSetMessage(config: IContainerConfig, oi4Id: string, filter?: string): IOPCUADataSetMessage | undefined {
+            if (config) {
+                const configFilter = getFilter(config);
+                if (filter && configFilter !== filter) { // filter is set and does not match with configuration filter
+                    return;
+                }
+                
+                return {
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4Id),
+                        filter: configFilter,
+                        subResource: oi4Id,
+                        Payload: config
+                };
+            }
         }
 
         if (!oi4Id) { // return everything
-            let messages = createDataSetMessages(applicationResources.config, applicationResources.oi4Id);
+            const messages: IOPCUADataSetMessage[] = [];
+            const mainConfig = createDataSetMessage(applicationResources.config, applicationResources.oi4Id);
+            if (mainConfig) {
+                messages.push(mainConfig);
+            }
+            
             applicationResources.subResources.forEach((value: IOI4Resource, key: string ) => {
-                const subResourceMessages = createDataSetMessages(value.config, key);
-                messages = messages.concat(subResourceMessages);
+                const subConfig = createDataSetMessage(value.config, key);
+                if (subConfig) {
+                    messages.push(subConfig);
+                }
             });
 
             return {abortSending: messages.length == 0, payload: messages};
         }
 
         // filter result
-        let messages: IOPCUADataSetMessage[] = [];
+        let config: IOPCUADataSetMessage | undefined;
         if (applicationResources.oi4Id == oi4Id) {
-            messages = createDataSetMessages(applicationResources.config, applicationResources.oi4Id, filter);
+            config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
         } else if (applicationResources.subResources.has(oi4Id)) {
-            messages = createDataSetMessages(applicationResources.subResources.get(oi4Id).config, oi4Id, filter);
+            config = createDataSetMessage(applicationResources.subResources.get(oi4Id).config, oi4Id, filter);
         }
-
+        
+        const messages: IOPCUADataSetMessage[] = config ? [config] : [];
         return {abortSending: messages.length == 0, payload: messages};
     }
 

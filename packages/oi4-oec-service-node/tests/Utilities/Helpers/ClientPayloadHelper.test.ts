@@ -175,14 +175,16 @@ describe('Unit test for ClientPayloadHelper', () => {
     function createConfigAppResource(): IOI4ApplicationResources {
         const applicationResources: IOI4ApplicationResources = {
             ...mockedOI4ApplicationResources,
-            config: {'filter1': {name: {text: 'group 1', locale: EOPCUALocale.enUS}}}
+            config: {'group1': {name: {text: 'group 1', locale: EOPCUALocale.enUS}},
+                    'context': {name: {text: 'filter1', locale: EOPCUALocale.enUS}}}
         }
 
         const subResource = 'vendor.com/1/2/3';
         applicationResources.subResources.clear();
         applicationResources.subResources.set(subResource, {
             ...mockedOI4ApplicationResources,
-            config: {'filter2': {name: {text: 'group 2', locale: EOPCUALocale.enUS}}}}); 
+            config: {'group2': {name: {text: 'group 2', locale: EOPCUALocale.enUS}},
+                    'context': {name: {text: 'filter2', locale: EOPCUALocale.enUS}}}}); 
 
         return applicationResources;
     }
@@ -196,11 +198,11 @@ describe('Unit test for ClientPayloadHelper', () => {
         const payload1 = validatedPayload.payload[0];
         expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id);
         expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload.name.text).toBe('group 1');
+        expect(payload1.Payload['group1'].name.text).toBe('group 1');
         const payload2 = validatedPayload.payload[1];
         expect(payload2.subResource).toStrictEqual('vendor.com/1/2/3');
         expect(payload2.filter).toBe('filter2');
-        expect(payload2.Payload.name.text).toBe('group 2');
+        expect(payload2.Payload['group2'].name.text).toBe('group 2');
     });
 
     it('createConfigSendResourcePayload works when requesting main resource', async () => {
@@ -212,7 +214,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const payload1 = validatedPayload.payload[0];
         expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id);
         expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload.name.text).toBe('group 1');
+        expect(payload1.Payload['group1'].name.text).toBe('group 1');
     });
 
     it('createConfigSendResourcePayload works when requesting sub resource', async () => {
@@ -224,7 +226,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const payload1 = validatedPayload.payload[0];
         expect(payload1.subResource).toStrictEqual('vendor.com/1/2/3');
         expect(payload1.filter).toBe('filter2');
-        expect(payload1.Payload.name.text).toBe('group 2');
+        expect(payload1.Payload['group2'].name.text).toBe('group 2');
     });
 
     it('createConfigSendResourcePayload works when requesting main resource with filter', async () => {
@@ -236,7 +238,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const payload1 = validatedPayload.payload[0];
         expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id);
         expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload.name.text).toBe('group 1');
+        expect(payload1.Payload['group1'] .name.text).toBe('group 1');
     });
 
     it('createConfigSendResourcePayload returns nothing with unknown filter', async () => {
@@ -247,6 +249,21 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.payload.length).toBe(0);
     });
 
+    it('createConfigSendResourcePayload works when no context is available', async () => {
+        const applicationResources: IOI4ApplicationResources = {
+            ...mockedOI4ApplicationResources,
+            config: {'group1': {name: {text: 'group 1', locale: EOPCUALocale.enUS}}}
+        }
+
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(applicationResources);
+
+        expect(validatedPayload.abortSending).toBe(false);
+        expect(validatedPayload.payload.length).toBe(1);
+        const payload1 = validatedPayload.payload[0];
+        expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id);
+        expect(payload1.filter).toBe(undefined);
+        expect(payload1.Payload['group1'].name.text).toBe('group 1');
+    });
 
     it('createPublishEventMessage works', async () => {
         const event = new SyslogEvent('fakeOrigin', 0, 'fakeDescription');
