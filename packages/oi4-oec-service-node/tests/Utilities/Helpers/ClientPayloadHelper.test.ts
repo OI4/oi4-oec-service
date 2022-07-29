@@ -22,7 +22,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     const OI4_ID_2 = Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`);
 
     const default_payload = [{
-        subResource: OI4_ID,
+        subResource: OI4_ID.toString(),
         DataSetWriterId: 0,
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];

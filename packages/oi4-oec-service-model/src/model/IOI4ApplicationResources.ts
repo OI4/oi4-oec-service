@@ -15,7 +15,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUAMetaData>;
 
-    subResources: Map<Oi4Identifier, IOI4Resource>;
+    subResources: Map<string, IOI4Resource>;
 
     getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 

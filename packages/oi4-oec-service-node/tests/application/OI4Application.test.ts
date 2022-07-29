@@ -31,13 +31,10 @@ import {
     IOPCUANetworkMessage,
     Oi4Identifier,
     OPCUABuilder,
-    ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import EventEmitter from 'events';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
 import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
-import {MqttMessageProcessorEventStatus} from "../../src/Utilities/Helpers/MqttMessageProcessor";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -71,7 +68,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
     // And harmonize it with the other mocks
     return {
         oi4Id: defaultAppId,
-        subResources: new Map<Oi4Identifier, IOI4ApplicationResources>(),
+        subResources: new Map<string, IOI4ApplicationResources>(),
         config: {
             registry: {
                 name: {locale: EOPCUALocale.enUS, text: 'reg-01'},
@@ -563,7 +560,7 @@ describe('OI4MessageBus test', () => {
 
         await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
         mock.mockRestore();
     });
@@ -588,7 +585,7 @@ describe('OI4MessageBus test', () => {
 
         await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
     });
 

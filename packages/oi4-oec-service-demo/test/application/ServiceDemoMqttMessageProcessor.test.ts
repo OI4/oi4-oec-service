@@ -71,7 +71,7 @@ describe('ServiceDemoMqttMessageProcessor.ts test', () => {
             appId: Oi4Identifier.fromString('acme.com/OEC%20Utility/OEC-ACME-UTILITY/my-device'),
             method: TopicMethods.PUB,
             resource: Resource.MAM,
-            oi4Id: 'acme.com/rock_solid_weather_sensor/OEC-ACME-UTILITY/F12SN894',
+            oi4Id: new Oi4Identifier('acme.com','rock_solid_weather_sensor','OEC-ACME-UTILITY','F12SN894'),
             serviceType: ServiceTypes.OT_CONNECTOR
         }
 

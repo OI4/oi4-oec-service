@@ -1,7 +1,9 @@
 import {MockedOPCUABuilderFactory} from '../MockedOPCUABuilderFactory';
-import {EOPCUAMessageType, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUAMessageType, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for MockedOPCUABuilderFactory.test', () => {
+
+    const oid4Id = new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber');
 
     beforeEach(() => {
         MockedOPCUABuilderFactory.resetAllMocks();
@@ -12,14 +14,14 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
             return Promise.resolve('WTF')
         });
 
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', ServiceTypes.AGGREGATION);
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
         const valid = await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'});
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).toBe('WTF');
     });
 
     it('The factory works, the default methods are mocked', async () => {
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithMockedMethods('fakeOi4Id', ServiceTypes.AGGREGATION);
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
 
         expect(await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'})).toBe(true);
         expect(mockedBuilder.checkTopicPath('path')).toBe(true);
@@ -47,9 +49,11 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
                     subResource: subResource,
                     correlationId: correlationId,
                     MetaData: {}
-            }});
+                }
+            });
 
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', ServiceTypes.AGGREGATION);
+
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
         const valid = await mockedBuilder.buildOPCUAMetaDataMessage(metaDataName, metaDataDescription, fieldProperty, classId, dataSetWriterId, filter, subResource, correlationId);
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).not.toBe(undefined);
@@ -64,7 +68,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
     });
 
     it('The factory works, when a method is not mocked when called undefined is retuned', async () => {
-        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods('fakeOi4Id', ServiceTypes.AGGREGATION);
+        const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
         const valid = await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'});
         expect(valid).toBe(undefined);
     });

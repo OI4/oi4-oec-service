@@ -73,7 +73,7 @@ export class ClientPayloadHelper {
             payload.push({
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), subResource),
                 filter: license.licenseId,
-                subResource: subResource ?? applicationResources.oi4Id,
+                subResource: subResource ?? applicationResources.oi4Id.toString(),
                 Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
             })
