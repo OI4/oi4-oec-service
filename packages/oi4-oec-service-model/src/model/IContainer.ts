@@ -1,11 +1,9 @@
-import { SubscriptionListConfig } from './Resource';
 import { EOPCUABaseDataType } from '@oi4/oi4-oec-service-opcua-model';
 import { IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
 
+// TODO move config interfaces to Resouce.ts and replace them by classes
 // Common Container config interfaces
-export interface IContainerConfig extends Record<string, IContainerConfigGroupName | IContainerConfigContext> {
-  context: IContainerConfigContext;
-}
+export type IContainerConfig = Record<string, IContainerConfigGroupName | IContainerConfigContext>;
 
 export interface IContainerConfigContext {
   name: IOPCUALocalizedText;
@@ -36,21 +34,3 @@ export interface IContainerConfigValidation {
   pattern?: string;
   values?: string[];
 }
-
-export interface ISubscriptionListObject {
-  topicPath: string;
-  interval?: number;
-  config?: SubscriptionListConfig;
-}
-
-// export interface IPublicationListObject {
-//   resource: string;
-//   tag?: string;
-//   DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
-//   oi4Identifier: string;
-//   active?: boolean;
-//   explicit?: EPublicationListExplicit;
-//   interval?: number; // UINT32
-//   precisions?: number; // REAL
-//   config?: EPublicationListConfig;
-// }

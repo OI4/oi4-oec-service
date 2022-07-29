@@ -11,8 +11,10 @@ import {
     PublicationList,
     Resource,
     SubscriptionList,
+    IContainerConfig,
 } from '@oi4/oi4-oec-service-model';
 import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
+import { IOI4Resource } from '@oi4/oi4-oec-service-model';
 
 export class ClientPayloadHelper {
 
@@ -115,55 +117,46 @@ export class ClientPayloadHelper {
         return {abortSending: payload.length == 0, payload: payload};
     }
 
-    // TODO this method must be refactored
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: string, filter?: string): ValidatedPayload {
-        console.log(`createConfigSendResourcePayload called with oi4Id: ${oi4Id} and filter: ${filter} from ${applicationResources.oi4Id}`);
-        return {abortSending: true, payload: undefined};
-        // const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
-        // const payload: IOPCUADataSetMessage[] = [];
-        //
-        // // Send all configs out
-        // if (filter === '') {
-        //
-        //     payload.push({
-        //         subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
-        //         Payload: actualPayload,
-        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-        //     });
-        //     return {abortSending: false, payload: payload};
-        //
-        //     // Send only filtered config out
-        // } else if (filter === actualPayload.context.name.text.toLowerCase().replace(' ', '')) {
-        //
-        //     // Filtered by subResource
-        //     actualPayload[filter] = applicationResources['config'][filter];
-        //     payload.push({
-        //         subResource: filter,
-        //         Payload: actualPayload,
-        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-        //     });
-        //     return {abortSending: false, payload: payload};
-        //
-        // } else if (Number.isNaN(dataSetWriterIdFilter)) {
-        //
-        //     // No subResource filter means we can only filter by DataSetWriterId in this else
-        //     return {abortSending: true, payload: undefined};
-        //
-        // } else if (dataSetWriterIdFilter === 8) {
-        //
-        //     // Filtered by DataSetWriterId
-        //     const actualPayload: IContainerConfig = (applicationResources as any)[subResource];
-        //     payload.push({
-        //         subResource: actualPayload.context.name.text.toLowerCase().replace(' ', ''),
-        //         Payload: actualPayload,
-        //         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, subResource),
-        //     });
-        //     return {abortSending: false, payload: payload};
-        //
-        // }
-        //
-        // //FIXME is this needed? I do not fully understand how this method is supposed to behave
-        // return {abortSending: true, payload: undefined};
+        
+        function createDataSetMessages(config: IContainerConfig, oi4Id: string, filter?: string): IOPCUADataSetMessage[] {
+            const result: IOPCUADataSetMessage[] = [];
+            if (config) {
+                for (const c in config) {
+                    if (filter && c !== filter) {
+                        continue;
+                    }
+
+                    result.push({
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4Id),
+                        filter: c,
+                        subResource: oi4Id,
+                        Payload: config[c]
+                    })
+                }
+            }
+            return result;
+        }
+
+        if (!oi4Id) { // return everything
+            let messages = createDataSetMessages(applicationResources.config, applicationResources.oi4Id);
+            applicationResources.subResources.forEach((value: IOI4Resource, key: string ) => {
+                const subResourceMessages = createDataSetMessages(value.config, key);
+                messages = messages.concat(subResourceMessages);
+            });
+
+            return {abortSending: messages.length == 0, payload: messages};
+        }
+
+        // filter result
+        let messages: IOPCUADataSetMessage[] = [];
+        if (applicationResources.oi4Id == oi4Id) {
+            messages = createDataSetMessages(applicationResources.config, applicationResources.oi4Id, filter);
+        } else if (applicationResources.subResources.has(oi4Id)) {
+            messages = createDataSetMessages(applicationResources.subResources.get(oi4Id).config, oi4Id, filter);
+        }
+
+        return {abortSending: messages.length == 0, payload: messages};
     }
 
     createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
