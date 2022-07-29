@@ -31,13 +31,11 @@ import {
     IOPCUANetworkMessage,
     Oi4Identifier,
     OPCUABuilder,
-    ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import EventEmitter from 'events';
-import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
+import {TopicMethods} from '@oi4/oi4-oec-service-node';
 import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
-import {MqttMessageProcessorEventStatus} from "../../src/Utilities/Helpers/MqttMessageProcessor";
+import {MqttMessageProcessorEventStatus} from '../../src/Utilities/Helpers/MqttMessageProcessor';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -563,7 +561,7 @@ describe('OI4MessageBus test', () => {
 
         await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
+        expect(eventEmitMock).toHaveBeenCalledWith(MqttMessageProcessorEventStatus.SET_CONFIG, new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
         mock.mockRestore();
     });

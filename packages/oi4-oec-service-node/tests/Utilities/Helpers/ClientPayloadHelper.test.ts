@@ -170,6 +170,8 @@ describe('Unit test for ClientPayloadHelper', () => {
     it('createSubscriptionListSendResourcePayload works when OI4 ID matches', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID);
         checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', mockedOI4ApplicationResources.oi4Id.toString());
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID);
+        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', mockedOI4ApplicationResources.oi4Id.toString());
     });
 
     function createConfigAppResource(): IOI4ApplicationResources {
