@@ -4,7 +4,7 @@ import {
     EOPCUAMessageType,
     IOPCUALocalizedText,
     IOPCUAMetaData,
-    IOPCUANetworkMessage
+    IOPCUANetworkMessage, Oi4Identifier
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
     Application,
@@ -24,11 +24,11 @@ import {extractProductInstanceUri} from "../../../src/application/OI4Resource";
 
 export class MockedIApplicationResourceFactory {
 
-    public static OI4_ID = 'fakeManufacturerUri/fakeModel/fakeProductCode/fakeSerialNumber';
+    public static OI4_ID = Oi4Identifier.fromString('fakeManufacturerUri/fakeModel/fakeProductCode/fakeSerialNumber');
 
     public static getMockedIApplicationResourceInstance = (mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()): IOI4ApplicationResources => {
         return {
-            subResources: new Map<string, IOI4ApplicationResources>(),
+            subResources: new Map<Oi4Identifier, IOI4ApplicationResources>(),
             config: {
                 'group_a': {
                     name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
@@ -70,7 +70,7 @@ export class MockedIApplicationResourceFactory {
             licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
             mam: mam,
             metaDataLookup: MockedIApplicationResourceFactory.getMockedDefaultIContainerMetaData(),
-            oi4Id: extractProductInstanceUri(mam),
+            oi4Id: Oi4Identifier.fromString(extractProductInstanceUri(mam)),
             profile: new Profile(Application.mandatory), //,
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: new RTLicense(),
@@ -81,11 +81,11 @@ export class MockedIApplicationResourceFactory {
                 console.log('Called mocked addDataSet. Do nothing....');
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            getLicense(oi4Id: string, licenseId?: string): License[] {
+            getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
             },
-            getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
+            getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
                 console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
                     if (elem.oi4Identifier !== oi4Id) return false;
@@ -94,13 +94,13 @@ export class MockedIApplicationResourceFactory {
                     return true;
                 });
             },
-            getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+            getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
                 console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.subscriptionList;
-            }, getHealth(oi4Id: string): Health {
+            }, getHealth(oi4Id: Oi4Identifier): Health {
                 console.log(`Called mocked getHealth with params ${oi4Id}`);
                 return this.health;
-            }, getMasterAssetModel(oi4Id: string): MasterAssetModel {
+            }, getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
                 console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
                 return this.mam;
             },
@@ -191,7 +191,7 @@ export class MockedIApplicationResourceFactory {
                 resource: Resource.EVENT,
                 DataSetWriterId: 43,
                 filter: 'fakeFilter',
-                oi4Identifier: MockedIApplicationResourceFactory.OI4_ID + '_2',
+                oi4Identifier: Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`),
             } as PublicationList)
         ];
     }

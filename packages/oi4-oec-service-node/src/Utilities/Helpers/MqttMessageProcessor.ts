@@ -61,7 +61,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo.appId === oi4Application.oi4Id) {
+        if (topicInfo?.appId?.equals(oi4Application.oi4Id)) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
                     await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);
@@ -177,7 +177,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in config group`);
         }
-        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id, EOPCUAStatusCode.Good);
+        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), EOPCUAStatusCode.Good);
 
         await oi4Application.sendEventStatus(status);
         await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource

@@ -26,13 +26,18 @@ import {
     EOPCUABaseDataType,
     EOPCUALocale,
     EOPCUAMessageType,
-    EOPCUAStatusCode, IOPCUAMetaData,
+    EOPCUAStatusCode,
+    IOPCUAMetaData,
     IOPCUANetworkMessage,
-    OPCUABuilder
+    Oi4Identifier,
+    OPCUABuilder,
+    ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
+import EventEmitter from 'events';
 import {TopicMethods} from '../../dist/Utilities/Helpers/Enums';
 import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
+import {MqttMessageProcessorEventStatus} from "../../src/Utilities/Helpers/MqttMessageProcessor";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -66,7 +71,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
     // And harmonize it with the other mocks
     return {
         oi4Id: defaultAppId,
-        subResources: new Map<string, IOI4ApplicationResources>(),
+        subResources: new Map<Oi4Identifier, IOI4ApplicationResources>(),
         config: {
             registry: {
                 name: {locale: EOPCUALocale.enUS, text: 'reg-01'},
@@ -106,19 +111,19 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 resource: Resource.HEALTH,
                 config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
-                oi4Identifier: '1'
+                oi4Identifier: new Oi4Identifier('1', '1', '1', '1'),
             } as PublicationList),
             PublicationList.clone({
                 resource: Resource.MAM,
                 config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
-                oi4Identifier: '2'
+                oi4Identifier: new Oi4Identifier('2', '2', '2', '2'),
             } as PublicationList),
             PublicationList.clone({
                 resource: Resource.LICENSE,
                 config: PublicationListConfig.MODE_1,
                 DataSetWriterId: 3,
-                oi4Identifier: '3'
+                oi4Identifier: new Oi4Identifier('3', '3', '3', '3'),
             } as PublicationList)
         ],
         profile: new Profile(Application.mandatory),
@@ -214,24 +219,24 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on: jest.fn(),
-        getMasterAssetModel(oi4Id: string): MasterAssetModel {
+        getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
             console.log(`Returning health for ${oi4Id}`);
             return this.mam;
         },
-        getHealth(oi4Id: string): Health {
+        getHealth(oi4Id: Oi4Identifier): Health {
             console.log(`Returning health for ${oi4Id}`);
             return this.health;
         },
-        getLicense(oi4Id: string, licenseId?: string): License[] {
+        getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
             console.log(`Returning licenses ${oi4Id} - ${licenseId}`);
             return this.license;
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[] {
+        getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
             return this.publicationList;
         },
-        getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+        getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
             console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
             return this.subscriptionList;
         },
@@ -246,7 +251,7 @@ let defaultOi4Application: OI4Application;
 
 const defaultTopicPrefix = 'oi4/Registry';
 const defaultValidFilter = '1';
-const defaultAppId = '1/1/1/1';
+const defaultAppId = new Oi4Identifier('1','1','1','1');
 const defaultOI4Id = defaultAppId;
 
 export function getOi4App(): OI4Application {
@@ -523,14 +528,14 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should send status', async () => {
-        const status: StatusEvent = new StatusEvent(defaultOi4ApplicationResources.oi4Id, EOPCUAStatusCode.Good, 'fake');
+        const status: StatusEvent = new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good, 'fake');
         await defaultOi4Application.sendEventStatus(status);
         expect(publish).toHaveBeenCalledWith(
             expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.EVENT}/status/${encodeURI(`${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}`)}`),
             expect.stringContaining(JSON.stringify(status)));
     });
 
-    function getIOPCUANetworkMessage(appId: string = defaultOi4ApplicationResources.oi4Id): IOPCUANetworkMessage {
+    function getIOPCUANetworkMessage(appId: Oi4Identifier = defaultOi4ApplicationResources.oi4Id): IOPCUANetworkMessage {
         return {
             DataSetClassId: DataSetClassIds['config'],
             PublisherId: `Registry/${appId}`,
