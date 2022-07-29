@@ -88,7 +88,7 @@ export class MockedIApplicationResourceFactory {
             getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
                 console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
-                    if (elem.oi4Identifier !== oi4Id) return false;
+                    if (elem.oi4Identifier.toString() !== oi4Id.toString()) return false;
                     if (resourceType !== undefined && elem.resource !== resourceType) return false;
                     if (tag !== undefined && elem.filter !== tag) return false;
                     return true;

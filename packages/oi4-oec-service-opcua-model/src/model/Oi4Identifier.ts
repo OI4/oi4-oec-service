@@ -12,7 +12,7 @@ export class Oi4Identifier {
     }
 
     toString(): string {
-        return `${this.manufacturerUri}/${this.model}/${this.productCode}/${this.serialNumber}`;
+        return `${encodeURIComponent(this.manufacturerUri)}/${encodeURIComponent(this.model)}/${encodeURIComponent(this.productCode)}/${encodeURIComponent(this.serialNumber)}`;
     }
 
     static fromString(oi4Id: string = ''): Oi4Identifier {

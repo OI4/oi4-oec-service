@@ -69,7 +69,7 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('If oi4Id not valid then error is thrown', () => {
-        expect(() => resources.getLicense(new Oi4Identifier('12','31','23','123123'))).toThrow('Sub resources not yet implemented');
+        expect(() => resources.getLicense(resources.oi4Id)).toThrow('Sub resources not yet implemented');
     });
 
     it('If oi4Id undefined all licenses are returned', () => {
@@ -79,7 +79,7 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
-        expect(resources.getLicense(resources.oi4Id).length).toBe(0);
+        expect(resources.getLicense(new Oi4Identifier('a','b', 'c','d')).length).toBe(0);
     });
 
     it('should filter publicationList', ()=> {
