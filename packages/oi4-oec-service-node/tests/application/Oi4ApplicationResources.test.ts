@@ -26,26 +26,26 @@ describe('Test Oi4ApplicationResources', () => {
     it('should be able to set sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
        resources.addSubResource(value);
-       expect(resources.subResources.has(oi4Id01)).toBeTruthy();
-       expect(resources.subResources.get(oi4Id01)).toEqual(value);
+       expect(resources.subResources.has(oi4Id01.toString())).toBeTruthy();
+       expect(resources.subResources.get(oi4Id01.toString())).toEqual(value);
     });
 
     it('should be able to get sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.subResources.set(oi4Id01, value);
+        resources.subResources.set(oi4Id01.toString(), value);
         expect(resources.getSubResource(oi4Id01)).toEqual(value);
     });
 
     it('should be able to check sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
         expect(resources.hasSubResource(oi4Id01)).toBeFalsy();
-        resources.subResources.set(oi4Id01, value);
+        resources.subResources.set(oi4Id01.toString(), value);
         expect(resources.hasSubResource(oi4Id01)).toBeTruthy();
     });
 
     it('should be able to delete sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.subResources.set(oi4Id01, value);
+        resources.subResources.set(oi4Id01.toString(), value);
         expect(resources.hasSubResource(oi4Id01)).toBeTruthy();
         expect(resources.removeSubResource(oi4Id01)).toBeTruthy();
         expect(resources.removeSubResource(oi4Id01)).toBeFalsy();
@@ -59,9 +59,9 @@ describe('Test Oi4ApplicationResources', () => {
         expect(resources.hasSubResource(oi4Id01)).toBeFalsy();
         expect(resources.hasSubResource(oi4Id02)).toBeFalsy();
         expect(resources.hasSubResource(oi4Id03)).toBeFalsy();
-        resources.subResources.set(oi4Id01, value01);
-        resources.subResources.set(oi4Id02, value02);
-        resources.subResources.set(oi4Id03, value03);
+        resources.subResources.set(oi4Id01.toString(), value01);
+        resources.subResources.set(oi4Id02.toString(), value02);
+        resources.subResources.set(oi4Id03.toString(), value03);
         const subResources: IterableIterator<IOI4Resource> = resources.getSubResource() as IterableIterator<IOI4Resource>;
         expect(subResources.next().value).toEqual(value01);
         expect(subResources.next().value).toEqual(value02);

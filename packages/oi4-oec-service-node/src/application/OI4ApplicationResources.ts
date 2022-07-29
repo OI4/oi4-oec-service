@@ -24,7 +24,7 @@ export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
-    readonly subResources: Map<Oi4Identifier, IOI4Resource>;
+    readonly subResources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -34,7 +34,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = DEFAULT_MAM_FILE) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this.subResources = new Map<Oi4Identifier, IOI4Resource>();
+        this.subResources = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
         this.metaDataLookup = {};
@@ -58,34 +58,34 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if(oi4Id === this.oi4Id) {
             return this.mam;
         }
-        return this.subResources.get(oi4Id).mam;
+        return this.subResources.get(oi4Id.toString()).mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
         if(oi4Id === this.oi4Id) {
             return this.health;
         }
-        return this.subResources.get(oi4Id).health;
+        return this.subResources.get(oi4Id.toString()).health;
     }
 
     hasSubResource(oi4Id: Oi4Identifier) {
-        return this.subResources.has(oi4Id);
+        return this.subResources.has(oi4Id.toString());
     }
 
     getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
         if(oi4Id !== undefined) {
-            return this.subResources.get(oi4Id);
+            return this.subResources.get(oi4Id.toString());
         }
         return this.subResources.values();
     }
 
     addSubResource(subResource: IOI4Resource): void {
-        this.subResources.set(subResource.oi4Id, subResource);
+        this.subResources.set(subResource.oi4Id.toString(), subResource);
         this.emit(OI4ResourceEvent.RESOURCE_ADDED, subResource.oi4Id);
     }
 
     removeSubResource(oi4Id: Oi4Identifier): boolean {
-        return this.subResources.delete(oi4Id);
+        return this.subResources.delete(oi4Id.toString());
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
     }
 

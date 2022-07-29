@@ -28,7 +28,7 @@ export class MockedIApplicationResourceFactory {
 
     public static getMockedIApplicationResourceInstance = (mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()): IOI4ApplicationResources => {
         return {
-            subResources: new Map<Oi4Identifier, IOI4ApplicationResources>(),
+            subResources: new Map<string, IOI4ApplicationResources>(),
             config: {
                 'group_a': {
                     name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),

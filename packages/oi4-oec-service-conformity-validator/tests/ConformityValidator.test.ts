@@ -27,7 +27,7 @@ import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.js
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
 import profile_device_unknown_resource from './__fixtures__/profile_device_unknown_resource.json';
 import profile_full_valid from './__fixtures__/profile_full_valid.json';
-import {ServiceTypes} from "@oi4/oi4-oec-service-opcua-model";
+import {Oi4Identifier, ServiceTypes} from "@oi4/oi4-oec-service-opcua-model";
 
 
 const publish = jest.fn();
@@ -48,7 +48,7 @@ const getMqttClient = (): mqtt.AsyncClient => {
     } as unknown as mqtt.AsyncClient;
 }
 
-const defaultAppId = 'openindustry4.com/nd/nd/nd';
+const defaultAppId = Oi4Identifier.fromString('openindustry4.com/nd/nd/nd');
 const defaultSubResource = 'vendor.com/a/b/c'
 const defaultTopic = `oi4/Registry/${defaultAppId}`;
 
@@ -460,7 +460,7 @@ describe('Unit test for ConformityValidator ', () => {
 
 
     it('should check oi4 conformity', async ()=> {
-        const result = await ConformityValidator.checkOI4IDConformity(defaultAppId);
+        const result = await ConformityValidator.checkOI4IDConformity(defaultAppId.toString());
         expect(result).toBe(true);
     })
 });
