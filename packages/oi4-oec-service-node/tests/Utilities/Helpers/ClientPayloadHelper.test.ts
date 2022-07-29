@@ -12,14 +12,14 @@ import {
     SyslogEvent,
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {IOPCUADataSetMessage, EOPCUALocale} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, EOPCUALocale, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for ClientPayloadHelper', () => {
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const OI4_ID = MockedIApplicationResourceFactory.OI4_ID;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const OI4_ID_2 = `${MockedIApplicationResourceFactory.OI4_ID}_2`;
+    const OI4_ID_2 = Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`);
 
     const default_payload = [{
         subResource: OI4_ID,
@@ -74,7 +74,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function createLicenseMockedPayload(dataSetWriterId: number, payload: any, oi4Id = OI4_ID) {
         return [{
-            subResource: oi4Id,
+            subResource: oi4Id.toString(),
             DataSetWriterId: dataSetWriterId,
             Payload: payload
         }];
@@ -94,7 +94,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.payload[0].filter).toBe('1');
     });
 
-    function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: string) {
+    function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: Oi4Identifier) {
         return PublicationList.clone({
             DataSetWriterId: datasetWriterId,
             oi4Identifier: oi4Id,
@@ -119,7 +119,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         if (filter !== undefined) {
             expectedInnerPayload.filter = filter;
         }
-        const expectedPayload = createMockedPayloadWithSubresource(oi4Id, dataSetWriterId, expectedInnerPayload, resource);
+        const expectedPayload = createMockedPayloadWithSubresource(oi4Id.toString(), dataSetWriterId, expectedInnerPayload, resource);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
@@ -139,7 +139,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     });
 
     it('createPublicationListSendResourcePayload return undefined payload when OI4 Id does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, `not_there_${OI4_ID}`);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, Oi4Identifier.fromString(`not_there_${OI4_ID}_2`));
         checkForEmptyPayload(validatedPayload);
     });
 
@@ -168,8 +168,8 @@ describe('Unit test for ClientPayloadHelper', () => {
     }
 
     it('createSubscriptionListSendResourcePayload works when OI4 ID matches', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, 'oi4Id');
-        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', mockedOI4ApplicationResources.oi4Id);
+        const validatedPayload: ValidatedPayload = clientPayloadHelper.createSubscriptionListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID);
+        checkAgainstSubscriptionPayload(validatedPayload, 'fakePath', mockedOI4ApplicationResources.oi4Id.toString());
     });
 
     function createConfigAppResource(): IOI4ApplicationResources {
@@ -184,7 +184,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         applicationResources.subResources.set(subResource, {
             ...mockedOI4ApplicationResources,
             config: {'group2': {name: {text: 'group 2', locale: EOPCUALocale.enUS}},
-                    'context': {name: {text: 'filter2', locale: EOPCUALocale.enUS}}}}); 
+                    'context': {name: {text: 'filter2', locale: EOPCUALocale.enUS}}}});
 
         return applicationResources;
     }

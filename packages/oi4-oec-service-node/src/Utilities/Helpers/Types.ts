@@ -1,4 +1,9 @@
-import {IOPCUADataSetMessage, IOPCUANetworkMessage, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    IOPCUADataSetMessage,
+    IOPCUANetworkMessage,
+    Oi4Identifier,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-opcua-model';
 import {Resource} from "@oi4/oi4-oec-service-model";
 import {TopicMethods} from "./Enums";
 
@@ -21,10 +26,10 @@ export type ValidatedIncomingMessageData = {
 
 export type TopicInfo = {
     topic: string;
-    appId: string;
+    appId: Oi4Identifier;
     method: TopicMethods;
     resource: Resource;
-    oi4Id: string;
+    oi4Id: Oi4Identifier;
     category?: string;
     serviceType: ServiceTypes;
     tag?: string;

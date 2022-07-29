@@ -4,7 +4,7 @@ import {Logger} from "@oi4/oi4-oec-service-logger";
 import {ServiceTypes} from "@oi4/oi4-oec-service-opcua-model";
 
 describe('Class: Device Manager', () => {
-  const logger = new Logger(true, 'TestIt', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, '', ServiceTypes.AGGREGATION);
+  const logger = new Logger(true, 'TestIt', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, undefined, ServiceTypes.AGGREGATION);
   describe('Method: log', () => {
     test('Getter', () => {
       logger.enabled = true;

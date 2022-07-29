@@ -8,7 +8,8 @@ import {
     EDeviceHealth,
     ESyslogEventFilter,
     IEvent,
-    IOI4ApplicationResources, MasterAssetModel,
+    IOI4ApplicationResources,
+    MasterAssetModel,
     Resource,
     StatusEvent,
     SubscriptionList,
@@ -21,6 +22,7 @@ import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 import {
     IOPCUADataSetMessage,
     IOPCUANetworkMessage,
+    Oi4Identifier,
     OPCUABuilder,
     ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
@@ -30,7 +32,7 @@ import {OI4ResourceEvent} from './OI4Resource';
 
 export interface IOI4Application extends EventEmitter {
 
-    oi4Id: string;
+    readonly oi4Id: Oi4Identifier;
     serviceType: ServiceTypes;
     applicationResources: IOI4ApplicationResources;
     topicPreamble: string;
@@ -89,7 +91,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         mqttSettings.will = {
             topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                subResource: this.oi4Id,
+                subResource: this.oi4Id.toString(),
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: CDataSetWriterIdLookup[Resource.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
@@ -107,6 +109,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         updateMqttClient(this.client);
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
+        this.on('setConfig', this.sendEventStatus);
         this.mqttMessageProcessor =  mqttMessageProcessor;
 
         this.initClientCallbacks();
@@ -160,21 +163,21 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resource.HEALTH, '', this.oi4Id, '').then();
+            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
             for(const resource of this.applicationResources.subResources.values()){
-                await this.sendResource(Resource.HEALTH, '', resource.oi4Id, '').then();
+                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
     private resourceChangedCallback(oi4Id: string, resource: Resource) {
         if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', oi4Id, '').then();
+            this.sendResource(Resource.HEALTH, '', oi4Id, oi4Id).then();
         }
     }
 
     private resourceAddedCallback(oi4Id: string) {
-        this.sendResource(Resource.MAM, '', oi4Id, '').then();
+        this.sendResource(Resource.MAM, '', oi4Id, oi4Id).then();
     }
 
     // GET SECTION ----------------//
@@ -216,8 +219,8 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param messageId - original messageId used as correlation ID
      */
     async sendMasterAssetModel(mam: MasterAssetModel, messageId?: string) {
-        const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id())];
-        await this.sendPayload(payload, Resource.MAM, messageId, 0, 0, mam.getOI4Id());
+        const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id().toString())];
+        await this.sendPayload(payload, Resource.MAM, messageId, 0, 0, mam.getOI4Id().toString());
     }
 
     /**
@@ -261,7 +264,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
                 break;
             }
             case Resource.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, subResource);
+                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, Oi4Identifier.fromString(subResource));
                 break;
             }
             case Resource.LICENSE_TEXT: {
@@ -274,11 +277,11 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             }
             case Resource.PUBLICATION_LIST: {
                 // TODO TAG is missing in topic element
-                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, subResource, filter);
+                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
                 break;
             }
             case Resource.SUBSCRIPTION_LIST: {
-                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, subResource, filter);
+                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
                 break;
             }
             case Resource.CONFIG: {
@@ -325,7 +328,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         if (filter && filter.length > 0 && endTag.length > 0) {
             endTag = `/${subResource}/${filter}`;
         }
-        
+
         try {
             const networkMessageArray: IOPCUANetworkMessage[] = this.builder.buildPaginatedOPCUANetworkMessageArray(payload, new Date(), DataSetClassIds[resource], messageId, page, perPage);
             if (typeof networkMessageArray[0] === 'undefined') {
@@ -372,7 +375,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     async getConfig() {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            subResource: this.oi4Id,
+            subResource: this.oi4Id.toString(), // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup['config'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
