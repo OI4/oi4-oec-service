@@ -4,13 +4,18 @@ import {
     IOI4ApplicationResources,
     IOI4Resource,
     MasterAssetModel,
+    PublicationList,
+    PublicationListConfig,
     RTLicense,
+    SubscriptionList,
+    SubscriptionListConfig,
 } from '@oi4/oi4-oec-service-model';
 
 import {
     IOPCUADataSetMetaData,
     IOPCUAMetaData,
-    IOPCUANetworkMessage, Oi4Identifier
+    IOPCUANetworkMessage,
+    Oi4Identifier
 } from '@oi4/oi4-oec-service-opcua-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource, OI4ResourceEvent} from "./OI4Resource";
@@ -38,6 +43,31 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
 
         this.dataLookup = {};
         this.metaDataLookup = {};
+
+        // Fill both pubList and subList
+        for (const resources of this.profile.resource) {
+            let resInterval = 0;
+            if (resources === 'health') {
+                resInterval = 60000;
+            } else {
+                resInterval = 0;
+            }
+
+            this._publicationList.push({
+                resource: resources,
+                subResource: this.oi4Id.toString(),
+                DataSetWriterId: 0,
+                oi4Identifier: this.oi4Id,
+                interval: resInterval,
+                config: PublicationListConfig.NONE_0,
+            } as PublicationList);
+
+            this._subscriptionList.push(SubscriptionList.clone({
+                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
+                interval: 0,
+                config: SubscriptionListConfig.NONE_0,
+            } as SubscriptionList));
+        }
     }
 
     private static extractMamFile(filePath: string): MasterAssetModel {
@@ -62,10 +92,10 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
-        if(oi4Id === this.oi4Id) {
+        if(this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
-        return this.subResources.get(oi4Id.toString()).health;
+        return this.subResources.get(oi4Id.toString())?.health;
     }
 
     hasSubResource(oi4Id: Oi4Identifier) {
@@ -81,12 +111,14 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
 
     addSubResource(subResource: IOI4Resource): void {
         this.subResources.set(subResource.oi4Id.toString(), subResource);
+        // TODO add sub resource to publication and subscription list
         this.emit(OI4ResourceEvent.RESOURCE_ADDED, subResource.oi4Id);
     }
 
     removeSubResource(oi4Id: Oi4Identifier): boolean {
-        return this.subResources.delete(oi4Id.toString());
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
+        return this.subResources.delete(oi4Id.toString());
+        // TODO remove sub resource to publication and subscription list
     }
 
     /**

@@ -1,17 +1,17 @@
 import {
     Application,
     EDeviceHealth,
-    Health, IContainerConfig,
+    Health,
+    IContainerConfig,
     IOI4Resource,
     License,
     LicenseText,
     MasterAssetModel,
     Profile,
     PublicationList,
-    PublicationListConfig, Resource,
+    Resource,
     RTLicense,
     SubscriptionList,
-    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
 import {Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
@@ -33,10 +33,12 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
 
+
     constructor(mam: MasterAssetModel) {
         super();
 
-        this._mam = mam;;
+        this._mam = mam;
+        ;
 
         this._profile = new Profile(Application.mandatory);
 
@@ -49,31 +51,6 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = []
 
         this._subscriptionList = []
-
-        // Fill both pubList and subList
-        for (const resources of this.profile.resource) {
-            let resInterval = 0;
-            if (resources === 'health') {
-                resInterval = 60000;
-            } else {
-                resInterval = 0;
-            }
-
-            this._publicationList.push({
-                resource: resources,
-                subResource: this.oi4Id.toString(),
-                DataSetWriterId: 0,
-                oi4Identifier: this.oi4Id,
-                interval: resInterval,
-                config: PublicationListConfig.NONE_0,
-            } as PublicationList);
-
-            this._subscriptionList.push(SubscriptionList.clone({
-                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
-                interval: 0,
-                config: SubscriptionListConfig.NONE_0,
-            } as SubscriptionList));
-        }
     }
 
     get oi4Id(): Oi4Identifier {
