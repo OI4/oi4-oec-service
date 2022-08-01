@@ -19,6 +19,8 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 
+    getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>
+
     getHealth(oi4Id: Oi4Identifier): Health;
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[];

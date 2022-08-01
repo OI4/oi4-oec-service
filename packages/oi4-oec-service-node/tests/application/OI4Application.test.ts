@@ -36,7 +36,6 @@ import {
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicMethods} from '@oi4/oi4-oec-service-node';
 import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
-import {MqttMessageProcessorEventStatus} from '../../src/Utilities/Helpers/MqttMessageProcessor';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -485,8 +484,8 @@ describe('OI4MessageBus test', () => {
     });
 
     // TODO refactor this test
-    it('should  prepare config payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), Resource.CONFIG, /*Subresource*/Resource.CONFIG);
+    it('should prepare config payload', async () => {
+        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), Resource.CONFIG, defaultOI4Id.toString());
         expect(result).toBeDefined();
         //expect(JSON.stringify(result.payload[0].Payload))
         //    .toBe(JSON.stringify(getResourceInfo().config));

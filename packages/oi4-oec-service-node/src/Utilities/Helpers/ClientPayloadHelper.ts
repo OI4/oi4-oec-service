@@ -118,7 +118,7 @@ export class ClientPayloadHelper {
         return {abortSending: payload.length == 0, payload: payload};
     }
 
-    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: string, filter?: string): ValidatedPayload {
+    createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: Oi4Identifier, filter?: string): ValidatedPayload {
 
         function getFilter(config: IContainerConfig): string | undefined {
             if (config?.['context']?.name) {
@@ -126,17 +126,17 @@ export class ClientPayloadHelper {
             }
         }
 
-        function createDataSetMessage(config: IContainerConfig, oi4Id: string, filter?: string): IOPCUADataSetMessage | undefined {
+        function createDataSetMessage(config: IContainerConfig, oi4Id: Oi4Identifier, filter?: string): IOPCUADataSetMessage | undefined {
             if (config) {
                 const configFilter = getFilter(config);
                 if (filter && configFilter !== filter) { // filter is set and does not match with configuration filter
                     return;
                 }
-
+                const oi4IdString = oi4Id.toString();
                 return {
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4Id),
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4IdString),
                         filter: configFilter,
-                        subResource: oi4Id,
+                        subResource: oi4IdString,
                         Payload: config
                 };
             }
@@ -150,7 +150,7 @@ export class ClientPayloadHelper {
             }
 
             applicationResources.subResources.forEach((value: IOI4Resource, key: string ) => {
-                const subConfig = createDataSetMessage(value.config, key);
+                const subConfig = createDataSetMessage(value.config, Oi4Identifier.fromString(key));
                 if (subConfig) {
                     messages.push(subConfig);
                 }
@@ -161,10 +161,11 @@ export class ClientPayloadHelper {
 
         // filter result
         let config: IOPCUADataSetMessage | undefined;
+        const oi4IdString = oi4Id.toString();
         if (applicationResources.oi4Id == oi4Id) {
             config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
-        } else if (applicationResources.subResources.has(oi4Id)) {
-            config = createDataSetMessage(applicationResources.subResources.get(oi4Id).config, oi4Id, filter);
+        } else if (applicationResources.subResources.has(oi4IdString)) {
+            config = createDataSetMessage(applicationResources.subResources.get(oi4Id.toString()).config, oi4Id, filter);
         }
 
         const messages: IOPCUADataSetMessage[] = config ? [config] : [];

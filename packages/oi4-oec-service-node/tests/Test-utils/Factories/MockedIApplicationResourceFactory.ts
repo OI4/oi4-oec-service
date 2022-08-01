@@ -11,7 +11,7 @@ import {
     EDeviceHealth,
     Health,
     IContainerConfigConfigName,
-    IOI4ApplicationResources,
+    IOI4ApplicationResources, IOI4Resource,
     License,
     LicenseText,
     MasterAssetModel,
@@ -103,6 +103,13 @@ export class MockedIApplicationResourceFactory {
             }, getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
                 console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
                 return this.mam;
+            },
+            getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
+                console.log(`Called mocked getSubResource with params ${oi4Id}`);
+                if(oi4Id !== undefined) {
+                    return this.subResources.get(oi4Id.toString());
+                }
+                return this.subResources.values();
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             on(_: string, __: Function): IOI4ApplicationResources {

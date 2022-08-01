@@ -124,8 +124,9 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
         }
 
-        let subResource = undefined;
+        let subResource: string;
         let filter = undefined;
+        const oi4IdSubResource = topicInfo.oi4Id?.toString();
         switch (topicInfo.resource)
         {
             case Resource.EVENT:
@@ -134,23 +135,23 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
             case Resource.LICENSE:
             case Resource.LICENSE_TEXT:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.licenseId;
                 break;
 
             case Resource.CONFIG:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.filter;
                 break;
 
             case Resource.PUBLICATION_LIST:
             case Resource.SUBSCRIPTION_LIST:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.tag;
                 break;
 
             default:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 break;
         }
 

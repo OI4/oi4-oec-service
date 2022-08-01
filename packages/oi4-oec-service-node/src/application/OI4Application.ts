@@ -285,7 +285,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
                 break;
             }
             case Resource.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, subResource, filter);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
                 break;
             }
             default: {
