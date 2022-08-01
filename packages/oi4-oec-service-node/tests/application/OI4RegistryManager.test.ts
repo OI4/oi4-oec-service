@@ -2,6 +2,7 @@ import {OI4RegistryManager} from '../../src';
 import {IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger} from '@oi4/oi4-oec-service-logger';
 import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
+import {MockedLoggerFactory} from '../Test-utils/Factories/MockedLoggerFactory';
 
 const defaultOI4Id = new Oi4Identifier('a','b','c','d');
 const parsedMessage: IOPCUANetworkMessage = {
@@ -60,11 +61,13 @@ describe('Unit test for OI4RegistryManager', () => {
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
-
+        const mockLogger = MockedLoggerFactory.getLoggerItems();
         parsedMessage.PublisherId = `${ServiceTypes.REGISTRY}/`;
-        expect(() => OI4RegistryManager.checkForOi4Registry(parsedMessage));
+        OI4RegistryManager.checkForOi4Registry(parsedMessage);
+        expect(mockLogger.fakeLogFile.some(file => file.toLowerCase().includes('couldn\'t retrieve oi4id'))).toBeTruthy();
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
+        mockLogger.clearLogFile();
     });
 
 });

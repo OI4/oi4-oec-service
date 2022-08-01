@@ -1,8 +1,8 @@
-import {IOPCUANetworkMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {indexOf} from 'lodash';
 import {EventEmitter} from 'events';
-import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 
 /**
  * The OI4RegistryManager class is a singleton that manages the OI4 registry.
@@ -35,8 +35,13 @@ export namespace OI4RegistryManager {
         if(serviceType !== ServiceTypes.REGISTRY){
             return;
         }
-        const oi4Id = Oi4Identifier.fromString(publisherId.substring(separatorPosition + 1));
-        saveCurrentOi4Id(oi4Id);
+        try {
+            const oi4Id = Oi4Identifier.fromString(publisherId.substring(separatorPosition + 1));
+            saveCurrentOi4Id(oi4Id);
+        }
+        catch (err) {
+            LOGGER.log(`Couldn't retrieve oi4id while checking if the publisherid contained an oi4 registry: ${err.message}`, ESyslogEventFilter.debug);
+        }
     }
 
     export function resetOI4RegistryManager() {
