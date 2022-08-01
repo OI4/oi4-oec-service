@@ -72,13 +72,13 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processor.processMqttMessage(mockedData.topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
     }
 
-    async function checkResultGet(resource: string, fakeTopic: string, filter: string = undefined) {
+    async function checkResultGet(resource: string, fakeTopic: string, subResource: string = undefined, filter: string = undefined) {
         oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
         processor.on(MqttMessageProcessorEventStatus.GET_DATA, oi4Application.sendResource);
         await processMessage(fakeTopic, resource, processor);
 
-        expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, undefined, filter, 0, 0);
+        expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, subResource, filter, 0, 0);
     }
 
     async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '', method = TopicMethods.SET) {
@@ -145,7 +145,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/${defaultFakeOi4Id}`;
-            await checkResultGet(resource, fakeTopic);
+            await checkResultGet(resource, fakeTopic, defaultFakeOi4Id);
         }
     });
 
@@ -168,10 +168,10 @@ describe('Unit test for MqttMessageProcessor', () => {
         await checkResultGet(Resource.CONFIG, fakeTopic);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic);
+        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeFilter);
+        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id, defaultFakeFilter);
     });
 
     it('extract topic info works - config - set', async () => {
@@ -253,23 +253,23 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - license and licenseText - get', async () => {
-        async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string) {
+        async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string, subResource?: string, filter?:string) {
             oi4Application.sendResource = jest.fn();
             await processMessage(fakeTopic, resourceConfig);
 
             // TODO handle event emitter
 
-            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, undefined, undefined, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, subResource, filter, 0, 0);
         }
 
         const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
 
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}`);
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
 
         //set LICENSE AND LICENSE TEXT basically does nothing
     });
@@ -285,7 +285,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
             oi4Application.sendResource = jest.fn();
             await processMessage(topic, resourceConfig);
-            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeSubResource, `${defaultFakeSubResource}/${defaultFakeFilter}`, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeOi4Id, defaultFakeFilter, 0, 0);
         }
 
         await testAgainstResourceForPublicationAndSubscriptionLists(Resource.PUBLICATION_LIST);

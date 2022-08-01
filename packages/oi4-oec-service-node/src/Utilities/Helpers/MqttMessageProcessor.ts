@@ -124,7 +124,37 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
         }
 
-        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, topicInfo.subResource, topicInfo.filter, page, perPage)
+        let subResource = undefined;
+        let filter = undefined;
+        switch (topicInfo.resource)
+        {
+            case Resource.EVENT:
+                subResource = `${topicInfo.category}/${topicInfo.filter}`;
+                break;
+
+            case Resource.LICENSE:
+            case Resource.LICENSE_TEXT:
+                subResource = topicInfo.oi4Id;
+                filter = topicInfo.licenseId;
+                break;
+
+            case Resource.CONFIG:
+                subResource = topicInfo.oi4Id;
+                filter = topicInfo.filter;
+                break;
+
+            case Resource.PUBLICATION_LIST:
+            case Resource.SUBSCRIPTION_LIST:
+                subResource = topicInfo.oi4Id;
+                filter = topicInfo.tag;
+                break;
+
+            default:
+                subResource = topicInfo.oi4Id;
+                break;
+        }
+
+        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, subResource, filter, page, perPage)
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {
