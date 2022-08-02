@@ -16,9 +16,10 @@ import { buildOpcUaJsonValidator } from './OpcUaSchemaProvider';
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from '../model/EOPCUA';
 import {ServiceTypes} from '../model/ServiceTypes';
+import {Oi4Identifier} from "../model/Oi4Identifier";
 
 export class OPCUABuilder {
-  oi4Id: string;
+  oi4Id: Oi4Identifier;
   serviceType: ServiceTypes;
   publisherId: string;
   jsonValidator: Ajv.Ajv;
@@ -26,7 +27,7 @@ export class OPCUABuilder {
   private topicRex: RegExp;
   private readonly msgSizeOffset: number;
 
-  constructor(oi4Id: string, serviceTypes: ServiceTypes, uaJsonValidator = buildOpcUaJsonValidator()) {
+  constructor(oi4Id: Oi4Identifier, serviceTypes: ServiceTypes, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
     this.serviceType = serviceTypes;
     this.publisherId = `${serviceTypes}/${oi4Id}`;
@@ -169,7 +170,7 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, subResource: string = this.oi4Id, status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, subResource: string = this.oi4Id.toString(), status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: dataSetWriterId,
       Timestamp: timestamp.toISOString(),

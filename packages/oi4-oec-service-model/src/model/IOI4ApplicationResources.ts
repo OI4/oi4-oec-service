@@ -1,4 +1,4 @@
-import {IOPCUAMetaData, IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUAMetaData, IOPCUANetworkMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 import {
     IContainerConfig
 } from './IContainer';
@@ -17,15 +17,17 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     subResources: Map<string, IOI4Resource>;
 
-    getMasterAssetModel(oi4Id: string): MasterAssetModel;
+    getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 
-    getHealth(oi4Id: string): Health;
+    getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>
 
-    getLicense(oi4Id: string, licenseId?: string): License[];
+    getHealth(oi4Id: Oi4Identifier): Health;
 
-    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[];
+    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[];
 
-    getPublicationList(oi4Id: string, resourceType?: Resource, tag?: string): PublicationList[];
+    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[];
+
+    getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[];
 
     on(event: string, listener: Function): this;
 
@@ -34,7 +36,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 }
 
 export interface IOI4Resource {
-    readonly oi4Id: string;
+    readonly oi4Id: Oi4Identifier;
     readonly profile: Profile;
     readonly mam: MasterAssetModel;
     health: Health;

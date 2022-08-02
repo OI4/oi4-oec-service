@@ -1,11 +1,11 @@
 import {getResource, Resource} from '@oi4/oi4-oec-service-model';
-import {getServiceType} from '@oi4/oi4-oec-service-opcua-model';
+import {getServiceType, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
 
 /**
-    This TopicParser make a qualitative validation of the topic info, for example checking
-    if the TopicInfo attributes components has acceptable values (not null, not empty or undefined)
+ This TopicParser make a qualitative validation of the topic info, for example checking
+ if the TopicInfo attributes components has acceptable values (not null, not empty or undefined)
  */
 export class TopicParser {
 
@@ -60,13 +60,13 @@ export class TopicParser {
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
-        if(TopicParser.isAtLeastOneStringEmpty([topicArray[2],topicArray[3],topicArray[4],topicArray[5]])) {
+        if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
 
         return {
             topic: topic,
-            appId: `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`,
+            appId: Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
             method: getTopicMethod(topicArray[6]),
             resource: getResource(topicArray[7]),
             oi4Id: undefined,
@@ -80,7 +80,7 @@ export class TopicParser {
     }
 
     static extractResourceSpecificInfo(wrapper: TopicWrapper): TopicInfo {
-        if(wrapper.topicInfo.method === TopicMethods.PUB && wrapper.topicInfo.resource === Resource.EVENT) {
+        if (wrapper.topicInfo.method === TopicMethods.PUB && wrapper.topicInfo.resource === Resource.EVENT) {
             TopicParser.extractPubEventInfo(wrapper);
         } else {
             TopicParser.extractResourceInfo(wrapper);
@@ -125,10 +125,10 @@ export class TopicParser {
     }
 
     private static extractOi4Id(wrapper: TopicWrapper) {
-        if(TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
+        if (TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
             throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
         }
-        wrapper.topicInfo.oi4Id = `${wrapper.topicArray[8]}/${wrapper.topicArray[9]}/${wrapper.topicArray[10]}/${wrapper.topicArray[11]}`;
+        wrapper.topicInfo.oi4Id = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]);
     }
 
     private static extractFilter(wrapper: TopicWrapper) {
@@ -142,7 +142,7 @@ export class TopicParser {
     private static extractListInfo(wrapper: TopicWrapper) {
         wrapper.topicInfo.subResource = TopicParser.extractItem(wrapper, 12, 'Invalid subresource: ');
         wrapper.topicInfo.filter = wrapper.topicInfo.subResource;
-        if(wrapper.topicArray.length == 14) {
+        if (wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
             wrapper.topicInfo.filter += `/${wrapper.topicInfo.tag}`;
         }
@@ -156,7 +156,7 @@ export class TopicParser {
     }
 
     private static isAtLeastOneStringEmpty(strings: Array<string>) {
-       return strings.filter(str => TopicParser.isStringEmpty(str)).length > 0;
+        return strings.filter(str => TopicParser.isStringEmpty(str)).length > 0;
     }
 
     private static isStringEmpty(string: string) {

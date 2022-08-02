@@ -35,7 +35,7 @@ export interface IOPCUADataSetMessage {
   Timestamp?: string; // TODO: Date type?
   Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
   filter?: string;
-  subResource: string;
+  subResource: string; // For 1.0 events still have plain strings as sub-resources. This will change in 1.1 where sub-resources will be renamed to source and always be an OI4 Id
   Payload: any; // TODO: arbitrary object?
 }
 

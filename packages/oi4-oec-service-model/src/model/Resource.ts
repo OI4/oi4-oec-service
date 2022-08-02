@@ -1,6 +1,12 @@
 import {OI4Payload} from './Payload';
 import {EDeviceHealth} from './EContainer';
-import {IMasterAssetModel, IOPCUALocalizedText, ServiceTypes, getServiceType} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    IMasterAssetModel,
+    IOPCUALocalizedText,
+    Oi4Identifier,
+    ServiceTypes,
+    getServiceType
+} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum Resource {
     MAM = 'mam',
@@ -89,8 +95,8 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
         return Resource.MAM;
     }
 
-    getOI4Id(): string {
-        return `${this.ManufacturerUri}/${encodeURIComponent(this.Model.text)}/${encodeURIComponent(this.ProductCode)}/${encodeURIComponent(this.SerialNumber)}`;
+    getOI4Id(): Oi4Identifier {
+        return new Oi4Identifier(this.ManufacturerUri, this.Model.text, this.ProductCode, this.SerialNumber);
     }
 
     getServiceType(): ServiceTypes {
@@ -185,7 +191,7 @@ export class PublicationList implements OI4Payload {
     subResource?: string;
     filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
-    oi4Identifier: string;
+    oi4Identifier: Oi4Identifier;
     mode: PublicationListMode;
     interval?: number; // UINT32
     precisions?: number; // REAL

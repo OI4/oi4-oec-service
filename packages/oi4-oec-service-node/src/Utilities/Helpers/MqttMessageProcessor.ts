@@ -61,7 +61,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo.appId === oi4Application.oi4Id) {
+        if (topicInfo?.appId?.equals(oi4Application.oi4Id)) {
             switch (topicInfo.method) {
                 case TopicMethods.GET: {
                     await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);
@@ -124,8 +124,9 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
         }
 
-        let subResource = undefined;
+        let subResource: string;
         let filter = undefined;
+        const oi4IdSubResource = topicInfo.oi4Id?.toString();
         switch (topicInfo.resource)
         {
             case Resource.EVENT:
@@ -134,23 +135,23 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
             case Resource.LICENSE:
             case Resource.LICENSE_TEXT:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.licenseId;
                 break;
 
             case Resource.CONFIG:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.filter;
                 break;
 
             case Resource.PUBLICATION_LIST:
             case Resource.SUBSCRIPTION_LIST:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 filter = topicInfo.tag;
                 break;
 
             default:
-                subResource = topicInfo.oi4Id;
+                subResource = oi4IdSubResource;
                 break;
         }
 
@@ -207,7 +208,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
             LOGGER.log(`${filter} already exists in config group`);
         }
-        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id, EOPCUAStatusCode.Good);
+        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), EOPCUAStatusCode.Good);
 
         await oi4Application.sendEventStatus(status);
         await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource

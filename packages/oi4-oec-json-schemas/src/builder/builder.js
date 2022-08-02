@@ -37,14 +37,14 @@ console.log(methodRegEx);
 tempPath = `${rootDir}/src/schemas/oi4Identifier.schema.json`
 tempJson = readJSON(tempPath)
 
-console.log('OI4Identifier Orig Pattern: ');
+console.log('Oi4Identifier.ts Orig Pattern: ');
 console.log(tempJson.pattern);
 const oi4IdRegEx = tempJson.pattern
   .slice(1)
   .slice(0, -1)
   .replace('/', '\\/')
   .replace('^/', '^\\/')
-console.log('OI4Identifier RegEx: ');
+console.log('Oi4Identifier.ts RegEx: ');
 console.log(oi4IdRegEx);
 
 // Build RegEx for NetworkMessage
