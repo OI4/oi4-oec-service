@@ -434,7 +434,8 @@ export class OI4ApplicationBuilder {
         const oi4Id = this.applicationResources.oi4Id;
         const serviceType = this.applicationResources.mam.getServiceType();
         if (this.opcUaBuilder === undefined) {
-            this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType);
+            const maximumPackageSize: number = this.mqttSettings?.properties?.maximumPacketSize | 262144;
+            this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType, maximumPackageSize);
         }
         return this.newOI4Application();
     }

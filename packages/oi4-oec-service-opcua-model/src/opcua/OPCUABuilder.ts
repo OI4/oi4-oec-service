@@ -25,14 +25,16 @@ export class OPCUABuilder {
   lastMessageId: string;
   private topicRex: RegExp;
   private readonly msgSizeOffset: number;
+  private readonly _maxMessageSize: number;
 
-  constructor(oi4Id: string, serviceTypes: ServiceTypes, uaJsonValidator = buildOpcUaJsonValidator()) {
+  constructor(oi4Id: string, serviceTypes: ServiceTypes, maxMessageSize = 262144, uaJsonValidator = buildOpcUaJsonValidator()) {
     this.oi4Id = oi4Id;
     this.serviceType = serviceTypes;
     this.publisherId = `${serviceTypes}/${oi4Id}`;
     this.jsonValidator = uaJsonValidator;
     this.lastMessageId = '';
     this.msgSizeOffset = 1000;
+    this._maxMessageSize = maxMessageSize;
 
     this.topicRex = new RegExp(topicPathSchemaJson.pattern);
   }
@@ -50,7 +52,7 @@ export class OPCUABuilder {
     let currentNetworkMessageIndex = 0;
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
-      if (wholeMsgLengthBytes + this.msgSizeOffset < parseInt(process.env.OI4_EDGE_MQTT_MAX_MESSAGE_SIZE!, 10) && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
+      if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.subResource, remainingPayloads.Status, remainingPayloads.filter, remainingPayloads.MetaDataVersion));
       } else {
         // This is the paginationObject

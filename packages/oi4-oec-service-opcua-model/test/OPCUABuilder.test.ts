@@ -34,7 +34,7 @@ describe('Unit test for MAMStorage reading', () => {
         const jsonValidator = new Ajv();
         jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
 
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION, jsonValidator);
+        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION, 262144, jsonValidator);
 
         expect.assertions(1);
         try {
@@ -82,13 +82,66 @@ test('should update last message when building network  message', () => {
     expect(msg.MessageId).toEqual(builder.lastMessageId);
 });
 
-test('builds paginated message', () => {
-    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY);
+test('builds two paginated messages if message size is small', () => {
+    const smallMessageSize = 10;
+    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY, smallMessageSize);
 
     const messages: IOPCUADataSetMessage[] = [{
         DataSetWriterId: 1,
         subResource: 'a/b/c/d',
         filter: 'filter',
+        Payload: [],
+        Timestamp: '2022-01-01T12:00:00.000'
+    },
+    {
+        DataSetWriterId: 2,
+        subResource: 'e/f/g/h',
+        filter: 'oee',
+        Payload: [],
+        Timestamp: '2022-01-01T12:00:00.000'
+    }]
+
+    const timeStamp = new Date(2022, 1, 2);
+    const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd'); 
+
+    expect(paginatedMessages.length).toEqual(2);
+    expect(paginatedMessages[0].Messages.length).toEqual(2);
+    expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
+    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
+    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
+    expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+    expect(paginatedMessages[0].Messages[1].Payload.page).toBe(1);
+    expect(paginatedMessages[0].Messages[1].Payload.perPage).toBe(1);
+    expect(paginatedMessages[0].Messages[1].Payload.totalCount).toBe(2);
+    expect(paginatedMessages[0].Messages[1].Payload.hasNext).toBeTruthy();
+
+    expect(paginatedMessages[1].Messages[0].DataSetWriterId).toBe(2);
+    expect(paginatedMessages[1].Messages[0].subResource).toBe('e/f/g/h');
+    expect(paginatedMessages[1].Messages[0].filter).toBe('oee');
+    expect(paginatedMessages[1].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+    expect(paginatedMessages[1].Messages[1].Payload.page).toBe(2);
+    expect(paginatedMessages[1].Messages[1].Payload.perPage).toBe(1);
+    expect(paginatedMessages[1].Messages[1].Payload.totalCount).toBe(2);
+    expect(paginatedMessages[1].Messages[1].Payload.hasNext).toBeFalsy();
+})
+
+test('builds one paginated message if message size is large', () => {
+    const largeMessageSize = 100000;
+    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY, largeMessageSize);
+
+    const messages: IOPCUADataSetMessage[] = [{
+        DataSetWriterId: 1,
+        subResource: 'a/b/c/d',
+        filter: 'filter',
+        Payload: [],
+        Timestamp: '2022-01-01T12:00:00.000'
+    },
+    {
+        DataSetWriterId: 2,
+        subResource: 'e/f/g/h',
+        filter: 'oee',
         Payload: [],
         Timestamp: '2022-01-01T12:00:00.000'
     }]
@@ -97,11 +150,20 @@ test('builds paginated message', () => {
     const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd'); 
 
     expect(paginatedMessages.length).toEqual(1);
-    expect(paginatedMessages[0].Messages.length).toEqual(2);
+    expect(paginatedMessages[0].Messages.length).toEqual(3);
     expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
     expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
     expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
     expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
-    expect(paginatedMessages[0].Messages[1].Payload.page).toBe(1);
+    expect(paginatedMessages[0].Messages[1].DataSetWriterId).toBe(2);
+    expect(paginatedMessages[0].Messages[1].subResource).toBe('e/f/g/h');
+    expect(paginatedMessages[0].Messages[1].filter).toBe('oee');
+    expect(paginatedMessages[0].Messages[1].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+    expect(paginatedMessages[0].Messages[2].Payload.page).toBe(1);
+    expect(paginatedMessages[0].Messages[2].Payload.perPage).toBe(2);
+    expect(paginatedMessages[0].Messages[2].Payload.totalCount).toBe(2);
+    expect(paginatedMessages[0].Messages[2].Payload.hasNext).toBeFalsy();
 })
+

@@ -6,7 +6,7 @@ import {
 // @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
@@ -29,7 +29,6 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
     builder: OI4ApplicationBuilder;
 
-    opcUaBuilder: OPCUABuilder;
     clientPayloadHelper: ClientPayloadHelper;
     clientCallbacksHelper: ClientCallbacksHelper;
     mqttMessageProcessor: MqttMessageProcessor;
@@ -37,16 +36,16 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: ISettingsPaths;
     private readonly mqttSettingsHelper: MqttCredentialsHelper;
+    private readonly serviceType: ServiceTypes;
 
     constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = DefaultSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
-        const serviceType = this.resources.mam.getServiceType();
+        this.serviceType = this.resources.mam.getServiceType();
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
-        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, serviceType);
+        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, this.serviceType);
 
-        this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, serviceType);
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper();
         this.mqttMessageProcessor = new MqttMessageProcessor();
@@ -61,20 +60,23 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
 
     initialize() {
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
+        const maximumPacketSize = OI4ApplicationFactory.getMaxPacketSize(brokerConfiguration);
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
             host: brokerConfiguration.address,
             port: brokerConfiguration.secure_port,
             protocol: MQTTS,
             properties: {
-                maximumPacketSize: OI4ApplicationFactory.getMaxPacketSize(brokerConfiguration)
+                maximumPacketSize: maximumPacketSize
             }
         }
+
+        const opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.serviceType, maximumPacketSize);
         this.initCredentials(mqttSettings);
         this.builder = OI4Application.builder()//
             .withApplicationResources(this.resources)//
             .withMqttSettings(mqttSettings)//
-            .withOPCUABuilder(this.opcUaBuilder)//
+            .withOPCUABuilder(opcUaBuilder)//
             .withClientPayloadHelper(this.clientPayloadHelper)//
             .withClientCallbacksHelper(this.clientCallbacksHelper)//
             .withMqttMessageProcessor(this.mqttMessageProcessor)//

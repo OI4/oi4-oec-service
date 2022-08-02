@@ -90,6 +90,8 @@ class Logger {
             this._mqttClient = mqttClient;
         }
 
+        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create messages that contain one event. 
+        // A message with one event cannot be split into smaller messages and shall never exceed the maximum package size.  
         this._builder = new OPCUABuilder(oi4Id, serviceType);
         this._oi4Id = oi4Id;
         this._serviceType = serviceType;

@@ -45,9 +45,12 @@ export class ConformityValidator {
 
         const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
         const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
-
+        
         initializeLogger(true, 'ConformityValidator-App', logLevel, publishingLevel, oi4Id, serviceType, this.conformityClient);
-        this.builder = new OPCUABuilder(oi4Id, serviceType);
+        
+        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create ".../get/<resource>" messages. 
+        // Such messages cannot be split into smaller messages and shall never exceed the maximum package size.  
+        this.builder = new OPCUABuilder(oi4Id, serviceType); 
     }
 
     /**
