@@ -3,16 +3,16 @@ import {TopicInfo} from '../../../src';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
 import {Resource} from '@oi4/oi4-oec-service-model';
-import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for TopicParser', () => {
 
     const defaultTopicInfo: TopicInfo = {
         topic: '',
-        appId: '',
+        appId: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         method: TopicMethods.GET,
         resource: Resource.MAM,
-        oi4Id: '',
+        oi4Id: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         category: '',
         serviceType: ServiceTypes.REGISTRY,
         tag: '',

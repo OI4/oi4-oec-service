@@ -1,14 +1,15 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {
-    ESyslogEventFilter, EventCategory,
+    DataSetWriterIdManager,
+    ESyslogEventFilter,
+    EventCategory,
     IEvent,
+    Resource,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
 import {Syslog, SyslogTransportInstance} from 'winston-syslog';
-import {DataSetWriterIdManager} from "@oi4/oi4-oec-service-model";
-import { Resource } from '@oi4/oi4-oec-service-model';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
@@ -31,7 +32,7 @@ class Logger {
     private _publishLevel: ESyslogEventFilter; /*tslint:disable-line*/
     private _name: string; /*tslint:disable-line*/
     private _mqttClient?: mqtt.AsyncClient;
-    private readonly _oi4Id?: string;
+    private readonly _oi4Id?: Oi4Identifier;
     private readonly _serviceType?: string;
     private readonly _builder?: OPCUABuilder;
     private readonly syslogFilterToEnum = {
@@ -61,7 +62,7 @@ class Logger {
         CAT_GENERIC_99: 'generic',
     }
 
-    constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: string, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
+    constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
         /**
          * Enables or disables the logging. Default: `true`
          * @type {boolean}
@@ -115,7 +116,7 @@ class Logger {
             glossyParser.parse(msg, (parsedMessage: any) => {
                 let syslogDataMessage;
                 if (this._builder) {
-                    const event: IEvent = new SyslogEvent(oi4Id, parsedMessage.prival);
+                    const event: IEvent = new SyslogEvent(oi4Id.toString(), parsedMessage.prival);
                     event.details = {
                         MSG: parsedMessage.message,
                         HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
@@ -230,7 +231,7 @@ class Logger {
 let log: Logger;
 let LOGGER: Readonly<Logger> = log;
 
-function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: string, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient): void {
+function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient): void {
     log = new Logger(enabled, name, level, publishLevel, oi4Id, serviceType, mqttClient);
     LOGGER = log;
 }

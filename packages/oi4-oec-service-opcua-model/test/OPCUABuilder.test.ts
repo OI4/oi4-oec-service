@@ -4,11 +4,13 @@ import Ajv from 'ajv'; /*tslint:disable-line*/
 import mam from './__fixtures__/mam_network_message.json';
 import invalidMam from './__fixtures__/invalid_mam_network_message.json';
 import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {ServiceTypes, IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {ServiceTypes, IOPCUADataSetMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+
+const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
 
 function createOPCUABuilderWithLastMessageId(prefix: string): OPCUABuilder {
     const pubId = 'pubId';
-    const builder = new OPCUABuilder('oi4id',ServiceTypes.REGISTRY,undefined);
+    const builder = new OPCUABuilder(oi4Id,ServiceTypes.REGISTRY,undefined);
     builder.lastMessageId = `${prefix}-${pubId}`;
     builder.publisherId = pubId;
     return builder;
@@ -17,14 +19,14 @@ function createOPCUABuilderWithLastMessageId(prefix: string): OPCUABuilder {
 describe('Unit test for MAMStorage reading', () => {
 
     it('checks OPC UA JSON validity', async () => {
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION);
+        const builder = new OPCUABuilder(oi4Id, ServiceTypes.AGGREGATION);
         return builder.checkOPCUAJSONValidity(mam).then(result => {
             expect(result).toBe(true);
         });
     });
 
     it('should fail on invalid network message', () => {
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION);
+        const builder = new OPCUABuilder(oi4Id, ServiceTypes.AGGREGATION);
         return builder.checkOPCUAJSONValidity(invalidMam).then(result => {
             expect(result).toBe(false);
         });
@@ -34,7 +36,7 @@ describe('Unit test for MAMStorage reading', () => {
         const jsonValidator = new Ajv();
         jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
 
-        const builder = new OPCUABuilder('', ServiceTypes.AGGREGATION, 262144, jsonValidator);
+        const builder = new OPCUABuilder(oi4Id, ServiceTypes.AGGREGATION, 262144, jsonValidator);
 
         expect.assertions(1);
         try {
@@ -84,7 +86,8 @@ test('should update last message when building network  message', () => {
 
 test('builds two paginated messages if message size is small', () => {
     const smallMessageSize = 10;
-    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY, smallMessageSize);
+	const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
+    const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, smallMessageSize);
 
     const messages: IOPCUADataSetMessage[] = [{
         DataSetWriterId: 1,
@@ -129,7 +132,8 @@ test('builds two paginated messages if message size is small', () => {
 
 test('builds one paginated message if message size is large', () => {
     const largeMessageSize = 100000;
-    const builder = new OPCUABuilder('vendor.com/1/2/3', ServiceTypes.UTILITY, largeMessageSize);
+	const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
+    const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, largeMessageSize);
 
     const messages: IOPCUADataSetMessage[] = [{
         DataSetWriterId: 1,

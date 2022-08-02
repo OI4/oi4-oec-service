@@ -1,6 +1,6 @@
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
 import {TopicMethods} from '../../../src';
-import {EOPCUAMessageType, IOPCUANetworkMessage, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUAMessageType, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicInfo, TopicWrapper} from '@oi4/oi4-oec-service-node';
 
 export type MessageItems = {
@@ -8,9 +8,9 @@ export type MessageItems = {
     method: TopicMethods;
     resource: Resource;
     category: string;
-    oi4Id: string;
+    oi4Id: Oi4Identifier;
     topic: string;
-    appId: string;
+    appId: Oi4Identifier;
     tag: string;
     filter: string;
     licenseId: string;
@@ -26,8 +26,8 @@ export class MessageFactory {
     public static getDefaultMessageItems(): MessageItems {
 
         const serviceType: ServiceTypes = ServiceTypes.REGISTRY;
-        const appId = 'mymanufacturer.com/1/1/1';
-        const oi4Id = '2/2/2/2';
+        const appId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
+        const oi4Id = Oi4Identifier.fromString('2/2/2/2');
         const method: TopicMethods = TopicMethods.GET;
         const resource: Resource = Resource.MAM;
         const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;

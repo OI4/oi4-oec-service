@@ -2,7 +2,7 @@ import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/Mocke
 import {MqttMessageProcessor, OI4RegistryManager} from '../../../src';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
 import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
-import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
@@ -17,13 +17,13 @@ describe('Unit test for MqttMessageProcessor', () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     const defaultEmitter: EventEmitter = new EventEmitter();
-    const defaultFakeAppId = 'mymanufacturer.com/1/1/1';
-    const registryFakeAppId = 'mymanufacturer.com/1/2/3';
+    const defaultFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
+    const registryFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/2/3');
     const defaultFakeSubResource = 'fakeSubResource';
     const defaultTopicPrefix = 'oi4/Aggregation';
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
-    const defaultFakeOi4Id = '1/1/1/1';
+    const defaultFakeOi4Id = Oi4Identifier.fromString('1/1/1/1');
     const defaultFakeTag = 'tag';
 
     const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel('mymanufacturer.com', '1', '1', '1');
@@ -102,7 +102,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
         expect(fakeLogFile.length).toBe(2);
         expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${registryFakeAppId}`);
-        expect(OI4RegistryManager.getOi4Id()).toBe(registryFakeAppId);
+        expect(OI4RegistryManager.getOi4Id().toString()).toBe(registryFakeAppId.toString());
     });
 
     it('If the serviceType is not "Registry" the oi4Id is not saved', async () => {
@@ -145,7 +145,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resource}/${defaultFakeOi4Id}`;
-            await checkResultGet(resource, fakeTopic, defaultFakeOi4Id);
+            await checkResultGet(resource, fakeTopic, defaultFakeOi4Id.toString());
         }
     });
 
@@ -164,14 +164,15 @@ describe('Unit test for MqttMessageProcessor', () => {
         });
 
     it('extract topic info works - config - get', async () => {
+        const oi4IdString = defaultFakeOi4Id.toString();
         let fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}`;
         await checkResultGet(Resource.CONFIG, fakeTopic);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id);
+        await checkResultGet(Resource.CONFIG, fakeTopic, oi4IdString);
 
         fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${Resource.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
-        await checkResultGet(Resource.CONFIG, fakeTopic, defaultFakeOi4Id, defaultFakeFilter);
+        await checkResultGet(Resource.CONFIG, fakeTopic, oi4IdString, defaultFakeFilter);
     });
 
     it('extract topic info works - config - set', async () => {
@@ -185,7 +186,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processMessage(fakeTopic, Resource.CONFIG, processor);
 
         expect(oi4Application.sendEventStatus).toHaveBeenCalledWith( {
-            origin: defaultFakeAppId,
+            origin: defaultFakeAppId.toString(),
             number: 0,
             description: undefined
         });
@@ -258,18 +259,19 @@ describe('Unit test for MqttMessageProcessor', () => {
             await processMessage(fakeTopic, resourceConfig);
 
             // TODO handle event emitter
-
-            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, subResource, filter, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, subResource?.toString(), filter, 0, 0);
         }
 
         const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
 
+        const oi4IdString = defaultFakeOi4Id.toString();
+
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}`);
         await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}`);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`, defaultFakeOi4Id);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
-        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, defaultFakeOi4Id, defaultFakeLicenseId);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}`, oi4IdString);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}`, oi4IdString);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE, `${baseFakeTopic}/${Resource.LICENSE}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, oi4IdString, defaultFakeLicenseId);
+        await testAgainstResourceForLicenseAndLicenseText(Resource.LICENSE_TEXT, `${baseFakeTopic}/${Resource.LICENSE_TEXT}/${defaultFakeOi4Id}/${defaultFakeLicenseId}`, oi4IdString, defaultFakeLicenseId);
 
         //set LICENSE AND LICENSE TEXT basically does nothing
     });
@@ -285,7 +287,7 @@ describe('Unit test for MqttMessageProcessor', () => {
             const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
             oi4Application.sendResource = jest.fn();
             await processMessage(topic, resourceConfig);
-            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeOi4Id, defaultFakeFilter, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeOi4Id.toString(), defaultFakeFilter, 0, 0);
         }
 
         await testAgainstResourceForPublicationAndSubscriptionLists(Resource.PUBLICATION_LIST);

@@ -9,7 +9,7 @@ import {
     MasterAssetModel,
     Resource,
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUALocale, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUALocale, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 
 const getStandardMqttConfig = (): MqttSettings => {
@@ -24,7 +24,7 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
-        oi4Id: '1',
+        oi4Id: new Oi4Identifier('a','b','c','d'),
         getHealth(_: string): Health {
             return {
                 resourceType(): Resource {

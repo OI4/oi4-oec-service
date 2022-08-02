@@ -1,19 +1,20 @@
 import {
     Application,
     EDeviceHealth,
-    Health, IContainerConfig,
+    Health,
+    IContainerConfig,
     IOI4Resource,
     License,
     LicenseText,
     MasterAssetModel,
     Profile,
     PublicationList,
-    PublicationListConfig, Resource,
+    Resource,
     RTLicense,
     SubscriptionList,
-    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
+import {Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum OI4ResourceEvent {
     RESOURCE_CHANGED = 'resourceChanged',
@@ -32,10 +33,12 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
 
+
     constructor(mam: MasterAssetModel) {
         super();
 
-        this._mam = mam;;
+        this._mam = mam;
+        ;
 
         this._profile = new Profile(Application.mandatory);
 
@@ -48,34 +51,9 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = []
 
         this._subscriptionList = []
-
-        // Fill both pubList and subList
-        for (const resources of this.profile.resource) {
-            let resInterval = 0;
-            if (resources === 'health') {
-                resInterval = 60000;
-            } else {
-                resInterval = 0;
-            }
-
-            this._publicationList.push({
-                resource: resources,
-                subResource: this.oi4Id,
-                DataSetWriterId: 0,
-                oi4Identifier: this.oi4Id,
-                interval: resInterval,
-                config: PublicationListConfig.NONE_0,
-            } as PublicationList);
-
-            this._subscriptionList.push(SubscriptionList.clone({
-                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
-                interval: 0,
-                config: SubscriptionListConfig.NONE_0,
-            } as SubscriptionList));
-        }
     }
 
-    get oi4Id(): string {
+    get oi4Id(): Oi4Identifier {
         return this.mam.getOI4Id();
     }
 
@@ -116,10 +94,10 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         return this._license;
     }
 
-    getLicense(oi4Id: string, licenseId?: string): License[] {
+    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
         if (oi4Id === undefined) {
             return this.license;
-        } else if (oi4Id !== this.oi4Id) {
+        } else if (oi4Id.equals(this.oi4Id)) {
             throw new Error('Sub resources not yet implemented');
         }
 
@@ -161,16 +139,16 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = publicationList;
     }
 
-    getPublicationList(oi4Id?: string, resourceType?: Resource, tag?: string): PublicationList[] {
+    getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
         return this._publicationList.filter((elem: PublicationList) => {
-            if (oi4Id !== undefined && elem.oi4Identifier !== oi4Id) return false;
+            if (oi4Id !== undefined && !oi4Id.equals(elem.oi4Identifier)) return false;
             if (resourceType !== undefined && elem.resource !== resourceType) return false;
             if (tag !== undefined && elem.filter !== tag) return false;
             return true;
         });
     }
 
-    getSubscriptionList(oi4Id?: string, resourceType?: Resource, tag?: string): SubscriptionList[] {
+    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
         console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
         return this._subscriptionList;
     }

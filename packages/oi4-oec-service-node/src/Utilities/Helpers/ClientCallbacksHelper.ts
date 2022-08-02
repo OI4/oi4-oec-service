@@ -21,9 +21,9 @@ export class ClientCallbacksHelper {
         await oi4application.client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(oi4application.builder.buildOPCUANetworkMessage([{
-                subResource: oi4Id,
+                subResource: oi4Id.toString(),
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.HEALTH, oi4Id),
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.HEALTH, oi4Id.toString()),
             }], new Date(), DataSetClassIds.mam)),
         );
         LOGGER.log('Connection to mqtt broker closed');
