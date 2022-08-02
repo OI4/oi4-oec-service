@@ -172,12 +172,12 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private resourceChangedCallback(oi4Id: string, resource: Resource) {
         if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', oi4Id, oi4Id).then();
+            this.sendResource(Resource.HEALTH, '', oi4Id, '').then();
         }
     }
 
     private resourceAddedCallback(oi4Id: string) {
-        this.sendResource(Resource.MAM, '', oi4Id, oi4Id).then();
+        this.sendResource(Resource.MAM, '', oi4Id, '').then();
     }
 
     // GET SECTION ----------------//
@@ -242,7 +242,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, subResource, filter);
     }
 
-    async preparePayload(resource: Resource, subResource: string, filter: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: Resource, subResource: string, filter?: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = OI4Application.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -302,7 +302,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         LOGGER.log(`Error: ${error}`, ESyslogEventFilter.error);
     }
 
-    private static validateFilter(filter: string): ValidatedFilter {
+    private static validateFilter(filter?: string): ValidatedFilter {
         // Initialized with -1, so we know when to use string-based filters or not
         let dswidFilter = -1;
         try {

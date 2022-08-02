@@ -92,6 +92,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
+        // TODO check why oi4Id is escaped and this.oi4Id is not
         if(this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
