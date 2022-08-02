@@ -1,6 +1,6 @@
 export enum EAssetType {
   device = 'device',
-  application = 'application,'
+  application = 'application'
 }
 
 export enum ESubResource {
