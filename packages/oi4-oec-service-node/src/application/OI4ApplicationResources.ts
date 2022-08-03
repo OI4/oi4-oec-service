@@ -85,7 +85,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     public getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
-        if(oi4Id === this.oi4Id) {
+        if(oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
         return this.subResources.get(oi4Id.toString()).mam;
