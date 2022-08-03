@@ -358,7 +358,7 @@ describe('OI4MessageBus test', () => {
         const onResourceMock = jest.fn((_, cb) => {
             cb(resources.oi4Id, Resource.HEALTH);
             expect(mockSendResource).toHaveBeenCalled();
-            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', resources.oi4Id, '');
+            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', resources.oi4Id.toString(), '');
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore

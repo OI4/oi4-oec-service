@@ -170,14 +170,14 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
-    private resourceChangedCallback(oi4Id: string, resource: Resource) {
+    private resourceChangedCallback(oi4Id: Oi4Identifier, resource: Resource) {
         if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', oi4Id, '').then();
+            this.sendResource(Resource.HEALTH, '', oi4Id.toString(), '').then();
         }
     }
 
-    private resourceAddedCallback(oi4Id: string) {
-        this.sendResource(Resource.MAM, '', oi4Id, '').then();
+    private resourceAddedCallback(oi4Id: Oi4Identifier) {
+        this.sendResource(Resource.MAM, '', oi4Id.toString(), '').then();
     }
 
     // GET SECTION ----------------//
