@@ -32,6 +32,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
     clientPayloadHelper: ClientPayloadHelper;
     clientCallbacksHelper: ClientCallbacksHelper;
     mqttMessageProcessor: MqttMessageProcessor;
+    opcUaBuilder: OPCUABuilder;
 
     private readonly resources: IOI4ApplicationResources;
     private readonly settingsPaths: ISettingsPaths;
@@ -71,12 +72,14 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
 
-        const opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.serviceType, maximumPacketSize);
+        if (this.opcUaBuilder === undefined) {
+            this.opcUaBuilder = new OPCUABuilder(this.resources.oi4Id, this.serviceType, maximumPacketSize);
+        }
         this.initCredentials(mqttSettings);
         this.builder = OI4Application.builder()//
             .withApplicationResources(this.resources)//
             .withMqttSettings(mqttSettings)//
-            .withOPCUABuilder(opcUaBuilder)//
+            .withOPCUABuilder(this.opcUaBuilder)//
             .withClientPayloadHelper(this.clientPayloadHelper)//
             .withClientCallbacksHelper(this.clientCallbacksHelper)//
             .withMqttMessageProcessor(this.mqttMessageProcessor)//
