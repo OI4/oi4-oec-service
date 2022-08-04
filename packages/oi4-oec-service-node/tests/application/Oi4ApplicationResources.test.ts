@@ -68,8 +68,8 @@ describe('Test Oi4ApplicationResources', () => {
         expect(subResources.next().value).toEqual(value03);
     });
 
-    it('If oi4Id not valid then error is thrown', () => {
-        expect(() => resources.getLicense(resources.oi4Id)).toThrow('Sub resources not yet implemented');
+    it('If oi4Id not valid then an empty list is returned', () => {
+        expect(resources.getLicense(resources.oi4Id)).toStrictEqual([]);
     });
 
     it('If oi4Id undefined all licenses are returned', () => {

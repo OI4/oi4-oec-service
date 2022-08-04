@@ -94,20 +94,6 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         return this._license;
     }
 
-    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
-        if (oi4Id === undefined) {
-            return this.license;
-        } else if (oi4Id.equals(this.oi4Id)) {
-            throw new Error('Sub resources not yet implemented');
-        }
-
-        if (licenseId === undefined) {
-            return this.license;
-        }
-
-        return this.license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
-    }
-
     private set license(license) {
         this._license = license
     }

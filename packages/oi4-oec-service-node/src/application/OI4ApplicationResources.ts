@@ -9,6 +9,7 @@ import {
     RTLicense,
     SubscriptionList,
     SubscriptionListConfig,
+    License
 } from '@oi4/oi4-oec-service-model';
 
 import {
@@ -99,7 +100,24 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return this.subResources.get(oi4Id.toString())?.health;
     }
 
-    hasSubResource(oi4Id: Oi4Identifier) {
+    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
+        if (oi4Id === undefined) {
+            return this.license;
+        } 
+        
+        const license = oi4Id.equals(this.oi4Id) ? this.license : this.subResources.get(oi4Id.toString())?.license;
+        if (license === undefined) {
+            return [];
+        }
+
+        if (licenseId === undefined) {
+            return license;
+        }
+
+        return license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
+    }
+
+    hasSubResource(oi4Id: Oi4Identifier): boolean {
         return this.subResources.has(oi4Id.toString());
     }
 
