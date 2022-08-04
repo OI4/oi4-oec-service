@@ -6,7 +6,6 @@ import {
     Health,
     IOI4ApplicationResources,
     LicenseText,
-    PublicationList,
     Resource,
     SubscriptionList,
     SyslogEvent,
@@ -95,11 +94,12 @@ describe('Unit test for ClientPayloadHelper', () => {
     });
 
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: Oi4Identifier) {
-        return PublicationList.clone({
+        return {
             DataSetWriterId: datasetWriterId,
-            oi4Identifier: oi4Id,
+            oi4Identifier: oi4Id.toString(),
             resource: resource,
-        } as PublicationList);
+            filter: undefined as string
+        } 
     }
 
     function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any, filter?: string) {
@@ -120,7 +120,7 @@ describe('Unit test for ClientPayloadHelper', () => {
             expectedInnerPayload.filter = filter;
         }
         const expectedPayload = createMockedPayloadWithSubresource(oi4Id.toString(), dataSetWriterId, expectedInnerPayload, resource);
-        expect(validatedPayload.payload).toStrictEqual(expectedPayload);
+        expect(JSON.parse(JSON.stringify(validatedPayload.payload))).toStrictEqual(JSON.parse(JSON.stringify(expectedPayload)));
     }
 
     it('createPublicationListSendResourcePayload works when matching OI4 Id is supplied', async () => {

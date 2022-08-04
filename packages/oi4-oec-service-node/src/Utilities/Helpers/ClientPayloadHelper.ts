@@ -94,7 +94,9 @@ export class ClientPayloadHelper {
                 DataSetWriterId: dataSetWriterId,
                 filter: resource,
                 subResource: applicationResources.oi4Id.toString(),
-                Payload: elem,
+                Payload: {... elem,
+                    oi4Identifier: elem.oi4Identifier.toString()
+                },
             } as IOPCUADataSetMessage;
         });
 

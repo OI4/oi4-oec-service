@@ -473,7 +473,7 @@ describe('OI4MessageBus test', () => {
         const result = await getPayload(Resource.PUBLICATION_LIST, Resource.PUBLICATION_LIST, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify(getResourceInfo().publicationList[i]));
+                .toBe(JSON.stringify({ ... getResourceInfo().publicationList[i], oi4Identifier: getResourceInfo().publicationList[i].oi4Identifier.toString() } ));
         }
     });
 
