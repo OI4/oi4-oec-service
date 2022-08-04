@@ -4,11 +4,11 @@ export class Oi4Identifier {
     productCode: string;
     serialNumber: string;
 
-    constructor(manufacturerUri: string, model: string, productCode: string, serialNumber: string) {
+    constructor(manufacturerUri: string, model: string, productCode: string, serialNumber: string, decodeArguments = false) {
         this.manufacturerUri = manufacturerUri;
-        this.model = model;
-        this.productCode = productCode;
-        this.serialNumber = serialNumber;
+        this.model = decodeArguments ? decodeURIComponent(model) : model;
+        this.productCode = decodeArguments ? decodeURIComponent(productCode) : productCode;
+        this.serialNumber = decodeArguments ? decodeURIComponent(serialNumber) : serialNumber;
     }
 
     toString(): string {

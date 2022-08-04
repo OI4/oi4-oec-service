@@ -128,7 +128,7 @@ export class TopicParser {
         if (TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
             throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
         }
-        wrapper.topicInfo.oi4Id = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]);
+        wrapper.topicInfo.oi4Id = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11], true);
     }
 
     private static extractFilter(wrapper: TopicWrapper) {
