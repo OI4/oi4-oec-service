@@ -20,7 +20,7 @@ export class Oi4Identifier {
         if (oi4IdParts.length !== 4) {
             throw new Error(`Invalid OI4 identifier: ${oi4Id}`);
         }
-        return new Oi4Identifier(oi4IdParts[0], decodeURIComponent(oi4IdParts[1]), decodeURIComponent(oi4IdParts[2]), decodeURIComponent(oi4IdParts[3]));
+        return new Oi4Identifier(oi4IdParts[0], oi4IdParts[1], oi4IdParts[2], oi4IdParts[3], true);
     }
 
     equals(other: Oi4Identifier): boolean {
