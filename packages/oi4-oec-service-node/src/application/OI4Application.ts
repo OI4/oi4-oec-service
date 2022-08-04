@@ -40,14 +40,22 @@ export interface IOI4Application extends EventEmitter {
     readonly client: mqtt.AsyncClient;
     readonly clientPayloadHelper: ClientPayloadHelper;
 
-    addSubscription(topic: string, config: SubscriptionListConfig, interval: number):  Promise<mqtt.ISubscriptionGrant[]>;
+    addSubscription(topic: string, config: SubscriptionListConfig, interval: number): Promise<mqtt.ISubscriptionGrant[]>;
+
     removeSubscription(topic: string): Promise<boolean>;
+
     sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page: number, perPage: number): Promise<void>;
+
     sendMetaData(cutTopic: string): Promise<void>;
-    sendData(cutTopic: string): Promise<void>;
+
+    sendData(oi4Id: Oi4Identifier, data?: any, filter?: string, messageId?: string): Promise<void>;
+
     sendMasterAssetModel(mam: MasterAssetModel, messageId?: string): Promise<void>;
+
     sendEvent(event: IEvent, filter: string): Promise<void>;
+
     sendEventStatus(status: StatusEvent): Promise<void>;
+
     getConfig(): Promise<void>;
 }
 
@@ -110,7 +118,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         LOGGER.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
         this.on('setConfig', this.sendEventStatus);
-        this.mqttMessageProcessor =  mqttMessageProcessor;
+        this.mqttMessageProcessor = mqttMessageProcessor;
 
         this.initClientCallbacks();
     }
@@ -164,7 +172,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     private initClientHealthHeartBeat() {
         setInterval(async () => {
             await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
-            for(const resource of this.applicationResources.subResources.values()){
+            for (const resource of this.applicationResources.subResources.values()) {
                 await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
@@ -187,14 +195,6 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      */
     async sendMetaData(cutTopic: string) {
         await this.send(cutTopic, 'metadata', this.applicationResources.metaDataLookup);
-    }
-
-    /**
-     * Sends all available data of the applicationResources to the bus
-     * @param cutTopic - the cuttopic, containing only the tag-element
-     */
-    public async sendData(cutTopic: string) {
-        await this.send(cutTopic, 'data', this.applicationResources.dataLookup);
     }
 
     //FIXME add a better type for the information send (Either data or metadata)
@@ -224,6 +224,22 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     }
 
     /**
+     * Send the according payload as resource data to the bus or uses the given data from the application resource
+     * @param oi4Id - the oi4Id of the resource
+     * @param data - the data to send
+     * @param filter - the filter to use
+     * @param messageId - original messageId used as correlation ID
+     */
+    async sendData(oi4Id: Oi4Identifier, data?: any, filter?: string, messageId?: string) {
+        if (data === undefined) {
+            // TODO is is most likely not right
+            data = this.applicationResources.dataLookup[oi4Id.toString()];
+        }
+        const payload = [this.clientPayloadHelper.createPayload(data, oi4Id.toString())];
+        await this.sendPayload(payload, Resource.DATA, messageId, 0, 0, oi4Id.toString(), filter);
+    }
+
+    /**
      * Sends the saved Resource from applicationResources to the message bus
      * @param resource - the resource that is to be sent to the bus (health, license etc.)
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
@@ -235,7 +251,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     async sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
         const validatedPayload: ValidatedPayload = await this.preparePayload(resource, subResource, filter);
 
-        if (validatedPayload.abortSending) {
+        if (validatedPayload === undefined || validatedPayload.abortSending) {
             return;
         }
 
@@ -322,7 +338,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, subResource: string, filter?: string): Promise<void> {
         // Don't forget the slash
         let endTag = '';
-        if (subResource && subResource.length > 0){
+        if (subResource && subResource.length > 0) {
             endTag = `/${subResource}`;
         }
         if (filter && filter.length > 0 && endTag.length > 0) {

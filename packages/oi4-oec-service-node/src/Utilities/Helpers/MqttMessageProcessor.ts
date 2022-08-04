@@ -92,7 +92,8 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
 
         if (topicInfo.resource === Resource.DATA) {
-            await oi4Application.sendData(topicInfo.filter);
+            // TODO should handle filter
+            await oi4Application.sendData(topicInfo.oi4Id);
             return;
         } else if (topicInfo.resource === this.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);

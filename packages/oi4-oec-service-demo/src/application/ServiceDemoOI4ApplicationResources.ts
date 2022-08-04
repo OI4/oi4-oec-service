@@ -10,7 +10,7 @@ const getMamFileLocation = (isLocal: boolean) => isLocal ? './docker_configs/con
 
 export class ServiceDemoOI4ApplicationResources extends OI4ApplicationResources {
 
-    private assets: Asset[];
+    readonly assets: Asset[];
 
     constructor(isLocal: boolean, paths: ISettingsPaths) {
         super(getMamFileLocation(isLocal));

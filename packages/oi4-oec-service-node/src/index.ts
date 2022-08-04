@@ -6,6 +6,8 @@ export * from './application/OI4ApplicationFactory';
 export * from './Config/SettingsPaths';
 export {FileLogger} from './Utilities/FileLogger/FileLogger';
 export {TopicMethods, getTopicMethod} from './Utilities/Helpers/Enums';
+export {ClientCallbacksHelper} from './Utilities/Helpers/ClientCallbacksHelper';
+export {ClientPayloadHelper} from './Utilities/Helpers/ClientPayloadHelper';
 export {MqttMessageProcessor} from './Utilities/Helpers/MqttMessageProcessor';
 export * from './Utilities/Helpers/TopicParser';
 export * from './Utilities/Helpers/Enums';

@@ -15,7 +15,9 @@ export class WeatherService {
 
     async getWeather(coordinates: Coordinates, language = Language.EN): Promise<WeatherServiceResponse> {
         const url = `${BASE_URL}?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${this.appid}&units=${this.units}&lang=${language}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url).catch(err => {
+            throw err;
+        });
         if(response.status !== 200) {
             throw new Error(`Failed to query OpenWeatherMap API: ${response.statusText}`);
         }

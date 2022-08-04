@@ -384,21 +384,23 @@ describe('OI4MessageBus test', () => {
             expect.stringContaining(JSON.stringify(getResourceInfo().metaDataLookup)));
     });
 
-    it('should send specific data lookup by tagname', async () => {
-        const tagName = 'tag-01'
-        await defaultOi4Application.sendData(tagName);
-        expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}/${tagName}`),
-            expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.dataLookup[tagName])));
-    });
+    // The following function is not defined yet/anymore
+    // it('should send specific data lookup by tagname', async () => {
+    //     const tagName = 'tag-01'
+    //     await defaultOi4Application.sendData(tagName);
+    //     expect(publish).toHaveBeenCalledWith(
+    //         expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}/${tagName}`),
+    //         expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.dataLookup[tagName])));
+    // });
 
-    it('should send all data if tagname not specified', async () => {
-        const tagName = ''
-        await defaultOi4Application.sendData(tagName);
-        expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}`),
-            expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
-    });
+    // The following function is not defined yet/anymore
+    // it('should send all data if tagname not specified', async () => {
+    //     const tagName = ''
+    //     await defaultOi4Application.sendData(tagName);
+    //     expect(publish).toHaveBeenCalledWith(
+    //         expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}`),
+    //         expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
+    // });
 
     it('should send resource with valid filter', async () => {
         await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);

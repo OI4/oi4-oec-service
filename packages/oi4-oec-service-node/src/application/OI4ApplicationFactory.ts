@@ -59,7 +59,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
         return this.builder.build();
     }
 
-    initialize() {
+    initialize(builder = OI4Application.builder()) {
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
@@ -71,7 +71,7 @@ export class OI4ApplicationFactory implements IOI4MessageBusFactory {
             }
         }
         this.initCredentials(mqttSettings);
-        this.builder = OI4Application.builder()//
+        this.builder = builder//
             .withApplicationResources(this.resources)//
             .withMqttSettings(mqttSettings)//
             .withOPCUABuilder(this.opcUaBuilder)//
