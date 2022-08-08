@@ -33,7 +33,7 @@
       "$ref": "dataTypes/int32.schema.json"
     },
     "arrayDimensions": {
-      "type": "array",
+      "type": ["array", "null"],
       "items": {
         "$ref": "dataTypes/uint32.schema.json"
       }

@@ -1,12 +1,14 @@
 [
   [
-    "DataSetMetaDataType Example", {
+    "DataSetMetaDataType Example",
+    {
       "name": "Dataset1",
       "description": {
         "text": "Description",
         "locale": "en-US"
       },
-      "fields": [{
+      "fields": [
+        {
           "name": "temperature",
           "description": {
             "text": "The main temperature",
@@ -20,10 +22,14 @@
             "Namespace": 1
           },
           "valueRank": 5,
-          "arrayDimensions": [5, 3],
+          "arrayDimensions": [
+            5,
+            3
+          ],
           "maxStringLength": 5,
           "dataSetFieldId": "FB8B6B28-B2F7-4E26-99F5-16D89BDF3D29",
-          "properties": [{
+          "properties": [
+            {
               "key": {
                 "namespaceIndex": 1,
                 "name": "temp"
@@ -42,7 +48,8 @@
         "Namespace 1",
         "Namespace 2"
       ],
-      "structureDataTypes": [{
+      "structureDataTypes": [
+        {
           "structureDefinition": {
             "defaultEncodingId": {
               "Id": 21
@@ -53,7 +60,8 @@
               "Namespace": 3
             },
             "structureType": "StructureWithOptionalFields_1",
-            "fields": [{
+            "fields": [
+              {
                 "name": "Field1",
                 "description": {
                   "text": "Description 1",
@@ -63,7 +71,10 @@
                   "Id": 42
                 },
                 "valueRank": 2,
-                "arrayDimensions": [1, 2],
+                "arrayDimensions": [
+                  1,
+                  2
+                ],
                 "maxStringLength": 5,
                 "isOptional": true
               }
@@ -71,11 +82,14 @@
           }
         }
       ],
-      "enumDataTypes": [{
+      "enumDataTypes": [
+        {
           "enumDefinition": {
-            "fields": [{
+            "fields": [
+              {
                 "name": "Field 1"
-              }, {
+              },
+              {
                 "name": "Field 2"
               }
             ]
@@ -83,7 +97,8 @@
           "builtInType": 6
         }
       ],
-      "simpleDataTypes": [{
+      "simpleDataTypes": [
+        {
           "BaseDataType": {
             "Id": 21,
             "Namespace": 2
@@ -98,6 +113,84 @@
           }
         }
       ]
+    }
+  ],
+  [
+    "Array Dimensions is null according https://reference.opcfoundation.org/Core/Part14/6.2.3/#6.2.3.2",
+    {
+      "name": "ApplicationLEDs",
+      "description": {
+        "locale": "en-US",
+        "text": "My application LEDs"
+      },
+      "fields": [
+        {
+          "name": "led02",
+          "description": {
+            "locale": "en-US",
+            "text": "LED 1"
+          },
+          "fieldFlags": 0,
+          "builtInType": 1,
+          "dataType": {
+            "IdType": 0,
+            "Id": 1
+          },
+          "valueRank": -1,
+          "arrayDimensions": null,
+          "maxStringLength": 0,
+          "dataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
+          "properties": []
+        }
+      ],
+      "dataSetClassId": "7C553DC8-CAD9-47CB-8DB4-731E61D909DE",
+      "configurationVersion": {
+        "majorVersion": 12345678,
+        "minorVersion": 12345678
+      },
+      "namespaces": [],
+      "structureDataTypes": [],
+      "enumDataTypes": [],
+      "simpleDataTypes": []
+    }
+  ],
+  [
+    "dataSetClassId is null according https://reference.opcfoundation.org/Core/Part14/6.2.3/#6.2.3.2",
+    {
+      "name": "ApplicationLEDs",
+      "description": {
+        "locale": "en-US",
+        "text": "My application LEDs"
+      },
+      "fields": [
+        {
+          "name": "led02",
+          "description": {
+            "locale": "en-US",
+            "text": "LED 1"
+          },
+          "fieldFlags": 0,
+          "builtInType": 1,
+          "dataType": {
+            "IdType": 0,
+            "Id": 1
+          },
+          "valueRank": -1,
+          "arrayDimensions": [],
+          "maxStringLength": 0,
+          "dataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
+          "properties": []
+        }
+      ],
+      "dataSetClassId": null,
+      "configurationVersion": {
+        "majorVersion": 12345678,
+        "minorVersion": 12345678
+      },
+      "namespaces": [],
+      "structureDataTypes": [],
+      "enumDataTypes": [],
+      "simpleDataTypes": []
     }
   ]
 ]
