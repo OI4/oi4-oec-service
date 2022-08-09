@@ -27,7 +27,7 @@ describe('Unit test for MAMStorage reading', () => {
         const jsonValidator = new Ajv();
         jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
 
-        const builder = new OPCUABuilder(oi4Identifier, ServiceTypes.AGGREGATION, jsonValidator);
+        const builder = new OPCUABuilder(oi4Identifier, ServiceTypes.AGGREGATION, 262144, jsonValidator);
 
         expect.assertions(1);
         try {
