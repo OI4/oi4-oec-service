@@ -162,10 +162,10 @@ export class ClientPayloadHelper {
         // filter result
         let config: IOPCUADataSetMessage | undefined;
         const oi4IdString = oi4Id.toString();
-        if (applicationResources.oi4Id == oi4Id) {
+        if (applicationResources.oi4Id.equals(oi4Id)) {
             config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
         } else if (applicationResources.subResources.has(oi4IdString)) {
-            config = createDataSetMessage(applicationResources.subResources.get(oi4Id.toString()).config, oi4Id, filter);
+            config = createDataSetMessage(applicationResources.subResources.get(oi4IdString).config, oi4Id, filter);
         }
 
         const messages: IOPCUADataSetMessage[] = config ? [config] : [];
