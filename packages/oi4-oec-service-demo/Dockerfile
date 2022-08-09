@@ -1,4 +1,4 @@
-ARG 6=base
+ARG BUILD_ENV=base
 
 FROM node:16-alpine3.15 as build_base
 
@@ -12,7 +12,7 @@ RUN npm config set unsafe-perm true
 
 RUN mkdir -p /etc/oi4/certs; mkdir /etc/oi4/mqtt; mkdir /etc/oi4/mqtt; mkdir /etc/oi4/config; mkdir -p /run/secrets/
 
-WORKDIR /usr/oi4-oec-dswb-connector
+WORKDIR /usr/oi4-oec-service-demo
 
 COPY ./package.json ./
 COPY ./.npmrc ./
@@ -29,8 +29,7 @@ FROM build_${BUILD_ENV}
 
 RUN mkdir -p logs
 
-COPY ./node_modules/@oi4 ./node_modules/@oi4
-COPY ./dist/src/app.js ./
+COPY ./dist ./
 
 COPY ./scripts/entrypoint.sh ./scripts/
 

@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  oi4-oec-service-demo:
+    image: oi4/oi4-oec-service-demo:latest
+    container_name: oi4-oec-service-demo
+    restart: on-failure
+    volumes:
+      - "/my/local/path/to/mqtt:/etc/oi4/mqtt"
+      - "/my/local/path/to/certs:/etc/oi4/certs"
+      - "/my/local/path/to/secrets:/run/secrets"
+      - "/my/local/path/to/config:/etc/oi4/config"
+      - "/my/local/path/to/app:/etc/oi4/app"
+    environment:
+      - OI4_EDGE_EVENT_LEVEL=warning
+      - OI4_EDGE_LOG_LEVEL=debug
+      - TZ=Europe/Berlin
