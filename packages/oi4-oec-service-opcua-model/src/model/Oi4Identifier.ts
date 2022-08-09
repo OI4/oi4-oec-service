@@ -4,11 +4,11 @@ export class Oi4Identifier {
     productCode: string;
     serialNumber: string;
 
-    constructor(manufacturerUri: string, model: string, productCode: string, serialNumber: string) {
+    constructor(manufacturerUri: string, model: string, productCode: string, serialNumber: string, decodeArguments = false) {
         this.manufacturerUri = manufacturerUri;
-        this.model = model;
-        this.productCode = productCode;
-        this.serialNumber = serialNumber;
+        this.model = decodeArguments ? decodeURIComponent(model) : model;
+        this.productCode = decodeArguments ? decodeURIComponent(productCode) : productCode;
+        this.serialNumber = decodeArguments ? decodeURIComponent(serialNumber) : serialNumber;
     }
 
     toString(): string {
@@ -20,7 +20,7 @@ export class Oi4Identifier {
         if (oi4IdParts.length !== 4) {
             throw new Error(`Invalid OI4 identifier: ${oi4Id}`);
         }
-        return new Oi4Identifier(oi4IdParts[0], oi4IdParts[1], oi4IdParts[2], oi4IdParts[3]);
+        return new Oi4Identifier(oi4IdParts[0], oi4IdParts[1], oi4IdParts[2], oi4IdParts[3], true);
     }
 
     equals(other: Oi4Identifier): boolean {

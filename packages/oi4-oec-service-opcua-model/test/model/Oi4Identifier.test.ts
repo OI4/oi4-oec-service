@@ -31,4 +31,12 @@ describe('Unit test for Oi4Identifier', () => {
 
         expect(oi4Identifier1.equals(undefined)).toBe(false);
     });
+
+    it('Check Oi4Identifier with special characters', ()=> {
+        const oi4Identifier1 = new Oi4Identifier('acme.com', 'model 1', 'product&Code ', 'serial+Number');
+        const oi4IdentfierString = oi4Identifier1.toString();
+        const oi4Identifier2 = Oi4Identifier.fromString(oi4IdentfierString);
+
+        expect(oi4Identifier1.equals(oi4Identifier2)).toBe(true);
+    })
 });
