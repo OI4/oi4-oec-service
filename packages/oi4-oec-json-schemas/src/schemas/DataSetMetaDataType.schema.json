@@ -17,7 +17,8 @@
       "$ref": "ConfigurationVersionDataType.schema.json"
     },
     "dataSetClassId": {
-      "type": "string"
+      "type": ["string", "null"],
+      "format": "uuid"
     },
     "description": {
       "$ref": "LocalizedText.schema.json"
