@@ -22,7 +22,7 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "files": [
-    "src/schemas/**/*.json"
+    "dist/schemas/**/*.json"
   ],
   "devDependencies": {
     "@types/jest-json-schema": "^6.1.0",
