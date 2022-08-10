@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-asyncapi",
-  "version": "1.0.0-preview.2",
+  "version": "1.0.0-preview.3",
   "description": "AsyncAPI description of the OI4 OEC topics and messages",
   "license": "BSD-3-Clause",
   "publishConfig": {
