@@ -8,7 +8,7 @@
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
-    "packages/!(*demo)"
+    "packages/*"
   ],
   "devDependencies": {
     "@types/jest": "^27.4.1",
