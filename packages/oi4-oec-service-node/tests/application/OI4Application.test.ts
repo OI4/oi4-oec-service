@@ -10,7 +10,6 @@ import {
     SubscriptionListConfig,
     EventCategory,
     Health,
-    IContainerConfig,
     IOI4ApplicationResources,
     License,
     LicenseText,
@@ -239,13 +238,10 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
             return this.subscriptionList;
         },
-        setConfig(_oi4Id: Oi4Identifier, _filter: string, _config: IContainerConfig): boolean {
-            return true;
-        },
         addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void {
             console.log(`function addDataSet called with ${dataSetName} ${data} ${metadata}`);
         }
-    } as IOI4ApplicationResources;
+    }
 }
 
 let defaultOi4ApplicationResources: IOI4ApplicationResources;
@@ -572,22 +568,25 @@ describe('OI4MessageBus test', () => {
         mock.mockRestore();
     });
 
-    it('should update config and send emit status status via mqtt process', async () => {
-        const setConfig = getIOPCUANetworkMessage();
+    it('should add new config and send emit status status via mqtt process', async () => {
+        const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         defaultOi4ApplicationResources.config['group-a'] = {
             name: {locale: EOPCUALocale.enUS, text: 'text'},
             'config_a': {
-                name: {locale: EOPCUALocale.enUS, text: 'config_a'},
-                value: '1000',
-                type: EOPCUABaseDataType.Number
+                category: EventCategory.CAT_STATUS_1,
+                number: 1,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                description: 'fake',
+                origin: defaultOi4ApplicationResources.oi4Id
             }
         };
         jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
         defaultOi4Application.sendEventStatus = jest.fn();
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(setConfig)), defaultOi4Application.builder, defaultOi4Application);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
         expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);

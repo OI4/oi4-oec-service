@@ -191,7 +191,9 @@ describe('Unit test for MqttMessageProcessor', () => {
             description: undefined
         });
 
-        expect(oi4Application.sendResource).toHaveBeenCalledWith(Resource.CONFIG, undefined, defaultFakeAppId.toString(), defaultFakeFilter, 0, 0);
+        expect(oi4Application.sendResource).toHaveBeenCalledWith(Resource.CONFIG, undefined, '', defaultFakeFilter, 0, 0);
+        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile[1]).toBe(`Added ${defaultFakeFilter} to config group`);
     });
 
     it('extract topic info works - config - if the filter is missing an error is thrown', async () => {

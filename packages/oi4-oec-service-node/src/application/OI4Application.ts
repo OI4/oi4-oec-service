@@ -146,7 +146,6 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     }
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0) {
-        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(item => item.topicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
             config: config,
@@ -172,9 +171,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), '').then();
+            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
             for (const resource of this.applicationResources.subResources.values()) {
-                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), '').then();
+                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
@@ -270,7 +269,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
         switch (resource) {
             case Resource.MAM:
-                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, this.oi4Id, subResource);
+                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, subResource);
                 break;
             case Resource.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);

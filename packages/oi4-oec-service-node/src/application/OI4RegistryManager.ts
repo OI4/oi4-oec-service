@@ -1,5 +1,6 @@
 import {IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {indexOf} from 'lodash';
 import {EventEmitter} from 'events';
 import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
 
@@ -28,7 +29,7 @@ export namespace OI4RegistryManager {
             return;
         }
 
-        const separatorPosition = publisherId.indexOf('/');
+        const separatorPosition = indexOf(publisherId, '/');
 
         const serviceType = publisherId.substring(0, separatorPosition);
         if(serviceType !== ServiceTypes.REGISTRY){

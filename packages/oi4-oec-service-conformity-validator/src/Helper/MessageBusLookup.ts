@@ -35,7 +35,7 @@ export class MessageBusLookup implements IMessageBusLookup
 
         
         await this.conformityClient.subscribe(pubTopic);
-        await this.conformityClient.publish(getTopic, getRequest.JsonMessage);
+        await this.conformityClient.publish(getTopic, JSON.stringify(getRequest.Message));
 
         return await promiseTimeout(new Promise((resolve) => {
                 this.pubMessages.once(pubTopic, (res) => {

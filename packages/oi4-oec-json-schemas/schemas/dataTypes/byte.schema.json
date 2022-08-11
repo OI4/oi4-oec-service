@@ -1,8 +1,0 @@
-{
-  "$id": "byte.schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of a metadata message",
-  "type": "integer",
-  "minimum": 0,
-  "maximum": 255
-}

@@ -1,6 +1,7 @@
 import {
     ESyslogEventFilter,
-    IContainerConfig,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
     Resource,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
@@ -25,6 +26,7 @@ export interface IMqttMessageProcessor extends EventEmitter {
 }
 
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
+    private readonly METADATA = 'metadata';
 
     async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
@@ -53,7 +55,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    protected async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
+    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
         // Check if message is from the OI4 registry and save it if it is
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
@@ -93,7 +95,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             // TODO should handle filter
             await oi4Application.sendData(topicInfo.oi4Id);
             return;
-        } else if (topicInfo.resource === Resource.METADATA) {
+        } else if (topicInfo.resource === this.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
             return;
         }
@@ -165,7 +167,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
             case Resource.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
-                    await this.setConfig(topicInfo, parsedMessage, oi4Application);
+                    await this.setConfig(topicInfo.filter, parsedMessage, oi4Application);
                 }
                 break;
             }
@@ -193,20 +195,25 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    private async setConfig(topicInfo: TopicInfo, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
+    private async setConfig(filter: string, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
         const applicationResources = oi4Application.applicationResources;
-        const filter = topicInfo.filter;
-        const oi4Id = topicInfo.oi4Id;
+        const currentConfig = applicationResources.config;
+        const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
+        if (filter === '') {
+            return;
+        }
+        if (!(filter in currentConfig)) {
+            currentConfig[filter] = newConfig;
+            LOGGER.log(`Added ${filter} to config group`);
+        } else {
+            currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
+            LOGGER.log(`${filter} already exists in config group`);
+        }
+        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), EOPCUAStatusCode.Good);
 
-        const message = config.Messages[0]; // only one message is allowed for set/config so we ignore further messages
-        const result = applicationResources.setConfig(oi4Id, filter, message.Payload as IContainerConfig);
-        const statusCode = result ? EOPCUAStatusCode.Good : EOPCUAStatusCode.Bad;
-
-        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), statusCode);
         await oi4Application.sendEventStatus(status);
-        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0);
+        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
     }
-
 
     private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {

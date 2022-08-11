@@ -1,4 +1,4 @@
-import {MasterAssetModel, Profile, Resource} from '../src';
+import {MasterAssetModel} from '../src';
 import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 
@@ -30,14 +30,5 @@ describe('Unit tests for Resources', () => {
         mam.DeviceClass = 'invalid';
         expect(()=> mam.getServiceType()).toThrowError('Unknown service type: invalid');
     });
-
-    it ('changing the profile should not affect the original resource list', ()=> {
-        const resources = [Resource.MAM, Resource.HEALTH];
-        const profile = new Profile(resources);
-        profile.resource.push(Resource.EVENT);
-
-        expect(profile.resource).toEqual([Resource.MAM, Resource.HEALTH, Resource.EVENT]);
-        expect(resources).toEqual([Resource.MAM, Resource.HEALTH]);
-    })
 
 });

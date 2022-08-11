@@ -38,6 +38,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         super();
 
         this._mam = mam;
+        ;
 
         this._profile = new Profile(Application.mandatory);
 

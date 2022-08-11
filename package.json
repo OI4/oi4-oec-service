@@ -1,9 +1,9 @@
 {
   "name": "@oi4/oi4-oec-service",
-  "version": "1.0.0",
+  "version": "1.0.0-preview.3",
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "private": true,
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
