@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NodeId schema (0) match fails for invalid config -> empty: empty 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'Id'[39m
+[31m    Path:     NodeId.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Id'[39m
+[31m    Path:     NodeId.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Id'[39m
+[31m    Path:     NodeId.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Id'[39m
+[31m    Path:     NodeId.schema.json#/required[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (1) match fails for invalid config -> Numeric Node Id with string instead number: Numeric Node Id with string instead number 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /Id must be integer[39m
+[31m    Received: [33m<string>[39m[31m SomeString[39m
+[31m    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type[39m
+[31m[39m[31m  /Id must match format \\"uuid\\"[39m
+[31m    Received: [33m<string>[39m[31m SomeString[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/format[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (2) match fails for invalid config -> String Node Id with number instead string: String Node Id with number instead string 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /IdType must be <= 0[39m
+[31m    Received: [33m<number>[39m[31m 1[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /IdType must be >= 2[39m
+[31m    Received: [33m<number>[39m[31m 1[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/minimum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /IdType must be >= 3[39m
+[31m    Received: [33m<number>[39m[31m 1[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/minimum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (3) match fails for invalid config -> Guid Node Id with number instead guid: Guid Node Id with number instead guid 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /IdType must be <= 0[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /IdType must be <= 1[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /IdType must be >= 3[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/minimum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (4) match fails for invalid config -> Guid Node Id with invalid guid: Guid Node Id with invalid guid 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /IdType must be <= 0[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be integer[39m
+[31m    Received: [33m<string>[39m[31m Invalid[39m
+[31m    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type[39m
+[31m[39m[31m  /IdType must be <= 1[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must match format \\"uuid\\"[39m
+[31m    Received: [33m<string>[39m[31m Invalid[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/format[39m
+[31m[39m[31m  /IdType must be >= 3[39m
+[31m    Received: [33m<number>[39m[31m 2[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/minimum[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (5) match fails for invalid config -> Opaque Node Id with invalid byte string: Opaque Node Id with invalid byte string 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /IdType must be <= 0[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be integer[39m
+[31m    Received: [33m<string>[39m[31m %?[39m
+[31m    Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type[39m
+[31m[39m[31m  /IdType must be <= 1[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /IdType must be <= 2[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must match format \\"uuid\\"[39m
+[31m    Received: [33m<string>[39m[31m %?[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/format[39m
+[31m[39m[31m  /Id must match pattern \\"^[-A-Za-z0-9+/]*={0,3}$\\"[39m
+[31m    Received: [33m<string>[39m[31m %?[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/pattern[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`NodeId schema (6) match fails for invalid config -> Opaque Node Id with number instead byte string: Opaque Node Id with number instead byte string 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /IdType must be <= 0[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /IdType must be <= 1[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /IdType must be <= 2[39m
+[31m    Received: [33m<number>[39m[31m 3[39m
+[31m    Path:     NodeId.schema.json#/properties/IdType/maximum[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  /Id must be string[39m
+[31m    Received: [33m<number>[39m[31m 42[39m
+[31m    Path:     NodeId.schema.json#/properties/Id/type[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}][39m
+[31m    Path:     NodeId.schema.json#/oneOf[39m
+[31m[39m"
+`;

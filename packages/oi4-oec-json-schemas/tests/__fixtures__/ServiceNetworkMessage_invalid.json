@@ -1,0 +1,98 @@
+[
+  ["empty", {}],
+  [
+    "Missing methodId in Request",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "methodsToCall": [
+          {
+            "inputArguments": [
+              {
+                "resource": "referenceDesignation"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  [
+    "Missing inputArguments in Request",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "methodsToCall": [
+          {
+            "methodId": "newDataSetWriterId"
+          }
+        ]
+      }
+    }
+  ],
+  [
+    "Missing statusCode in response ",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "results": [
+          {
+            "inputArgumentResults": [0],
+            "outputArguments": [
+              {
+                "resource": "referenceDesignation"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  [
+    "Missing inputArgumentResults in response",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "results": [
+          {
+            "statusCode": 0,
+            "outputArguments": [
+              {
+                "resource": "referenceDesignation"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  [
+    "Missing outputArguments in response",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "results": [
+          {
+            "statusCode": 0,
+            "inputArgumentResults": [0]
+          }
+        ]
+      }
+    }
+  ]
+]

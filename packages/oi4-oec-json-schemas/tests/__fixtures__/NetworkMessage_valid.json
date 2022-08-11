@@ -1,0 +1,115 @@
+[
+  [
+    "Network message with status event",
+    {
+      "MessageId": "1652867880093-ITConnector/provider.com/model/product/1234",
+      "MessageType": "ua-data",
+      "PublisherId": "ITConnector/provider.com/model/product/1234",
+      "Messages": [
+        {
+          "DataSetWriterId": 623,
+          "filter": "good",
+          "subResource": "status",
+          "SequenceNumber": 37,
+          "Timestamp": "2021-12-16T22:25:10.094Z",
+          "Payload": {
+            "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
+            "number": 0,
+            "description": "The operation succeeded.",
+            "category": "CAT_STATUS_1",
+            "details": {
+              "symbolicId": "Good"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  [
+    "Network message with optional properties",
+    {
+      "MessageId": "1652867880093-ITConnector/provider.com/model/product/1234",
+      "MessageType": "ua-data",
+      "PublisherId": "ITConnector/provider.com/model/product/1234",
+      "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
+      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "Messages": [ ]
+    }
+  ],
+  [
+    "Network message with pagination",
+    {
+      "MessageId": "1639693510094-OTConnector/provider.com/FieldDataService/FDS-001/1200-0345",
+      "MessageType": "ua-data",
+      "PublisherId": "OTConnector/provider.com/FieldDataService/FDS-001/1200-0345",
+      "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
+      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "Messages": [{
+          "DataSetWriterId": 1,
+          "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+          "Payload": {
+            "Manufacturer": {
+              "locale": "en-US",
+              "text": "Provider Ltd."
+            },
+            "ManufacturerUri": "provider.com",
+            "Model": {
+              "locale": "en-US",
+              "text": "FieldDataService"
+            },
+            "ProductCode": "FDS-001",
+            "HardwareRevision": "",
+            "SoftwareRevision": "1.0.1",
+            "DeviceRevision": "",
+            "DeviceManual": "https://provider.com/manuals/FDS-001.pdf",
+            "DeviceClass": "OI4.OTConnector",
+            "SerialNumber": "1200-0345",
+            "ProductInstanceUri": "provider.com/FieldDataService/FDS-001/1200-0345",
+            "RevisionCounter": 1,
+            "Description": {
+              "locale": "en-US",
+              "text": "This OT connector provides field data"
+            }
+          }
+        }, {
+          "DataSetWriterId": 4798,
+          "subResource": "groe.mca/DeviceModelB/ModelA/AC33.447/20443",
+          "Payload": {
+            "Manufacturer": {
+              "locale": "en-US",
+              "text": "GROE"
+            },
+            "ManufacturerUri": "https://groe.mca",
+            "Model": {
+              "locale": "en-US",
+              "text": "DeviceModelB"
+            },
+            "ProductCode": "AC33.447",
+            "HardwareRevision": "1.1",
+            "SoftwareRevision": "2.4.1",
+            "DeviceRevision": "4",
+            "DeviceManual": "",
+            "DeviceClass": "",
+            "SerialNumber": "20443",
+            "ProductInstanceUri": "groe.mca/DeviceModelB/AC33.447/20443",
+            "RevisionCounter": 1,
+            "Description": {
+              "locale": "en-US",
+              "text": "Device Model B measurement unit"
+            }
+          }
+        }, {
+          "DataSetWriterId": 3,
+          "filter": "Pagination",
+          "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+          "Payload": {
+            "totalCount": 2,
+            "perPage": 25,
+            "page": 1,
+            "hasNext": false
+          }
+        }
+      ]
+    }
+  ]
+]

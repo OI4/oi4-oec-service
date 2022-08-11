@@ -1,0 +1,51 @@
+{
+  "$id": "DataSetMetaData.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a metadata message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "DataSetWriterId",
+    "filter",
+    "MessageId",
+    "MessageType",
+    "PublisherId",
+    "MetaData",
+    "subResource"
+  ],
+  "properties": {
+    "correlationId": {
+      "type": "string",
+      "description": "Correlation ID used for logging and as debug information"
+    },
+    "DataSetWriterId": {
+      "$ref": "dataTypes/uint16.schema.json"
+    },
+    "filter": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the filter, together with the subResource, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7)."
+    },
+    "MessageId": {
+      "type": "string",
+      "description": "Message ID",
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+    },
+    "MetaData": {
+      "$ref": "DataSetMetaDataType.schema.json"
+    },
+    "MessageType": {
+      "const": "ua-metadata",
+      "description": "Message Type"
+    },
+    "PublisherId": {
+      "type": "string",
+      "description": "Publisher ID",
+      "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
+      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+    },
+    "subResource": {
+      "type": "string",
+      "description": "In combination with the used resource in the topic, the subResource, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the subResource in the topic (8.1.6) if present."
+    }
+  }
+}

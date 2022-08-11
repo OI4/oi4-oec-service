@@ -7,22 +7,17 @@
     "types": [
       "node",
       "jest"
-    ],
-    "paths": {
-      "@oi4/oi4-oec-service-model": [
-        "packages/oi4-oec-service-model"
-      ]
-    }
+    ]
   },
   "include": [
     "src/**/*",
     "src/**/*.json",
     "LICENSE",
-    "README.md",
-    "package.json"
+    "README.md"
   ],
   "exclude": [
     "dist",
-    "node_modules/**/*"
+    "node_modules/**/*",
+    "package.json"
   ]
 }

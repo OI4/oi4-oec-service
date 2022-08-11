@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataSetMetaData schema (0) match fails for invalid config -> empty: empty 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'DataSetWriterId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'filter'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MessageId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MessageType'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'PublisherId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MetaData'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'subResource'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m"
+`;
+
+exports[`DataSetMetaData schema (1) match fails for invalid config -> Invalid message id: Invalid message id 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /MessageId must match pattern \\"^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com/FieldDataService/FDS-001/1200-0345[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/MessageId/pattern[39m
+[31m[39m[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com/FieldDataService/FDS-001/1200-0345[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern[39m
+[31m[39m"
+`;
+
+exports[`DataSetMetaData schema (2) match fails for invalid config -> Invalid publisher id: Invalid publisher id 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern[39m
+[31m[39m"
+`;

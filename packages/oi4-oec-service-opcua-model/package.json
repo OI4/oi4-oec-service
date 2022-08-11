@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-opcua-model",
-  "version": "0.12.3",
+  "version": "1.0.0-preview.3",
   "description": "OI4 Open Edge Computing OPC UA model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -20,8 +20,12 @@
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
   },
+  "dependencies": {
+    "@oi4/oi4-oec-json-schemas": "^1.0.0-preview.3"
+  },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
+    "buildCore": "yarn run build",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "deploy": "echo \"Deploy not specified\" && exit 0",
     "lint": "eslint src/**/*.ts test/**/*.ts",

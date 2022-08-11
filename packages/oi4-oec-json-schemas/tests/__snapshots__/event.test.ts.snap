@@ -1,0 +1,698 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`event schema (0) match fails for invalid config -> empty: empty 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'category'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'category'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'category'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'category'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (1) match fails for invalid config -> Status event with unsupported property: Status event with unsupported property 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (2) match fails for invalid config -> Status event with missing origin: Status event with missing origin 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (3) match fails for invalid config -> Status event with missing number: Status event with missing number 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (4) match fails for invalid config -> Status event with wrong symbolicId: Status event with wrong symbolicId 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /details/symbolicId must be string[39m
+[31m    Received: [33m<number>[39m[31m 11[39m
+[31m    Path:     event.schema.json#/properties/details/properties/symbolicId/type[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":11}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":11}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (5) match fails for invalid config -> Syslog event with unsupported property: Syslog event with unsupported property 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (6) match fails for invalid config -> Syslog event with missing origin: Syslog event with missing origin 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (7) match fails for invalid config -> Syslog event with missing number: Syslog event with missing number 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MSG'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'HEADER'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (8) match fails for invalid config -> Syslog event with wrong details: Syslog event with wrong details 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (9) match fails for invalid config -> NE107 event with unsupported property: NE107 event with unsupported property 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (10) match fails for invalid config -> NE107 event with missing origin: NE107 event with missing origin 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (11) match fails for invalid config -> NE107 event with missing number: NE107 event with missing number 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'diagnosticCode'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'location'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"diagnosticCode\\":\\"F-238\\",\\"location\\":\\"Floor 1\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (12) match fails for invalid config -> NE107 event with wrong details: NE107 event with wrong details 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'symbolicId'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"symbolicId\\":\\"Good\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (13) match fails for invalid config -> Generic event with unsupported property: Generic event with unsupported property 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'unsupported'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     event.schema.json#/additionalProperties[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (14) match fails for invalid config -> Generic event with missing origin: Generic event with missing origin 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'origin'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (15) match fails for invalid config -> Generic event with missing number: Generic event with missing number 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  must have required property 'number'[39m
+[31m    Path:     event.schema.json#/required[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;
+
+exports[`event schema (16) match fails for invalid config -> Event with unknown category: Event with unknown category 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_STATUS_1[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_SYSLOG_0[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_NE107_2[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     event.schema.json#/properties/details/additionalProperties[39m
+[31m[39m[31m  /category must be equal to constant[39m
+[31m    Expected: [33m<string>[39m[31m CAT_GENERIC_99[39m
+[31m    Received: [33m<string>[39m[31m CAT_GENERIC_0[39m
+[31m    Path:     event.schema.json#/properties/category/const[39m
+[31m[39m[31m  must match exactly one schema in oneOf[39m
+[31m    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}][39m
+[31m    Path:     event.schema.json#/oneOf[39m
+[31m[39m"
+`;

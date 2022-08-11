@@ -5,7 +5,7 @@ module.exports = {
   collectCoverage: false,
   collectCoverageFrom: [
     '**/src/**/*.{ts,tsx}',
-    '**/test/**/*.test.{ts,tsx}',
+    '**/test/**/*.test.{ts,tsx,js}',
     '!**/*.d.{ts,tsx}',
     '!**/node_modules/**',
   ],
@@ -20,5 +20,4 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text-summary', 'text', 'html', 'json'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'jsx', 'node'],
-  setupFiles: ['<rootDir>../../.jest/setEnvironment.js'],
 };

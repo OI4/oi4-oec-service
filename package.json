@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service",
-  "version": "0.12.3",
+  "version": "1.0.0-preview.3",
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "BSD-3-Clause",
@@ -10,9 +10,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "dependencies": {
-    "@oi4/json-schemas": "^0.12.0"
-  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^14.14.28",
@@ -31,12 +28,18 @@
     "lodash": "^4.17.21"
   },
   "scripts": {
+    "docker:build": "/bin/bash build_docker.sh",
+    "docker:run": "docker run -d --name oi4-oec-service-demo --hostname oi4-oec-service-demo --network=integration_network -it oi4-oec-service-demo",
+    "docker:stop": "docker stop oi4-service",
+    "docker:start": "docker start oi4-service",
+    "docker:rm": "docker rm oi4-service",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "buildCore": "lerna run buildCore",
     "clean": "lerna clean",
     "clean:build": "lerna run clean",
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prePublish": "lerna publish prepatch --no-git-tag-version --preid alpha --loglevel silly --yes --force-publish",
     "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes",
     "linkIt": "lerna run linkIt"

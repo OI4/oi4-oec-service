@@ -1,0 +1,5 @@
+{
+  "address": "localhost",
+  "secure_port": 8883,
+  "max_packet_siz": 256
+}

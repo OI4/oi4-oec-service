@@ -100,9 +100,13 @@ dist
 # TernJS port file
 .tern-port
 
+# oi4-oec-service-demo docker configs
+/packages/oec-service-demo/docker_configs/
+
 # Custom
 out
 .vscode
 .idea
 /oi4-service.iml
 .DS_Store
+./prepare.sh

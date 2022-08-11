@@ -1,6 +1,6 @@
 export enum EAssetType {
   device = 'device',
-  application = 'application,'
+  application = 'application'
 }
 
 export enum ESubResource {
@@ -47,23 +47,4 @@ export enum EDeviceHealth {
   CHECK_FUNCTION_2 = 'CHECK_FUNCTION_2',
   OFF_SPEC_3 = 'OFF_SPEC_3',
   MAINTENANCE_REQUIRED_4 = 'MAINTENANCE_REQUIRED_4',
-}
-
-export enum EPublicationListExplicit {
-  EXPL_OFF_0 = 'EXPL_OFF_0',
-  EXPL_TAG_1 = 'EXPL_TAG_1',
-  EXPL_DSWID_2 = 'EXPL_DSWID_2',
-  EXPL_TAG_AND_DSWID_3 = 'EXPL_TAG_AND_DSWID_3'
-}
-
-export enum EPublicationListConfig {
-  NONE_0 = 'NONE_0',
-  STATUS_1 = 'STATUS_1',
-  INTERVAL_2 = 'INTERVAL_2',
-  STATUS_AND_INTERVAL_3 = 'STATUS_AND_INTERVAL_3',
-}
-
-export enum ESubscriptionListConfig {
-  NONE_0 = 'NONE_0',
-  CONF_1 = 'CONF_1',
 }

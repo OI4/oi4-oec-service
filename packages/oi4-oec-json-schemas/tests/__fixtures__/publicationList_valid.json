@@ -1,0 +1,48 @@
+[
+  [
+    "minimal publicationList", {
+      "resource": "mam",
+      "DataSetWriterId": 1,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+    }
+  ],
+  [
+    "publicationList with interval", {
+      "resource": "health",
+      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "DataSetWriterId": 3456,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
+      "interval": 0,
+      "config": "NONE_0"
+    }
+  ],
+  [
+    "publicationList with filter", {
+      "resource": "event",
+      "subResource": "CAT_SYSLOG_0",
+      "filter": "notice",
+      "DataSetWriterId": 625,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "mode": "APPLICATION_2",
+      "interval": 0,
+      "config": "MODE_AND_INTERVAL_3"
+    }
+  ],
+    [
+    "publicationList with all mandatory and optional elements", {
+      "resource": "event",
+      "subResource": "CAT_SYSLOG_0",
+      "filter": "notice",
+      "DataSetWriterId": 625,
+      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "mode": "SUBRESOURCE_3",
+      "interval": 0,
+	  "precisions": {
+		  "min": 1,
+		  "max": 2
+	  },
+      "config": "MODE_AND_INTERVAL_3"
+    }
+  ]
+]
