@@ -1,5 +1,5 @@
 # Open Industry 4.0 Alliance - Open Edge Computing Service
-The oi4-service repository contains all artifacts to build a service compliant to [OEC Development Guideline v1.0.0]("docs/OI4_OEC_Development_Guideline_V1.0.0.pdf").
+The oi4-service repository contains all artifacts to build a service compliant to [OEC Development Guideline v1.0.0](docs/OI4_OEC_Development_Guideline_V1.0.0.pdf).
 It also covers a base service that will help you build your own compliant OI4 OEC service by providing most of the OI4 state machine.
 
 JSON schemas and models will help you to process, validate and publish OI4 OEC compliant messages.
