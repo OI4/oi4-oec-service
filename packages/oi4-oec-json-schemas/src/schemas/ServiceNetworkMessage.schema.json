@@ -4,8 +4,14 @@
   "description": "A representation of an event",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "MessageId",
+    "MessageType",
+    "PublisherId",
+    "Message"
+  ],
   "properties": {
-    "correlationId": {
+    "CorrelationId": {
       "type": "string",
       "description": "Correlation ID used for logging and as debug information"
     },
@@ -40,11 +46,5 @@
         }
       ]
     }
-  },
-  "required": [
-    "MessageId",
-    "MessageType",
-    "PublisherId",
-    "Message"
-  ]
+  }
 }

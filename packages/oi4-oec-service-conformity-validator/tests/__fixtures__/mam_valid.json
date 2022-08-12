@@ -3,21 +3,21 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 1,
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 4,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {
         "Manufacturer": {
-          "locale": "en-US",
-          "text": "OpenIndustry 4"
+          "Locale": "en-US",
+          "Text": "OpenIndustry 4"
         },
         "ManufacturerUri": "openindustry4.com",
         "Model": {
-          "locale": "en-US",
-          "text": "OEC Registry"
+          "Locale": "en-US",
+          "Text": "OEC Registry"
         },
         "ProductCode": "nd",
         "HardwareRevision": "",
@@ -29,8 +29,8 @@
         "ProductInstanceUri": "openindustry4.com/nd/nd/nd",
         "RevisionCounter": 1,
         "Description": {
-          "locale": "en-US",
-          "text": "This is the Registry"
+          "Locale": "en-US",
+          "Text": "This is the Registry"
         }
       }
     }

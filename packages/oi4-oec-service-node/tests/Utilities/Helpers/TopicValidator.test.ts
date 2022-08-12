@@ -18,7 +18,7 @@ describe('Unit test for TopicParser', () => {
         tag: '',
         filter: '',
         licenseId: '',
-        subResource: ''
+        source: ''
     }
 
     const defaultTopicWrapper: TopicWrapper = {

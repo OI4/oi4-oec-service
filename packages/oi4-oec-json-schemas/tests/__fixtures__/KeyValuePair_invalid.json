@@ -3,40 +3,40 @@
   [
     "empty key",
     {
-      "key": {},
-      "value": ""
+      "Key": {},
+      "Value": ""
     }
   ],
   [
     "invalid key",
     {
-      "key": {
-        "name": "",
-        "nameSpaceIndex": 0
+      "Key": {
+        "Name": "",
+        "NameSpaceIndex": 0
       },
-      "value": "o"
+      "Value": "o"
     }
   ],
   [
     "invalid key property value",
     {
-      "key": {
-        "name": "",
-        "namespaceIndex": "0"
+      "Key": {
+        "Name": "",
+        "NamespaceIndex": "0"
       },
-      "value": "o"
+      "Value": "o"
     }
   ],
   [
     "additional properties",
     {
       "bar": "foo",
-      "key": {
-        "name": "",
-        "namespaceIndex": 0,
+      "Key": {
+        "Name": "",
+        "NamespaceIndex": 0,
         "foo": "bar"
       },
-      "value": "o"
+      "Value": "o"
     }
   ]
 ]

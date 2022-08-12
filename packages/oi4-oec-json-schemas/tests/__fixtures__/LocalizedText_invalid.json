@@ -3,41 +3,41 @@
   [
     "Invalid Locale",
     {
-      "locale": "ene",
-      "text": "my text"
+      "Locale": "ene",
+      "Text": "my text"
     }
   ],
   [
     "Invalid Locale",
     {
-      "locale": "en-USofA",
-      "text": "my text"
+      "Locale": "en-USofA",
+      "Text": "my text"
     }
   ],
   [
     "Invalid Text",
     {
-      "locale": "en-US",
-      "text": ""
+      "Locale": "en-US",
+      "Text": ""
     }
   ],
   [
-    "missing locale",
+    "missing Locale",
     {
-      "text": "some chinese text"
+      "Text": "some chinese text"
     }
   ],
   [
-    "empty locale & text",
+    "empty Locale & Text",
     {
-      "locale": "",
-      "text": ""
+      "Locale": "",
+      "Text": ""
     }
   ],
   [
-    "missing text",
+    "missing Text",
     {
-      "locale": "cn-CHS"
+      "Locale": "cn-CHS"
     }
   ]
 ]

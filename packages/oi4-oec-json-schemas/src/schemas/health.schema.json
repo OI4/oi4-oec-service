@@ -4,7 +4,7 @@
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
-  "required": ["health"],
+  "required": ["Health"],
   "properties": {
     "health": {
       "$ref": "constants/DeviceHealthEnumeration.schema.json"

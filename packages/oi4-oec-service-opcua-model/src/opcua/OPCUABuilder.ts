@@ -47,53 +47,55 @@ export class OPCUABuilder {
     return messageId;
   }
 
-  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0): IOPCUANetworkMessage[] {
+  buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', Page = 0, PerPage = 0): IOPCUANetworkMessage[] {
     const networkMessageArray: IOPCUANetworkMessage[] = [];
     networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId));
     let currentNetworkMessageIndex = 0;
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
-      if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (perPage === 0 || (perPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < perPage))) {
-        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.subResource, remainingPayloads.Status, remainingPayloads.filter, remainingPayloads.MetaDataVersion));
+      if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (PerPage === 0 || (PerPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < PerPage))) {
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.filter, remainingPayloads.MetaDataVersion));
       } else {
         // This is the paginationObject
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
           {
-            totalCount: dataSetPayloads.length,
-            perPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
-            page: currentNetworkMessageIndex + 1,
-            hasNext: true,
+            TotalCount: dataSetPayloads.length,
+            PerPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+            Page: currentNetworkMessageIndex + 1,
+            HasNext: true,
+            PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO: 
           }, timestamp, parseInt(`${remainingPayloads.DataSetWriterId}${currentNetworkMessageIndex}`, 10)
         ));
-        if (page !== 0 && currentNetworkMessageIndex >= page) {
+        if (Page !== 0 && currentNetworkMessageIndex >= Page) {
           if (payloadIndex === dataSetPayloads.length) {
-            networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].Payload.hasNext = false;
+            networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].Payload.HasNext = false;
           }
-          break; // If we request a certain page, there's no need to build more than necessary
+          break; // If we request a certain Page, there's no need to build more than necessary
         }
         networkMessageArray.push(this.buildOPCUANetworkMessage([remainingPayloads], timestamp, dataSetClassId, correlationId));
         currentNetworkMessageIndex++;
       }
     }
-    if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
+    if (Page === 0 || (Page !== 0 && currentNetworkMessageIndex < Page)) {
       // Pagination Object
       networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
         {
-          totalCount: dataSetPayloads.length,
-          perPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
-          page: currentNetworkMessageIndex + 1,
-          hasNext: false,
+          TotalCount: dataSetPayloads.length,
+          PerPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+          Page: currentNetworkMessageIndex + 1,
+          HasNext: false,
+          PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO:
         },
         timestamp,
         parseInt(`${networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
       ));
     }
-    // If a specific page was requested, wo only send that page
-    if ((page !== 0 && page > 0)) {
-      if (page > networkMessageArray.length) return [];
-      // Since the request was for one specific page, we always set hasNext to false here
-      const returnedPage = networkMessageArray[page-1];
-      returnedPage.Messages[returnedPage.Messages.length - 1].Payload.hasNext = false;
+    // If a specific Page was requested, wo only send that Page
+    if ((Page !== 0 && Page > 0)) {
+      if (Page > networkMessageArray.length) return [];
+      // Since the request was for one specific Page, we always set HasNext to false here
+      const returnedPage = networkMessageArray[Page-1];
+      returnedPage.Messages[returnedPage.Messages.length - 1].Payload.HasNext = false;
       return [returnedPage];
     } else {
       return networkMessageArray;
@@ -116,7 +118,7 @@ export class OPCUABuilder {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
     for (const payload of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.subResource, payload.Status, payload.filter, payload.MetaDataVersion));
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.filter, payload.MetaDataVersion));
     }
     const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
     const opcUaDataMessage: IOPCUANetworkMessage = {
@@ -125,7 +127,7 @@ export class OPCUABuilder {
       DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
       PublisherId: this.publisherId,
       Messages: opcUaDataPayload,
-      correlationId: correlationId,
+      CorrelationId: correlationId,
     };
 
     // change last message only when there wasn't any conflict
@@ -143,11 +145,11 @@ export class OPCUABuilder {
    * @param fieldProperties - the properties of each field. Currently consists of unit, description, type, min/max and valueRank. TODO: this is not finalized yet
    * @param classId - the DataSetClassId that is used for the data (health, license etc.)
    * @param dataSetWriterId - An identifier for DataSetWriter which published the DataSetMetaData. It is unique within the scope of a Publisher. The related DataSetMessage (9.2.3) to this DataSetMetaData contains the same DataSetWriterId.
-   * @param filter - The filter is mandatory, but does not belong to OPC UA DataSetMetaData according to Part 14-7.2.3.4.2-Table 93. In combination with the used resource in the topic, the filter, together with the subResource, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7).
-   * @param subResource - The subResource is mandatory, but does not belong to OPC UA DataSetMessage according to Part 14-7.2.3.3-Table 92. In combination with the used resource in the topic, the subResource, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the subResource in the topic (8.1.6) if present.
+   * @param filter - The filter is mandatory, but does not belong to OPC UA DataSetMetaData according to Part 14-7.2.3.4.2-Table 93. In combination with the used resource in the topic, the filter, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7).
+   * @param source - The Source is mandatory, but does not belong to OPC UA DataSetMessage according to Part 14-7.2.3.3-Table 92. In combination with the used resource in the topic, the Source, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present.
    * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
    */
-  buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, subResource: string, correlationId = ''): IOPCUAMetaData {
+  buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, source: string, correlationId = ''): IOPCUAMetaData {
     const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
     const proposedMessageId =`${Date.now().toString()}-${this.publisherId}`;
     const opcUaMetaDataMessage: IOPCUAMetaData = {
@@ -155,9 +157,9 @@ export class OPCUABuilder {
       MessageType: EOPCUAMessageType.uaMetadata,
       PublisherId: this.publisherId,
       DataSetWriterId: dataSetWriterId,
-      filter: filter,
-      subResource: subResource,
-      correlationId: correlationId,
+      Filter: filter,
+      Source: source,
+      CorrelationId: correlationId,
       MetaData: opcUaMetaDataPayload,
     };
     // change only last message if there wasn't any conflict
@@ -172,12 +174,12 @@ export class OPCUABuilder {
    * @param actualPayload - the payload (valid key-values) that is to be encapsulated
    * @param timestamp - the current timestamp in Date format
    */
-  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, subResource: string = this.oi4Id.toString(), status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+  private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, source: string = this.oi4Id.toString(), status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
     const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
       DataSetWriterId: dataSetWriterId,
       Timestamp: timestamp.toISOString(),
-      filter: filter,
-      subResource: subResource,
+      Filter: filter,
+      Source: source,
       Payload: actualPayload,
     };
     if (typeof metaDataVersion !== 'undefined' && metaDataVersion !== null) {
@@ -206,17 +208,17 @@ export class OPCUABuilder {
       fieldArray.push(fieldObject);
     }
     const metaDataObject: IOPCUADataSetMetaDataType = {
-      name: metaDataName,
-      dataSetClassId: classId,
-      configurationVersion: {
-        majorVersion: 0,
-        minorVersion: 0,
+      Name: metaDataName,
+      DataSetClassId: classId,
+      ConfigurationVersion: {
+        MajorVersion: 0,
+        MinorVersion: 0,
       },
-      description: {
-        locale: EOPCUALocale.enUS,
-        text: metaDataDescription,
+      Description: {
+        Locale: EOPCUALocale.enUS,
+        Text: metaDataDescription,
       },
-      fields: fieldArray,
+      Fields: fieldArray,
     };
     return metaDataObject;
   }
@@ -225,52 +227,52 @@ export class OPCUABuilder {
   private buildOPCUAMetaDataField(key: string, unit: string, description: string, type: EOPCUABuiltInType, min: number, max: number, valueRank: number): IOPCUAFieldMetaData {
     const field = {
       valueRank,
-      name: key,
-      description: {
-        locale: EOPCUALocale.enUS,
-        text: description,
+      Name: key,
+      Description: {
+        Locale: EOPCUALocale.enUS,
+        Text: description,
       },
-      fieldFlags: 0, // Currently not parsed
-      builtInType: type,
-      dataType: { // Currently not parsed, should be the NodeID of builtInType
+      FieldFlags: 0, // Currently not parsed
+      BuiltInType: type,
+      DataType: { // Currently not parsed, should be the NodeID of builtInType
         IdType: 0,
         Id: 1,
       },
-      arrayDimensions: [0], // Initial value, set later
-      maxStringLength: 0, // Initial value, set later
-      dataSetFieldId: uuid(), // TODO: Discuss which uuid needs to be here
-      properties: [ // Partially hardcoded!
+      ArrayDimensions: [0], // Initial value, set later
+      MaxStringLength: 0, // Initial value, set later
+      DataSetFieldId: uuid(), // TODO: Discuss which uuid needs to be here
+      Properties: [ // Partially hardcoded!
         {
-          key: {
+          Key: {
             Name: 'Unit',
             Uri: 0,
           },
-          value: unit,
+          Value: unit,
         },
         {
-          key: {
+          Key: {
             Name: 'Min',
             Uri: 0,
           },
-          value: min,
+          Value: min,
         },
         {
-          key: {
+          Key: {
             Name: 'Max',
             Uri: 0,
           },
-          value: max,
+          Value: max,
         },
       ],
     };
     if (type === EOPCUABuiltInType.String) {
-      field.maxStringLength = max; // If The type is a string, we interpret min/max as string-length!
+      field.MaxStringLength = max; // If The type is a string, we interpret min/max as string-length!
     }
     if (valueRank === EOPCUAValueRank.Array) {
-      field.arrayDimensions = [max];
+      field.ArrayDimensions = [max];
     }
     if (valueRank === EOPCUAValueRank.Matrix) {
-      field.arrayDimensions = [min, max];
+      field.ArrayDimensions = [min, max];
     }
     return field;
   }

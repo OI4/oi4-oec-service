@@ -3,70 +3,65 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "217434d6-6e1e-4230-b907-f52bc9ffe152",
-  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 161,
-      "filter": "mam",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "MAM",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "resource": "mam",
-        "subResource": "openindustry4.com/nd/nd/nd",
+        "Resource": "MAM",
+        "Source": "openindustry4.com/nd/nd/nd",
         "DataSetWriterId": 1,
-        "oi4Identifier": "openindustry4.com/nd/nd/nd",
-        "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
-        "config": "NONE_0"
+        "Mode": "APPLICATION_SOURCE_FILTER_8",
+        "Config": "NONE_0"
       }
     }, {
       "DataSetWriterId": 161,
-      "filter": "health",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "Health",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "resource": "health",
-        "subResource": "openindustry4.com/nd/nd/nd",
+        "Resource": "Health",
+        "Source": "openindustry4.com/nd/nd/nd",
         "DataSetWriterId": 3456,
-        "oi4Identifier": "openindustry4.com/nd/nd/nd",
-        "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
-        "interval": 0,
-        "config": "NONE_0"
+        "Mode": "APPLICATION_SOURCE_FILTER_8",
+        "Interval": 0,
+        "Config": "NONE_0"
       }
     }, {
       "DataSetWriterId": 161,
-      "filter": "profile",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "Profile",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "resource": "profile",
-        "subResource": "openindustry4.com/nd/nd/nd",
+        "Resource": "Profile",
+        "Source": "openindustry4.com/nd/nd/nd",
         "DataSetWriterId": 74,
-        "oi4Identifier": "openindustry4.com/nd/nd/nd",
-        "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
-        "interval": 0,
-        "config": "NONE_0"
+        "Mode": "APPLICATION_SOURCE_FILTER_8",
+        "Interval": 0,
+        "Config": "NONE_0"
       }
     }, {
       "DataSetWriterId": 161,
-      "filter": "event",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "Event",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "resource": "event",
-        "subResource": "CAT_SYSLOG_0",
-        "filter": "notice",
+        "Resource": "Event",
+        "Source": "openindustry4.com/nd/nd/nd",
+        "Filter": "Syslog/Notice",
         "DataSetWriterId": 625,
-        "oi4Identifier": "openindustry4.com/nd/nd/nd",
-        "mode": "APPLICATION_2",
-        "interval": 0,
-        "config": "NONE_0"
+        "Mode": "APPLICATION_2",
+        "Interval": 0,
+        "Config": "NONE_0"
       }
     }, {
       "DataSetWriterId": 161,
-      "filter": "data",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "Data",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "resource": "data",
-        "subResource": "openindustry4.com/nd/nd/nd",
-        "filter": "oee",
+        "Resource": "Data",
+        "Source": "openindustry4.com/nd/nd/nd",
+        "Filter": "oee",
         "DataSetWriterId": 93,
-        "oi4Identifier": "openindustry4.com/nd/nd/nd",
-        "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
+        "mode": "APPLICATION_SOURCE_FILTER_8",
         "config": "MODE_AND_INTERVAL_3"
       }
     }

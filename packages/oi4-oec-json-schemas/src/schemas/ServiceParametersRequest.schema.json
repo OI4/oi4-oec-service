@@ -4,16 +4,16 @@
   "description": "The Open Industry 4.0 Alliance created a ServiceParameterRequest object, which is related to OPC UA its method call service (see OPC UA  Part 4-5.11.2.2-Table 65)",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "MethodsToCall"
+  ],
   "properties": {
-    "methodsToCall": {
+    "MethodsToCall": {
       "type": "array",
       "description": "Methods to be called. The order of execution of methods is up to the receiver",
       "items": {
         "$ref": "CallMethodRequest.schema.json"
       }
     }
-  },
-  "required": [
-    "methodsToCall"
-  ]
+  }
 }

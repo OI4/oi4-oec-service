@@ -9,10 +9,12 @@ export enum AsyncClientEvents {
 }
 
 export enum TopicMethods {
-    GET = 'get',
-    PUB = 'pub',
-    SET = 'set',
-    DEL = 'del',
+    GET = 'Get',
+    PUB = 'Pub',
+    SET = 'Set',
+    DEL = 'Del',
+    CALL  = 'Call',
+    REPLY = 'Reply'
 }
 
 export function getTopicMethod(method: string) : TopicMethods {
@@ -25,6 +27,10 @@ export function getTopicMethod(method: string) : TopicMethods {
             return TopicMethods.SET;
         case TopicMethods.DEL:
             return TopicMethods.DEL;
+        case TopicMethods.CALL:
+            return TopicMethods.CALL;
+        case TopicMethods.REPLY:
+            return TopicMethods.REPLY;
         default:
             throw new Error(`Unknown method: ${method}`);
     }

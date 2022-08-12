@@ -35,7 +35,7 @@ export type TopicInfo = {
     tag?: string;
     filter?: string;
     licenseId?: string;
-    subResource?: string;
+    source?: string;
 }
 
 export type TopicWrapper = {

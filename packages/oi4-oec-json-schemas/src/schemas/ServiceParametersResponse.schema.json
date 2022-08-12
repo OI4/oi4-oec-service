@@ -4,16 +4,16 @@
   "description": "The Open Industry 4.0 Alliance created a ServiceParameterResponse object, which is related to OPC UA's method call service (see OPC UA  Part 4-5.11.2.2-Table 65)",
   "type": "object",
   "additionalProperties": false,
+  "required": [
+    "Results"
+  ],
   "properties": {
-    "results": {
+    "Results": {
       "type": "array",
       "description": "Result of of a ServiceParameterRequest. The order of method results must be in the same order as methodsToCall elements were placed in ServiceParameterRequest",
       "items": {
         "$ref": "CallMethodResult.schema.json"
       }
     }
-  },
-  "required": [
-    "results"
-  ]
+  }
 }

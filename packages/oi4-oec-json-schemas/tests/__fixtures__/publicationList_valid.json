@@ -1,48 +1,45 @@
 [
   [
     "minimal publicationList", {
-      "resource": "mam",
+      "Resource": "MAM",
       "DataSetWriterId": 1,
-      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345"
     }
   ],
   [
     "publicationList with interval", {
-      "resource": "health",
-      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "Resource": "Health",
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
       "DataSetWriterId": 3456,
-      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "mode": "APPLICATION_SUBRESOURCE_FILTER_8",
-      "interval": 0,
-      "config": "NONE_0"
+      "Mode": "APPLICATION_SOURCE_FILTER_8",
+      "Interval": 0,
+      "Config": "NONE_0"
     }
   ],
   [
     "publicationList with filter", {
-      "resource": "event",
-      "subResource": "CAT_SYSLOG_0",
-      "filter": "notice",
+      "Resource": "Event",
+      "Filter": "Syslog/Notice",
       "DataSetWriterId": 625,
-      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "mode": "APPLICATION_2",
-      "interval": 0,
-      "config": "MODE_AND_INTERVAL_3"
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "Mode": "APPLICATION_2",
+      "Interval": 0,
+      "Config": "MODE_AND_INTERVAL_3"
     }
   ],
     [
     "publicationList with all mandatory and optional elements", {
-      "resource": "event",
-      "subResource": "CAT_SYSLOG_0",
-      "filter": "notice",
+      "Resource": "Event",
+      "Filter": "Syslog/Notice",
       "DataSetWriterId": 625,
-      "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "mode": "SUBRESOURCE_3",
-      "interval": 0,
-	  "precisions": {
-		  "min": 1,
-		  "max": 2
-	  },
-      "config": "MODE_AND_INTERVAL_3"
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "Mode": "SOURCE_3",
+      "Interval": 0,
+	    "Precisions": {
+		    "min": 1,
+		    "max": 2
+	    },
+      "Config": "MODE_AND_INTERVAL_3"
     }
   ]
 ]

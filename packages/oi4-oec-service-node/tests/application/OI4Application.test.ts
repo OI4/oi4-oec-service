@@ -72,37 +72,37 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         subResources: new Map<string, IOI4ApplicationResources>(),
         config: {
             registry: {
-                name: {locale: EOPCUALocale.enUS, text: 'reg-01'},
+                name: {Locale: EOPCUALocale.enUS, Text: 'reg-01'},
                 showRegistry: {
                     value: 'val-showreg-01',
                     type: EOPCUABaseDataType.DateTime,
-                    name: {locale: EOPCUALocale.enUS, text: 'showreg-01'}
+                    name: {Locale: EOPCUALocale.enUS, Text: 'showreg-01'}
                 },
                 developmentMode: {
                     value: 'val-dev-01',
                     type: EOPCUABaseDataType.Number,
-                    name: {locale: EOPCUALocale.enUS, text: 'dev-01'}
+                    name: {Locale: EOPCUALocale.enUS, Text: 'dev-01'}
                 }
             },
             logging: {
                 auditLevel: {
-                    name: {locale: EOPCUALocale.enUS, text: 'audit-01'},
+                    name: {Locale: EOPCUALocale.enUS, Text: 'audit-01'},
                     value: 'val-01',
                     type: EOPCUABaseDataType.Boolean
                 },
-                name: {locale: EOPCUALocale.enUS, text: 'login-01'},
+                name: {Locale: EOPCUALocale.enUS, Text: 'login-01'},
                 logType: {
                     value: 'val-type-01',
                     type: EOPCUABaseDataType.String,
-                    name: {locale: EOPCUALocale.enUS, text: 'type-01'}
+                    name: {Locale: EOPCUALocale.enUS, Text: 'type-01'}
                 },
                 logFileSize: {
                     value: 'val-log-01',
                     type: EOPCUABaseDataType.ByteString,
-                    name: {locale: EOPCUALocale.enUS, text: 'log-01'}
+                    name: {Locale: EOPCUALocale.enUS, Text: 'log-01'}
                 }
             },
-            context: {name: {locale: EOPCUALocale.enUS, text: 'config-01'}, description: undefined}
+            context: {name: {Locale: EOPCUALocale.enUS, Text: 'config-01'}, description: undefined}
         },
         publicationList: [
             PublicationList.clone({
@@ -124,19 +124,19 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 oi4Identifier: new Oi4Identifier('3', '3', '3', '3'),
             } as PublicationList)
         ],
-        profile: new Profile(Application.mandatory),
-        licenseText: licenseText,
+        Profile: new Profile(Application.mandatory),
+        licenseText: LicenseText,
         license: [
             new License('1', [
-                    {licAuthors: ['a-01', 'a-02'], component: 'comp-01', licAddText: 'text-a'},
-                    {licAuthors: ['b-01', 'b-01'], component: 'comp-02', licAddText: 'text-b'},
-                    {licAuthors: ['c-01', 'c-01'], component: 'comp-03', licAddText: 'text-c'},
+                    {LicAuthors: ['a-01', 'a-02'], Component: 'comp-01', LicAddText: 'text-a'},
+                    {LicAuthors: ['b-01', 'b-01'], Component: 'comp-02', LicAddText: 'text-b'},
+                    {LicAuthors: ['c-01', 'c-01'], Component: 'comp-03', LicAddText: 'text-c'},
                 ]
             ),
             new License('2', [
-                    {licAuthors: ['aa-01', 'aa-02'], component: 'comp-001', licAddText: 'text-aa'},
-                    {licAuthors: ['bb-01', 'bb-01'], component: 'comp-002', licAddText: 'text-bb'},
-                    {licAuthors: ['cc-01', 'cc-01'], component: 'comp-003', licAddText: 'text-cc'},
+                    {LicAuthors: ['aa-01', 'aa-02'], Component: 'comp-001', LicAddText: 'text-aa'},
+                    {LicAuthors: ['bb-01', 'bb-01'], Component: 'comp-002', LicAddText: 'text-bb'},
+                    {LicAuthors: ['cc-01', 'cc-01'], Component: 'comp-003', LicAddText: 'text-cc'},
                 ],
             )
         ],
@@ -146,17 +146,17 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             DeviceClass: 'OI4.Aggregation',
             ManufacturerUri: 'test',
             Model: {
-                locale: EOPCUALocale.enUS,
-                text: 'text'
+                Locale: EOPCUALocale.enUS,
+                Text: 'text'
             },
             Description: {
-                locale: EOPCUALocale.enUS,
-                text: 'text'
+                Locale: EOPCUALocale.enUS,
+                Text: 'text'
             },
             DeviceManual: '',
             Manufacturer: {
-                locale: EOPCUALocale.enUS,
-                text: 'text'
+                Locale: EOPCUALocale.enUS,
+                Text: 'text'
             },
             HardwareRevision: '1.0',
             ProductCode: '213dq',
@@ -192,9 +192,9 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 MessageType: EOPCUAMessageType.uaMetadata,
                 PublisherId: '',
                 DataSetWriterId: 0,
-                filter: '',
-                subResource: '',
-                correlationId: '',
+                Filter: '',
+                Source: '',
+                CorrelationId: '',
                 MetaData: undefined
 
             },
@@ -203,16 +203,16 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 MessageType: EOPCUAMessageType.uaMetadata,
                 PublisherId: '',
                 DataSetWriterId: 0,
-                filter: '',
-                subResource: '',
-                correlationId: '',
+                Filter: '',
+                Source: '',
+                CorrelationId: '',
                 MetaData: undefined
             }
         },
         subscriptionList: [
-            SubscriptionList.clone({topicPath: 'path-01', config: SubscriptionListConfig.CONF_1} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-02', config: SubscriptionListConfig.NONE_0} as SubscriptionList),
-            SubscriptionList.clone({topicPath: 'path-03', config: SubscriptionListConfig.NONE_0} as SubscriptionList)
+            SubscriptionList.clone({TopicPath: 'path-01', Config: SubscriptionListConfig.CONF_1} as SubscriptionList),
+            SubscriptionList.clone({TopicPath: 'path-02', Config: SubscriptionListConfig.NONE_0} as SubscriptionList),
+            SubscriptionList.clone({TopicPath: 'path-03', Config: SubscriptionListConfig.NONE_0} as SubscriptionList)
         ],
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -247,7 +247,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
 let defaultOi4ApplicationResources: IOI4ApplicationResources;
 let defaultOi4Application: OI4Application;
 
-const defaultTopicPrefix = 'oi4/Registry';
+const defaultTopicPrefix = 'Oi4/Registry';
 const defaultValidFilter = '1';
 const defaultAppId = new Oi4Identifier('1','1','1','1');
 const defaultOI4Id = defaultAppId;
@@ -419,8 +419,8 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    async function getPayload(filter: string, resource: string, subResource?: string, oi4Application: OI4Application = defaultOi4Application) {
-        return await oi4Application.preparePayload(getResource(resource), subResource, filter);
+    async function getPayload(filter: string, resource: string, source?: string, oi4Application: OI4Application = defaultOi4Application) {
+        return await oi4Application.preparePayload(getResource(resource), source, filter);
     }
 
     it('should prepare mam payload', async () => {
@@ -572,7 +572,7 @@ describe('OI4MessageBus test', () => {
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
 
         defaultOi4ApplicationResources.config['group-a'] = {
-            name: {locale: EOPCUALocale.enUS, text: 'text'},
+            name: {Locale: EOPCUALocale.enUS, Text: 'text'},
             'config_a': {
                 category: EventCategory.CAT_STATUS_1,
                 number: 1,

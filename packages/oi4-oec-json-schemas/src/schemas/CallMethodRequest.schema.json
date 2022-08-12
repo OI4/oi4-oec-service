@@ -2,15 +2,15 @@
   "$id": "CallMethodRequest.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "",
-  "additionalProperties": false,
   "type": "object",
-  "required": ["inputArguments", "methodId"],
+  "additionalProperties": false,
+  "required": ["InputArguments", "MethodId"],
   "properties": {
-    "methodId": {
+    "MethodId": {
       "type": "string",
       "minLength": 1
     },
-    "inputArguments": {
+    "InputArguments": {
       "type": "array",
       "additionalItems": false,
       "items": [

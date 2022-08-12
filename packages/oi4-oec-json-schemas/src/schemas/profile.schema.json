@@ -4,9 +4,9 @@
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
-  "required": ["resource"],
+  "required": ["Resource"],
   "properties": {
-    "resource": {
+    "Resource": {
       "type": "array",
       "items": {
         "$ref": "constants/resources.schema.json"

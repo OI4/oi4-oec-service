@@ -20,7 +20,7 @@ import {
     Resource,
     RTLicense, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
-import {extractProductInstanceUri} from "../../../src/application/OI4Resource";
+import {extractProductInstanceUri} from '../../../src/application/OI4Resource';
 
 export class MockedIApplicationResourceFactory {
 
@@ -28,7 +28,7 @@ export class MockedIApplicationResourceFactory {
 
     public static getMockedIApplicationResourceInstance = (mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()): IOI4ApplicationResources => {
         return {
-            subResources: new Map<string, IOI4ApplicationResources>(),
+            Source: new Map<string, IOI4ApplicationResources>(),
             config: {
                 'group_a': {
                     name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
@@ -63,9 +63,9 @@ export class MockedIApplicationResourceFactory {
             dataLookup: MockedIApplicationResourceFactory.getMockedDataLookup(),
             health: new Health(EDeviceHealth.NORMAL_0, 100),
             license: [new License('1', [{
-                licAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson'],
-                component: 'fakeComponent',
-                licAddText: 'fakeLicence'
+                LicAuthors: ['John Doe', 'Mary Poppins', 'Bilbo Baggins', 'John Rambo', 'Homer Simpson'],
+                Component: 'fakeComponent',
+                LicAddText: 'fakeLicence'
             }])],
             licenseText: MockedIApplicationResourceFactory.getDefaultKeyValueItem(),
             mam: mam,
@@ -88,9 +88,9 @@ export class MockedIApplicationResourceFactory {
             getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
                 console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
-                    if (elem.oi4Identifier.toString() !== oi4Id.toString()) return false;
-                    if (resourceType !== undefined && elem.resource !== resourceType) return false;
-                    if (tag !== undefined && elem.filter !== tag) return false;
+                    if (elem.Source.toString() !== oi4Id.toString()) return false;
+                    if (resourceType !== undefined && elem.Resource !== resourceType) return false;
+                    if (tag !== undefined && elem.Filter !== tag) return false;
                     return true;
                 });
             },
@@ -104,12 +104,12 @@ export class MockedIApplicationResourceFactory {
                 console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
                 return this.mam;
             },
-            getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
-                console.log(`Called mocked getSubResource with params ${oi4Id}`);
+            getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
+                console.log(`Called mocked getSource with params ${oi4Id}`);
                 if(oi4Id !== undefined) {
-                    return this.subResources.get(oi4Id.toString());
+                    return this.source.get(oi4Id.toString());
                 }
-                return this.subResources.values();
+                return this.source.values();
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             on(_: string, __: Function): IOI4ApplicationResources {
@@ -121,13 +121,13 @@ export class MockedIApplicationResourceFactory {
 
     private static getMockedDefaultStandardIContainerConfig(): IContainerConfigConfigName {
         return {
-            name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeConfig'),
-            defaultValue: 'fakeValue',
-            mandatory: false,
-            validation: MockedIApplicationResourceFactory.getMockedDefaultIContainerConfigValidation(),
-            description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
-            value: 'fakeValue',
-            type: EOPCUABaseDataType.String
+            Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeConfig'),
+            DefaultValue: 'fakeValue',
+            Mandatory: false,
+            Validation: MockedIApplicationResourceFactory.getMockedDefaultIContainerConfigValidation(),
+            Description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
+            Value: 'fakeValue',
+            Type: EOPCUABaseDataType.String
         };
     };
 
@@ -166,17 +166,17 @@ export class MockedIApplicationResourceFactory {
                 MessageType: EOPCUAMessageType.uaData,
                 PublisherId: 'fakePublisherId',
                 DataSetWriterId: 42,
-                filter: 'fakeFilter',
-                subResource: 'fakeSubResource',
-                correlationId: '42',
+                Filter: 'fakeFilter',
+                Source: 'fakeSource',
+                CorrelationId: '42',
                 MetaData: {
-                    name: 'fakeName',
-                    description: this.getMockedIOPCUALocalizedText('fakeText'),
-                    fields: [],
-                    dataSetClassId: 'fakeDatasetId',
-                    configurationVersion: {
-                        majorVersion: 12,
-                        minorVersion: 1,
+                    Name: 'fakeName',
+                    Description: this.getMockedIOPCUALocalizedText('fakeText'),
+                    Fields: [],
+                    DataSetClassId: 'fakeDatasetId',
+                    ConfigurationVersion: {
+                        MajorVersion: 12,
+                        MinorVersion: 1,
                     },
                 }
             }
@@ -184,21 +184,21 @@ export class MockedIApplicationResourceFactory {
     }
 
     private static getMockedIOPCUALocalizedText(text: string): IOPCUALocalizedText {
-        return {locale: EOPCUALocale.enUS, text: text};
+        return {Locale: EOPCUALocale.enUS, Text: text};
     }
 
     private static getMockedPublicationList(): PublicationList[] {
         return [
             PublicationList.clone({
-                resource: Resource.HEALTH,
+                Resource: Resource.HEALTH,
                 DataSetWriterId: 42,
-                oi4Identifier: MockedIApplicationResourceFactory.OI4_ID,
+                Source: MockedIApplicationResourceFactory.OI4_ID,
             } as PublicationList),
             PublicationList.clone({
-                resource: Resource.EVENT,
+                Resource: Resource.EVENT,
                 DataSetWriterId: 43,
-                filter: 'fakeFilter',
-                oi4Identifier: Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`),
+                Filter: 'fakeFilter',
+                Source: Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`),
             } as PublicationList)
         ];
     }
@@ -206,7 +206,7 @@ export class MockedIApplicationResourceFactory {
     private static getMockedSubscriptionList(): SubscriptionList[] {
         return [
             SubscriptionList.clone({
-                topicPath: 'fakePath'
+                TopicPath: 'fakePath'
             } as SubscriptionList)
         ];
     }
@@ -220,7 +220,7 @@ export class MockedIApplicationResourceFactory {
                 DataSetClassId: 'fakeDataSetId',
                 Messages: [{
                     DataSetWriterId: 42,
-                    subResource: 'fakeSubResource',
+                    Source: 'fakeSource',
                     Payload: {
                         fakeContent: 'fakeContent',
                     }

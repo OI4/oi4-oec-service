@@ -6,24 +6,24 @@
   "additionalProperties": false,
   "required": [
     "DataSetWriterId",
-    "filter",
+    "Filter",
     "MessageId",
     "MessageType",
     "PublisherId",
     "MetaData",
-    "subResource"
+    "Source"
   ],
   "properties": {
-    "correlationId": {
+    "CorrelationId": {
       "type": "string",
       "description": "Correlation ID used for logging and as debug information"
     },
     "DataSetWriterId": {
       "$ref": "dataTypes/uint16.schema.json"
     },
-    "filter": {
+    "Filter": {
       "type": "string",
-      "description": "In combination with the used resource in the topic, the filter, together with the subResource, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7)."
+      "description": "In combination with the used Resource in the topic, the Filter, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the Filter in the topic (8.1.7)."
     },
     "MessageId": {
       "type": "string",
@@ -43,9 +43,9 @@
       "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
       "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
-    "subResource": {
+    "Source": {
       "type": "string",
-      "description": "In combination with the used resource in the topic, the subResource, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the subResource in the topic (8.1.6) if present."
+      "description": "In combination with the used Resource in the topic, the Source, together with the Filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present."
     }
   }
 }

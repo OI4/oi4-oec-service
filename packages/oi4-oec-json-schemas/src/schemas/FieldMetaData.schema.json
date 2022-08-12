@@ -6,51 +6,51 @@
   "additionalProperties": false,
   "required": [],
   "properties": {
-    "name": {
+    "Name": {
       "type": "string",
       "description": "Name of the field"
     },
-    "description": {
+    "Description": {
       "type": "object",
       "$ref": "LocalizedText.schema.json"
     },
-    "fieldFlags": {
+    "FieldFlags": {
       "type": "integer",
       "minimum": 0,
 	    "maximum": 1,
 	    "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
     },
-    "builtInType": {
+    "BuiltInType": {
       "$type": "integer",
       "minimum": 1,
       "maximum": 25,
       "description": "See https://reference.opcfoundation.org/v104/Core/docs/Part6/5.1.2/"
     },
-    "dataType": {
+    "DataType": {
       "$ref": "NodeId.schema.json"
     },
-    "valueRank": {
+    "ValueRank": {
       "$ref": "dataTypes/int32.schema.json"
     },
-    "arrayDimensions": {
+    "ArrayDimensions": {
       "type": ["array", "null"],
       "items": {
         "$ref": "dataTypes/uint32.schema.json"
       }
     },
-    "maxStringLength": {
+    "MaxStringLength": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "dataSetFieldId": {
+    "DataSetFieldId": {
       "type": "string",
       "format": "uuid"
     },
-    "properties": {
-	  "type": "array",
-	  "description": "Provides additional semantics for the field",
-	  "items":{
-		  "$ref": "KeyValuePair.schema.json"
-	  }
+    "Properties": {
+	    "type": "array",
+	    "description": "Provides additional semantics for the field",
+	    "items":{
+		    "$ref": "KeyValuePair.schema.json"
+	    }
     }
   }
 }

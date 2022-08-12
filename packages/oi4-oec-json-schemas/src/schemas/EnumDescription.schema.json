@@ -5,18 +5,18 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "builtInType",
-    "enumDefinition"
+    "BuiltInType",
+    "EnumDefinition"
   ],
   "properties": {
-    "enumDefinition": {
+    "EnumDefinition": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "fields"
       ],
       "properties": {
-        "fields": {
+        "Fields": {
           "description": "The EnumDefinition object according to OPC UA Part 3-8.50-Table 35",
           "type": "array",
           "items": {
@@ -26,7 +26,7 @@
               "name"
             ],
             "properties": {
-              "name": {
+              "Name": {
                 "type": "string"
               }
             }
@@ -34,7 +34,7 @@
         }
       }
     },
-    "builtInType": {
+    "BuiltInType": {
       "$ref": "dataTypes/byte.schema.json",
       "description": "Indicates whether the DataType is an Enumeration or an OptionSet 6 = Int32 => Enumeration, 22 = ExtensionObject => OptionSet, 28 = UInt => OptionSet"
     }

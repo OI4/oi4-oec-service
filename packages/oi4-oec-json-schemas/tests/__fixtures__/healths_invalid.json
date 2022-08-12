@@ -3,35 +3,35 @@
   [
     "health is missing",
     {
-      "healthScore": 50
+      "HealthScore": 50
     }
   ],
   [
     "health is not within enum",
     {
-      "health": "blub",
-      "healthScore": 50
+      "Health": "blub",
+      "HealthScore": 50
     }
   ],
   [
     "health score is larger 100",
     {
-      "health": "CHECK_FUNCTION_2",
-      "healthScore": 101
+      "Health": "CHECK_FUNCTION_2",
+      "HealthScore": 101
     }
   ],
   [
     "health score is negative",
     {
-      "health": "CHECK_FUNCTION_2",
-      "healthScore": -1
+      "Health": "CHECK_FUNCTION_2",
+      "HealthScore": -1
     }
   ],
   [
     "swapped key and value",
     {
-      "health": 0,
-      "healthScore": "CHECK_FUNCTION_2"
+      "Health": 0,
+      "HealthScore": "CHECK_FUNCTION_2"
     }
   ]
 ]
