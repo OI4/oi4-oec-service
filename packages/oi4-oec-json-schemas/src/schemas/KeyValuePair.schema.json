@@ -2,14 +2,14 @@
   "$id": "KeyValuePair.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "",
-  "additionalProperties": false,
   "type": "object",
-  "required": ["key", "value"],
+  "additionalProperties": false,
+  "required": ["Key", "Value"],
   "properties": {
-    "key": {
+    "Key": {
       "$ref": "QualifiedName.schema.json"
     },
-    "value": {
+    "Value": {
       "$ref": "BaseDataType.schema.json"
     }
   }

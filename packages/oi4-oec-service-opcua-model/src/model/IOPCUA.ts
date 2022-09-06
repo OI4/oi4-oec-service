@@ -23,7 +23,7 @@ export interface IOPCUANetworkMessage {
   MessageType: EOPCUAMessageType;
   PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
   DataSetClassId: GUID;
-  correlationId?: MessageId;
+  CorrelationId?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
 }
 
@@ -34,8 +34,8 @@ export interface IOPCUADataSetMessage {
   MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
   Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
-  filter?: string;
-  subResource: string; // For 1.0 events still have plain strings as sub-resources. This will change in 1.1 where sub-resources will be renamed to source and always be an OI4 Id
+  Filter?: string;
+  Source: string; // For 1.0 events still have plain strings as sub-resources. This will change in 1.1 where sub-resources will be renamed to source and always be an OI4 Id
   Payload: any; // TODO: arbitrary object?
 }
 
@@ -44,37 +44,37 @@ export interface IOPCUADataSetMetaData {
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
-  filter: string;
-  subResource: string;
-  correlationId: string;
+  Filter: string;
+  Source: string;
+  CorrelationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
 }
 
 // MetaData Message containing information about units etc.
 export interface IOPCUADataSetMetaDataType {
-  name: string; // name of DataSet
-  description: IOPCUALocalizedText;
-  fields: IOPCUAFieldMetaData[];
-  dataSetClassId: GUID;
-  configurationVersion: IOPCUAConfigurationVersionDataType;
+  Name: string; // name of DataSet
+  Description: IOPCUALocalizedText;
+  Fields: IOPCUAFieldMetaData[];
+  DataSetClassId: GUID;
+  ConfigurationVersion: IOPCUAConfigurationVersionDataType;
 }
 
 export interface IOPCUAFieldMetaData {
-  name: string;
-  description: IOPCUALocalizedText;
-  fieldFlags: number;
-  builtInType: number;
-  dataType: IOPCUADataType;
-  valueRank: number;
-  arrayDimensions: any[];
-  maxStringLength: number;
-  dataSetFieldId: GUID;
-  properties: IOPCUAKeyValuePair[];
+  Name: string;
+  Description: IOPCUALocalizedText;
+  FieldFlags: number;
+  BuiltInType: number;
+  DataType: IOPCUADataType;
+  ValueRank: number;
+  ArrayDimensions: any[];
+  MaxStringLength: number;
+  DataSetFieldId: GUID;
+  Properties: IOPCUAKeyValuePair[];
 }
 
 interface IOPCUAKeyValuePair {
-  key: IOPCUAKey;
-  value: any;
+  Key: IOPCUAKey;
+  Value: any;
 }
 
 interface IOPCUAKey {
@@ -88,13 +88,13 @@ interface IOPCUADataType {
 }
 
 export interface IOPCUALocalizedText {
-  locale: EOPCUALocale;
-  text: string;
+  Locale: EOPCUALocale;
+  Text: string;
 }
 
 export interface IOPCUAConfigurationVersionDataType{
-  majorVersion: number;
-  minorVersion: number;
+  MajorVersion: number;
+  MinorVersion: number;
 }
 
 // TODO: STRING for now, validators found below (thanks to node-opcua)

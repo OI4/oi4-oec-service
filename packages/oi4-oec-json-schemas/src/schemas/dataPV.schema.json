@@ -1,8 +1,8 @@
 {
   "$id": "dataPV.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
   "description": "A representation of an Process Values (PV) data schema",
+  "additionalProperties": false,
   "required": ["pv"],
   "properties": {
     "pv": {

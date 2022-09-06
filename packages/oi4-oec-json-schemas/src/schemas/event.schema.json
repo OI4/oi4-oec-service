@@ -22,31 +22,26 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "origin",
-        "number",
-        "category"
+        "Number",
+        "Category"
       ],
       "properties": {
-        "origin": {
-          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
-          "$ref": "oi4Identifier.schema.json"
-        },
-        "number": {
+        "Number": {
           "description": "An number to hint to the reason of the event",
           "$ref": "dataTypes/uint32.schema.json"
         },
-        "description": {
+        "Description": {
           "description": "Human readable description for the event number",
           "type": "string"
         },
-        "category": {
+        "Category": {
           "const": "CAT_STATUS_1"
         },
-        "details": {
+        "Details": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "symbolicId": {
+            "SymbolicId": {
               "description": "A symbolic id, defined by the OPC Foundation, as short form of the description (e.g. “BadEncodingError” for 0x80060000)",
               "type": "string"
             }
@@ -59,27 +54,22 @@
       "additionalProperties": false,
       "description": "A syslog event provides information as described in RFC3164",
       "required": [
-        "origin",
-        "number",
-        "category"
+        "Number",
+        "Category"
       ],
       "properties": {
-        "origin": {
-          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
-          "$ref": "oi4Identifier.schema.json"
-        },
-        "number": {
+        "Number": {
           "description": "An number to hint to the reason of the event",
           "$ref": "dataTypes/uint32.schema.json"
         },
-        "description": {
+        "Description": {
           "description": "Human readable description for the event number",
           "type": "string"
         },
-        "category": {
+        "Category": {
           "const": "CAT_SYSLOG_0"
         },
-        "details": {
+        "Details": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -100,35 +90,30 @@
       "additionalProperties": false,
       "description": "Event according to NAMUR NE107",
       "required": [
-        "origin",
-        "number",
-        "category"
+        "Number",
+        "Category"
       ],
       "properties": {
-        "origin": {
-          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
-          "$ref": "oi4Identifier.schema.json"
-        },
-        "number": {
+        "Number": {
           "description": "An number to hint to the reason of the event",
           "$ref": "dataTypes/uint32.schema.json"
         },
-        "description": {
+        "Description": {
           "description": "Human readable description for the event number",
           "type": "string"
         },
-        "category": {
+        "Category": {
           "const": "CAT_NE107_2"
         },
-        "details": {
+        "Details": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "diagnosticCode": {
+            "DiagnosticCode": {
               "description": "Manufacturer specific detail information about the the event. E.g. F-238",
               "type": "string"
             },
-            "location": {
+            "Location": {
               "description": "Actual location of the raised event. E.g. if an asset has multiple sensor units build like temperature",
               "type": "string"
             }
@@ -141,27 +126,22 @@
       "additionalProperties": false,
       "description": "A generic event provides information which are undefined out of the scope of the Open Industry 4.0 Alliance",
       "required": [
-        "origin",
-        "number",
-        "category"
+        "Number",
+        "Category"
       ],
       "properties": {
-        "origin": {
-          "description": "The oi4Identifier (3) identifies the asset (might be a device or an application), where the event comes from",
-          "$ref": "oi4Identifier.schema.json"
-        },
-        "number": {
+        "Number": {
           "description": "An number to hint to the reason of the event",
           "$ref": "dataTypes/uint32.schema.json"
         },
-        "description": {
+        "Description": {
           "description": "Human readable description for the event number",
           "type": "string"
         },
-        "category": {
+        "Category": {
           "const": "CAT_GENERIC_99"
         },
-        "details": {
+        "Details": {
           "properties": {}
         }
       }

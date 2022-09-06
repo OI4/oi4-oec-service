@@ -2,91 +2,91 @@
   [
     "valid with null value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": null
+      "Value": null
     }
   ],
   [
     "valid with string value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": ""
+      "Value": ""
     }
   ],
   [
     "valid with integer value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": 1.0
+      "Value": 1.0
     }
   ],
   [
     "valid with boolean value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": true
+      "Value": true
     }
   ],
   [
     "valid with number value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": 3.14
+      "Value": 3.14
     }
   ],
   [
     "valid with empty array value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": []
+      "Value": []
     }
   ],
   [
     "valid with string array value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": ["a", "b", "c"]
+      "Value": ["a", "b", "c"]
     }
   ],
   [
     "valid with empty object value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": {}
+      "Value": {}
     }
   ],
   [
     "valid with object value",
     {
-      "key": {
-        "name": "1",
-        "namespaceIndex": 0
+      "Key": {
+        "Name": "1",
+        "NamespaceIndex": 0
       },
-      "value": {
+      "Value": {
         "a": "b"
       }
     }

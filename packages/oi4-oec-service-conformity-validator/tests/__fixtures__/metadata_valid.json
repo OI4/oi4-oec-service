@@ -3,18 +3,18 @@
   "MessageType": "ua-metadata",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetWriterId": 753,
-  "filter": "oee",
-  "subResource": "openindustry4.com/nd/nd/nd",
-  "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "Filter": "oee",
+  "Source": "openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
   "MetaData": {
-    "name": "Dataset1",
-    "description": {
-      "text": "Description",
-      "locale": "en-US"
+    "Name": "Dataset1",
+    "Description": {
+      "Text": "Description",
+      "Locale": "en-US"
     },
-    "namespaces": [],
-    "structureDataTypes": [],
-    "enumDataTypes": [],
-    "simpleDataTypes": []
+    "Namespaces": [],
+    "StructureDataTypes": [],
+    "EnumDataTypes": [],
+    "SimpleDataTypes": []
   }
 }

@@ -1,8 +1,23 @@
 {
   "$id": "mam.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": false,
   "description": "A representation of an Master Asset Model payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "DeviceClass",
+    "DeviceManual",
+    "DeviceRevision",
+    "HardwareRevision",
+    "Manufacturer",
+    "ManufacturerUri",
+    "Model",
+    "ProductCode",
+    "ProductInstanceUri",
+    "RevisionCounter",
+    "SerialNumber",
+    "SoftwareRevision"
+  ],
   "properties": {
     "Description": {
       "$ref": "LocalizedText.schema.json"
@@ -57,20 +72,5 @@
       "type": "string",
       "description": "The SoftwareRevision shall be given according to the manufacturer-internal revision number of the software installed on the asset. If for any asset a manufacturer does not have a formalized software revision, it shall be set by default to \"undefined\". For any subsequent software revisions, this value shall be incremented in an appropriate way.\nA recommended best practice is to use a dot-separated four numbers schema. "
     }
-  },
-  "required": [
-    "DeviceClass",
-    "DeviceManual",
-    "DeviceRevision",
-    "HardwareRevision",
-    "Manufacturer",
-    "ManufacturerUri",
-    "Model",
-    "ProductCode",
-    "ProductInstanceUri",
-    "RevisionCounter",
-    "SerialNumber",
-    "SoftwareRevision"
-  ],
-  "type": "object"
+  }
 }

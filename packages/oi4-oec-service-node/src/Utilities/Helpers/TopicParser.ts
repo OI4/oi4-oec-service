@@ -75,7 +75,7 @@ export class TopicParser {
             serviceType: getServiceType(topicArray[1]),
             tag: undefined,
             licenseId: undefined,
-            subResource: undefined,
+            source: undefined,
         };
     }
 
@@ -140,8 +140,8 @@ export class TopicParser {
     }
 
     private static extractListInfo(wrapper: TopicWrapper) {
-        wrapper.topicInfo.subResource = TopicParser.extractItem(wrapper, 12, 'Invalid subresource: ');
-        wrapper.topicInfo.filter = wrapper.topicInfo.subResource;
+        wrapper.topicInfo.source = TopicParser.extractItem(wrapper, 12, 'Invalid source: ');
+        wrapper.topicInfo.filter = wrapper.topicInfo.source;
         if (wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
             wrapper.topicInfo.filter += `/${wrapper.topicInfo.tag}`;

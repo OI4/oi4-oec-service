@@ -2,17 +2,17 @@ import {EOPCUALocale, IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model'
 
 export const ServiceMasterAssetModel: IMasterAssetModel = {
     Manufacturer: {
-        locale: EOPCUALocale.enUS,
-        text: 'Hilscher'
+        Locale: EOPCUALocale.enUS,
+        Text: 'Hilscher'
     },
     ManufacturerUri: 'hilscher.com',
     Model: {
-        locale: EOPCUALocale.enUS,
-        text: 'OEC Registry'
+        Locale: EOPCUALocale.enUS,
+        Text: 'OEC Registry'
     },
     ProductCode: 'OEC-REG',
     HardwareRevision: '',
-    SoftwareRevision: '0.12.1',
+    SoftwareRevision: '1.1.0',
     DeviceRevision: '',
     DeviceManual: '',
     DeviceClass: 'Registry',
@@ -20,7 +20,7 @@ export const ServiceMasterAssetModel: IMasterAssetModel = {
     ProductInstanceUri: '',
     RevisionCounter: 0,
     Description: {
-        locale: EOPCUALocale.enUS,
-        text: 'The OEC Registry, an Open Industry 4.0 Alliance application'
+        Locale: EOPCUALocale.enUS,
+        Text: 'The OEC Registry, an Open Industry 4.0 Alliance application'
     }
 }

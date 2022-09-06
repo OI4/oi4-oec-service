@@ -36,10 +36,10 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         mam: MasterAssetModel.clone({
             DeviceClass: 'OI4.Registry',
             ManufacturerUri: 'test',
-            Model: {locale: EOPCUALocale.enUS, text: 'text'},
-            Description: {locale: EOPCUALocale.enUS, text: 'text'},
+            Model: {Locale: EOPCUALocale.enUS, Text: 'text'},
+            Description: {Locale: EOPCUALocale.enUS, Text: 'text'},
             DeviceManual: '',
-            Manufacturer: {locale: EOPCUALocale.enUS, text: 'text'},
+            Manufacturer: {Locale: EOPCUALocale.enUS, Text: 'text'},
             HardwareRevision: '1.0',
             ProductCode: '213dq',
             DeviceRevision: '1.0',
@@ -146,10 +146,10 @@ describe('Connection to MQTT with TLS', () => {
             .build();
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`Oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/Pub/MAM/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({
-                health: EDeviceHealth.NORMAL_0,
-                healthScore: 0
+                Health: EDeviceHealth.NORMAL_0,
+                HealthScore: 0
             } as Health)));
     });
 
@@ -169,7 +169,7 @@ describe('Connection to MQTT with TLS', () => {
             .withMqttSettings(mqttOpts)
             .build();
         expect(oi4Application.mqttClient.options.will?.payload)
-            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as Health));
+            .toContain(JSON.stringify({Health: EDeviceHealth.FAILURE_1, HealthScore: 0} as Health));
     });
 
 });

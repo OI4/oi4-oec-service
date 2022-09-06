@@ -3,40 +3,40 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "2ae0505e-2830-4980-b65e-0bbdf08e2d45",
-  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 357,
-      "filter": "MIT",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "MIT",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 21,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {
-        "components": [{
-            "component": "MQTTCl",
-            "licAuthors": [
+        "Components": [{
+            "Component": "MQTTCl",
+            "LicAuthors": [
               "Lorem ipsum"
             ],
-            "licAddText": "Copyright (c) 2020 Lorem ipsum"
+            "LicAddText": "Copyright (c) 2020 Lorem ipsum"
           }, {
-            "component": "nodeFDS",
-            "licAuthors": [
+            "Component": "nodeFDS",
+            "LicAuthors": [
               "provider.com"
             ],
-            "licAddText": "Copyright (c) 2021 provider.com"
+            "LicAddText": "Copyright (c) 2021 provider.com"
           }
         ]
       }
     }, {
       "DataSetWriterId": 358,
-      "filter": "Apache%202.0",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "Apache%202.0",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Payload": {
-        "components": [{
-            "component": "nodeFDS_field",
-            "licAuthors": [
+        "Components": [{
+            "Component": "nodeFDS_field",
+            "LicAuthors": [
               "provider.com"
             ],
-            "licAddText": "Copyright 2021 provider.com"
+            "LicAddText": "Copyright 2021 provider.com"
           }
         ]
       }

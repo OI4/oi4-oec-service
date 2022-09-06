@@ -14,7 +14,7 @@ export type MessageItems = {
     tag: string;
     filter: string;
     licenseId: string;
-    subResource: string;
+    source: string;
     publisherId: string;
     getTopicPrefix: Function;
     getDefaultTopicInfo: Function;
@@ -31,7 +31,7 @@ export class MessageFactory {
         const method: TopicMethods = TopicMethods.GET;
         const resource: Resource = Resource.MAM;
         const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;
-        const subResource = 'fakeSubResource';
+        const source = 'fakeSource';
         const licenseId = '1234';
         const filter = 'oi4_pv';
         const tag = 'tag';
@@ -50,7 +50,7 @@ export class MessageFactory {
                 tag: tag,
                 filter: filter,
                 licenseId: licenseId,
-                subResource: subResource
+                source: source
             }
         };
 
@@ -79,7 +79,7 @@ export class MessageFactory {
             tag,
             filter,
             licenseId,
-            subResource,
+            source,
             publisherId,
             getTopicPrefix,
             getDefaultTopicInfo,

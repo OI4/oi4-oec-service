@@ -3,7 +3,7 @@
   "MessageType": true,
   "PublisherId": "OTConnector/provider.com/FieldDataService/FDS-001/1200-0345",
   "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-  "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+  "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
   "Messages": [
     {
       "DataSetWriterId": 1,
@@ -11,13 +11,13 @@
       "Timestamp": "2021-12-16T22:25:10.094Z",
       "Payload": {
         "Manufacturer": {
-          "locale": "en-US",
-          "text": "Provider Ltd."
+          "Locale": "en-US",
+          "Text": "Provider Ltd."
         },
         "ManufacturerUri": "provider.com",
         "Model": {
-          "locale": "en-US",
-          "text": "FieldDataService"
+          "Locale": "en-US",
+          "Text": "FieldDataService"
         },
         "ProductCode": "FDS-001",
         "HardwareRevision": "",
@@ -29,8 +29,8 @@
         "ProductInstanceUri": "provider.com/FieldDataService/FDS-001/1200-0345",
         "RevisionCounter": 1,
         "Description": {
-          "locale": "en-US",
-          "text": "This OT connector provides field data"
+          "Locale": "en-US",
+          "Text": "This OT connector provides field data"
         }
       }
     }

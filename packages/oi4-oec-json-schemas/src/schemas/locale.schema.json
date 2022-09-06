@@ -4,9 +4,9 @@
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
-  "required": ["locale"],
+  "required": ["Locale"],
   "properties": {
-    "locale": {
+    "Locale": {
       "$ref": "constants/locale.pattern.schema.json"
     }
   }

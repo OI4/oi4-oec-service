@@ -122,7 +122,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
                 }
             }
         }
-
+// TODO: this needs a rework. old subResource (now Source) is always an Oi4Identifier since V1.1 of the Guideline
         let subResource: string;
         let filter = undefined;
         const oi4IdSubResource = topicInfo.oi4Id?.toString();
@@ -204,7 +204,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
         const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), statusCode);
         await oi4Application.sendEventStatus(status);
-        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0);
+        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0); // TODO set source. Still valid?!
     }
 
 

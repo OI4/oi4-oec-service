@@ -34,7 +34,7 @@ export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
-    readonly subResources: Map<string, IOI4Resource>;
+    readonly Source: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -44,7 +44,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = DEFAULT_MAM_FILE) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this.subResources = new Map<string, IOI4Resource>();
+        this.Source = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
         this.metaDataLookup = {};
@@ -52,23 +52,22 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         // Fill both pubList and subList
         for (const resources of this.profile.resource) {
             let resInterval = 0;
-            if (resources === 'health') {
+            if (resources === 'Health') {
                 resInterval = 60000;
             } else {
                 resInterval = 0;
             }
 
             this._publicationList.push({
-                resource: resources,
-                subResource: this.oi4Id.toString(),
+                Resource: resources,
+                Source: this.oi4Id,
                 DataSetWriterId: 0,
-                oi4Identifier: this.oi4Id,
-                interval: resInterval,
-                config: PublicationListConfig.NONE_0,
+                Interval: resInterval,
+                Config: PublicationListConfig.NONE_0,
             } as PublicationList);
 
             this._subscriptionList.push(SubscriptionList.clone({
-                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
+                topicPath: `Oi4/${this.mam.getServiceType()}/${this.oi4Id}/Get/${resources}/${this.oi4Id}`,
                 interval: 0,
                 config: SubscriptionListConfig.NONE_0,
             } as SubscriptionList));
@@ -93,7 +92,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if(oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
-        return this.subResources.get(oi4Id.toString()).mam;
+        return this.Source.get(oi4Id.toString()).mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
@@ -101,7 +100,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if(this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
-        return this.subResources.get(oi4Id.toString())?.health;
+        return this.Source.get(oi4Id.toString())?.health;
     }
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
@@ -109,7 +108,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.license;
         } 
         
-        const license = oi4Id.equals(this.oi4Id) ? this.license : this.subResources.get(oi4Id.toString())?.license;
+        const license = oi4Id.equals(this.oi4Id) ? this.license : this.Source.get(oi4Id.toString())?.license;
         if (license === undefined) {
             return [];
         }
@@ -184,27 +183,26 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return false;
     }
 
-
-    hasSubResource(oi4Id: Oi4Identifier): boolean {
-        return this.subResources.has(oi4Id.toString());
+    hasSource(oi4Id: Oi4Identifier): boolean {
+        return this.Source.has(oi4Id.toString());
     }
 
-    getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
+    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
         if(oi4Id !== undefined) {
-            return this.subResources.get(oi4Id.toString());
+            return this.Source.get(oi4Id.toString());
         }
-        return this.subResources.values();
+        return this.Source.values();
     }
 
-    addSubResource(subResource: IOI4Resource): void {
-        this.subResources.set(subResource.oi4Id.toString(), subResource);
+    addSource(source: IOI4Resource): void {
+        this.Source.set(source.oi4Id.toString(), source);
         // TODO add sub resource to publication and subscription list
-        this.emit(OI4ResourceEvent.RESOURCE_ADDED, subResource.oi4Id);
+        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
     }
 
-    removeSubResource(oi4Id: Oi4Identifier): boolean {
+    removeSource(oi4Id: Oi4Identifier): boolean {
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
-        return this.subResources.delete(oi4Id.toString());
+        return this.Source.delete(oi4Id.toString());
         // TODO remove sub resource to publication and subscription list
     }
 

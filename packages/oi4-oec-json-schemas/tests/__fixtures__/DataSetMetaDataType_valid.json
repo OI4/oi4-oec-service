@@ -2,102 +2,102 @@
   [
     "DataSetMetaDataType Example",
     {
-      "name": "Dataset1",
-      "description": {
-        "text": "Description",
-        "locale": "en-US"
+      "Name": "Dataset1",
+      "Description": {
+        "Text": "Description",
+        "Locale": "en-US"
       },
-      "fields": [
+      "Fields": [
         {
-          "name": "temperature",
-          "description": {
-            "text": "The main temperature",
-            "locale": "en-US"
+          "Name": "temperature",
+          "Description": {
+            "Text": "The main temperature",
+            "Locale": "en-US"
           },
-          "fieldFlags": 1,
-          "builtInType": 6,
-          "dataType": {
+          "FieldFlags": 1,
+          "BuiltInType": 6,
+          "DataType": {
             "IdType": 1,
             "Id": "SomeId",
             "Namespace": 1
           },
-          "valueRank": 5,
-          "arrayDimensions": [
+          "ValueRank": 5,
+          "ArrayDimensions": [
             5,
             3
           ],
-          "maxStringLength": 5,
-          "dataSetFieldId": "FB8B6B28-B2F7-4E26-99F5-16D89BDF3D29",
-          "properties": [
+          "MaxStringLength": 5,
+          "DataSetFieldId": "FB8B6B28-B2F7-4E26-99F5-16D89BDF3D29",
+          "Properties": [
             {
-              "key": {
-                "namespaceIndex": 1,
-                "name": "temp"
+              "Key": {
+                "NamespaceIndex": 1,
+                "Name": "temp"
               },
-              "value": 15
+              "Value": 15
             }
           ]
         }
       ],
-      "dataSetClassId": "3E213A2F-CB6F-45D3-A6B8-01B9DFCEFEC7",
-      "configurationVersion": {
-        "majorVersion": 3,
-        "minorVersion": 1
+      "DataSetClassId": "3E213A2F-CB6F-45D3-A6B8-01B9DFCEFEC7",
+      "ConfigurationVersion": {
+        "MajorVersion": 3,
+        "MinorVersion": 1
       },
-      "namespaces": [
+      "Namespaces": [
         "Namespace 1",
         "Namespace 2"
       ],
-      "structureDataTypes": [
+      "StructureDataTypes": [
         {
-          "structureDefinition": {
-            "defaultEncodingId": {
+          "StructureDefinition": {
+            "DefaultEncodingId": {
               "Id": 21
             },
-            "baseDataType": {
+            "BaseDataType": {
               "IdType": 1,
               "Id": "BaseId",
               "Namespace": 3
             },
-            "structureType": "StructureWithOptionalFields_1",
-            "fields": [
+            "StructureType": "StructureWithOptionalFields_1",
+            "Fields": [
               {
-                "name": "Field1",
-                "description": {
-                  "text": "Description 1",
-                  "locale": "en-US"
+                "Name": "Field1",
+                "Description": {
+                  "Text": "Description 1",
+                  "Locale": "en-US"
                 },
-                "datatype": {
+                "DataType": {
                   "Id": 42
                 },
-                "valueRank": 2,
-                "arrayDimensions": [
+                "ValueRank": 2,
+                "ArrayDimensions": [
                   1,
                   2
                 ],
-                "maxStringLength": 5,
-                "isOptional": true
+                "MaxStringLength": 5,
+                "IsOptional": true
               }
             ]
           }
         }
       ],
-      "enumDataTypes": [
+      "EnumDataTypes": [
         {
-          "enumDefinition": {
-            "fields": [
+          "EnumDefinition": {
+            "Fields": [
               {
-                "name": "Field 1"
+                "Name": "Field 1"
               },
               {
-                "name": "Field 2"
+                "Name": "Field 2"
               }
             ]
           },
-          "builtInType": 6
+          "BuiltInType": 6
         }
       ],
-      "simpleDataTypes": [
+      "SimpleDataTypes": [
         {
           "BaseDataType": {
             "Id": 21,
@@ -108,8 +108,8 @@
             "Id": 42
           },
           "Name": {
-            "namespaceIndex": 1,
-            "name": "temp"
+            "NamespaceIndex": 1,
+            "Name": "temp"
           }
         }
       ]
@@ -118,79 +118,79 @@
   [
     "Array Dimensions is null according https://reference.opcfoundation.org/Core/Part14/6.2.3/#6.2.3.2",
     {
-      "name": "ApplicationLEDs",
-      "description": {
-        "locale": "en-US",
-        "text": "My application LEDs"
+      "Name": "ApplicationLEDs",
+      "Description": {
+        "Locale": "en-US",
+        "Text": "My application LEDs"
       },
-      "fields": [
+      "Fields": [
         {
-          "name": "led02",
-          "description": {
-            "locale": "en-US",
-            "text": "LED 1"
+          "Name": "led02",
+          "Description": {
+            "Locale": "en-US",
+            "Text": "LED 1"
           },
-          "fieldFlags": 0,
-          "builtInType": 1,
-          "dataType": {
+          "FieldFlags": 0,
+          "BuiltInType": 1,
+          "DataType": {
             "IdType": 0,
             "Id": 1
           },
-          "valueRank": -1,
-          "arrayDimensions": null,
-          "maxStringLength": 0,
-          "dataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
-          "properties": []
+          "ValueRank": -1,
+          "ArrayDimensions": null,
+          "MaxStringLength": 0,
+          "DataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
+          "Properties": []
         }
       ],
-      "dataSetClassId": "7C553DC8-CAD9-47CB-8DB4-731E61D909DE",
-      "configurationVersion": {
-        "majorVersion": 12345678,
-        "minorVersion": 12345678
+      "DataSetClassId": "7C553DC8-CAD9-47CB-8DB4-731E61D909DE",
+      "ConfigurationVersion": {
+        "MajorVersion": 12345678,
+        "MinorVersion": 12345678
       },
-      "namespaces": [],
-      "structureDataTypes": [],
-      "enumDataTypes": [],
-      "simpleDataTypes": []
+      "Namespaces": [],
+      "StructureDataTypes": [],
+      "EnumDataTypes": [],
+      "SimpleDataTypes": []
     }
   ],
   [
-    "dataSetClassId is null according https://reference.opcfoundation.org/Core/Part14/6.2.3/#6.2.3.2",
+    "DataSetClassId is null according https://reference.opcfoundation.org/Core/Part14/6.2.3/#6.2.3.2",
     {
-      "name": "ApplicationLEDs",
-      "description": {
-        "locale": "en-US",
-        "text": "My application LEDs"
+      "Name": "ApplicationLEDs",
+      "Description": {
+        "Locale": "en-US",
+        "Text": "My application LEDs"
       },
-      "fields": [
+      "Fields": [
         {
-          "name": "led02",
-          "description": {
-            "locale": "en-US",
-            "text": "LED 1"
+          "Name": "led02",
+          "Description": {
+            "Locale": "en-US",
+            "Text": "LED 1"
           },
-          "fieldFlags": 0,
-          "builtInType": 1,
-          "dataType": {
+          "FieldFlags": 0,
+          "BuiltInType": 1,
+          "DataType": {
             "IdType": 0,
             "Id": 1
           },
-          "valueRank": -1,
-          "arrayDimensions": [],
-          "maxStringLength": 0,
-          "dataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
-          "properties": []
+          "ValueRank": -1,
+          "ArrayDimensions": [],
+          "MaxStringLength": 0,
+          "DataSetFieldId": "ADC1B146-7ACB-4059-AB83-3F56713CED5D",
+          "Properties": []
         }
       ],
-      "dataSetClassId": null,
-      "configurationVersion": {
-        "majorVersion": 12345678,
-        "minorVersion": 12345678
+      "DataSetClassId": null,
+      "ConfigurationVersion": {
+        "MajorVersion": 12345678,
+        "MinorVersion": 12345678
       },
-      "namespaces": [],
-      "structureDataTypes": [],
-      "enumDataTypes": [],
-      "simpleDataTypes": []
+      "Namespaces": [],
+      "StructureDataTypes": [],
+      "EnumDataTypes": [],
+      "SimpleDataTypes": []
     }
   ]
 ]
