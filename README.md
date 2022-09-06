@@ -4,8 +4,8 @@ It also covers a base service that will help you build your own compliant OI4 OE
 
 JSON schemas and models will help you to process, validate and publish OI4 OEC compliant messages.
 
-The oi4-service is a community project and is not offered by the OI4 Alliance. It is published under the MIT license.
-AND most important is that it is an OI4 open source project that needs your contribution!
+The oi4-service is a community project and is not offered by the OI4 Alliance. It is published under the MIT license
+AND most important it is an OI4 open source project that needs your contribution!
 If you want to contribute and do not know how, just reach out for the WG leads.
 
 ## Installation

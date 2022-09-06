@@ -174,7 +174,7 @@ export class Profile implements OI4Payload {
     readonly Resources: Resources[];
 
     constructor(resources: Resources[]) {
-        this.Resources = resources;
+        this.Resources = Object.assign([], resource);
     }
 
     resourceType(): Resources {

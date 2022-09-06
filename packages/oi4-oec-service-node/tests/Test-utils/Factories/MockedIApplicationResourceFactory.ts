@@ -21,6 +21,7 @@ import {
     RTLicense, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 import {extractProductInstanceUri} from '../../../src/application/OI4Resource';
+import { IContainerConfig } from '@oi4/oi4-oec-service-model';
 
 export class MockedIApplicationResourceFactory {
 
@@ -110,6 +111,9 @@ export class MockedIApplicationResourceFactory {
                     return this.source.get(oi4Id.toString());
                 }
                 return this.source.values();
+            },
+            setConfig(_: Oi4Identifier, __: string, ___: IContainerConfig): boolean {
+                return true;
             },
             // eslint-disable-next-line @typescript-eslint/naming-convention
             on(_: string, __: Function): IOI4ApplicationResources {

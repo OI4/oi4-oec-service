@@ -19,7 +19,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 
-    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>
+    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>;
 
     getHealth(oi4Id: Oi4Identifier): Health;
 
@@ -29,9 +29,10 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[];
 
+    setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean;
+
     on(event: string, listener: Function): this;
 
-    // Methods
     addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 }
 

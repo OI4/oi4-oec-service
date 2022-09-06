@@ -19,13 +19,13 @@ import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
 
-export interface IOI4MessageBusFactory {
+export interface IOI4ApplicationFactory {
     createOI4Application: () => OI4Application;
-    initialize: () => IOI4MessageBusFactory;
+    initialize: () => IOI4ApplicationFactory;
     builder: OI4ApplicationBuilder;
 }
 
-export class OI4ApplicationFactory implements IOI4MessageBusFactory {
+export class OI4ApplicationFactory implements IOI4ApplicationFactory {
 
     builder: OI4ApplicationBuilder;
 

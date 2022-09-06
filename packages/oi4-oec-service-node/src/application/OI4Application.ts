@@ -146,6 +146,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     }
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0) {
+        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(item => item.topicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             topicPath: topic,
             config: config,
