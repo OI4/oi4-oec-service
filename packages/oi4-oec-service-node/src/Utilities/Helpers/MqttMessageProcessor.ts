@@ -25,7 +25,6 @@ export interface IMqttMessageProcessor extends EventEmitter {
 }
 
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
-    private readonly METADATA = 'metadata';
 
     async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
         LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
@@ -54,7 +53,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    private async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
+    protected async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
         // Check if message is from the OI4 registry and save it if it is
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
@@ -94,7 +93,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             // TODO should handle filter
             await oi4Application.sendData(topicInfo.oi4Id);
             return;
-        } else if (topicInfo.resource === this.METADATA) {
+        } else if (topicInfo.resource === Resource.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
             return;
         }
