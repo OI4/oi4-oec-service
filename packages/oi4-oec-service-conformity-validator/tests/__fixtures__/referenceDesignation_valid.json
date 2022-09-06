@@ -3,21 +3,21 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "27a75019-164a-496d-a38b-90e8a55c2cfa",
-  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 489,
-      "filter": "room_206",
-      "subResource": "Registry/openindustry4.com/nd/nd/nd",
+      "Filter": "room_206",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 17,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {
-        "location": {
-          "value": "room_206",
-          "local": "Room 206",
-          "parent": {
-            "value": "floor_2",
-            "local": "Floor 2",
-            "oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
+        "Location": {
+          "Value": "room_206",
+          "Local": "Room 206",
+          "Parent": {
+            "Value": "floor_2",
+            "Local": "Floor 2",
+            "Oi4Identifier": "provider.com/FieldDataService/FDS-001/1200-0345"
           }
         }
       }

@@ -13,7 +13,6 @@
       "$ref": "#/definitions/opaqueType"
     }
   ],
-
   "definitions": {
     "numberType": {
       "type": "object",

@@ -19,7 +19,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultEmitter: EventEmitter = new EventEmitter();
     const defaultFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
     const registryFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/2/3');
-    const defaultFakeSubResource = 'fakeSubResource';
+    const defaultFakeSource = 'fakeSource';
     const defaultTopicPrefix = 'oi4/Aggregation';
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
@@ -72,13 +72,13 @@ describe('Unit test for MqttMessageProcessor', () => {
         await processor.processMqttMessage(mockedData.topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
     }
 
-    async function checkResultGet(resource: string, fakeTopic: string, subResource: string = undefined, filter: string = undefined) {
+    async function checkResultGet(resource: string, fakeTopic: string, source: string = undefined, filter: string = undefined) {
         oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
         processor.on(MqttMessageProcessorEventStatus.GET_DATA, oi4Application.sendResource);
         await processMessage(fakeTopic, resource, processor);
 
-        expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, subResource, filter, 0, 0);
+        expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, source, filter, 0, 0);
     }
 
     async function checkAgainstError(resourceConfig: string, errorPrefix: string, topicSuffix = '', method = TopicMethods.SET) {
@@ -252,12 +252,12 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - license and licenseText - get', async () => {
-        async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string, subResource?: string, filter?:string) {
+        async function testAgainstResourceForLicenseAndLicenseText(resourceConfig: string, fakeTopic: string, source?: string, filter?:string) {
             oi4Application.sendResource = jest.fn();
             await processMessage(fakeTopic, resourceConfig);
 
             // TODO handle event emitter
-            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, subResource?.toString(), filter, 0, 0);
+            expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, source?.toString(), filter, 0, 0);
         }
 
         const baseFakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}`;
@@ -282,7 +282,7 @@ describe('Unit test for MqttMessageProcessor', () => {
 
     it('extract topic info works - publicationList and subscriptionList', async () => {
         async function testAgainstResourceForPublicationAndSubscriptionLists(resourceConfig: string) {
-            const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSubResource}/${defaultFakeFilter}`;
+            const topic = `${defaultTopicPrefix}/${defaultFakeAppId}/${TopicMethods.GET}/${resourceConfig}/${defaultFakeOi4Id}/${defaultFakeSource}/${defaultFakeFilter}`;
             oi4Application.sendResource = jest.fn();
             await processMessage(topic, resourceConfig);
             expect(oi4Application.sendResource).toHaveBeenCalledWith(resourceConfig, undefined, defaultFakeOi4Id.toString(), defaultFakeFilter, 0, 0);
@@ -294,14 +294,14 @@ describe('Unit test for MqttMessageProcessor', () => {
         //del subscriptionList basically does nothing
     });
 
-    it('extract topic info - publicationList and subscriptionList - if subresource or tag is missing, an error is thrown', async () => {
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid tag', `/${defaultFakeSubResource}/`)
+    it('extract topic info - publicationList and subscriptionList - if source or tag is missing, an error is thrown', async () => {
+        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid tag', `/${defaultFakeSource}/`)
         fakeLogFile.splice(0, fakeLogFile.length);
-        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid subresource', `//${defaultFakeTag}`)
+        await checkAgainstError(Resource.PUBLICATION_LIST, 'Invalid source', `//${defaultFakeTag}`)
         fakeLogFile.splice(0, fakeLogFile.length);
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid tag', `/${defaultFakeSubResource}/`)
+        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid tag', `/${defaultFakeSource}/`)
         fakeLogFile.splice(0, fakeLogFile.length);
-        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid subresource', `//${defaultFakeTag}`)
+        await checkAgainstError(Resource.SUBSCRIPTION_LIST, 'Invalid source', `//${defaultFakeTag}`)
     });
 
 });

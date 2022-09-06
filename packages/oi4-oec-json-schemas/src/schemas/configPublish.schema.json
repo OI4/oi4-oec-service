@@ -9,12 +9,12 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "name",
-        "type",
-        "value"
+        "Name",
+        "Type",
+        "Value"
       ],
       "properties": {
-        "type": {
+        "Type": {
           "description": "",
           "type": "string",
           "readOnly": true,
@@ -26,38 +26,38 @@
             "String"
           ]
         },
-        "value": {
+        "Value": {
           "description": "",
           "type": "string"
         },
-        "unit": {
+        "Unit": {
           "description": "",
           "type": "string",
           "readOnly": true
         },
-        "validation": {
+        "Validation": {
           "type": "object",
           "description": "",
           "minProperties": 1,
           "readOnly": true,
           "properties": {
-            "length": {
+            "Length": {
               "type": "number",
               "readOnly": true
             },
-            "min": {
+            "Min": {
               "type": "number",
               "readOnly": true
             },
-            "max": {
+            "Max": {
               "type": "number",
               "readOnly": true
             },
-            "pattern": {
+            "Pattern": {
               "type": "string",
               "readOnly": true
             },
-            "values": {
+            "Values": {
               "type": "array",
               "additionalItems": false,
               "uniqueItems": true,
@@ -68,28 +68,28 @@
             }
           }
         },
-        "defaultValue": {
+        "DefaultValue": {
           "description": "",
           "readOnly": true,
           "type": "string"
         },
-        "mandatory": {
+        "Mandatory": {
           "description": "",
           "readOnly": true,
           "default": false,
           "type": "boolean"
         },
-        "sensitive": {
+        "Sensitive": {
           "description": "",
           "readOnly": true,
           "type": "boolean"
         },
-        "name": {
+        "Name": {
           "description": "",
           "$ref": "LocalizedText.schema.json",
           "readOnly": true
         },
-        "description": {
+        "Description": {
           "description": "",
           "$ref": "LocalizedText.schema.json",
           "readOnly": true
@@ -100,7 +100,7 @@
       "type": "object",
       "minProperties": 2,
       "required": [
-        "name"
+        "Name"
       ],
       "additionalProperties": {
         "$ref": "LocalizedText.schema.json"
@@ -117,15 +117,15 @@
     "^(?!\bcontext\b)[A-z_][A-z0-9-_]*$": {
       "$ref": "#/definitions/groupConfig"
     },
-    "context": {
+    "Context": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name"],
+      "required": ["Name"],
       "properties": {
-        "name": {
+        "Name": {
           "$ref": "LocalizedText.schema.json"
         },
-        "description": {
+        "Description": {
           "$ref": "LocalizedText.schema.json"
         }
       }

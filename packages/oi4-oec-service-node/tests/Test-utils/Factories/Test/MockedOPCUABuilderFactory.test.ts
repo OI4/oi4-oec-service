@@ -35,7 +35,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         const fieldProperty = {payload: 'payload'};
         const dataSetWriterId = 1;
         const filter = 'filter';
-        const subResource = 'subResource';
+        const source = 'source';
         const correlationId = 'correlationId';
 
         const checkOPCUAJSONValidityMock = MockedOPCUABuilderFactory.mockOPCUABuilderMethod('buildOPCUAMetaDataMessage',
@@ -46,7 +46,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
                     PublisherId: '2',
                     DataSetWriterId: 3,
                     filter: filter,
-                    subResource: subResource,
+                    source: source,
                     correlationId: correlationId,
                     MetaData: {}
                 }
@@ -54,7 +54,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
 
 
         const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithoutMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
-        const valid = await mockedBuilder.buildOPCUAMetaDataMessage(metaDataName, metaDataDescription, fieldProperty, classId, dataSetWriterId, filter, subResource, correlationId);
+        const valid = await mockedBuilder.buildOPCUAMetaDataMessage(metaDataName, metaDataDescription, fieldProperty, classId, dataSetWriterId, filter, source, correlationId);
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).not.toBe(undefined);
         expect(valid.MessageId).toBe('1');
@@ -62,7 +62,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         expect(valid.PublisherId).toBe('2');
         expect(valid.DataSetWriterId).toBe(3);
         expect(valid.filter).toBe(filter);
-        expect(valid.subResource).toBe(subResource);
+        expect(valid.source).toBe(source);
         expect(valid.correlationId).toBe(correlationId);
         expect(valid.MetaData).toStrictEqual({});
     });

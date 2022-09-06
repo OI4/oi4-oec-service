@@ -1,89 +1,89 @@
 {
     "logging": {
-      "name": {
-        "locale": "en-US",
-        "text": "Logging"
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Logging"
       },
-      "description": {
-        "locale": "en-US",
-        "text": "Everything related to logging"
+      "Description": {
+        "Locale": "en-US",
+        "Text": "Everything related to logging"
       },
       "auditLevel": {
-        "name": {
-          "locale": "en-US",
-          "text": "Audit Level"
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Audit Level"
         },
-        "description": {
-          "locale": "en-US",
-          "text": "Audit Level, use Syslog Enum entries only!"
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Audit Level, use Syslog Enum entries only!"
         },
-        "value": "warning",
-        "type": "String"
+        "Value": "warning",
+        "Type": "String"
       },
       "logType": {
-        "name": {
-          "locale": "en-US",
-          "text": "Logging type"
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Logging type"
         },
-        "description": {
-          "locale": "en-US",
-          "text": "Currently used to enable / disable log to storage. Enum"
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Currently used to enable / disable log to storage. Enum"
         },
-        "value": "disabled",
-        "type": "String"
+        "Value": "disabled",
+        "Type": "String"
       },
       "logFileSize": {
-        "name": {
-          "locale": "en-US",
-          "text": "Size of Logfile (bytes)"
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Size of Logfile (bytes)"
         },
-        "description": {
-          "locale": "en-US",
-          "text": "After this size, the logfile will cycle to the next one"
+        "Description": {
+          "Locale": "en-US",
+          "Text": "After this size, the logfile will cycle to the next one"
         },
-        "value": "250000",
-        "type": "Number",
-        "unit": "byte"
+        "Value": "250000",
+        "Type": "Number",
+        "Unit": "byte"
       }
     },
     "registry": {
-      "name": {
-        "locale": "en-US",
-        "text": "Registry"
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Registry"
       },
-      "description": {
-        "locale": "en-US",
-        "text": "Everything related to registry specific config"
+      "Description": {
+        "Locale": "en-US",
+        "Text": "Everything related to registry specific config"
       },
       "developmentMode": {
-        "name": {
-          "locale": "en-US",
-          "text": "Development mode"
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Development mode"
         },
-        "description": {
-          "locale": "en-US",
-          "text": "Enables or disables the development mode of the frontend"
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Enables or disables the development mode of the frontend"
         },
-        "value": "false",
-        "type": "Boolean"
+        "Value": "false",
+        "Type": "Boolean"
       },
       "showRegistry": {
-        "name": {
-          "locale": "en-US",
-          "text": "Show Registry"
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Show Registry"
         },
-        "description": {
-          "locale": "en-US",
-          "text": "Decides, whether to save the Registry along the other assets or not"
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Decides, whether to save the Registry along the other assets or not"
         },
-        "value": "true",
-        "type": "Boolean"
+        "Value": "true",
+        "Type": "Boolean"
       }
     },
     "context": {
-      "name": {
-        "locale": "en-US",
-        "text": "Registry Configuration"
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Registry Configuration"
       }
     }
   }

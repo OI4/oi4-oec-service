@@ -44,7 +44,7 @@ export interface IOI4Application extends EventEmitter {
 
     removeSubscription(topic: string): Promise<boolean>;
 
-    sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page: number, perPage: number): Promise<void>;
+    sendResource(resource: Resource, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void>;
 
     sendMetaData(cutTopic: string): Promise<void>;
 
@@ -97,9 +97,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         this.clientPayloadHelper = clientPayloadHelper;
 
         mqttSettings.will = {
-            topic: `oi4/${this.serviceType}/${this.oi4Id}/pub/health/${this.oi4Id}`,
+            topic: `Oi4/${this.serviceType}/${this.oi4Id}/Pub/Health/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                subResource: this.oi4Id.toString(),
+                Source: this.oi4Id.toString(),
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: CDataSetWriterIdLookup[Resource.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
@@ -164,16 +164,16 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private async initIncomingMessageListeners() {
         // Listen to own routes
-        await this.addSubscription(`${this.topicPreamble}/get/#`);
-        await this.addSubscription(`${this.topicPreamble}/set/#`);
-        await this.addSubscription(`${this.topicPreamble}/del/#`);
+        await this.addSubscription(`${this.topicPreamble}/Get/#`);
+        await this.addSubscription(`${this.topicPreamble}/Set/#`);
+        await this.addSubscription(`${this.topicPreamble}/Del/#`);
         this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder, this));
     }
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
             await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
-            for (const resource of this.applicationResources.subResources.values()) {
+            for (const resource of this.applicationResources.Source.values()) {
                 await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
@@ -244,22 +244,22 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * Sends the saved Resource from applicationResources to the message bus
      * @param resource - the resource that is to be sent to the bus (health, license etc.)
      * @param messageId - the messageId that was sent to us with the request. If it's present, we need to put it into the correlationID of our response
-     * @param subResource
+     * @param source
      * @param [filter] - the tag of the resource
      * @param page
      * @param perPage
      */
-    async sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page = 0, perPage = 0) {
-        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, subResource, filter);
+    async sendResource(resource: Resource, messageId: string, source: string, filter: string, page = 0, perPage = 0) {
+        const validatedPayload: ValidatedPayload = await this.preparePayload(resource, source, filter);
 
         if (validatedPayload === undefined || validatedPayload.abortSending) {
             return;
         }
 
-        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, subResource, filter);
+        await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, source, filter);
     }
 
-    async preparePayload(resource: Resource, subResource: string, filter?: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: Resource, source: string, filter?: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = OI4Application.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -270,7 +270,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
         switch (resource) {
             case Resource.MAM:
-                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, subResource);
+                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, source);
                 break;
             case Resource.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
@@ -281,7 +281,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
                 break;
             }
             case Resource.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, Oi4Identifier.fromString(subResource));
+                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, Oi4Identifier.fromString(source));
                 break;
             }
             case Resource.LICENSE_TEXT: {
@@ -289,20 +289,20 @@ export class OI4Application extends EventEmitter implements IOI4Application {
                 break;
             }
             case Resource.LICENSE: {
-                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, subResource, filter);
+                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
             case Resource.PUBLICATION_LIST: {
                 // TODO TAG is missing in topic element
-                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
+                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
             case Resource.SUBSCRIPTION_LIST: {
-                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
+                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
             case Resource.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(subResource), filter);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
             default: {
@@ -336,14 +336,14 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         return {isValid: true, dswidFilter: dswidFilter};
     }
 
-    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, subResource: string, filter?: string): Promise<void> {
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, source: string, filter?: string): Promise<void> {
         // Don't forget the slash
         let endTag = '';
-        if (subResource && subResource.length > 0) {
-            endTag = `/${subResource}`;
+        if (source && source.length > 0) {
+            endTag = `/${source}`;
         }
         if (filter && filter.length > 0 && endTag.length > 0) {
-            endTag = `/${subResource}/${filter}`;
+            endTag = `/${source}/${filter}`;
         }
 
         try {
@@ -392,7 +392,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     async getConfig() {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            subResource: this.oi4Id.toString(), // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
+            Source: this.oi4Id.toString(), // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup['config'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/

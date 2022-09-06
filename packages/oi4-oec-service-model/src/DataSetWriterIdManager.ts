@@ -10,8 +10,8 @@ export namespace DataSetWriterIdManager {
     /**
      * Returns the next DataSetWriterId for the matching resource and sub resource combination.
      */
-    export function getDataSetWriterId(resource: Resource, subResource: string): number {
-        const key = getDataSetWriterIdKey(resource, subResource);
+    export function getDataSetWriterId(resource: Resource, source: string): number {
+        const key = getDataSetWriterIdKey(resource, source);
         if(!dataSetWriterIds.has(key)){
             dataSetWriterIds.set(key, nextDataSetWriterId());
         }
@@ -22,8 +22,8 @@ export namespace DataSetWriterIdManager {
         return ++ lastDataSetMessageId;
     }
 
-    function getDataSetWriterIdKey(resource: Resource, subResource: string): string {
-        const sub = (resource === Resource.PUBLICATION_LIST ||  resource === Resource.SUBSCRIPTION_LIST) ? "NA" : subResource;
+    function getDataSetWriterIdKey(resource: Resource, source: string): string {
+        const sub = (resource === Resource.PUBLICATION_LIST ||  resource === Resource.SUBSCRIPTION_LIST) ? "NA" : source;
         return `${resource}_|_${sub}`;
     }
 

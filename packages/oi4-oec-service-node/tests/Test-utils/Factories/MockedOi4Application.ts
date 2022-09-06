@@ -69,8 +69,8 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
         return Promise.resolve(undefined);
     }
 
-    sendResource(resource: Resource, messageId: string, subResource: string, filter: string, page: number, perPage: number): Promise<void> {
-        LOGGER.log(`sendResource called with resource: ${resource}, messageId: ${messageId}, subResource: ${subResource}, filter: ${filter}, page: ${page}, perPage: ${perPage}`);
+    sendResource(resource: Resource, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void> {
+        LOGGER.log(`sendResource called with resource: ${resource}, messageId: ${messageId}, source: ${source}, filter: ${filter}, page: ${page}, perPage: ${perPage}`);
         return Promise.resolve(undefined);
     }
 

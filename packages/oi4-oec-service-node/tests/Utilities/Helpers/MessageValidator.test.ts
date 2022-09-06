@@ -35,7 +35,7 @@ describe('Unit test for TopicParser', () => {
     it('If payload messages are not empty no message is written in in the log', async () => {
         defaultParsedMessage.Messages = [{
             DataSetWriterId: 1,
-            subResource: 'asd',
+            Source: 'asd',
             Payload: {}
         }]
         await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);

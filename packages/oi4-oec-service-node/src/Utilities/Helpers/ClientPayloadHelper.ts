@@ -18,11 +18,12 @@ import { IOI4Resource } from '@oi4/oi4-oec-service-model';
 
 export class ClientPayloadHelper {
 
+    // TODO: we can now (V1.1) see the source a Oi4Identifier only. Code needs adoptions.
     // subResource is with 1.0 still a string and not an Oi4Identifier as with 1.1
-    createPayload(payload: OI4Payload, subResource: string): IOPCUADataSetMessage {
+    createPayload(payload: OI4Payload, source: string): IOPCUADataSetMessage {
         return {
-            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), subResource),
-            subResource: subResource,
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), source),
+            source: source,
             Payload: payload,
         };
     };
@@ -37,9 +38,9 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createMamResourcePayload(applicationResources: IOI4ApplicationResources, subResource: string): ValidatedPayload {
-        const mam = applicationResources.getMasterAssetModel(Oi4Identifier.fromString(subResource));
-        const payload = [this.createPayload(mam, subResource)];
+    createMamResourcePayload(applicationResources: IOI4ApplicationResources, source: string): ValidatedPayload {
+        const mam = applicationResources.getMasterAssetModel(Oi4Identifier.fromString(source));
+        const payload = [this.createPayload(mam, source)];
         return {abortSending: false, payload: payload};
     }
 
@@ -67,15 +68,15 @@ export class ClientPayloadHelper {
     }
 
     // TODO Rework
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, subResource?: string, licenseId?: string): ValidatedPayload {
+    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, source?: string, licenseId?: string): ValidatedPayload {
         const payload: IOPCUADataSetMessage[] = [];
-        const licenses: License[] = applicationResources.getLicense(Oi4Identifier.fromString(subResource), licenseId);
+        const licenses: License[] = applicationResources.getLicense(Oi4Identifier.fromString(source), licenseId);
 
         for (const license of licenses) {
             payload.push({
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), subResource),
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), source),
                 filter: license.licenseId,
-                subResource: subResource ?? applicationResources.oi4Id.toString(),
+                source: source ?? applicationResources.oi4Id.toString(),
                 Timestamp: new Date().toISOString(),
                 Payload: {components: license.components},
             })
@@ -88,14 +89,14 @@ export class ClientPayloadHelper {
         const resourceType = filter !== undefined ? getResource(filter) : undefined;
 
         const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
-            const resource = getResource(elem.resource);
+            const resource = getResource(elem.Resource);
             const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id.toString());
             return {
                 DataSetWriterId: dataSetWriterId,
                 filter: resource,
-                subResource: applicationResources.oi4Id.toString(),
+                source: applicationResources.oi4Id.toString(),
                 Payload: {... elem,
-                    oi4Identifier: elem.oi4Identifier.toString()
+                    oi4Identifier: elem.Source.toString()
                 },
             } as IOPCUADataSetMessage;
         });
@@ -112,7 +113,7 @@ export class ClientPayloadHelper {
             return {
                 DataSetWriterId: dataSetWriterId,
                 filter: resource,
-                subResource: applicationResources.oi4Id.toString(),
+                source: applicationResources.oi4Id.toString(),
                 Payload: elem,
             } as IOPCUADataSetMessage;
         });
@@ -138,7 +139,7 @@ export class ClientPayloadHelper {
                 return {
                         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4IdString),
                         filter: configFilter,
-                        subResource: oi4IdString,
+                        source: oi4IdString,
                         Payload: config
                 };
             }
@@ -151,7 +152,7 @@ export class ClientPayloadHelper {
                 messages.push(mainConfig);
             }
 
-            applicationResources.subResources.forEach((value: IOI4Resource, key: string ) => {
+            applicationResources.Source.forEach((value: IOI4Resource, key: string ) => {
                 const subConfig = createDataSetMessage(value.config, Oi4Identifier.fromString(key));
                 if (subConfig) {
                     messages.push(subConfig);
@@ -166,19 +167,19 @@ export class ClientPayloadHelper {
         const oi4IdString = oi4Id.toString();
         if (applicationResources.oi4Id.equals(oi4Id)) {
             config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
-        } else if (applicationResources.subResources.has(oi4IdString)) {
-            config = createDataSetMessage(applicationResources.subResources.get(oi4IdString).config, oi4Id, filter);
+        } else if (applicationResources.Source.has(oi4IdString)) {
+            config = createDataSetMessage(applicationResources.Source.get(oi4IdString).config, oi4Id, filter);
         }
 
         const messages: IOPCUADataSetMessage[] = config ? [config] : [];
         return {abortSending: messages.length == 0, payload: messages};
     }
 
-    createPublishEventMessage(filter: string, subResource: string, event: IEvent): IOPCUADataSetMessage[] {
+    createPublishEventMessage(filter: string, source: string, event: IEvent): IOPCUADataSetMessage[] {
         return [{
-            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(event.resourceType(), subResource),
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(event.resourceType(), source),
             filter: filter,
-            subResource: subResource,
+            source: source,
             Timestamp: new Date().toISOString(),
             Payload: event,
         }];

@@ -4,19 +4,25 @@
   "description": "A representation of a pagination object",
   "type": "object",
   "additionalProperties": false,
-  "required": ["totalCount","perPage", "page", "hasNext"],
+  "required": ["TotalCount","PerPage", "Page", "HasNext", "PaginationId"],
   "properties": {
-    "totalCount": {
+    "TotalCount": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "perPage": {
+    "PerPage": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "page": {
+    "Page": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "hasNext": {
+    "HasNext": {
       "type": "boolean"
+    },
+    "PaginationId": {
+      "type": "string",
+      "description": "Message ID",
+      "$comment": "TODO: find a way to include the oi4Identifier better here",
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     }
   }
 }

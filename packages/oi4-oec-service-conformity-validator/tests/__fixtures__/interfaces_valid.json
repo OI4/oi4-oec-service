@@ -3,11 +3,11 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "96d22d73-bce6-42d3-9949-45e0d04e4d54",
-  "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [
       {
       "DataSetWriterId": 623,
-      "subResource": "status",
+      "Source": "openindustry4.com/nd/nd/nd",
       "Timestamp": "2021-12-16T22:25:10.094Z",
       "Payload": {}
     }

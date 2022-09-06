@@ -21,7 +21,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     const OI4_ID_2 = Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`);
 
     const default_payload = [{
-        subResource: OI4_ID.toString(),
+        Source: OI4_ID.toString(),
         DataSetWriterId: 0,
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
@@ -73,7 +73,7 @@ describe('Unit test for ClientPayloadHelper', () => {
 
     function createLicenseMockedPayload(dataSetWriterId: number, payload: any, oi4Id = OI4_ID) {
         return [{
-            subResource: oi4Id.toString(),
+            Source: oi4Id.toString(),
             DataSetWriterId: dataSetWriterId,
             Payload: payload
         }];
@@ -89,24 +89,24 @@ describe('Unit test for ClientPayloadHelper', () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedOI4ApplicationResources, OI4_ID_2.toString(), 'license');
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
-        expect(validatedPayload.payload[0].subResource).toBe(OI4_ID_2.toString());
-        expect(validatedPayload.payload[0].filter).toBe('1');
+        expect(validatedPayload.payload[0].Source).toBe(OI4_ID_2.toString());
+        expect(validatedPayload.payload[0].Filter).toBe('1');
     });
 
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: Oi4Identifier) {
         return {
             DataSetWriterId: datasetWriterId,
-            oi4Identifier: oi4Id.toString(),
-            resource: resource,
-            filter: undefined as string
+            Source: oi4Id.toString(),
+            Resource: resource,
+            Filter: undefined as string
         } 
     }
 
-    function createMockedPayloadWithSubresource(subResource: string, dataSetWriterId: number, payload: any, filter?: string) {
+    function createMockedPayloadWithSource(source: string, dataSetWriterId: number, payload: any, filter?: string) {
         return [{
             DataSetWriterId: dataSetWriterId,
-            subResource: subResource,
-            filter: filter,
+            Source: source,
+            Filter: filter,
             Payload: payload,
         }];
     }
@@ -117,9 +117,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createPublicationMockedPayload(resource, itemDataSetWriterId, subOI4Id);
         if (filter !== undefined) {
-            expectedInnerPayload.filter = filter;
+            expectedInnerPayload.Filter = filter;
         }
-        const expectedPayload = createMockedPayloadWithSubresource(oi4Id.toString(), dataSetWriterId, expectedInnerPayload, resource);
+        const expectedPayload = createMockedPayloadWithSource(oi4Id.toString(), dataSetWriterId, expectedInnerPayload, resource);
         expect(JSON.parse(JSON.stringify(validatedPayload.payload))).toStrictEqual(JSON.parse(JSON.stringify(expectedPayload)));
     }
 
@@ -160,10 +160,10 @@ describe('Unit test for ClientPayloadHelper', () => {
         } as SubscriptionList);
     }
 
-    function checkAgainstSubscriptionPayload(validatedPayload: ValidatedPayload, topicPath: string, subresource: string) {
+    function checkAgainstSubscriptionPayload(validatedPayload: ValidatedPayload, topicPath: string, source: string) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createSubscriptionMockedPayload(topicPath);
-        const expectedPayload = createMockedPayloadWithSubresource(subresource, 0, expectedInnerPayload, Resource.SUBSCRIPTION_LIST);
+        const expectedPayload = createMockedPayloadWithSource(source, 0, expectedInnerPayload, Resource.SUBSCRIPTION_LIST);
         expect(validatedPayload.payload).toStrictEqual(expectedPayload);
     }
 
@@ -175,16 +175,16 @@ describe('Unit test for ClientPayloadHelper', () => {
     function createConfigAppResource(): IOI4ApplicationResources {
         const applicationResources: IOI4ApplicationResources = {
             ...mockedOI4ApplicationResources,
-            config: {'group1': {name: {text: 'group 1', locale: EOPCUALocale.enUS}},
-                    'context': {name: {text: 'filter1', locale: EOPCUALocale.enUS}}}
+            config: {'group1': {Name: {Text: 'group 1', Locale: EOPCUALocale.enUS}},
+                    'context': {Name: {Text: 'filter1', Locale: EOPCUALocale.enUS}}}
         }
 
-        const subResource = 'vendor.com/1/2/3';
-        applicationResources.subResources.clear();
-        applicationResources.subResources.set(subResource, {
+        const source = 'vendor.com/1/2/3';
+        applicationResources.Source.clear();
+        applicationResources.Source.set(source, {
             ...mockedOI4ApplicationResources,
-            config: {'group2': {name: {text: 'group 2', locale: EOPCUALocale.enUS}},
-                    'context': {name: {text: 'filter2', locale: EOPCUALocale.enUS}}}});
+            config: {'group2': {Name: {Text: 'group 2', Locale: EOPCUALocale.enUS}},
+                    'context': {Name: {Text: 'filter2', Locale: EOPCUALocale.enUS}}}});
 
         return applicationResources;
     }
@@ -196,13 +196,13 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(2);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload['group1'].name.text).toBe('group 1');
+        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
         const payload2 = validatedPayload.payload[1];
-        expect(payload2.subResource).toStrictEqual('vendor.com/1/2/3');
-        expect(payload2.filter).toBe('filter2');
-        expect(payload2.Payload['group2'].name.text).toBe('group 2');
+        expect(payload2.Source).toStrictEqual('vendor.com/1/2/3');
+        expect(payload2.Filter).toBe('filter2');
+        expect(payload2.Payload['group2'].Name.Text).toBe('group 2');
     });
 
     it('createConfigSendResourcePayload works when requesting main resource', async () => {
@@ -212,9 +212,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload['group1'].name.text).toBe('group 1');
+        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
     it('createConfigSendResourcePayload works when requesting sub resource', async () => {
@@ -224,9 +224,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.subResource).toStrictEqual('vendor.com/1/2/3');
-        expect(payload1.filter).toBe('filter2');
-        expect(payload1.Payload['group2'].name.text).toBe('group 2');
+        expect(payload1.Source).toStrictEqual('vendor.com/1/2/3');
+        expect(payload1.Filter).toBe('filter2');
+        expect(payload1.Payload['group2'].Name.Text).toBe('group 2');
     });
 
     it('createConfigSendResourcePayload works when requesting main resource with filter', async () => {
@@ -236,9 +236,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.filter).toBe('filter1');
-        expect(payload1.Payload['group1'] .name.text).toBe('group 1');
+        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.Payload['group1'] .Name.Text).toBe('group 1');
     });
 
     it('createConfigSendResourcePayload returns nothing with unknown filter', async () => {
@@ -252,7 +252,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     it('createConfigSendResourcePayload works when no context is available', async () => {
         const applicationResources: IOI4ApplicationResources = {
             ...mockedOI4ApplicationResources,
-            config: {'group1': {name: {text: 'group 1', locale: EOPCUALocale.enUS}}}
+            config: {'group1': {Name: {Text: 'group 1', Locale: EOPCUALocale.enUS}}}
         }
 
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createConfigSendResourcePayload(applicationResources);
@@ -260,9 +260,9 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.subResource).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.filter).toBe(undefined);
-        expect(payload1.Payload['group1'].name.text).toBe('group 1');
+        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.Filter).toBe(undefined);
+        expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
     it('createPublishEventMessage works', async () => {
@@ -271,12 +271,12 @@ describe('Unit test for ClientPayloadHelper', () => {
             MSG: 'fakeMSG',
             HEADER: 'fakeHeader',
         };
-        const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSubResource', event);
+        const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSource', event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];
         expect(extractedMessage.DataSetWriterId).toBe(0);
-        expect(extractedMessage.filter).toBe('fakeFilter');
-        expect(extractedMessage.subResource).toBe('fakeSubResource');
+        expect(extractedMessage.Filter).toBe('fakeFilter');
+        expect(extractedMessage.Source).toBe('fakeSource');
         expect(extractedMessage.Payload).toStrictEqual(event);
     });
 

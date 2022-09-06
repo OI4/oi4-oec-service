@@ -2,15 +2,15 @@
   "$id": "QualifiedName.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "",
-  "additionalProperties": false,
   "type": "object",
-  "required": ["name", "namespaceIndex"],
+  "additionalProperties": false,
+  "required": ["Name", "NamespaceIndex"],
   "properties": {
-    "name": {
+    "Name": {
       "type": "string",
       "description": ""
     },
-    "namespaceIndex": {
+    "NamespaceIndex": {
       "$ref": "dataTypes/uint16.schema.json"
     }
   }

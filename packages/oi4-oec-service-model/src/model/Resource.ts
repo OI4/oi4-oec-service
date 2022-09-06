@@ -8,72 +8,72 @@ import {
     getServiceType
 } from '@oi4/oi4-oec-service-opcua-model';
 
-export enum Resource {
-    MAM = 'mam',
-    HEALTH = 'health',
-    LICENSE = 'license',
-    LICENSE_TEXT = 'licenseText',
-    PROFILE = 'profile',
-    DATA = 'data',
-    RT_LICENSE = 'rtLicense',
-    CONFIG = 'config',
-    INTERFACE = 'interface',
-    EVENT = 'event',
-    METADATA = 'metadata',
-    PUBLICATION_LIST = 'publicationList',
-    SUBSCRIPTION_LIST = 'subscriptionList',
-    REFERENCE_DESIGNATION = 'referenceDesignation',
-    INTERFACES = 'interfaces'
+export enum Resources {
+    MAM = 'MAM',
+    HEALTH = 'Health',
+    LICENSE = 'License',
+    LICENSE_TEXT = 'LicenseText',
+    PROFILE = 'Profile',
+    DATA = 'Data',
+    RT_LICENSE = 'RtLicense',
+    CONFIG = 'Config',
+    INTERFACE = 'Interface',
+    EVENT = 'Event',
+    METADATA = 'Metadata',
+    PUBLICATION_LIST = 'PublicationList',
+    SUBSCRIPTION_LIST = 'SubscriptionList',
+    REFERENCE_DESIGNATION = 'ReferenceDesignation',
+    INTERFACES = 'Interfaces'
 }
 
-export function getResource(resource: string): Resource {
+export function getResource(resource: string): Resources {
     switch (resource) {
-        case Resource.MAM:
-            return Resource.MAM;
-        case Resource.HEALTH:
-            return Resource.HEALTH;
-        case Resource.LICENSE:
-            return Resource.LICENSE;
-        case Resource.LICENSE_TEXT:
-            return Resource.LICENSE_TEXT;
-        case Resource.PROFILE:
-            return Resource.PROFILE;
-        case Resource.DATA:
-            return Resource.DATA;
-        case Resource.RT_LICENSE:
-            return Resource.RT_LICENSE;
-        case Resource.CONFIG:
-            return Resource.CONFIG;
-        case Resource.EVENT:
-            return Resource.EVENT;
-        case Resource.METADATA:
-            return Resource.METADATA;
-        case Resource.PUBLICATION_LIST:
-            return Resource.PUBLICATION_LIST;
-        case Resource.SUBSCRIPTION_LIST:
-            return Resource.SUBSCRIPTION_LIST;
-        case Resource.REFERENCE_DESIGNATION:
-            return Resource.REFERENCE_DESIGNATION;
-        case Resource.INTERFACES:
-            return Resource.INTERFACES;
+        case Resources.MAM:
+            return Resources.MAM;
+        case Resources.HEALTH:
+            return Resources.HEALTH;
+        case Resources.LICENSE:
+            return Resources.LICENSE;
+        case Resources.LICENSE_TEXT:
+            return Resources.LICENSE_TEXT;
+        case Resources.PROFILE:
+            return Resources.PROFILE;
+        case Resources.DATA:
+            return Resources.DATA;
+        case Resources.RT_LICENSE:
+            return Resources.RT_LICENSE;
+        case Resources.CONFIG:
+            return Resources.CONFIG;
+        case Resources.EVENT:
+            return Resources.EVENT;
+        case Resources.METADATA:
+            return Resources.METADATA;
+        case Resources.PUBLICATION_LIST:
+            return Resources.PUBLICATION_LIST;
+        case Resources.SUBSCRIPTION_LIST:
+            return Resources.SUBSCRIPTION_LIST;
+        case Resources.REFERENCE_DESIGNATION:
+            return Resources.REFERENCE_DESIGNATION;
+        case Resources.INTERFACES:
+            return Resources.INTERFACES;
         default:
-            throw new Error(`Unknown resource: ${resource}`);
+            throw new Error(`Unknown resource: ${Resources}`);
     }
 }
 
 // TODO I am totally wrong remove me for ever...
 export const CDataSetWriterIdLookup: Record<string, number> = {
-    mam: 1,
-    health: 2,
-    license: 3,
-    licenseText: 4,
-    rtLicense: 5,
-    event: 6,
-    profile: 7,
-    config: 8,
-    publicationList: 9,
-    subscriptionList: 10,
-    interfaces: 11
+    MAM: 1,
+    Health: 2,
+    License: 3,
+    LicenseText: 4,
+    RtLicense: 5,
+    Event: 6,
+    Profile: 7,
+    Config: 8,
+    PublicationList: 9,
+    SubscriptionList: 10,
+    Interfaces: 11
 }
 
 export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
@@ -91,8 +91,8 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
     SerialNumber: string;
     SoftwareRevision: string;
 
-    resourceType(): Resource {
-        return Resource.MAM;
+    resourceType(): Resources {
+        return Resources.MAM;
     }
 
     getOI4Id(): Oi4Identifier {
@@ -112,93 +112,92 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
 }
 
 export class Health implements OI4Payload {
-    readonly health: EDeviceHealth;
-    readonly healthScore: number; // UInt16 (from 0 to 100%)
+    readonly Health: EDeviceHealth;
+    readonly HealthScore: number; // UInt16 (from 0 to 100%)
 
     constructor(health: EDeviceHealth, healthScore: number) {
-        this.health = health;
-        this.healthScore = healthScore;
+        this.Health = health;
+        this.HealthScore = healthScore;
     }
 
-    resourceType(): Resource {
-        return Resource.HEALTH;
+    resourceType(): Resources {
+        return Resources.HEALTH;
     }
 
     static clone(source: Health): Health {
-        return new Health(source.health, source.healthScore);
+        return new Health(source.Health, source.HealthScore);
     }
 }
 
 export class RTLicense implements OI4Payload {
-    resourceType(): Resource {
-        return Resource.RT_LICENSE;
+    resourceType(): Resources {
+        return Resources.RT_LICENSE;
     }
 }
 
 export class License implements OI4Payload {
-    readonly licenseId: string;
-    readonly components: IComponentObject[];
+    readonly LicenseId: string;
+    readonly Components: IComponentObject[];
 
     constructor(licenseId: string, components: IComponentObject[]) {
-        this.licenseId = licenseId;
-        this.components = components;
+        this.LicenseId = licenseId;
+        this.Components = components;
     }
 
-    resourceType(): Resource {
-        return Resource.LICENSE;
+    resourceType(): Resources {
+        return Resources.LICENSE;
     }
 
     static clone(source: License): License {
-        return new License(source.licenseId, source.components);
+        return new License(source.LicenseId, source.Components);
     }
 
 }
 
 export class LicenseText implements OI4Payload {
-    readonly licenseText: string;
+    readonly LicenseText: string;
 
     constructor(licenseText: string) {
-        this.licenseText = licenseText;
+        this.LicenseText = licenseText;
     }
 
-    resourceType(): Resource {
-        return Resource.LICENSE_TEXT;
+    resourceType(): Resources {
+        return Resources.LICENSE_TEXT;
     }
 
     static clone(source: LicenseText): LicenseText {
-        return new LicenseText(source.licenseText);
+        return new LicenseText(source.LicenseText);
     }
 }
 
 export class Profile implements OI4Payload {
-    readonly resource: Resource[];
+    readonly Resources: Resources[];
 
-    constructor(resource: Resource[]) {
-        this.resource = Object.assign([], resource);
+    constructor(resources: Resources[]) {
+        this.Resources = Object.assign([], resource);
     }
 
-    resourceType(): Resource {
-        return Resource.PROFILE;
+    resourceType(): Resources {
+        return Resources.PROFILE;
     }
 
     static clone(source: Profile): Profile {
-        return new Profile(source.resource);
+        return new Profile(source.Resources);
     }
 }
 
 export class PublicationList implements OI4Payload {
-    resource: Resource;
-    subResource?: string;
-    filter?: string;
+    Resource: Resources;
+    Source: Oi4Identifier;
+    Filter?: string;
     DataSetWriterId: number; // Actually OI4-Identifier: TODO: Validator
-    oi4Identifier: Oi4Identifier;
-    mode: PublicationListMode;
-    interval?: number; // UINT32
-    precisions?: number; // REAL
-    config?: PublicationListConfig;
+    Mode: PublicationListMode;
+    Interval?: number; // UINT32
+    Precisions?: number; // REAL
+    Config?: PublicationListConfig;
 
-    resourceType(): Resource {
-        return Resource.PUBLICATION_LIST;
+    resourceType(): Resources {
+        return Resources.PUBLICATION_LIST;
     }
 
     static clone(source: PublicationList): PublicationList {
@@ -213,8 +212,8 @@ export class SubscriptionList implements OI4Payload {
     interval: number;
     config?: SubscriptionListConfig;
 
-    resourceType(): Resource {
-        return Resource.SUBSCRIPTION_LIST;
+    resourceType(): Resources {
+        return Resources.SUBSCRIPTION_LIST;
     }
 
     static clone(source: SubscriptionList): SubscriptionList {
@@ -228,12 +227,12 @@ export enum PublicationListMode {
     OFF_0 = 'OFF_0',
     ON_REQUEST_1 = 'ON_REQUEST_1',
     APPLICATION_2 = 'APPLICATION_2',
-    SUBRESOURCE_3 = 'SUBRESOURCE_3',
+    SOURCE_3 = 'SOURCE_3',
     FILTER_4 = 'FILTER_4',
-    APPLICATION_SUBRESOURCE_5 = 'APPLICATION_SUBRESOURCE_5',
+    APPLICATION_SOURCE_5 = 'APPLICATION_SOURCE_5',
     APPLICATION_FILTER_6 = 'APPLICATION_FILTER_6',
-    SUBRESOURCE_FILTER_7 = 'SUBRESOURCE_FILTER_7',
-    APPLICATION_SUBRESOURCE_FILTER_8 = 'APPLICATION_SUBRESOURCE_FILTER_8',
+    SOURCE_FILTER_7 = 'SOURCE_FILTER_7',
+    APPLICATION_SOURCE_FILTER_8 = 'APPLICATION_SOURCE_FILTER_8',
 }
 
 export enum PublicationListConfig {
@@ -249,8 +248,8 @@ export enum SubscriptionListConfig {
 }
 
 export interface IComponentObject {
-    component: string;
-    licAuthors: string[];
-    licAddText: string;
+    Component: string;
+    LicAuthors: string[];
+    LicAddText: string;
 }
 

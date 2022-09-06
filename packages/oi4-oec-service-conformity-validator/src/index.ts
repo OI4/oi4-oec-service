@@ -27,8 +27,8 @@ import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
 export * from './model/IConformityValidator';
 
 interface ItemRef {
-    subResource: string;
-    filter: string;
+    Source: string;
+    Filter: string;
 }
 
 /**
@@ -78,10 +78,10 @@ export class ConformityValidator {
      * If a resource passes, its entry in the conformity Object is set to 'OK', otherwise, the initialized 'NOK' values persist.
      * @param topicPreamble - The entire topic used to check conformity.
      * @param assetType - Determines whether the asset is an application or an device.
-     * @param subResource - The subResource.
+     * @param Source - The Source.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
-    async checkConformity(assetType: EAssetType, topicPreamble: string, subResource?: string, resourceList?: Resource[]): Promise<IConformity> {
+    async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resource[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
 
@@ -94,12 +94,12 @@ export class ConformityValidator {
 
         try {
 
-            if (subResource == undefined) {
+            if (source == undefined) {
                 const topicArray = topicPreamble.split('/');
                 const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
                 oi4Result = await ConformityValidator.checkOI4IDConformity(originator);
             } else {
-                oi4Result = await ConformityValidator.checkOI4IDConformity(subResource);
+                oi4Result = await ConformityValidator.checkOI4IDConformity(source);
             }
         } catch (err) {
             LOGGER.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
@@ -114,7 +114,7 @@ export class ConformityValidator {
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
 
         try {
-            conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, subResource);
+            conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, source);
             conformityObject.profileResourceList = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
 
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
@@ -179,7 +179,7 @@ export class ConformityValidator {
 
                     case Resource.METADATA:
                         for (const data of dataList) {
-                            resObj = await this.checkResourceConformity(topicPreamble, Resource.METADATA, data.subResource, data.filter);
+                            resObj = await this.checkResourceConformity(topicPreamble, Resource.METADATA, data.Source, data.Filter);
                             if (resObj.validity != EValidity.ok) {
                                 // meta data not valid --> don't continue
                                 break;
@@ -188,7 +188,7 @@ export class ConformityValidator {
                         break;
 
                     case Resource.DATA:
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         dataList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
                         break;
 
@@ -221,10 +221,10 @@ export class ConformityValidator {
                     case Resource.LICENSE_TEXT:
                         if (licenseList.length == 0) {
                             // just check if there is any license text
-                            resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                            resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         } else {
                             for (const license of licenseList) {
-                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.subResource, license.filter);
+                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.Source, license.Filter);
                                 if (resObj.validity != EValidity.ok) {
                                     // text not valid --> don't continue
                                     break;
@@ -235,12 +235,12 @@ export class ConformityValidator {
                         break;
 
                     case Resource.LICENSE:
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         licenseList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.LICENSE);
                         break;
 
                     default:
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, subResource);
+                        resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                 }
             } catch (err) {
                 LOGGER.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
@@ -287,16 +287,16 @@ export class ConformityValidator {
      * Sidenote: "Custom" Resources will be marked as an error and not checked
      * @param topicPreamble The fullTopic that is used to check the get-route
      * @param assetType  The type of asset being tested (device / application.
-     * @param subResource
-     * @param assetType The (optional) subresource.
+     * @param Source
+     * @param assetType The (optional) Source.
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
 
-    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, subResource?: string): Promise<IValidityDetails> {
+    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, source?: string): Promise<IValidityDetails> {
         let resObj: IValidityDetails;
 
         try {
-            resObj = await this.checkResourceConformity(topicPreamble, Resource.PROFILE, subResource);
+            resObj = await this.checkResourceConformity(topicPreamble, Resource.PROFILE, source);
         } catch (e) {
             LOGGER.log(`Error in checkProfileConformity: ${e}`);
             throw e;
@@ -342,13 +342,13 @@ export class ConformityValidator {
      * If we don't receive an answer within the given timeframe, an error is returned.
      * @param topicPreamble - the originator oi4Id of the requestor
      * @param resource - the resource that is to be checked (health, license, etc...)
-     * @param subResource - the subResource of the requestor, in most cases their oi4Id
+     * @param Source - the Source of the requestor, in most cases their oi4Id
      * @param filter - the filter (if available)
      */
-    async checkResourceConformity(topicPreamble: string, resource: Resource, subResource?: string, filter?: string): Promise<IValidityDetails> {
+    async checkResourceConformity(topicPreamble: string, resource: Resource, source?: string, filter?: string): Promise<IValidityDetails> {
 
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
-        const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, subResource, filter);
+        const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, source, filter);
 
         const getTopic = getRequest.getTopic('get');
         const pubTopic = getRequest.getTopic('pub');
@@ -530,8 +530,8 @@ export class ConformityValidator {
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 LOGGER.log(`Found pagination in ${resource}!`);
-            } else if (ConformityValidator.isNotEmpty(dataSetMessage.filter) && ConformityValidator.isNotEmpty(dataSetMessage.subResource)) {
-                result.push({subResource: dataSetMessage.subResource, filter: dataSetMessage.filter});
+            } else if (ConformityValidator.isNotEmpty(dataSetMessage.filter) && ConformityValidator.isNotEmpty(dataSetMessage.source)) {
+                result.push({Source: dataSetMessage.Source, Filter: dataSetMessage.Filter});
             }
         }
 

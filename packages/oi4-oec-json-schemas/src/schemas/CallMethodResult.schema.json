@@ -2,11 +2,11 @@
   "$id": "CallMethodResult.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "",
-  "additionalProperties": false,
-  "required": ["statusCode", "inputArgumentResults", "outputArguments"],
   "type": "object",
+  "additionalProperties": false,
+  "required": ["StatusCode", "InputArgumentResults", "OutputArguments"],
   "properties": {
-    "inputArgumentResults": {
+    "InputArgumentResults": {
       "type": "array",
       "additionalItems": false,
       "uniqueItems": true,
@@ -16,10 +16,10 @@
         }
       ]
     },
-    "statusCode": {
+    "StatusCode": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "outputArguments": {
+    "OutputArguments": {
       "type": "array",
       "additionalItems": false,
       "uniqueItems": true,

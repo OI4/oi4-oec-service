@@ -4,19 +4,13 @@
   "description": "A representation of a pagination object for get messages",
   "type": "object",
   "additionalProperties": false,
-  "required": ["perPage", "page"],
+  "required": ["PerPage", "Page"],
   "properties": {
-    "totalCount": {
+    "PerPage": {
       "$ref": "dataTypes/uint32.schema.json"
     },
-    "perPage": {
+    "Page": {
       "$ref": "dataTypes/uint32.schema.json"
-    },
-    "page": {
-      "$ref": "dataTypes/uint32.schema.json"
-    },
-    "hasNext": {
-      "type": "boolean"
     }
   }
 }

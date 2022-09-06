@@ -5,25 +5,25 @@ import {Resource} from '@oi4/oi4-oec-service-model';
 export class GetRequest {
     TopicPreamble: string;
     Resource: Resource;
-    SubResource? : string;
+    Source? : string;
     Filter?: string;
     Message: IOPCUANetworkMessage;
 
-    constructor(topicPreamble: string, resource: Resource, message: IOPCUANetworkMessage, subResource?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resource, message: IOPCUANetworkMessage, source?: string, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
         this.Message = message;
-        this.SubResource = subResource;
+        this.Source = source;
         this.Filter = filter;
     }
 
     public getTopic(action = 'pub'): string {
         let topic = `${this.TopicPreamble}/${action}/${this.Resource}`;
-        if (GetRequest.isNotEmpty(this.SubResource)) {
-            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.SubResource}`;
+        if (GetRequest.isNotEmpty(this.Source)) {
+            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;
         }
-        if (GetRequest.isNotEmpty(this.SubResource) && GetRequest.isNotEmpty(this.Filter)) {
-            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.SubResource}/${this.Filter}`;
+        if (GetRequest.isNotEmpty(this.Source) && GetRequest.isNotEmpty(this.Filter)) {
+            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}/${this.Filter}`;
         }
 
         return topic;

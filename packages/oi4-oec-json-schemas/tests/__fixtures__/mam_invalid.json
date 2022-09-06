@@ -9,13 +9,13 @@
       "DeviceRevision": null,
       "HardwareRevision": null,
       "Manufacturer": {
-        "locale": null,
-        "text": null
+        "Locale": null,
+        "Text": null
       },
       "ManufacturerUri": null,
       "Model": {
-        "locale": null,
-        "text": null
+        "Locale": null,
+        "Text": null
       },
       "ProductCode": null,
       "ProductInstanceUri": null,
@@ -33,13 +33,13 @@
       "DeviceRevision": "",
       "HardwareRevision": "1.0.0",
       "Manufacturer": {
-        "locale": "en-US",
-        "text": "ACME"
+        "Locale": "en-US",
+        "Text": "ACME"
       },
       "ManufacturerUri": "endress.com",
       "Model": {
-        "locale": "en-US",
-        "text": "Ajax"
+        "Locale": "en-US",
+        "Text": "Ajax"
       },
       "ProductCode": "AAA",
       "ProductInstanceUri": "https://acme/ajax/aaa",
@@ -52,21 +52,21 @@
     "revision counter exceeds int32",
     {
       "Description": {
-        "locale": "en-US",
-        "text": "Descriptive text"
+        "Locale": "en-US",
+        "Text": "Descriptive text"
       },
       "DeviceClass": "",
       "DeviceManual": "",
       "DeviceRevision": "",
       "HardwareRevision": "1.0.0",
       "Manufacturer": {
-        "locale": "en-US",
-        "text": "ACME"
+        "Locale": "en-US",
+        "Text": "ACME"
       },
       "ManufacturerUri": "endress.com",
       "Model": {
-        "locale": "en-US",
-        "text": "Ajax"
+        "Locale": "en-US",
+        "Text": "Ajax"
       },
       "ProductCode": "AAA",
       "ProductInstanceUri": "https://acme/ajax/aaa",

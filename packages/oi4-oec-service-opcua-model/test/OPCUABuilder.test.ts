@@ -91,15 +91,15 @@ test('builds two paginated messages if message size is small', () => {
 
     const messages: IOPCUADataSetMessage[] = [{
         DataSetWriterId: 1,
-        subResource: 'a/b/c/d',
-        filter: 'filter',
+        Source: 'a/b/c/d',
+        Filter: 'filter',
         Payload: [],
         Timestamp: '2022-01-01T12:00:00.000'
     },
     {
         DataSetWriterId: 2,
-        subResource: 'e/f/g/h',
-        filter: 'oee',
+        Source: 'e/f/g/h',
+        Filter: 'oee',
         Payload: [],
         Timestamp: '2022-01-01T12:00:00.000'
     }]
@@ -110,24 +110,26 @@ test('builds two paginated messages if message size is small', () => {
     expect(paginatedMessages.length).toEqual(2);
     expect(paginatedMessages[0].Messages.length).toEqual(2);
     expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
-    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
+    expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
+    expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
     expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
-    expect(paginatedMessages[0].Messages[1].Payload.page).toBe(1);
-    expect(paginatedMessages[0].Messages[1].Payload.perPage).toBe(1);
-    expect(paginatedMessages[0].Messages[1].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[0].Messages[1].Payload.hasNext).toBeTruthy();
+    expect(paginatedMessages[0].Messages[1].Payload.Page).toBe(1);
+    expect(paginatedMessages[0].Messages[1].Payload.PerPage).toBe(1);
+    expect(paginatedMessages[0].Messages[1].Payload.TotalCount).toBe(2);
+    expect(paginatedMessages[0].Messages[1].Payload.HasNext).toBeTruthy();
+    expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
 
     expect(paginatedMessages[1].Messages[0].DataSetWriterId).toBe(2);
-    expect(paginatedMessages[1].Messages[0].subResource).toBe('e/f/g/h');
-    expect(paginatedMessages[1].Messages[0].filter).toBe('oee');
+    expect(paginatedMessages[1].Messages[0].Source).toBe('e/f/g/h');
+    expect(paginatedMessages[1].Messages[0].Filter).toBe('oee');
     expect(paginatedMessages[1].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
-    expect(paginatedMessages[1].Messages[1].Payload.page).toBe(2);
-    expect(paginatedMessages[1].Messages[1].Payload.perPage).toBe(1);
-    expect(paginatedMessages[1].Messages[1].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[1].Messages[1].Payload.hasNext).toBeFalsy();
+    expect(paginatedMessages[1].Messages[1].Payload.Page).toBe(2);
+    expect(paginatedMessages[1].Messages[1].Payload.PerPage).toBe(1);
+    expect(paginatedMessages[1].Messages[1].Payload.TotalCount).toBe(2);
+    expect(paginatedMessages[1].Messages[1].Payload.HasNext).toBeFalsy();
+    expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
 })
 
 test('builds one paginated message if message size is large', () => {
@@ -137,15 +139,15 @@ test('builds one paginated message if message size is large', () => {
 
     const messages: IOPCUADataSetMessage[] = [{
         DataSetWriterId: 1,
-        subResource: 'a/b/c/d',
-        filter: 'filter',
+        Source: 'a/b/c/d',
+        Filter: 'filter',
         Payload: [],
         Timestamp: '2022-01-01T12:00:00.000'
     },
     {
         DataSetWriterId: 2,
-        subResource: 'e/f/g/h',
-        filter: 'oee',
+        Source: 'e/f/g/h',
+        Filter: 'oee',
         Payload: [],
         Timestamp: '2022-01-01T12:00:00.000'
     }]
@@ -156,18 +158,19 @@ test('builds one paginated message if message size is large', () => {
     expect(paginatedMessages.length).toEqual(1);
     expect(paginatedMessages[0].Messages.length).toEqual(3);
     expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
-    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
+    expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
+    expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
     expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
     expect(paginatedMessages[0].Messages[1].DataSetWriterId).toBe(2);
-    expect(paginatedMessages[0].Messages[1].subResource).toBe('e/f/g/h');
-    expect(paginatedMessages[0].Messages[1].filter).toBe('oee');
+    expect(paginatedMessages[0].Messages[1].Source).toBe('e/f/g/h');
+    expect(paginatedMessages[0].Messages[1].Filter).toBe('oee');
     expect(paginatedMessages[0].Messages[1].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
-    expect(paginatedMessages[0].Messages[2].Payload.page).toBe(1);
-    expect(paginatedMessages[0].Messages[2].Payload.perPage).toBe(2);
-    expect(paginatedMessages[0].Messages[2].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[0].Messages[2].Payload.hasNext).toBeFalsy();
+    expect(paginatedMessages[0].Messages[2].Payload.Page).toBe(1);
+    expect(paginatedMessages[0].Messages[2].Payload.PerPage).toBe(2);
+    expect(paginatedMessages[0].Messages[2].Payload.TotalCount).toBe(2);
+    expect(paginatedMessages[0].Messages[2].Payload.HasNext).toBeFalsy();
+    expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
 })
 
