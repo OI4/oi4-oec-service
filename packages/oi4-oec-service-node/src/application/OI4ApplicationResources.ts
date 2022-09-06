@@ -1,6 +1,9 @@
 import {
     Health,
     IContainerConfig,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IContainerConfigValidation,
     IOI4ApplicationResources,
     IOI4Resource,
     MasterAssetModel,
@@ -19,9 +22,10 @@ import {
     Oi4Identifier
 } from '@oi4/oi4-oec-service-opcua-model';
 import {existsSync, readFileSync} from 'fs';
-import {OI4Resource, OI4ResourceEvent} from "./OI4Resource";
-import os from "os";
+import {OI4Resource, OI4ResourceEvent} from './OI4Resource';
+import os from 'os';
 import path = require('path');
+import { Resource } from '@oi4/oi4-oec-service-model';
 
 export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
 
@@ -117,6 +121,70 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
     }
 
+    setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean {
+        // search existing config
+        let currentConfig: IContainerConfig = undefined;
+        if (this.oi4Id.equals(oi4Id)) {
+            currentConfig = this.config;
+        } 
+        else if (this.hasSubResource(oi4Id)) {
+            const subResource = this.getSubResource(oi4Id) as IOI4Resource;
+            currentConfig = subResource?.config;
+        }
+
+        if (!currentConfig) {
+            // no existing config found --> add
+            if (this.oi4Id.equals(oi4Id)) {
+                this.config = config;
+            } else if (this.hasSubResource(oi4Id)) {
+                const subResource = this.getSubResource(oi4Id) as IOI4Resource;
+                subResource.config = config;
+            }
+            else { return false; }
+
+            this.emit(OI4ResourceEvent.RESOURCE_ADDED, oi4Id, Resource.CONFIG);
+            return true; 
+        }
+
+        // update existing config:
+
+        if (!filter) {
+            // filter is mandatory when updating the configuration
+            return false;
+        }
+
+        if ('context' in currentConfig && encodeURIComponent(currentConfig['context'].name.text) !== filter) {
+            return false; // no matching filter
+        }
+
+        // apply changes
+        let configUpdated = false;
+        const ignoreList = ['name', 'Name', 'description', 'Description'];
+
+        for (const groupName of Object.keys(config)) {
+            for (const settingName of Object.keys(config[groupName])) {
+                if (ignoreList.includes(settingName)) {
+                    continue;
+                }
+
+                const oldSetting = (currentConfig[groupName] as IContainerConfigGroupName)?.[settingName] as IContainerConfigConfigName;
+                const newSetting = (config[groupName] as IContainerConfigGroupName)[settingName] as IContainerConfigConfigName;
+                if (oldSetting && this.validateConfigValue(newSetting.value, oldSetting.validation)) {
+                    oldSetting.value = newSetting.value; // currently we only accept a new value
+                    configUpdated = true;
+                }
+            }
+        }
+
+        if (configUpdated) {
+            this.emit(OI4ResourceEvent.RESOURCE_CHANGED, oi4Id, Resource.CONFIG);
+            return true;
+        }
+
+        return false;
+    }
+
+
     hasSubResource(oi4Id: Oi4Identifier): boolean {
         return this.subResources.has(oi4Id.toString());
     }
@@ -151,6 +219,37 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (metadata) {
             this.metaDataLookup[key] = metadata;
         }
+    }
+
+    private validateConfigValue(value: string, validation?: IContainerConfigValidation): boolean {
+        if (!validation) {
+            return true;
+        }
+
+        if (validation.length !== undefined && value.length > validation.length)  {
+            return false; 
+        } 
+
+        if (validation.min !== undefined && Number(value) < validation.min) {
+            return false;
+        }
+
+        if (validation.max !== undefined && Number(value) > validation.max) { 
+            return false;
+        }
+
+        if (validation.pattern !== undefined) {
+            const regexp = new RegExp(validation.pattern);
+            if (!regexp.test(value)) {
+                return false;
+            }
+        }
+
+        if (validation.values != undefined && !validation.values.includes(value)) {
+            return false;
+        }
+
+        return true;
     }
 }
 

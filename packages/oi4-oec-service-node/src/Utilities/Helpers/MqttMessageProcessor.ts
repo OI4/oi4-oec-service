@@ -1,7 +1,6 @@
 import {
     ESyslogEventFilter,
-    IContainerConfigConfigName,
-    IContainerConfigGroupName,
+    IContainerConfig,
     Resource,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
@@ -167,7 +166,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
             case Resource.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
-                    await this.setConfig(topicInfo.filter, parsedMessage, oi4Application);
+                    await this.setConfig(topicInfo, parsedMessage, oi4Application);
                 }
                 break;
             }
@@ -195,25 +194,20 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    private async setConfig(filter: string, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
+    private async setConfig(topicInfo: TopicInfo, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
         const applicationResources = oi4Application.applicationResources;
-        const currentConfig = applicationResources.config;
-        const newConfig: IContainerConfigGroupName | IContainerConfigConfigName = config.Messages[0].Payload;
-        if (filter === '') {
-            return;
-        }
-        if (!(filter in currentConfig)) {
-            currentConfig[filter] = newConfig;
-            LOGGER.log(`Added ${filter} to config group`);
-        } else {
-            currentConfig[filter] = newConfig; // No difference if we create the data or just update it with an object
-            LOGGER.log(`${filter} already exists in config group`);
-        }
-        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), EOPCUAStatusCode.Good);
+        const filter = topicInfo.filter;
+        const oi4Id = topicInfo.oi4Id;
 
+        const message = config.Messages[0]; // only one message is allowed for set/config so we ignore further messages
+        const result = applicationResources.setConfig(oi4Id, filter, message.Payload as IContainerConfig);
+        const statusCode = result ? EOPCUAStatusCode.Good : EOPCUAStatusCode.Bad;
+
+        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), statusCode);
         await oi4Application.sendEventStatus(status);
-        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, '', filter, 0, 0); // TODO set subResource
+        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0);
     }
+
 
     private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {
