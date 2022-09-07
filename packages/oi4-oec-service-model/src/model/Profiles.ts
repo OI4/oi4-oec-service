@@ -1,30 +1,30 @@
-import {Resource} from './Resource';
+import {Resources} from './Resources';
 
-const profileFull: Resource [] = [
-    Resource.MAM,
-    Resource.HEALTH,
-    Resource.LICENSE,
-    Resource.LICENSE_TEXT,
-    Resource.PROFILE,
-    Resource.DATA,
-    Resource.RT_LICENSE,
-    Resource.CONFIG,
-    Resource.EVENT,
-    Resource.METADATA,
-    Resource.PUBLICATION_LIST,
-    Resource.SUBSCRIPTION_LIST,
-    Resource.REFERENCE_DESIGNATION,
-    Resource.INTERFACES
+const profileFull: Resources [] = [
+    Resources.MAM,
+    Resources.HEALTH,
+    Resources.LICENSE,
+    Resources.LICENSE_TEXT,
+    Resources.PROFILE,
+    Resources.DATA,
+    Resources.RT_LICENSE,
+    Resources.CONFIG,
+    Resources.EVENT,
+    Resources.METADATA,
+    Resources.PUBLICATION_LIST,
+    Resources.SUBSCRIPTION_LIST,
+    Resources.REFERENCE_DESIGNATION,
+    Resources.INTERFACES
 ];
 
 export const Application = {
     mandatory:  [
-        Resource.MAM,
-        Resource.HEALTH,
-        Resource.LICENSE,
-        Resource.LICENSE_TEXT,
-        Resource.PUBLICATION_LIST,
-        Resource.PROFILE
+        Resources.MAM,
+        Resources.HEALTH,
+        Resources.LICENSE,
+        Resources.LICENSE_TEXT,
+        Resources.PUBLICATION_LIST,
+        Resources.PROFILE
     ],
     full: profileFull
 };
@@ -32,10 +32,10 @@ export const Application = {
 export const Device = {
 
     mandatory: [
-        Resource.MAM,
-        Resource.HEALTH,
-        Resource.PROFILE,
-        Resource.REFERENCE_DESIGNATION
+        Resources.MAM,
+        Resources.HEALTH,
+        Resources.PROFILE,
+        Resources.REFERENCE_DESIGNATION
     ],
     full: profileFull,
 };

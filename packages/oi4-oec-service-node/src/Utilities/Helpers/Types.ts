@@ -4,8 +4,8 @@ import {
     Oi4Identifier,
     ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
-import {Resource} from "@oi4/oi4-oec-service-model";
-import {TopicMethods} from "./Enums";
+import {Resources} from '@oi4/oi4-oec-service-model';
+import {TopicMethods} from './Enums';
 
 export type ValidatedFilter = {
     isValid: boolean;
@@ -28,7 +28,7 @@ export type TopicInfo = {
     topic: string;
     appId: Oi4Identifier;
     method: TopicMethods;
-    resource: Resource;
+    resource: Resources;
     oi4Id: Oi4Identifier;
     category?: string;
     serviceType: ServiceTypes;

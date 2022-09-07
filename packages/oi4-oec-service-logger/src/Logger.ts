@@ -5,7 +5,7 @@ import {
     ESyslogEventFilter,
     EventCategory,
     IEvent,
-    Resource,
+    Resources,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
@@ -91,8 +91,8 @@ class Logger {
             this._mqttClient = mqttClient;
         }
 
-        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create messages that contain one event. 
-        // A message with one event cannot be split into smaller messages and shall never exceed the maximum package size.  
+        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create messages that contain one event.
+        // A message with one event cannot be split into smaller messages and shall never exceed the maximum package size.
         this._builder = new OPCUABuilder(oi4Id, serviceType);
         this._oi4Id = oi4Id;
         this._serviceType = serviceType;
@@ -113,18 +113,20 @@ class Logger {
                 date: new Date(),
                 message: data.message,
             });
+            const oi4IdString = oi4Id.toString();
             glossyParser.parse(msg, (parsedMessage: any) => {
                 let syslogDataMessage;
                 if (this._builder) {
-                    const event: IEvent = new SyslogEvent(oi4Id.toString(), parsedMessage.prival);
-                    event.details = {
+                    // TODO handle the source
+                    const event: IEvent = new SyslogEvent(parsedMessage.prival);
+                    event.Details = {
                         MSG: parsedMessage.message,
                         HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                     };
                     syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                        subResource: event.subResource(),
+                        Source: oi4IdString,
                         Payload: event,
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.EVENT, event.subResource()),
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4IdString),
                     }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */

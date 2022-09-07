@@ -10,7 +10,7 @@ import {
     IEvent,
     IOI4ApplicationResources,
     MasterAssetModel,
-    Resource,
+    Resources,
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig
@@ -44,7 +44,7 @@ export interface IOI4Application extends EventEmitter {
 
     removeSubscription(topic: string): Promise<boolean>;
 
-    sendResource(resource: Resource, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void>;
+    sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void>;
 
     sendMetaData(cutTopic: string): Promise<void>;
 
@@ -52,9 +52,9 @@ export interface IOI4Application extends EventEmitter {
 
     sendMasterAssetModel(mam: MasterAssetModel, messageId?: string): Promise<void>;
 
-    sendEvent(event: IEvent, filter: string): Promise<void>;
+    sendEvent(event: IEvent, source: string, filter: string): Promise<void>;
 
-    sendEventStatus(status: StatusEvent): Promise<void>;
+    sendEventStatus(status: StatusEvent, source: string): Promise<void>;
 
     getConfig(): Promise<void>;
 }
@@ -101,7 +101,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                 Source: this.oi4Id.toString(),
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
-                DataSetWriterId: CDataSetWriterIdLookup[Resource.HEALTH]
+                DataSetWriterId: CDataSetWriterIdLookup[Resources.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
             qos: 0,
             retain: false,
@@ -146,18 +146,18 @@ export class OI4Application extends EventEmitter implements IOI4Application {
     }
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0) {
-        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(item => item.topicPath !== topic);
+        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(item => item.TopicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
-            topicPath: topic,
-            config: config,
-            interval: interval,
+            TopicPath: topic,
+            Config: config,
+            Interval: interval,
         } as SubscriptionList));
         return await this.client.subscribe(topic);
     }
 
     async removeSubscription(topic: string) {
         return this.client.unsubscribe(topic).then(() => {
-            this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(subscription => subscription.topicPath !== topic);
+            this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(subscription => subscription.TopicPath !== topic);
             return true;
         });
     }
@@ -172,21 +172,21 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
-            for (const resource of this.applicationResources.Source.values()) {
-                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
+            await this.sendResource(Resources.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
+            for (const resource of this.applicationResources.sources.values()) {
+                await this.sendResource(Resources.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
-    private resourceChangedCallback(oi4Id: Oi4Identifier, resource: Resource) {
-        if (resource === Resource.HEALTH) {
-            this.sendResource(Resource.HEALTH, '', oi4Id.toString(), '').then();
+    private resourceChangedCallback(oi4Id: Oi4Identifier, resource: Resources) {
+        if (resource === Resources.HEALTH) {
+            this.sendResource(Resources.HEALTH, '', oi4Id.toString(), '').then();
         }
     }
 
     private resourceAddedCallback(oi4Id: Oi4Identifier) {
-        this.sendResource(Resource.MAM, '', oi4Id.toString(), '').then();
+        this.sendResource(Resources.MAM, '', oi4Id.toString(), '').then();
     }
 
     // GET SECTION ----------------//
@@ -221,7 +221,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      */
     async sendMasterAssetModel(mam: MasterAssetModel, messageId?: string) {
         const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id().toString())];
-        await this.sendPayload(payload, Resource.MAM, messageId, 0, 0, mam.getOI4Id().toString());
+        await this.sendPayload(payload, Resources.MAM, messageId, 0, 0, mam.getOI4Id().toString());
     }
 
     /**
@@ -237,7 +237,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             data = this.applicationResources.dataLookup[oi4Id.toString()];
         }
         const payload = [this.clientPayloadHelper.createPayload(data, oi4Id.toString())];
-        await this.sendPayload(payload, Resource.DATA, messageId, 0, 0, oi4Id.toString(), filter);
+        await this.sendPayload(payload, Resources.DATA, messageId, 0, 0, oi4Id.toString(), filter);
     }
 
     /**
@@ -249,7 +249,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param page
      * @param perPage
      */
-    async sendResource(resource: Resource, messageId: string, source: string, filter: string, page = 0, perPage = 0) {
+    async sendResource(resource: Resources, messageId: string, source: string, filter: string, page = 0, perPage = 0) {
         const validatedPayload: ValidatedPayload = await this.preparePayload(resource, source, filter);
 
         if (validatedPayload === undefined || validatedPayload.abortSending) {
@@ -259,7 +259,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, source, filter);
     }
 
-    async preparePayload(resource: Resource, source: string, filter?: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: Resources, source: string, filter?: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = OI4Application.validateFilter(filter);
         if (!validatedFilter.isValid) {
             LOGGER.log('Invalid filter, abort sending...');
@@ -269,39 +269,39 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         let payloadResult: ValidatedPayload;
 
         switch (resource) {
-            case Resource.MAM:
+            case Resources.MAM:
                 payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, source);
                 break;
-            case Resource.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
+            case Resources.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
                 break;
             }
-            case Resource.PROFILE: {
+            case Resources.PROFILE: {
                 payloadResult = this.clientPayloadHelper.createProfileSendResourcePayload(this.applicationResources);
                 break;
             }
-            case Resource.HEALTH: {
+            case Resources.HEALTH: {
                 payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, Oi4Identifier.fromString(source));
                 break;
             }
-            case Resource.LICENSE_TEXT: {
+            case Resources.LICENSE_TEXT: {
                 payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter);
                 break;
             }
-            case Resource.LICENSE: {
+            case Resources.LICENSE: {
                 payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
-            case Resource.PUBLICATION_LIST: {
+            case Resources.PUBLICATION_LIST: {
                 // TODO TAG is missing in topic element
                 payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
-            case Resource.SUBSCRIPTION_LIST: {
+            case Resources.SUBSCRIPTION_LIST: {
                 payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
-            case Resource.CONFIG: {
+            case Resources.CONFIG: {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
                 break;
             }
@@ -368,21 +368,20 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param filter
      */
     // TODO figure out how the determine the filter from the actual object/interface, whatever
-    async sendEvent(event: IEvent, filter: string) {
-        const subResource = event.subResource();
-        const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, subResource, event);
+    async sendEvent(event: IEvent, source: string, filter: string) {
+        const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, source, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
-        const publishAddress = `${this.topicPreamble}/pub/event/${subResource}/${filter}`;
+        const publishAddress = `${this.topicPreamble}/pub/event/${source}/${filter}`;
         await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
-        LOGGER.log(`Published event on ${this.topicPreamble}/event/${subResource}/${filter}`);
+        LOGGER.log(`Published event on ${this.topicPreamble}/event/${source}/${filter}`);
     }
 
 
-    public async sendEventStatus(status: StatusEvent) {
+    public async sendEventStatus(status: StatusEvent, source: string) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            subResource: 'status',
+            Source: source,
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup['event'],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/

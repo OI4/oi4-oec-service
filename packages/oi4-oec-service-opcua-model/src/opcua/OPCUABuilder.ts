@@ -16,7 +16,7 @@ import { buildOpcUaJsonValidator } from './OpcUaSchemaProvider';
 import { v4 as uuid } from 'uuid'; /*tslint:disable-line*/
 import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from '../model/EOPCUA';
 import {ServiceTypes} from '../model/ServiceTypes';
-import {Oi4Identifier} from "../model/Oi4Identifier";
+import {Oi4Identifier} from '../model/Oi4Identifier';
 
 export class OPCUABuilder {
   oi4Id: Oi4Identifier;
@@ -54,7 +54,7 @@ export class OPCUABuilder {
     for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
       const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
       if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (PerPage === 0 || (PerPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < PerPage))) {
-        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.filter, remainingPayloads.MetaDataVersion));
+        networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.Filter, remainingPayloads.MetaDataVersion));
       } else {
         // This is the paginationObject
         networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
@@ -63,7 +63,7 @@ export class OPCUABuilder {
             PerPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
             Page: currentNetworkMessageIndex + 1,
             HasNext: true,
-            PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO: 
+            PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO:
           }, timestamp, parseInt(`${remainingPayloads.DataSetWriterId}${currentNetworkMessageIndex}`, 10)
         ));
         if (Page !== 0 && currentNetworkMessageIndex >= Page) {
@@ -118,7 +118,7 @@ export class OPCUABuilder {
     //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
     // }
     for (const payload of dataSetPayloads) {
-      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.filter, payload.MetaDataVersion));
+      opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.Filter, payload.MetaDataVersion));
     }
     const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
     const opcUaDataMessage: IOPCUANetworkMessage = {
@@ -226,7 +226,7 @@ export class OPCUABuilder {
   // Hardcoded dataSetFieldId
   private buildOPCUAMetaDataField(key: string, unit: string, description: string, type: EOPCUABuiltInType, min: number, max: number, valueRank: number): IOPCUAFieldMetaData {
     const field = {
-      valueRank,
+      ValueRank: valueRank,
       Name: key,
       Description: {
         Locale: EOPCUALocale.enUS,

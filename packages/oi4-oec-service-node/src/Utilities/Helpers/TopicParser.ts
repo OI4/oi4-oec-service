@@ -1,4 +1,4 @@
-import {getResource, Resource} from '@oi4/oi4-oec-service-model';
+import {getResource, Resources} from '@oi4/oi4-oec-service-model';
 import {getServiceType, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicInfo, TopicWrapper} from './Types';
 import {getTopicMethod, TopicMethods} from './Enums';
@@ -80,7 +80,7 @@ export class TopicParser {
     }
 
     static extractResourceSpecificInfo(wrapper: TopicWrapper): TopicInfo {
-        if (wrapper.topicInfo.method === TopicMethods.PUB && wrapper.topicInfo.resource === Resource.EVENT) {
+        if (wrapper.topicInfo.method === TopicMethods.PUB && wrapper.topicInfo.resource === Resources.EVENT) {
             TopicParser.extractPubEventInfo(wrapper);
         } else {
             TopicParser.extractResourceInfo(wrapper);
@@ -101,21 +101,21 @@ export class TopicParser {
 
             if (wrapper.topicArray.length > 12) {
                 switch (wrapper.topicInfo.resource) {
-                    case Resource.CONFIG:
-                    case Resource.DATA:
-                    case Resource.METADATA: {
+                    case Resources.CONFIG:
+                    case Resources.DATA:
+                    case Resources.METADATA: {
                         TopicParser.extractFilter(wrapper)
                         break;
                     }
 
-                    case Resource.LICENSE_TEXT:
-                    case Resource.LICENSE: {
+                    case Resources.LICENSE_TEXT:
+                    case Resources.LICENSE: {
                         TopicParser.extractLicense(wrapper);
                         break;
                     }
 
-                    case Resource.PUBLICATION_LIST:
-                    case Resource.SUBSCRIPTION_LIST: {
+                    case Resources.PUBLICATION_LIST:
+                    case Resources.SUBSCRIPTION_LIST: {
                         TopicParser.extractListInfo(wrapper);
                         break;
                     }

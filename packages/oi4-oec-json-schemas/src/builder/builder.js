@@ -67,8 +67,8 @@ console.log(`TopicPathRegEx:\n${topicPathRegEx}`)
 // Read Modify Write NetworkSchemaJson
 tempPath = `${rootDir}/src/schemas/NetworkMessage.schema.json`
 tempJson = readJSON(tempPath)
-tempJson.properties.PublisherId.pattern = publisherIdRegEx
-tempJson.properties.MessageId.pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`
+tempJson.properties.PublisherId.Pattern = publisherIdRegEx
+tempJson.properties.MessageId.Pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`
 writeJSON(tempPath, tempJson)
 
 // Read Modify Write topicPathSchemaJson

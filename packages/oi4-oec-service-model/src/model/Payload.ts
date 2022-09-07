@@ -1,5 +1,5 @@
-import { Resource } from "./Resource";
+import { Resources } from "./Resources";
 
 export interface OI4Payload {
-    resourceType(): Resource;
+    resourceType(): Resources;
 }

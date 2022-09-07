@@ -9,7 +9,7 @@ import {
     License,
     OI4Payload,
     PublicationList,
-    Resource,
+    Resources,
     SubscriptionList,
     IContainerConfig,
 } from '@oi4/oi4-oec-service-model';
@@ -23,7 +23,7 @@ export class ClientPayloadHelper {
     createPayload(payload: OI4Payload, source: string): IOPCUADataSetMessage {
         return {
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), source),
-            source: source,
+            Source: source,
             Payload: payload,
         };
     };
@@ -75,10 +75,10 @@ export class ClientPayloadHelper {
         for (const license of licenses) {
             payload.push({
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), source),
-                filter: license.licenseId,
-                source: source ?? applicationResources.oi4Id.toString(),
+                Filter: license.LicenseId,
+                Source: source ?? applicationResources.oi4Id.toString(),
                 Timestamp: new Date().toISOString(),
-                Payload: {components: license.components},
+                Payload: {components: license.Components},
             })
         }
 
@@ -93,8 +93,8 @@ export class ClientPayloadHelper {
             const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id.toString());
             return {
                 DataSetWriterId: dataSetWriterId,
-                filter: resource,
-                source: applicationResources.oi4Id.toString(),
+                Filter: resource,
+                Source: applicationResources.oi4Id.toString(),
                 Payload: {... elem,
                     oi4Identifier: elem.Source.toString()
                 },
@@ -108,12 +108,12 @@ export class ClientPayloadHelper {
         const resourceType = filter !== undefined ? getResource(filter) : undefined;
 
         const payload: IOPCUADataSetMessage[] = applicationResources.getSubscriptionList(oi4Id, resourceType, tag).map((elem: SubscriptionList) => {
-            const resource = Resource.SUBSCRIPTION_LIST;
+            const resource = Resources.SUBSCRIPTION_LIST;
             const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id.toString());
             return {
                 DataSetWriterId: dataSetWriterId,
-                filter: resource,
-                source: applicationResources.oi4Id.toString(),
+                Filter: resource,
+                Source: applicationResources.oi4Id.toString(),
                 Payload: elem,
             } as IOPCUADataSetMessage;
         });
@@ -124,8 +124,8 @@ export class ClientPayloadHelper {
     createConfigSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: Oi4Identifier, filter?: string): ValidatedPayload {
 
         function getFilter(config: IContainerConfig): string | undefined {
-            if (config?.['context']?.name) {
-                return encodeURI(config['context'].name.text)
+            if (config?.['context']?.Name) {
+                return encodeURI(config['context'].Name.Text)
             }
         }
 
@@ -137,9 +137,9 @@ export class ClientPayloadHelper {
                 }
                 const oi4IdString = oi4Id.toString();
                 return {
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.CONFIG, oi4IdString),
-                        filter: configFilter,
-                        source: oi4IdString,
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.CONFIG, oi4IdString),
+                        Filter: configFilter,
+                        Source: oi4IdString,
                         Payload: config
                 };
             }
@@ -152,7 +152,7 @@ export class ClientPayloadHelper {
                 messages.push(mainConfig);
             }
 
-            applicationResources.Source.forEach((value: IOI4Resource, key: string ) => {
+            applicationResources.sources.forEach((value: IOI4Resource, key: string ) => {
                 const subConfig = createDataSetMessage(value.config, Oi4Identifier.fromString(key));
                 if (subConfig) {
                     messages.push(subConfig);
@@ -167,8 +167,8 @@ export class ClientPayloadHelper {
         const oi4IdString = oi4Id.toString();
         if (applicationResources.oi4Id.equals(oi4Id)) {
             config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
-        } else if (applicationResources.Source.has(oi4IdString)) {
-            config = createDataSetMessage(applicationResources.Source.get(oi4IdString).config, oi4Id, filter);
+        } else if (applicationResources.sources.has(oi4IdString)) {
+            config = createDataSetMessage(applicationResources.sources.get(oi4IdString).config, oi4Id, filter);
         }
 
         const messages: IOPCUADataSetMessage[] = config ? [config] : [];
@@ -178,8 +178,8 @@ export class ClientPayloadHelper {
     createPublishEventMessage(filter: string, source: string, event: IEvent): IOPCUADataSetMessage[] {
         return [{
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(event.resourceType(), source),
-            filter: filter,
-            source: source,
+            Filter: filter,
+            Source: source,
             Timestamp: new Date().toISOString(),
             Payload: event,
         }];

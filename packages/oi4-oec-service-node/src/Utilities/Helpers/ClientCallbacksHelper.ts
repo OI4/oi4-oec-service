@@ -2,11 +2,11 @@ import {
     DataSetClassIds,
     EDeviceHealth,
     ESyslogEventFilter,
-    Resource,
+    Resources,
     DataSetWriterIdManager
 } from '@oi4/oi4-oec-service-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {OI4Application} from "../../application/OI4Application"; /*tslint:disable-line*/
+import {OI4Application} from '../../application/OI4Application'; /*tslint:disable-line*/
 
 export class ClientCallbacksHelper {
 
@@ -21,9 +21,9 @@ export class ClientCallbacksHelper {
         await oi4application.client.publish(
             `${topicPreamble}/pub/mam/${oi4Id}`,
             JSON.stringify(oi4application.builder.buildOPCUANetworkMessage([{
-                subResource: oi4Id.toString(),
+                Source: oi4Id.toString(),
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resource.HEALTH, oi4Id.toString()),
+                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.HEALTH, oi4Id.toString()),
             }], new Date(), DataSetClassIds.mam)),
         );
         LOGGER.log('Connection to mqtt broker closed');
@@ -43,8 +43,8 @@ export class ClientCallbacksHelper {
         const applicationResources = oi4application.applicationResources;
         await oi4application.sendMasterAssetModel(applicationResources.mam).then();
         LOGGER.log('Published birth message', ESyslogEventFilter.informational);
-        for(const resource of applicationResources.subResources.values()){
-            await oi4application.sendMasterAssetModel(resource.mam).then();
+        for(const source of applicationResources.sources.values()){
+            await oi4application.sendMasterAssetModel(source.mam).then();
         }
     };
 

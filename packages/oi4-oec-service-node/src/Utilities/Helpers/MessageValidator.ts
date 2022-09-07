@@ -1,6 +1,6 @@
 import {TopicInfo, TopicWrapper} from './Types';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, ESyslogEventFilter, Resource} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, ESyslogEventFilter, Resources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicMethods} from './Enums';
 
@@ -53,7 +53,7 @@ export class MessageValidator {
     }
 
     private static checkForMalformedTopic(wrapper: TopicWrapper) {
-        const allowedGetResourcesLength8And12 = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.INTERFACE, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedGetResourcesLength8And12 = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACE, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
         let isTopicStructureMalformed;
 
         switch(wrapper.topicArray.length) {
@@ -87,38 +87,38 @@ export class MessageValidator {
         }
     }
 
-    private static checkAgainstMalformedTopicLength8(info: TopicInfo, allowedGetResources: Array<Resource>) {
-        const allowedPubResources = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+    private static checkAgainstMalformedTopicLength8(info: TopicInfo, allowedGetResources: Array<Resources>) {
+        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
 
         return this.checkAgainstResources(info, allowedGetResources, allowedPubResources);
     }
 
     private static checkAgainstMalformedTopicLength10(info: TopicInfo) {
-        return info.method !== TopicMethods.PUB || info.resource !== Resource.EVENT;
+        return info.method !== TopicMethods.PUB || info.resource !== Resources.EVENT;
     }
 
-    private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resource>) {
-        const allowedPubResources = [Resource.MAM, Resource.HEALTH, Resource.RT_LICENSE, Resource.PROFILE, Resource.REFERENCE_DESIGNATION, Resource.INTERFACE, Resource.CONFIG, Resource.DATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
-        const allowedSetDelResources = [Resource.REFERENCE_DESIGNATION];
+    private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resources>) {
+        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACE, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedSetDelResources = [Resources.REFERENCE_DESIGNATION];
 
         return this.checkAgainstResources(info, allowedGetResources, allowedPubResources, allowedSetDelResources, allowedSetDelResources);
     }
 
     private static checkAgainstMalformedTopicLength13(info: TopicInfo) {
-        const allowedGetPubResources = [Resource.CONFIG, Resource.DATA, Resource.METADATA, Resource.LICENSE, Resource.LICENSE_TEXT, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
-        const allowedSetResources = [Resource.CONFIG, Resource.DATA, Resource.METADATA, Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
-        const allowedDelResources = [Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedGetPubResources = [Resources.CONFIG, Resources.DATA, Resources.METADATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedSetResources = [Resources.CONFIG, Resources.DATA, Resources.METADATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedDelResources = [Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
 
         return this.checkAgainstResources(info, allowedGetPubResources, allowedGetPubResources, allowedSetResources, allowedDelResources);
     }
 
     private static checkAgainstMalformedTopicLength14(info: TopicInfo) {
-        const allowedGetPubSetDelResources = [Resource.PUBLICATION_LIST, Resource.SUBSCRIPTION_LIST];
+        const allowedGetPubSetDelResources = [Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
 
         return this.checkAgainstResources(info, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources);
     }
 
-    private static checkAgainstResources(info: TopicInfo, allowedGetResources: Array<Resource>, allowedPubResources: Array<Resource>, allowedSetResources: Array<Resource> = [], allowedDelResources: Array<Resource> = []) {
+    private static checkAgainstResources(info: TopicInfo, allowedGetResources: Array<Resources>, allowedPubResources: Array<Resources>, allowedSetResources: Array<Resources> = [], allowedDelResources: Array<Resources> = []) {
         switch(info.method) {
             case TopicMethods.GET: {
                 return !allowedGetResources.includes(info.resource);

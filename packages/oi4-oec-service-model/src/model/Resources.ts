@@ -96,7 +96,7 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
     }
 
     getOI4Id(): Oi4Identifier {
-        return new Oi4Identifier(this.ManufacturerUri, this.Model.text, this.ProductCode, this.SerialNumber);
+        return new Oi4Identifier(this.ManufacturerUri, this.Model.Text, this.ProductCode, this.SerialNumber);
     }
 
     getServiceType(): ServiceTypes {
@@ -174,7 +174,7 @@ export class Profile implements OI4Payload {
     readonly Resources: Resources[];
 
     constructor(resources: Resources[]) {
-        this.Resources = Object.assign([], resource);
+        this.Resources = Object.assign([], resources);
     }
 
     resourceType(): Resources {
@@ -208,9 +208,9 @@ export class PublicationList implements OI4Payload {
 }
 
 export class SubscriptionList implements OI4Payload {
-    topicPath: string;
-    interval: number;
-    config?: SubscriptionListConfig;
+    TopicPath: string;
+    Interval: number;
+    Config?: SubscriptionListConfig;
 
     resourceType(): Resources {
         return Resources.SUBSCRIPTION_LIST;

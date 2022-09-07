@@ -22,7 +22,7 @@
     "@asyncapi/cli": "^0.17.0"
   },
   "scripts": {
-    "build": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
+    "buildAsyncAPI": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
     "validate": "asyncapi validate asyncapi.yaml"
   }
 }
