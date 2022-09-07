@@ -1,7 +1,7 @@
 import {
     ESyslogEventFilter,
     IContainerConfig,
-    Resource,
+    Resources,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
@@ -89,11 +89,11 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
     private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
 
-        if (topicInfo.resource === Resource.DATA) {
+        if (topicInfo.resource === Resources.DATA) {
             // TODO should handle filter
             await oi4Application.sendData(topicInfo.oi4Id);
             return;
-        } else if (topicInfo.resource === Resource.METADATA) {
+        } else if (topicInfo.resource === Resources.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
             return;
         }
@@ -128,23 +128,23 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         const oi4IdSubResource = topicInfo.oi4Id?.toString();
         switch (topicInfo.resource)
         {
-            case Resource.EVENT:
+            case Resources.EVENT:
                 subResource = `${topicInfo.category}/${topicInfo.filter}`;
                 break;
 
-            case Resource.LICENSE:
-            case Resource.LICENSE_TEXT:
+            case Resources.LICENSE:
+            case Resources.LICENSE_TEXT:
                 subResource = oi4IdSubResource;
                 filter = topicInfo.licenseId;
                 break;
 
-            case Resource.CONFIG:
+            case Resources.CONFIG:
                 subResource = oi4IdSubResource;
                 filter = topicInfo.filter;
                 break;
 
-            case Resource.PUBLICATION_LIST:
-            case Resource.SUBSCRIPTION_LIST:
+            case Resources.PUBLICATION_LIST:
+            case Resources.SUBSCRIPTION_LIST:
                 subResource = oi4IdSubResource;
                 filter = topicInfo.tag;
                 break;
@@ -159,11 +159,11 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {
-            case Resource.DATA: {
+            case Resources.DATA: {
                 this.setData(topicInfo.filter, parsedMessage, oi4Application);
                 break;
             }
-            case Resource.CONFIG: {
+            case Resources.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
                     await this.setConfig(topicInfo, parsedMessage, oi4Application);
                 }
@@ -179,7 +179,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     private setData(cutTopic: string, data: IOPCUANetworkMessage, oi4Application: IOI4Application) {
         const applicationResources = oi4Application.applicationResources;
         const filter = cutTopic;
-        // This topicObject is also specific to the resource. The data resource will include the TagName!
+        // This topicObject is also specific to the Resources. The data resource will include the TagName!
         const dataLookup = applicationResources.dataLookup;
         if (filter === '') {
             return;
@@ -202,15 +202,15 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         const result = applicationResources.setConfig(oi4Id, filter, message.Payload as IContainerConfig);
         const statusCode = result ? EOPCUAStatusCode.Good : EOPCUAStatusCode.Bad;
 
-        const status: StatusEvent = new StatusEvent(applicationResources.oi4Id.toString(), statusCode);
-        await oi4Application.sendEventStatus(status);
-        await oi4Application.sendResource(Resource.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0); // TODO set source. Still valid?!
+        const status: StatusEvent = new StatusEvent(statusCode);
+        await oi4Application.sendEventStatus(status, oi4Id.toString());
+        await oi4Application.sendResource(Resources.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0); // TODO set source. Still valid?!
     }
 
 
     private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application) {
         switch (topicInfo.resource) {
-            case Resource.DATA: {
+            case Resources.DATA: {
                 this.deleteData(topicInfo.filter, oi4Application);
                 break;
             }

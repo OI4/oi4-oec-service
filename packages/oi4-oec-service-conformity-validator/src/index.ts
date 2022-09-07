@@ -14,10 +14,9 @@ import {
     Device,
     EAssetType,
     ESyslogEventFilter,
-    Resource
+    Resources
 } from '@oi4/oi4-oec-service-model';
 
-// Resource imports
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
@@ -40,7 +39,7 @@ export class ConformityValidator {
     private readonly messageBusLookup: IMessageBusLookup;
     private builder: OPCUABuilder;
     private readonly jsonValidator: Ajv.Ajv;
-    static completeProfileList: Resource[] = Application.full;
+    static completeProfileList: Resources[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
     constructor(oi4Id: Oi4Identifier, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
@@ -50,12 +49,12 @@ export class ConformityValidator {
 
         const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
         const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
-        
+
         initializeLogger(true, 'ConformityValidator-App', logLevel, publishingLevel, oi4Id, serviceType, this.conformityClient);
-        
-        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create ".../get/<resource>" messages. 
-        // Such messages cannot be split into smaller messages and shall never exceed the maximum package size.  
-        this.builder = new OPCUABuilder(oi4Id, serviceType); 
+
+        // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create ".../get/<Resources>" messages.
+        // Such messages cannot be split into smaller messages and shall never exceed the maximum package size.
+        this.builder = new OPCUABuilder(oi4Id, serviceType);
     }
 
     /**
@@ -81,7 +80,7 @@ export class ConformityValidator {
      * @param Source - The Source.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
-    async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resource[]): Promise<IConformity> {
+    async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resources[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
 
@@ -126,7 +125,7 @@ export class ConformityValidator {
         }
 
         // First, all mandatories
-        const checkList: Resource[] = Object.assign([], mandatoryResourceList);
+        const checkList: Resources[] = Object.assign([], mandatoryResourceList);
         try {
             // Second, all resources actually stored in the profile (Only oi4-conform profile entries will be checked)
             for (const resource of conformityObject.profileResourceList) {
@@ -160,8 +159,8 @@ export class ConformityValidator {
         }
 
         // move evaluation of some resources to the end to ensure that data for evaluation of these resources was previously read
-        ConformityValidator.moveToEnd(checkList, Resource.LICENSE_TEXT);
-        ConformityValidator.moveToEnd(checkList, Resource.METADATA);
+        ConformityValidator.moveToEnd(checkList, Resources.LICENSE_TEXT);
+        ConformityValidator.moveToEnd(checkList, Resources.METADATA);
 
         conformityObject.checkedResourceList = checkList;
 
@@ -177,9 +176,9 @@ export class ConformityValidator {
             try {
                 switch (resource) {
 
-                    case Resource.METADATA:
+                    case Resources.METADATA:
                         for (const data of dataList) {
-                            resObj = await this.checkResourceConformity(topicPreamble, Resource.METADATA, data.Source, data.Filter);
+                            resObj = await this.checkResourceConformity(topicPreamble, Resources.METADATA, data.Source, data.Filter);
                             if (resObj.validity != EValidity.ok) {
                                 // meta data not valid --> don't continue
                                 break;
@@ -187,13 +186,13 @@ export class ConformityValidator {
                         }
                         break;
 
-                    case Resource.DATA:
+                    case Resources.DATA:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, source);
-                        dataList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.DATA);
+                        dataList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resources.DATA);
                         break;
 
 
-                    case Resource.INTERFACES:
+                    case Resources.INTERFACES:
                         // TODO Update if specification is released
                         // INTERFACES are not fully described in specification yet
                         // we don't know if INTERFACES support get-requests
@@ -204,7 +203,7 @@ export class ConformityValidator {
                         }
                         break;
 
-                    case Resource.EVENT:
+                    case Resources.EVENT:
                         // We cannot trigger events by a get-request
                         // Therefore we cannot enforce that the tested asset publishes an event for the conformance validateion
                         resObj = {
@@ -214,11 +213,11 @@ export class ConformityValidator {
                         }
                         break;
 
-                    case Resource.PROFILE:
+                    case Resources.PROFILE:
                         // profile was already checked
                         continue;
 
-                    case Resource.LICENSE_TEXT:
+                    case Resources.LICENSE_TEXT:
                         if (licenseList.length == 0) {
                             // just check if there is any license text
                             resObj = await this.checkResourceConformity(topicPreamble, resource, source);
@@ -234,9 +233,9 @@ export class ConformityValidator {
 
                         break;
 
-                    case Resource.LICENSE:
+                    case Resources.LICENSE:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, source);
-                        licenseList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resource.LICENSE);
+                        licenseList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resources.LICENSE);
                         break;
 
                     default:
@@ -296,7 +295,7 @@ export class ConformityValidator {
         let resObj: IValidityDetails;
 
         try {
-            resObj = await this.checkResourceConformity(topicPreamble, Resource.PROFILE, source);
+            resObj = await this.checkResourceConformity(topicPreamble, Resources.PROFILE, source);
         } catch (e) {
             LOGGER.log(`Error in checkProfileConformity: ${e}`);
             throw e;
@@ -323,8 +322,8 @@ export class ConformityValidator {
      * @param assetType The type that is used to retrieve the list of mandatory resources
      * @returns {string[]} A list of mandatory resources
      */
-    static getMandatoryResources(assetType: EAssetType): Resource[] {
-        let mandatoryResources: Resource[];
+    static getMandatoryResources(assetType: EAssetType): Resources[] {
+        let mandatoryResources: Resources[];
         if (assetType === EAssetType.application) {
             mandatoryResources = Application.mandatory;
         } else {
@@ -345,7 +344,7 @@ export class ConformityValidator {
      * @param Source - the Source of the requestor, in most cases their oi4Id
      * @param filter - the filter (if available)
      */
-    async checkResourceConformity(topicPreamble: string, resource: Resource, source?: string, filter?: string): Promise<IValidityDetails> {
+    async checkResourceConformity(topicPreamble: string, resource: Resources, source?: string, filter?: string): Promise<IValidityDetails> {
 
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
         const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, source, filter);
@@ -362,7 +361,7 @@ export class ConformityValidator {
         let eRes: number;
         const schemaResult: ISchemaConformity = await this.checkSchemaConformity(resource, parsedMessage);
         if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
-            if (parsedMessage.correlationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+            if (parsedMessage.CorrelationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
                 eRes = EValidity.ok;
             } else {
                 eRes = EValidity.partial;
@@ -404,7 +403,7 @@ export class ConformityValidator {
      * @param payload  The payload that is being checked
      * @returns true, if both the networkmessage and the payload fit the resource, false otherwise
      */
-    async checkSchemaConformity(resource: Resource, payload: any): Promise<ISchemaConformity> {
+    async checkSchemaConformity(resource: Resources, payload: any): Promise<ISchemaConformity> {
         let messageValidationResult;
         let payloadValidationResult = false;
 
@@ -412,7 +411,7 @@ export class ConformityValidator {
         const payloadResultMsgArr: string[] = [];
 
         try {
-            const schema = resource == Resource.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
+            const schema = resource == Resources.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
             messageValidationResult = await this.jsonValidator.validate(schema, payload);
         } catch (networkMessageValidationErr) {
             LOGGER.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
@@ -429,7 +428,7 @@ export class ConformityValidator {
         if (messageValidationResult) {
             if (payload.MessageType === 'ua-metadata') {
                 payloadValidationResult = true; // Metadata was already validated by DataSetMetaData.schema.json
-            } else if (resource == Resource.DATA) {
+            } else if (resource == Resources.DATA) {
                 payloadValidationResult = true; // Data can be anything and therefore no schema exists
 
             } else { // Since it's a data message, we can check against schemas
@@ -478,9 +477,9 @@ export class ConformityValidator {
         return schemaConformity;
     }
 
-    private static getPubPayloadSchema(resource: Resource): string {
+    private static getPubPayloadSchema(resource: Resources): string {
         switch (resource) {
-            case Resource.CONFIG:
+            case Resources.CONFIG:
                 return 'configPublish.schema.json';
 
             default:
@@ -524,13 +523,13 @@ export class ConformityValidator {
         }
     }
 
-    private static collectItemReferences(messages: IOPCUADataSetMessage[], resource: Resource): ItemRef[] {
+    private static collectItemReferences(messages: IOPCUADataSetMessage[], resource: Resources): ItemRef[] {
         const result: ItemRef[] = [];
 
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 LOGGER.log(`Found pagination in ${resource}!`);
-            } else if (ConformityValidator.isNotEmpty(dataSetMessage.filter) && ConformityValidator.isNotEmpty(dataSetMessage.source)) {
+            } else if (ConformityValidator.isNotEmpty(dataSetMessage.Filter) && ConformityValidator.isNotEmpty(dataSetMessage.Source)) {
                 result.push({Source: dataSetMessage.Source, Filter: dataSetMessage.Filter});
             }
         }

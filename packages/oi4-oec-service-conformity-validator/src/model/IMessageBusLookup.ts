@@ -1,15 +1,15 @@
 import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {Resource} from '@oi4/oi4-oec-service-model';
+import {Resources} from '@oi4/oi4-oec-service-model';
 
 
 export class GetRequest {
     TopicPreamble: string;
-    Resource: Resource;
+    Resource: Resources;
     Source? : string;
     Filter?: string;
     Message: IOPCUANetworkMessage;
 
-    constructor(topicPreamble: string, resource: Resource, message: IOPCUANetworkMessage, source?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resources, message: IOPCUANetworkMessage, source?: string, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
         this.Message = message;
@@ -30,7 +30,7 @@ export class GetRequest {
     }
 
     private static isNotEmpty(input: string | undefined): boolean {
-        return input != undefined && input != null && input.length > 0;
+        return input != undefined && true && input.length > 0;
     }
 }
 

@@ -25,7 +25,8 @@
       "type": "string",
       "description": "Message ID",
       "$comment": "TODO: find a way to include the oi4Identifier better here",
-      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+      "pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$",
+      "Pattern": "^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
     "MessageType": {
       "const": "ua-data",
@@ -35,7 +36,8 @@
       "description": "Publisher ID",
       "$comment": "TODO: find a way to include the oi4Identifier better here",
       "pattern:": "^.+/[a-z0-9-.]+/.+/.+/.+$",
-      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
+      "pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$",
+      "Pattern": "^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\/(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:\\/[^\\/`\\^\r\n]+){3})$"
     },
     "Messages": {
       "type": "array",

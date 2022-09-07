@@ -21,32 +21,32 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('should initializes sub resource class field', () => {
-        expect(resources.Source).not.toBeUndefined();
+        expect(resources.sources).not.toBeUndefined();
     });
 
     it('should be able to set sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
        resources.addSource(value);
-       expect(resources.Source.has(oi4Id01.toString())).toBeTruthy();
-       expect(resources.Source.get(oi4Id01.toString())).toEqual(value);
+       expect(resources.sources.has(oi4Id01.toString())).toBeTruthy();
+       expect(resources.sources.get(oi4Id01.toString())).toEqual(value);
     });
 
     it('should be able to get sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.Source.set(oi4Id01.toString(), value);
+        resources.sources.set(oi4Id01.toString(), value);
         expect(resources.getSource(oi4Id01)).toEqual(value);
     });
 
     it('should be able to check sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
         expect(resources.hasSource(oi4Id01)).toBeFalsy();
-        resources.Source.set(oi4Id01.toString(), value);
+        resources.sources.set(oi4Id01.toString(), value);
         expect(resources.hasSource(oi4Id01)).toBeTruthy();
     });
 
     it('should be able to delete sub resource', () => {
         const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.Source.set(oi4Id01.toString(), value);
+        resources.sources.set(oi4Id01.toString(), value);
         expect(resources.hasSource(oi4Id01)).toBeTruthy();
         expect(resources.removeSource(oi4Id01)).toBeTruthy();
         expect(resources.removeSource(oi4Id01)).toBeFalsy();
@@ -60,9 +60,9 @@ describe('Test Oi4ApplicationResources', () => {
         expect(resources.hasSource(oi4Id01)).toBeFalsy();
         expect(resources.hasSource(oi4Id02)).toBeFalsy();
         expect(resources.hasSource(oi4Id03)).toBeFalsy();
-        resources.Source.set(oi4Id01.toString(), value01);
-        resources.Source.set(oi4Id02.toString(), value02);
-        resources.Source.set(oi4Id03.toString(), value03);
+        resources.sources.set(oi4Id01.toString(), value01);
+        resources.sources.set(oi4Id02.toString(), value02);
+        resources.sources.set(oi4Id03.toString(), value03);
         const sources: IterableIterator<IOI4Resource> = resources.getSource() as IterableIterator<IOI4Resource>;
         expect(sources.next().value).toEqual(value01);
         expect(sources.next().value).toEqual(value02);
@@ -134,7 +134,7 @@ describe('Test Oi4ApplicationResources', () => {
             publicationList: [],
             subscriptionList: []
         }
-        
+
         return subResource;
     }
 
@@ -162,7 +162,7 @@ describe('Test Oi4ApplicationResources', () => {
         const oi4Identifier = new Oi4Identifier('vendor.com', 'a', 'b', 'c');
         const subResource = createResourceWithConfig(oi4Identifier);
         resources.addSubResource(subResource);
-        
+
         const setConfig = createConfig();
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value = '1000';
 
