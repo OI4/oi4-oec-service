@@ -1,12 +1,11 @@
-import {TopicInfo, TopicWrapper} from './Types';
+import {TopicInfo, TopicWrapper, TopicMethods} from '../topic/TopicModel';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {DataSetClassIds, ESyslogEventFilter, Resources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicMethods} from './Enums';
 
 /**
  The MessageValidator makes a qualitative validation on the publisherId and on the dataSetClassId,
- plus a quantitative validation of the TopicInfo (checks if the topic string structure is correct and
+ plus a quantitative validation of the TopicModel (checks if the topic string structure is correct and
  carries enough information the the requested action)
  */
 export class MessageValidator {

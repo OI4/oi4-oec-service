@@ -18,7 +18,7 @@ import {
     NamurNE107Event,
     Profile,
     PublicationList,
-    Resource,
+    Resources,
     RTLicense,
     StatusEvent,
     SubscriptionList,
@@ -36,7 +36,8 @@ import {
 } from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {TopicMethods} from '@oi4/oi4-oec-service-node';
-import {OI4ResourceEvent} from '../../dist/application/OI4Resource';
+import {OI4ResourceEvent} from '../../src/application/OI4Resource';
+import {OI4_NS} from '../../src/topic/TopicModel';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
@@ -61,8 +62,8 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getResourceInfo = (): IOI4ApplicationResources => {
     const licenseText = new Map<string, LicenseText>();
-    licenseText.set('a', LicenseText.clone({licenseText: '1'} as LicenseText));
-    licenseText.set('b', LicenseText.clone({licenseText: '2'} as LicenseText));
+    licenseText.set('a', LicenseText.clone({LicenseText: '1'} as LicenseText));
+    licenseText.set('b', LicenseText.clone({LicenseText: '2'} as LicenseText));
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -105,24 +106,25 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             },
             context: {name: {Locale: EOPCUALocale.enUS, Text: 'config-01'}, description: undefined}
         },
+        // TODO changed from oi4Id to Source...just in case it fails
         publicationList: [
             PublicationList.clone({
-                resource: Resource.HEALTH,
-                config: PublicationListConfig.INTERVAL_2,
+                Resource: Resources.HEALTH,
+                Config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
-                oi4Identifier: new Oi4Identifier('1', '1', '1', '1'),
+                Source: new Oi4Identifier('1', '1', '1', '1'),
             } as PublicationList),
             PublicationList.clone({
-                resource: Resource.MAM,
-                config: PublicationListConfig.NONE_0,
+                Resource: Resources.MAM,
+                Config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
-                oi4Identifier: new Oi4Identifier('2', '2', '2', '2'),
+                Source: new Oi4Identifier('2', '2', '2', '2'),
             } as PublicationList),
             PublicationList.clone({
-                resource: Resource.LICENSE,
-                config: PublicationListConfig.MODE_1,
+                Resource: Resources.LICENSE,
+                Config: PublicationListConfig.MODE_1,
                 DataSetWriterId: 3,
-                oi4Identifier: new Oi4Identifier('3', '3', '3', '3'),
+                Source: new Oi4Identifier('3', '3', '3', '3'),
             } as PublicationList)
         ],
         Profile: new Profile(Application.mandatory),
@@ -232,10 +234,10 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
-        getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
+        getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resources, tag?: string): PublicationList[] {
             return this.publicationList;
         },
-        getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
+        getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[] {
             console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
             return this.subscriptionList;
         },
@@ -251,7 +253,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
 let defaultOi4ApplicationResources: IOI4ApplicationResources;
 let defaultOi4Application: OI4Application;
 
-const defaultTopicPrefix = 'Oi4/Registry';
+const defaultTopicPrefix = `${OI4_NS}Registry`;
 const defaultValidFilter = '1';
 const defaultAppId = new Oi4Identifier('1','1','1','1');
 const defaultOI4Id = defaultAppId;
@@ -360,9 +362,9 @@ describe('OI4MessageBus test', () => {
         const resources = getResourceInfo();
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const onResourceMock = jest.fn((_, cb) => {
-            cb(resources.oi4Id, Resource.HEALTH);
+            cb(resources.oi4Id, Resources.HEALTH);
             expect(mockSendResource).toHaveBeenCalled();
-            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resource.HEALTH), '', resources.oi4Id.toString(), '');
+            expect(mockSendResource).toHaveBeenCalledWith(expect.stringContaining(Resources.HEALTH), '', resources.oi4Id.toString(), '');
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
@@ -377,14 +379,14 @@ describe('OI4MessageBus test', () => {
         const tagName = 'tag-01';
         await defaultOi4Application.sendMetaData(tagName);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}/${tagName}`),
+            expect.stringContaining(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.METADATA}/${tagName}`),
             expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.metaDataLookup[tagName])));
     });
 
     it('should send all metadata if tagname not specified', async () => {
         await defaultOi4Application.sendMetaData('');
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.METADATA}`),
+            expect.stringContaining(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.METADATA}`),
             expect.stringContaining(JSON.stringify(getResourceInfo().metaDataLookup)));
     });
 
@@ -393,7 +395,7 @@ describe('OI4MessageBus test', () => {
     //     const tagName = 'tag-01'
     //     await defaultOi4Application.sendData(tagName);
     //     expect(publish).toHaveBeenCalledWith(
-    //         expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}/${tagName}`),
+    //         expect.stringContaining(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.DATA}/${tagName}`),
     //         expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.dataLookup[tagName])));
     // });
 
@@ -402,25 +404,25 @@ describe('OI4MessageBus test', () => {
     //     const tagName = ''
     //     await defaultOi4Application.sendData(tagName);
     //     expect(publish).toHaveBeenCalledWith(
-    //         expect.stringContaining(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.DATA}`),
+    //         expect.stringContaining(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.DATA}`),
     //         expect.stringContaining(JSON.stringify(getResourceInfo().dataLookup)));
     // });
 
     it('should send resource with valid filter', async () => {
-        await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter);
-        const expectedAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter);
+        const expectedAddress = `${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/`;
         expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
         const filter = '0'
-        await defaultOi4Application.sendResource(Resource.HEALTH, '', '', filter);
-        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', filter);
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     it('should not send resource if page is out of range', async () => {
-        await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter, 20, 20);
-        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 20, 20);
+        expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     async function getPayload(filter: string, resource: string, source?: string, oi4Application: OI4Application = defaultOi4Application) {
@@ -428,61 +430,62 @@ describe('OI4MessageBus test', () => {
     }
 
     it('should prepare mam payload', async () => {
-        const result = await getPayload('', Resource.MAM, defaultAppId.toString());
+        const result = await getPayload('', Resources.MAM, defaultAppId.toString());
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
     function checkProfilePayload(payload: any) {
         const profilePayload: Profile = payload.Payload;
-        expect(profilePayload.resourceType()).toBe(Resource.PROFILE);
-        expect(profilePayload.resource).not.toBeUndefined();
-        expect(profilePayload.resource.length).toBeGreaterThan(0);
+        expect(profilePayload.resourceType()).toBe(Resources.PROFILE);
+        expect(profilePayload.Resources).not.toBeUndefined();
+        expect(profilePayload.Resources.length).toBeGreaterThan(0);
     }
 
     it('should prepare profile payload when filter !== oi4Id', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), Resource.PROFILE);
+        const result = await getPayload(CDataSetWriterIdLookup.profile.toString(), Resources.PROFILE);
         checkProfilePayload(result.payload[0]);
     });
 
     it('should prepare profile payload when filter === oi4Id', async () => {
-        const result = await getPayload(defaultValidFilter, Resource.PROFILE);
+        const result = await getPayload(defaultValidFilter, Resources.PROFILE);
         checkProfilePayload(result.payload[0]);
     });
 
     it('should prepare rt license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.rtLicense.toString(), Resource.RT_LICENSE);
+        const result = await getPayload(CDataSetWriterIdLookup.rtLicense.toString(), Resources.RT_LICENSE);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
     });
 
     it('should prepare health payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), Resource.HEALTH, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.health.toString(), Resources.HEALTH, defaultOI4Id.toString());
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
     it('should prepare license text payload', async () => {
         const filter = 'a';
-        const result = await getPayload(filter, Resource.LICENSE_TEXT);
+        const result = await getPayload(filter, Resources.LICENSE_TEXT);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().licenseText.get(filter)));
     });
 
     it('should prepare license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.license.toString(), Resource.LICENSE, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.license.toString(), Resources.LICENSE, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({components: getResourceInfo().license[i].components}));
+                .toBe(JSON.stringify({components: getResourceInfo().license[i].Components}));
         }
     });
 
     it('should prepare publicationList  payload', async () => {
-        const result = await getPayload(Resource.PUBLICATION_LIST, Resource.PUBLICATION_LIST, defaultOI4Id.toString());
+        const result = await getPayload(Resources.PUBLICATION_LIST, Resources.PUBLICATION_LIST, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
+            // TODO change from oi4 to source...just in case it fails
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({ ... getResourceInfo().publicationList[i], oi4Identifier: getResourceInfo().publicationList[i].oi4Identifier.toString() } ));
+                .toBe(JSON.stringify({ ... getResourceInfo().publicationList[i], oi4Identifier: getResourceInfo().publicationList[i].Source.toString() } ));
         }
     });
 
     it('should prepare subscriptionList  payload', async () => {
-        const result = await getPayload(Resource.SUBSCRIPTION_LIST, Resource.SUBSCRIPTION_LIST, defaultOI4Id.toString());
+        const result = await getPayload(Resources.SUBSCRIPTION_LIST, Resources.SUBSCRIPTION_LIST, defaultOI4Id.toString());
         for (let i = 0; i < result.payload.length; i++) {
             const resourceInfo = defaultOi4ApplicationResources.subscriptionList[i];
             expect(JSON.stringify(result.payload[i].Payload)).toBe(JSON.stringify(resourceInfo));
@@ -491,7 +494,7 @@ describe('OI4MessageBus test', () => {
 
     // TODO refactor this test
     it('should prepare config payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), Resource.CONFIG, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.config.toString(), Resources.CONFIG, defaultOI4Id.toString());
         expect(result).toBeDefined();
         //expect(JSON.stringify(result.payload[0].Payload))
         //    .toBe(JSON.stringify(getResourceInfo().config));
@@ -500,23 +503,23 @@ describe('OI4MessageBus test', () => {
     // it('should not prepare anything if resource not found', async () => {
     //     const filter = CDataSetWriterIdLookup.config.toString();
     //     const resource = 'invalid resource';
-    //     const result = await defaultOi4Application.preparePayload(Resource.MAM, '', filter);
+    //     const result = await defaultOi4Application.preparePayload(Resources.MAM, '', filter);
     //     expect(result).toBeUndefined();
     // });
 
     it('should not send resource if error occured in pagination', async () => {
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
         jest.clearAllMocks();
-        await defaultOi4Application.sendResource(Resource.HEALTH, '', '', defaultValidFilter, 1, 20);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 1, 20);
         expect(publish).toBeCalledTimes(0);
         mockOPCUABuilder.mockRestore();
     });
 
     function createEvent(): NamurNE107Event {
-        const event = new NamurNE107Event('fakeOrigin', 0, 'fakeDescription');
-        event.details = {
-            diagnosticCode: 'fakeCode',
-            location: 'fakeLocation',
+        const event = new NamurNE107Event(0, 'fakeDescription');
+        event.Details = {
+            DiagnosticCode: 'fakeCode',
+            Location: 'fakeLocation',
         }
         return event;
     }
@@ -524,18 +527,20 @@ describe('OI4MessageBus test', () => {
     it('should send event', async () => {
         const event = createEvent();
         jest.clearAllMocks();
-        await defaultOi4Application.sendEvent(event, defaultValidFilter);
+        const oi4IdString = defaultOi4ApplicationResources.oi4Id.toString();
+        await defaultOi4Application.sendEvent(event, oi4IdString, defaultValidFilter);
 
-        const expectedPublishAddress = `oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/pub/event/${event.subResource()}/${defaultValidFilter}`;
+        const expectedPublishAddress = `${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/pub/event/${oi4IdString}/${defaultValidFilter}`;
         expect(publish).toHaveBeenCalled();
         expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
     });
 
     it('should send status', async () => {
-        const status: StatusEvent = new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good, 'fake');
-        await defaultOi4Application.sendEventStatus(status);
+        const oi4IdString = defaultOi4ApplicationResources.oi4Id.toString();
+        const status: StatusEvent = new StatusEvent(EOPCUAStatusCode.Good, 'fake');
+        await defaultOi4Application.sendEventStatus(status, oi4IdString);
         expect(publish).toHaveBeenCalledWith(
-            expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resource.EVENT}/status/${encodeURI(`${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}`)}`),
+            expect.stringMatching(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.PUB}/${Resources.EVENT}/status/${encodeURI(`${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}`)}`),
             expect.stringContaining(JSON.stringify(status)));
     });
 
@@ -565,9 +570,9 @@ describe('OI4MessageBus test', () => {
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
         defaultOi4Application.sendEventStatus = jest.fn();
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good));
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
         mock.mockRestore();
     });
@@ -576,27 +581,28 @@ describe('OI4MessageBus test', () => {
         const setConfig = getIOPCUANetworkMessage();
 
         defaultOi4ApplicationResources.config['group-a'] = {
-            name: {Locale: EOPCUALocale.enUS, Text: 'text'},
+            Name: {Locale: EOPCUALocale.enUS, Text: 'text'},
             'config_a': {
-                name: {locale: EOPCUALocale.enUS, text: 'config_a'},
-                value: '1000',
-                type: EOPCUABaseDataType.Number
+                Name: {Locale: EOPCUALocale.enUS, Text: 'config_a'},
+                Value: '1000',
+                Type: EOPCUABaseDataType.Number
             }
         };
         jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
 
         defaultOi4Application.sendEventStatus = jest.fn();
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resource.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(setConfig)), defaultOi4Application.builder, defaultOi4Application);
+        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${TopicMethods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(setConfig)), defaultOi4Application.builder, defaultOi4Application);
 
-        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(defaultOi4ApplicationResources.oi4Id.toString(), EOPCUAStatusCode.Good));
+        // TODO might fail because event has no OI4 origin/source anymore
+        expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(EOPCUAStatusCode.Good));
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
     });
 
     it('should send config with get request', async () => {
         await defaultOi4Application.getConfig();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringMatching(`oi4/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.GET}/${Resource.CONFIG}/${getResourceInfo().oi4Id}`),
+            expect.stringMatching(`${OI4_NS}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${TopicMethods.GET}/${Resources.CONFIG}/${getResourceInfo().oi4Id}`),
             expect.stringContaining(JSON.stringify(defaultOi4ApplicationResources.config)));
     });
 

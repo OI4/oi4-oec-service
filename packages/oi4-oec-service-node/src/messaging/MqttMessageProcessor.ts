@@ -6,13 +6,13 @@ import {
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {TopicInfo, TopicWrapper} from './Types';
-import {PayloadTypes, TopicMethods} from './Enums';
-import {OI4RegistryManager} from '../../application/OI4RegistryManager';
+import {TopicInfo, TopicWrapper, TopicMethods} from '../topic/TopicModel';
+import {TopicParser} from '../topic/TopicParser';
+import {PayloadTypes} from './MessagingModel';
+import {OI4RegistryManager} from '../application/OI4RegistryManager';
 import EventEmitter from 'events';
-import {TopicParser} from './TopicParser';
 import {MessageValidator} from './MessageValidator';
-import {IOI4Application} from '../../application/OI4Application';
+import {IOI4Application} from '../application/OI4Application';
 
 export enum MqttMessageProcessorEventStatus {
     GET_DATA = 'getData',

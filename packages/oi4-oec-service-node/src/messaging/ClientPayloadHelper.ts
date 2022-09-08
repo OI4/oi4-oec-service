@@ -1,4 +1,4 @@
-import {ValidatedPayload} from './Types';
+import {ValidatedPayload} from '../topic/TopicModel';
 import {
     DataSetWriterIdManager,
     EDeviceHealth,

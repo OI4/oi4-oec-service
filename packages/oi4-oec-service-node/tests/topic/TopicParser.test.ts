@@ -1,10 +1,10 @@
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
 import {Resource} from '@oi4/oi4-oec-service-model';
 import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicParser} from '../../../src/Utilities/Helpers/TopicParser';
+import {TopicParser} from '../../../src/utilities/Helpers/TopicParser';
 import {TopicWrapper} from '../../../src';
 import {TopicInfo} from '@oi4/oi4-oec-service-node';
-import {MessageFactory, MessageItems} from '../../Test-utils/Factories/MessageFactory';
+import {MessageFactory, MessageItems} from '../../testUtils/Factories/MessageFactory';
 
 describe('Unit test for TopicParser', () => {
 

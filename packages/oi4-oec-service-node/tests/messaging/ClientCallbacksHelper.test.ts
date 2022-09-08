@@ -1,7 +1,7 @@
-import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {ClientCallbacksHelper} from '../../../src/Utilities/Helpers/ClientCallbacksHelper';
+import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
+import {ClientCallbacksHelper} from '../../src/messaging/ClientCallbacksHelper';
 import mqtt from 'async-mqtt';
-import {getOi4App} from '../../application/OI4Application.test';
+import {getOi4App} from '../application/OI4Application.test';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 
 describe('Unit test for ClientCallbackHelper', () => {

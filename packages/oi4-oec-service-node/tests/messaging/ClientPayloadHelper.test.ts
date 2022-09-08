@@ -1,4 +1,4 @@
-import {ClientPayloadHelper} from '../../../src/Utilities/Helpers/ClientPayloadHelper';
+import {ClientPayloadHelper} from '../../../src/utilities/Helpers/ClientPayloadHelper';
 import {ValidatedPayload} from '../../../src';
 import {
     DataSetWriterIdManager,
@@ -99,7 +99,7 @@ describe('Unit test for ClientPayloadHelper', () => {
             Source: oi4Id.toString(),
             Resource: resource,
             Filter: undefined as string
-        } 
+        }
     }
 
     function createMockedPayloadWithSource(source: string, dataSetWriterId: number, payload: any, filter?: string) {

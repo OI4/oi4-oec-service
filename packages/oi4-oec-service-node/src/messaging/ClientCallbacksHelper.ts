@@ -6,7 +6,7 @@ import {
     DataSetWriterIdManager
 } from '@oi4/oi4-oec-service-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {OI4Application} from '../../application/OI4Application'; /*tslint:disable-line*/
+import {OI4Application} from '../application/OI4Application'; /*tslint:disable-line*/
 
 export class ClientCallbacksHelper {
 

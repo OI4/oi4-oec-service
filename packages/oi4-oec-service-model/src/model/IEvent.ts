@@ -54,7 +54,7 @@ export class StatusEvent extends BaseEvent {
     }
 
     Details: {
-        symbolicId?: string;
+        SymbolicId?: string;
     };
 }
 
@@ -66,8 +66,8 @@ export class NamurNE107Event extends BaseEvent {
     }
 
     Details: {
-        diagnosticCode?: string;
-        location?: string;
+        DiagnosticCode?: string;
+        Location?: string;
     };
 }
 
