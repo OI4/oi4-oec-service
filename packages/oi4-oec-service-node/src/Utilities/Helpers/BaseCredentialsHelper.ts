@@ -1,8 +1,7 @@
 import {Credentials} from '../../application/MqttSettings';
 import {existsSync, readFileSync} from 'fs';
-import {indexOf} from 'lodash';
-import {DefaultMqttSettingsPaths, IMqttSettingsPaths} from "../../Config/SettingsPaths";
-import * as path from "path";
+import {DefaultMqttSettingsPaths, IMqttSettingsPaths} from '../../Config/SettingsPaths';
+import * as path from 'path';
 
 export class BaseCredentialsHelper {
 
@@ -28,7 +27,7 @@ export class BaseCredentialsHelper {
     }
 
     protected static validateAndParseCredentials(decodedCredentials: string): Credentials {
-        const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
+        const usernamePasswordSeparatorPosition = decodedCredentials.indexOf(':');
         if( decodedCredentials.startsWith(':') ||
             usernamePasswordSeparatorPosition == -1) {
             throw new Error('Credentials are does not respect the format "username:password"');
