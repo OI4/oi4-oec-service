@@ -43,5 +43,5 @@
     "test": "jest ",
     "linkIt": "yarn link"
   },
-  "gitHead": "334eba63fdecdf5c522c3158a96932b4e7d237b5"
+  "gitHead": "a6474f680191de29023b4c6767178266c7c75835"
 }
