@@ -1,7 +1,7 @@
 import {
     MqttMessageProcessor,
-} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+} from '../../../src/utilities/Helpers/MqttMessageProcessor';
+import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
 
 export type ProcessorAndMockedData = {
     processor: MqttMessageProcessor;

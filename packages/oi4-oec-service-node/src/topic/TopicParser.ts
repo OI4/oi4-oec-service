@@ -1,11 +1,10 @@
 import {getResource, Resources} from '@oi4/oi4-oec-service-model';
 import {getServiceType, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicInfo, TopicWrapper} from './Types';
-import {getTopicMethod, TopicMethods} from './Enums';
+import {TopicInfo, TopicWrapper, getTopicMethod, TopicMethods} from './TopicModel';
 
 /**
  This TopicParser make a qualitative validation of the topic info, for example checking
- if the TopicInfo attributes components has acceptable values (not null, not empty or undefined)
+ if the TopicModel attributes components has acceptable values (not null, not empty or undefined)
  */
 export class TopicParser {
 

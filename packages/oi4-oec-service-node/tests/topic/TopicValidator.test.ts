@@ -1,6 +1,6 @@
-import {TopicValidator} from '../../../src/Utilities/Helpers/TopicValidator';
-import {TopicInfo} from '../../../src';
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+import {TopicValidator} from '../../../src/utilities/Helpers/TopicValidator';
+import {TopicModel} from '../../../src';
+import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
 import {Resource} from '@oi4/oi4-oec-service-model';
 import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';

@@ -1,4 +1,4 @@
-import {TopicWrapper} from "./Types";
+import {TopicWrapper} from "./TopicModel";
 
 //FIXME: This is just the beginning of a draft, must be evaluated if it is worthy to implement this or not
 

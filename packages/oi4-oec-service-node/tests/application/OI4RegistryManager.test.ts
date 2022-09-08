@@ -2,7 +2,7 @@ import {OI4RegistryManager} from '../../src';
 import {IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger} from '@oi4/oi4-oec-service-logger';
 import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
-import {MockedLoggerFactory} from '../Test-utils/Factories/MockedLoggerFactory';
+import {MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
 
 const defaultOI4Id = new Oi4Identifier('a','b','c','d');
 const parsedMessage: IOPCUANetworkMessage = {

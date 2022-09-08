@@ -15,10 +15,11 @@ import {
     SubscriptionList,
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
-import {ValidatedFilter, ValidatedPayload} from '../Utilities/Helpers/Types';
-import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
-import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
-import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
+import {ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
+import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
+import {ClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
+import {AsyncClientEvents} from '../messaging/MessagingModel';
+import {MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
 import {
     IOPCUADataSetMessage,
     IOPCUANetworkMessage,
@@ -27,8 +28,8 @@ import {
     ServiceTypes
 } from '@oi4/oi4-oec-service-opcua-model';
 import {MqttSettings} from './MqttSettings';
-import {AsyncClientEvents} from '../Utilities/Helpers/Enums';
 import {OI4ResourceEvent} from './OI4Resource';
+import {OI4_NS} from '../topic/TopicModel';
 
 export interface IOI4Application extends EventEmitter {
 
@@ -92,12 +93,12 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
         this.applicationResources = applicationResources;
-        this.topicPreamble = `oi4/${this.serviceType}/${this.oi4Id}`;
+        this.topicPreamble = `${OI4_NS}/${this.serviceType}/${this.oi4Id}`;
 
         this.clientPayloadHelper = clientPayloadHelper;
 
         mqttSettings.will = {
-            topic: `Oi4/${this.serviceType}/${this.oi4Id}/Pub/Health/${this.oi4Id}`,
+            topic: `${OI4_NS}/${this.serviceType}/${this.oi4Id}/Pub/Health/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                 Source: this.oi4Id.toString(),
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),

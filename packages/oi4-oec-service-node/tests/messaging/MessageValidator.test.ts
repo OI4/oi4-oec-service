@@ -2,10 +2,10 @@ import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {MessageValidator} from '../../../src/Utilities/Helpers/MessageValidator';
+import {MessageValidator} from '../../../src/utilities/Helpers/MessageValidator';
 import {MessageFactory, MessageItems} from '../../Test-utils/Factories/MessageFactory';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
 
 describe('Unit test for TopicParser', () => {
 

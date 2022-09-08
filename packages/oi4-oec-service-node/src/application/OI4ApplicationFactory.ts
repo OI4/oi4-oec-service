@@ -1,8 +1,3 @@
-import {
-    BrokerConfiguration,
-    MqttSettings,
-    Credentials,
-} from './MqttSettings';
 // @ts-ignore
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
@@ -10,11 +5,12 @@ import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
-import {BaseCredentialsHelper} from '../Utilities/Helpers/BaseCredentialsHelper';
-import {ClientPayloadHelper} from '../Utilities/Helpers/ClientPayloadHelper';
-import {ClientCallbacksHelper} from '../Utilities/Helpers/ClientCallbacksHelper';
-import {DefaultSettingsPaths, ISettingsPaths} from '../Config/SettingsPaths';
-import {MqttMessageProcessor} from '../Utilities/Helpers/MqttMessageProcessor';
+import {BrokerConfiguration, Credentials, MqttSettings} from './MqttSettings';
+import {DefaultSettingsPaths, ISettingsPaths} from '../configuration/SettingsPaths';
+import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
+import {ClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
+import {MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
+import {BaseCredentialsHelper} from '../utilities/BaseCredentialsHelper';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const MQTTS = 'mqtts';
@@ -53,7 +49,7 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
     }
 
     createOI4Application(): OI4Application {
-        if(this.builder === undefined) {
+        if (this.builder === undefined) {
             this.initialize();
         }
         return this.builder.build();

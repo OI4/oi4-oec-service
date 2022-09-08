@@ -1,6 +1,6 @@
 import {OI4ApplicationResources} from '../../src';
 import {OI4ResourceEvent} from '../../src/application/OI4Resource';
-import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
 import {IMasterAssetModel, Oi4Identifier, EOPCUALocale, EOPCUABaseDataType} from '@oi4/oi4-oec-service-opcua-model';
 import {EDeviceHealth, Health, IContainerConfig, IOI4Resource, PublicationList, PublicationListMode, PublicationListConfig, Resource, IContainerConfigGroupName, IContainerConfigConfigName} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');

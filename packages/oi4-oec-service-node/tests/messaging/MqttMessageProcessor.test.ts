@@ -1,14 +1,14 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
 import {MqttMessageProcessor, OI4RegistryManager} from '../../../src';
 import {MockedOPCUABuilderFactory} from '../../Test-utils/Factories/MockedOPCUABuilderFactory';
-import {TopicMethods} from '../../../src/Utilities/Helpers/Enums';
+import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
 import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
 import {MockOi4Application} from '../../Test-utils/Factories/MockedOi4Application';
 import {MockedIApplicationResourceFactory} from '../../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {MqttMessageProcessorEventStatus} from '../../../src/Utilities/Helpers/MqttMessageProcessor';
+import {MqttMessageProcessorEventStatus} from '../../../src/utilities/Helpers/MqttMessageProcessor';
 
 describe('Unit test for MqttMessageProcessor', () => {
 
