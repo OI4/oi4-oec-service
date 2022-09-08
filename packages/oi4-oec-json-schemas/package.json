@@ -33,5 +33,6 @@
     "build": "yarn run clean && node src/builder/builder.js &&  tsc -b tsconfig.json",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "lint": "eslint ."
-  }
+  },
+  "gitHead": "a6474f680191de29023b4c6767178266c7c75835"
 }
