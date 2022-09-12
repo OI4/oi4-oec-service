@@ -1,7 +1,7 @@
 {
-  "$id": "configPublish.schema.json",
+  "$id": "Config.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of a publish configuration message",
+  "description": "A representation of a config message",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
@@ -100,7 +100,7 @@
       "type": "object",
       "minProperties": 2,
       "required": [
-        "Name"
+        "Nme"
       ],
       "additionalProperties": {
         "$ref": "LocalizedText.schema.json"
@@ -132,4 +132,3 @@
     }
   }
 }
-

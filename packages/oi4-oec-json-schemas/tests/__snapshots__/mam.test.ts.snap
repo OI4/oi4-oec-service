@@ -50,21 +50,21 @@ received
 [31m[39m[31m  /HardwareRevision must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
 [31m    Path:     mam.schema.json#/properties/HardwareRevision/type[39m
-[31m[39m[31m  /Manufacturer/locale must be string[39m
+[31m[39m[31m  /Manufacturer/Locale must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
 [31m    Path:     mam.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Manufacturer/text must be string[39m
+[31m[39m[31m  /Manufacturer/Text must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/text/type[39m
+[31m    Path:     mam.schema.json#/properties/Text/type[39m
 [31m[39m[31m  /ManufacturerUri must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
 [31m    Path:     mam.schema.json#/properties/ManufacturerUri/type[39m
-[31m[39m[31m  /Model/locale must be string[39m
+[31m[39m[31m  /Model/Locale must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
 [31m    Path:     mam.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Model/text must be string[39m
+[31m[39m[31m  /Model/Text must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/text/type[39m
+[31m    Path:     mam.schema.json#/properties/Text/type[39m
 [31m[39m[31m  /ProductCode must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
 [31m    Path:     mam.schema.json#/properties/ProductCode/type[39m

@@ -20,7 +20,7 @@ export const buildOpcUaJsonValidator = () => {
     // OPC UA common Schemas
     jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');
     jsonValidator.addSchema(ConfigurationVersionDataTypeSchemaJson, 'ConfigurationVersionDataType.schema.json');
-    jsonValidator.addSchema(oi4IdentifierSchemaJson, 'oi4Identifier.schema.json');
+    jsonValidator.addSchema(oi4IdentifierSchemaJson, 'Oi4Identifier.schema.json');
     jsonValidator.addSchema(DataSetMessageSchemaJson, 'DataSetMessage.schema.json');
     jsonValidator.addSchema(LocalizedTextSchemaJson, 'LocalizedText.schema.json');
 

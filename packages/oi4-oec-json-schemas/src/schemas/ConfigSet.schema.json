@@ -1,7 +1,7 @@
 {
-  "$id": "config.schema.json",
+  "$id": "ConfigSet.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of a config message",
+  "description": "A representation of a set configuration message",
   "type": "object",
   "additionalProperties": false,
   "definitions": {
@@ -9,8 +9,6 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "Name",
-        "Type",
         "Value"
       ],
       "properties": {
@@ -37,7 +35,7 @@
         },
         "Validation": {
           "type": "object",
-          "description": "",
+		      "additionalProperties": false,
           "minProperties": 1,
           "readOnly": true,
           "properties": {
@@ -98,10 +96,8 @@
     },
     "groupConfig": {
       "type": "object",
-      "minProperties": 2,
-      "required": [
-        "Nme"
-      ],
+      "minProperties": 1,
+      "required": [],
       "additionalProperties": {
         "$ref": "LocalizedText.schema.json"
       },

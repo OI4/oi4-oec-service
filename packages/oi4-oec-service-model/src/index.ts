@@ -4,6 +4,7 @@ export * from './model/DatatSetClassIds';
 export * from './model/Resources';
 export * from './model/IContainer';
 export * from './model/IEvent';
+export * from './model/Methods';
 export * from './model/Profiles';
 export * from './model/Payload';
 export * from './model/IOI4ApplicationResources'

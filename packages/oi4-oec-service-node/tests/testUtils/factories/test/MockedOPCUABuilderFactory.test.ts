@@ -61,9 +61,9 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         expect(valid.MessageType).toBe(EOPCUAMessageType.uaData);
         expect(valid.PublisherId).toBe('2');
         expect(valid.DataSetWriterId).toBe(3);
-        expect(valid.filter).toBe(filter);
-        expect(valid.source).toBe(source);
-        expect(valid.correlationId).toBe(correlationId);
+        expect(valid.Filter).toBe(filter);
+        expect(valid.Source).toBe(source);
+        expect(valid.CorrelationId).toBe(correlationId);
         expect(valid.MetaData).toStrictEqual({});
     });
 

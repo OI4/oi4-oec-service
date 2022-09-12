@@ -551,7 +551,7 @@ components:
       summary: A blank message to transmit no data.
       contentType: application/json
       payload:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/empty.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/Empty.schema.json'
 
   #############################
   # AsyncAPI correlationIds   #
@@ -579,7 +579,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/mam.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/MAM.schema.json'
     health:
       type: object
       properties:
@@ -594,7 +594,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/health.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/Health.schema.json'
     config:
       type: object
       properties:
@@ -609,7 +609,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/configPublish.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/ConfigPublish.schema.json'
     license:
       type: object
       properties:
@@ -624,7 +624,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/license.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/License.schema.json'
     licenseText:
       type: object
       properties:
@@ -639,7 +639,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/licenseText.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/LicenseText.schema.json'
     rtLicense:
       type: object
       properties:
@@ -654,7 +654,7 @@ components:
         - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/DataSetMessageBase.schema.json'
       properties:
         Payload:
-          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/rtLicense.schema.json'
+          $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/RtLicense.schema.json'
     tagString:
       type: string
       pattern: "[\\w\\d%\\.-]{1,255}"
@@ -685,12 +685,12 @@ components:
     oi4Identifier:
       description: The oi4Identifier, in the form of <ManufacturerUri/Model/ProductCode/SerialNumber>, represents a DIN SPEC 91406 conform URI and can be broken down into its components, resulting in further filtering options on topics (e.g. all applications from manufacturer A, or the assets of type B).
       schema:
-        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/oi4Identifier.schema.json'
+        $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/Oi4Identifier.schema.json'
     tag:
       description: The tag defines the point of interest, which can be addressed through three different ways. The payload of a tag is always a previously defined DataSet, represented via tag, DataSetWriterId or the oi4Identifier of an asset.
       schema:
         oneOf:
-          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/oi4Identifier.schema.json'
+          - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/Oi4Identifier.schema.json'
           - $ref: '../../node_modules/@oi4/oi4-oec-json-schemas/src/schemas/dataTypes/uint16.schema.json'
           - $ref: '#/components/schemas/tagString'
 

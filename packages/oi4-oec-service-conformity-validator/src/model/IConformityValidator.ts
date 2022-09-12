@@ -3,7 +3,7 @@ import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
 
 export interface IConformity {
     oi4Id: EValidity;
-    resource: Record<string, IValidityDetails>;
+    resources: Record<string, IValidityDetails>;
     checkedResourceList: Resources[];
     profileResourceList: Resources[];
     nonProfileResourceList: Resources[];

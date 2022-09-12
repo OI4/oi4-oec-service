@@ -17,7 +17,7 @@ import {
     MasterAssetModel,
     Profile,
     PublicationList,
-    Resource,
+    Resources,
     RTLicense, SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 import {extractProductInstanceUri} from '../../../src/application/OI4Resource';
@@ -29,33 +29,33 @@ export class MockedIApplicationResourceFactory {
 
     public static getMockedIApplicationResourceInstance = (mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel()): IOI4ApplicationResources => {
         return {
-            Source: new Map<string, IOI4ApplicationResources>(),
+            sources: new Map<string, IOI4ApplicationResources>(),
             config: {
                 'group_a': {
-                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
                     'config_a': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                     'config_b': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
                 },
                 'group_b': {
-                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
                     'config_ab': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                     'config_bb': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
                 },
                 'group_c': {
-                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                    Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
                     'config_ac': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                     'config_bc': MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
                 },
-                context: {name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeContext')},
+                context: {Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeContext')},
                 logging: {
                     auditLevel: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                     logFileSize: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                     logType: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
-                    name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName')
+                    Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName')
                 },
                 registry:
                     {
-                        name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
+                        Name: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeName'),
                         description: MockedIApplicationResourceFactory.getMockedIOPCUALocalizedText('fakeDescription'),
                         developmentMode: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig(),
                         showRegistry: MockedIApplicationResourceFactory.getMockedDefaultStandardIContainerConfig()
@@ -86,7 +86,7 @@ export class MockedIApplicationResourceFactory {
                 console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
                 return this.license;
             },
-            getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
+            getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): PublicationList[] {
                 console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
                     if (elem.Source.toString() !== oi4Id.toString()) return false;
@@ -95,7 +95,7 @@ export class MockedIApplicationResourceFactory {
                     return true;
                 });
             },
-            getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
+            getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[] {
                 console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.subscriptionList;
             }, getHealth(oi4Id: Oi4Identifier): Health {
@@ -136,7 +136,7 @@ export class MockedIApplicationResourceFactory {
     };
 
     private static getMockedDefaultIContainerConfigValidation() {
-        return {length: 0, min: 0, max: 0, pattern: 'fakePattern', values: ['fakeValue']}
+        return {Length: 0, Min: 0, Max: 0, Pattern: 'fakePattern', Values: ['fakeValue']}
     }
 
     private static getDefaultKeyValueItem() {
@@ -194,12 +194,12 @@ export class MockedIApplicationResourceFactory {
     private static getMockedPublicationList(): PublicationList[] {
         return [
             PublicationList.clone({
-                Resource: Resource.HEALTH,
+                Resource: Resources.HEALTH,
                 DataSetWriterId: 42,
                 Source: MockedIApplicationResourceFactory.OI4_ID,
             } as PublicationList),
             PublicationList.clone({
-                Resource: Resource.EVENT,
+                Resource: Resources.EVENT,
                 DataSetWriterId: 43,
                 Filter: 'fakeFilter',
                 Source: Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`),

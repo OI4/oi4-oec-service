@@ -1,12 +1,13 @@
 import {
     ESyslogEventFilter,
     IContainerConfig,
+    Methods,
     Resources,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {TopicInfo, TopicWrapper, TopicMethods} from '../topic/TopicModel';
+import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {TopicParser} from '../topic/TopicParser';
 import {PayloadTypes} from './MessagingModel';
 import {OI4RegistryManager} from '../application/OI4RegistryManager';
@@ -61,19 +62,19 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         // The message is directed directly at us
         if (topicInfo?.appId?.equals(oi4Application.oi4Id)) {
             switch (topicInfo.method) {
-                case TopicMethods.GET: {
+                case Methods.GET: {
                     await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);
                     break;
                 }
-                case TopicMethods.PUB: {
+                case Methods.PUB: {
                     LOGGER.log('No reaction needed to our own publish event', ESyslogEventFilter.informational);
                     break; // Only break here, because we should not react to our own publication messages
                 }
-                case TopicMethods.SET: {
+                case Methods.SET: {
                     await this.executeSetActions(topicInfo, parsedMessage, oi4Application);
                     break;
                 }
-                case TopicMethods.DEL: {
+                case Methods.DEL: {
                     await this.executeDelActions(topicInfo, oi4Application);
                     break;
                 }

@@ -13,7 +13,7 @@ import {
     DataSetClassIds,
     Device,
     EAssetType,
-    ESyslogEventFilter,
+    ESyslogEventFilter, Methods,
     Resources
 } from '@oi4/oi4-oec-service-model';
 
@@ -65,7 +65,7 @@ export class ConformityValidator {
         return {
             oi4Id: EValidity.default,
             validity: EValidity.default,
-            resource: {},
+            resources: {},
             checkedResourceList: [],
             profileResourceList: [],
             nonProfileResourceList: [],
@@ -82,7 +82,7 @@ export class ConformityValidator {
      */
     async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resources[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
-        LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.warning);
+        LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.informational);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
@@ -92,7 +92,6 @@ export class ConformityValidator {
         let resObj: IValidityDetails; // Container for validation results
 
         try {
-
             if (source == undefined) {
                 const topicArray = topicPreamble.split('/');
                 const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
@@ -113,11 +112,11 @@ export class ConformityValidator {
         conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
 
         try {
-            conformityObject.resource['profile'] = await this.checkProfileConformity(topicPreamble, assetType, source);
-            conformityObject.profileResourceList = conformityObject.resource.profile.dataSetMessages[0].Payload.resource;
+            conformityObject.resources[Resources.PROFILE] = await this.checkProfileConformity(topicPreamble, assetType, source);
+            conformityObject.profileResourceList = conformityObject.resources.Profile.dataSetMessages[0].Payload.resource;
 
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
-            conformityObject.resource['profile'] = {
+            conformityObject.resources[Resources.PROFILE] = {
                 dataSetMessages: [],
                 validity: EValidity.nok,
                 validityErrors: ['Timeout on Resource'],
@@ -134,10 +133,10 @@ export class ConformityValidator {
                     if (ConformityValidator.completeProfileList.includes(resource)) { // Second condition is for checking if the profile event meets OI4-Standards
                         checkList.push(resource);
                     } else { // If we find resource which are not part of the oi4 standard, we don't check them but we mark them as an error
-                        conformityObject.resource[resource] = {
+                        conformityObject.resources[resource] = {
                             dataSetMessages: [],
                             validity: EValidity.nok,
-                            validityErrors: ['Resource is unknown to oi4'],
+                            validityErrors: ['Resource is unknown to OI4'],
                         };
                     }
                 }
@@ -253,13 +252,13 @@ export class ConformityValidator {
             }
 
             if (resObj.validity === EValidity.ok || resObj.validity === EValidity.default) { // Set the validity according to the results
-                conformityObject.resource[resource] = resObj;
+                conformityObject.resources[resource] = resObj;
             } else {
                 errorSoFar = true;
             }
 
             // Finally, assign the temporary ResObj to the conformityObject
-            conformityObject.resource[resource] = {
+            conformityObject.resources[resource] = {
                 validity: resObj.validity,
                 validityErrors: resObj.validityErrors,
                 dataSetMessages: resObj.dataSetMessages,
@@ -304,14 +303,14 @@ export class ConformityValidator {
         const profileDataSetMessage = resObj.dataSetMessages;
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         const profilePayload = profileDataSetMessage[0].Payload;
-        if (!(mandatoryResourceList.every(i => profilePayload.resource.includes(i)))) {
+        if (!(mandatoryResourceList.every(i => profilePayload.Resources.includes(i)))) {
             resObj.validity = EValidity.partial;
             resObj.validityErrors.push('Not every mandatory in resource list of profile.');
         }
 
-        if (profilePayload.resource.includes('data') && !profilePayload.resource.includes('metadata')) {
+        if (profilePayload.Resources.includes(Resources.DATA) && !profilePayload.Resources.includes(Resources.METADATA)) {
             resObj.validity = EValidity.partial;
-            resObj.validityErrors.push('Profile contains the resource "data" but not "metadata".');
+            resObj.validityErrors.push(`Profile contains the resource "${Resources.DATA}" but not "${Resources.METADATA}".`);
         }
 
         return resObj;
@@ -349,12 +348,12 @@ export class ConformityValidator {
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
         const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, source, filter);
 
-        const getTopic = getRequest.getTopic('get');
-        const pubTopic = getRequest.getTopic('pub');
+        const getTopic = getRequest.getTopic(Methods.GET);
+        const pubTopic = getRequest.getTopic(Methods.PUB);
 
-        LOGGER.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        LOGGER.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
         const response = await this.messageBusLookup.getMessage(getRequest);
-        LOGGER.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
+        LOGGER.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
 
         const errorMsgArr = [];
         const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUANetworkMessage;
@@ -437,7 +436,7 @@ export class ConformityValidator {
                         const schemaName = ConformityValidator.getPubPayloadSchema(resource);
                         payloadValidationResult = await this.jsonValidator.validate(schemaName, payloads.Payload);
                         if (!payloadValidationResult) {
-                            const paginationResult = await this.jsonValidator.validate('pagination.schema.json', payloads.Payload);
+                            const paginationResult = await this.jsonValidator.validate('Pagination.schema.json', payloads.Payload);
                             if (!paginationResult) break; // No need to further check messages, we already have an error
                             payloadValidationResult = true; // If it was a conform pagination object, we accept it
                         }
@@ -480,7 +479,7 @@ export class ConformityValidator {
     private static getPubPayloadSchema(resource: Resources): string {
         switch (resource) {
             case Resources.CONFIG:
-                return 'configPublish.schema.json';
+                return 'ConfigPublish.schema.json';
 
             default:
                 return `${resource}.schema.json`;

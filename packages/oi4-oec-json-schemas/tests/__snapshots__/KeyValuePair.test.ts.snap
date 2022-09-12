@@ -4,9 +4,9 @@ exports[`KeyValuePair schema (0) match fails for invalid config -> empty: empty 
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'key'[39m
+[31m  must have required property 'Key'[39m
 [31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  must have required property 'value'[39m
+[31m[39m[31m  must have required property 'Value'[39m
 [31m    Path:     KeyValuePair.schema.json#/required[39m
 [31m[39m"
 `;
@@ -15,10 +15,10 @@ exports[`KeyValuePair schema (1) match fails for invalid config -> empty key: em
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /key must have required property 'name'[39m
+[31m  /Key must have required property 'Name'[39m
 [31m    Received: [33m<object> [39m[31m{}[39m
 [31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  /key must have required property 'namespaceIndex'[39m
+[31m[39m[31m  /Key must have required property 'NamespaceIndex'[39m
 [31m    Received: [33m<object> [39m[31m{}[39m
 [31m    Path:     KeyValuePair.schema.json#/required[39m
 [31m[39m"
@@ -28,12 +28,12 @@ exports[`KeyValuePair schema (2) match fails for invalid config -> invalid key: 
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /key must have required property 'namespaceIndex'[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}[39m
+[31m  /Key must have required property 'NamespaceIndex'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}[39m
 [31m    Path:     KeyValuePair.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'nameSpaceIndex'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'NameSpaceIndex'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"nameSpaceIndex\\":0}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}[39m
 [31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
 [31m[39m"
 `;
@@ -42,7 +42,7 @@ exports[`KeyValuePair schema (3) match fails for invalid config -> invalid key p
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /key/namespaceIndex must be integer[39m
+[31m  /Key/NamespaceIndex must be integer[39m
 [31m    Received: [33m<string>[39m[31m 0[39m
 [31m    Path:     KeyValuePair.schema.jsondataTypes/uint16.schema.json/type[39m
 [31m[39m"
@@ -57,7 +57,7 @@ received
 [31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
 [31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"name\\":\\"\\",\\"namespaceIndex\\":0,\\"foo\\":\\"bar\\"}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NamespaceIndex\\":0,\\"foo\\":\\"bar\\"}[39m
 [31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
 [31m[39m"
 `;

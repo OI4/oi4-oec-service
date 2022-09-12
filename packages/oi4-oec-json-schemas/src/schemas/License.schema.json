@@ -1,5 +1,5 @@
 {
-  "$id": "license.schema.json",
+  "$id": "License.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "License Schema",
   "type": "object",
@@ -10,7 +10,7 @@
       "type": "array",
       "description": "The components list contains all software components, which are licensed under the same license. Both, the DataSetWriterId and the Filter from the DataSetMessage header are related to that License",
       "items": {
-        "$ref": "#/definitions/componentsObject"
+        "$ref": "#/definitions/ComponentsObject"
       }
     }
   },
@@ -20,7 +20,7 @@
       "additionalProperties": false,
       "required": ["Component"],
       "properties": {
-        "component": {
+        "Component": {
           "description": "This is the name of the component, which uses the license names in the father object",
           "type": "string"
         },

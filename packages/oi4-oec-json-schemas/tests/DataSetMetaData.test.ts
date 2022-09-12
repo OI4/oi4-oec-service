@@ -16,7 +16,7 @@ import fieldMetaDataSchema from '../src/schemas/FieldMetaData.schema.json'
 import nodeIdSchema from '../src/schemas/NodeId.schema.json'
 import structureDescription from '../src/schemas/StructureDescription.schema.json'
 import simpleTypeDescription from '../src/schemas/SimpleTypeDescription.schema.json'
-import oi4Identifier from '../src/schemas/oi4Identifier.schema.json'
+import oi4Identifier from '../src/schemas/Oi4Identifier.schema.json'
 
 import validObjs from './__fixtures__/DataSetMetaData_valid.json'
 import invalidObjs from './__fixtures__/DataSetMetaData_invalid.json'
@@ -27,7 +27,7 @@ expect.extend(
     // Loading in a schema which is comprised only of definitions,
     // which means specific test schemas need to be created.
     // This is good for testing specific conditions for definition schemas.
-    schemas: [uint16, uint32, int32, byte, localizedTextSchema, locale, 
+    schemas: [uint16, uint32, int32, byte, localizedTextSchema, locale,
       keyValuePair, qualifiedName, baseDataType, enumDescription, structureDescription,
     simpleTypeDescription, oi4Identifier],
     verbose: true,
@@ -43,14 +43,14 @@ describe('DataSetMetaData schema', () => {
     it('validate schema', () => {
       expect(schema).toBeValidSchema()
     })
-  
+
     it.each(validObjs as [])(
       '(%#) match valid config object to schema -> %s',
       (_name: string, obj) => {
         expect(obj).toMatchSchema(schema)
       }
     )
-  
+
     it.each(invalidObjs as [])(
       '(%#) match fails for invalid config -> %s',
       (name: string, obj) => {

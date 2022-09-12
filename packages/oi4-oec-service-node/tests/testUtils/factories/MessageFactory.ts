@@ -1,4 +1,4 @@
-import {DataSetClassIds, Resource} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, Resources} from '@oi4/oi4-oec-service-model';
 import {TopicMethods} from '../../../src';
 import {EOPCUAMessageType, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {TopicInfo, TopicWrapper} from '@oi4/oi4-oec-service-node';
@@ -6,7 +6,7 @@ import {TopicInfo, TopicWrapper} from '@oi4/oi4-oec-service-node';
 export type MessageItems = {
     serviceType: ServiceTypes;
     method: TopicMethods;
-    resource: Resource;
+    resource: Resources;
     category: string;
     oi4Id: Oi4Identifier;
     topic: string;
@@ -29,7 +29,7 @@ export class MessageFactory {
         const appId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
         const oi4Id = Oi4Identifier.fromString('2/2/2/2');
         const method: TopicMethods = TopicMethods.GET;
-        const resource: Resource = Resource.MAM;
+        const resource: Resources = Resources.MAM;
         const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;
         const source = 'fakeSource';
         const licenseId = '1234';
@@ -88,7 +88,7 @@ export class MessageFactory {
 
     };
 
-    public static getDefaultParsedMessage(publisherId = '', resource: Resource = Resource.MAM): IOPCUANetworkMessage {
+    public static getDefaultParsedMessage(publisherId = '', resource: Resources = Resources.MAM): IOPCUANetworkMessage {
         return {
             MessageId: 'fakeMessageId',
             MessageType: EOPCUAMessageType.uaData,

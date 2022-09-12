@@ -1,15 +1,15 @@
 {
-  "$id": "health.schema.json",
+  "$id": "Health.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
   "required": ["Health"],
   "properties": {
-    "health": {
+    "Health": {
       "$ref": "constants/DeviceHealthEnumeration.schema.json"
     },
-    "healthScore": {
+    "HealthScore": {
       "type": "integer",
       "minimum": 0,
       "maximum": 100

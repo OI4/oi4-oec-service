@@ -1,5 +1,5 @@
 // Base
-import oi4IdentifierSchemaJson from './schemas/oi4Identifier.schema.json';
+import oi4IdentifierSchemaJson from './schemas/Oi4Identifier.schema.json';
 
 // Constants
 import resourcesSchemaJson from './schemas/constants/resources.schema.json';
@@ -8,28 +8,28 @@ import serviceTypeSchemaJson from './schemas/constants/serviceType.schema.json';
 import DeviceHealthEnumerationSchemaJson from './schemas/constants/DeviceHealthEnumeration.schema.json';
 
 // Payloads
-import healthSchemaJson from './schemas/health.schema.json';
-import mamSchemaJson from './schemas/mam.schema.json';
-import licenseSchemaJson from './schemas/license.schema.json';
-import licenseTextSchemaJson from './schemas/licenseText.schema.json';
-import profileSchemaJson from './schemas/profile.schema.json';
-import eventSchemaJson from './schemas/event.schema.json';
-import rtLicenseSchemaJson from './schemas/rtLicense.schema.json';
-import configSchemaJson from './schemas/config.schema.json';
-import publicationListSchemaJson from './schemas/publicationList.schema.json';
-import subscriptionListSchemaJson from './schemas/subscriptionList.schema.json';
-import referenceDesignationSchemaJson from './schemas/referenceDesignation.schema.json';
-import localeSchemaJson from './schemas/locale.schema.json';
-import paginationSchemaJson from './schemas/pagination.schema.json';
-import interfacesSchemaJson from './schemas/interfaces.schema.json';
+import healthSchemaJson from './schemas/Health.schema.json';
+import mamSchemaJson from './schemas/MAM.schema.json';
+import licenseSchemaJson from './schemas/License.schema.json';
+import licenseTextSchemaJson from './schemas/LicenseText.schema.json';
+import profileSchemaJson from './schemas/Profile.schema.json';
+import eventSchemaJson from './schemas/Event.schema.json';
+import rtLicenseSchemaJson from './schemas/RtLicense.schema.json';
+import configSchemaJson from './schemas/Config.schema.json';
+import publicationListSchemaJson from './schemas/PublicationList.schema.json';
+import subscriptionListSchemaJson from './schemas/SubscriptionList.schema.json';
+import referenceDesignationSchemaJson from './schemas/ReferenceDesignation.schema.json';
+import localeSchemaJson from './schemas/Locale.schema.json';
+import paginationSchemaJson from './schemas/Pagination.schema.json';
+import interfacesSchemaJson from './schemas/Interfaces.schema.json';
 
 import NetworkMessageSchemaJson from './schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from './schemas/ConfigurationVersionDataType.schema.json';
 import DataSetMessageSchemaJson from './schemas/DataSetMessage.schema.json';
 import LocalizedTextSchemaJson from './schemas/LocalizedText.schema.json';
-import configPublishSchemaJson from './schemas/configPublish.schema.json';
-import configSetSchemaJson from './schemas/configSet.schema.json';
-import dataPVSchemaJson from './schemas/dataPV.schema.json';
+import configPublishSchemaJson from './schemas/ConfigPublish.schema.json';
+import configSetSchemaJson from './schemas/ConfigSet.schema.json';
+import dataPVSchemaJson from './schemas/DataPV.schema.json';
 
 import DataSetMetaDataSchemaJson from './schemas/DataSetMetaData.schema.json';
 import DataSetMetaDataTypeSchemaJson from './schemas/DataSetMetaDataType.schema.json';
@@ -85,10 +85,10 @@ export {
     configSetSchemaJson,
     interfacesSchemaJson,
     dataPVSchemaJson,
-    
+
     DataSetMetaDataSchemaJson,
     DataSetMetaDataTypeSchemaJson,
-    FieldMetaDataSchemaJson, 
+    FieldMetaDataSchemaJson,
     EnumDescriptionSchemaJson,
     StructureDescriptionSchemaJson,
     SimpleTypeDescriptionSchemaJson,

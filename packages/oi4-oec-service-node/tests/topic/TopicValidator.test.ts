@@ -1,8 +1,6 @@
-import {TopicValidator} from '../../../src/utilities/Helpers/TopicValidator';
-import {TopicModel} from '../../../src';
-import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
+import {TopicInfo, TopicValidator, TopicMethods} from '../../src';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
-import {Resource} from '@oi4/oi4-oec-service-model';
+import {Resources} from '@oi4/oi4-oec-service-model';
 import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for TopicParser', () => {
@@ -11,7 +9,7 @@ describe('Unit test for TopicParser', () => {
         topic: '',
         appId: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         method: TopicMethods.GET,
-        resource: Resource.MAM,
+        resource: Resources.MAM,
         oi4Id: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         category: '',
         serviceType: ServiceTypes.REGISTRY,

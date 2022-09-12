@@ -1,5 +1,5 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/oi4Identifier.schema.json'
+import schema from '../src/schemas/Oi4Identifier.schema.json'
 
 expect.extend(
   matchersWithOptions({
