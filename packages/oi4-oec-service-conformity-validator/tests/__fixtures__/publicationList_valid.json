@@ -61,8 +61,8 @@
         "Source": "openindustry4.com/nd/nd/nd",
         "Filter": "oee",
         "DataSetWriterId": 93,
-        "mode": "APPLICATION_SOURCE_FILTER_8",
-        "config": "MODE_AND_INTERVAL_3"
+        "Mode": "APPLICATION_SOURCE_FILTER_8",
+        "Config": "MODE_AND_INTERVAL_3"
       }
     }
   ]

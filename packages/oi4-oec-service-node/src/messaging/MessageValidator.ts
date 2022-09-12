@@ -1,6 +1,6 @@
-import {TopicInfo, TopicWrapper, TopicMethods} from '../topic/TopicModel';
+import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, ESyslogEventFilter, Resources} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 
 /**
@@ -93,7 +93,7 @@ export class MessageValidator {
     }
 
     private static checkAgainstMalformedTopicLength10(info: TopicInfo) {
-        return info.method !== TopicMethods.PUB || info.resource !== Resources.EVENT;
+        return info.method !== Methods.PUB || info.resource !== Resources.EVENT;
     }
 
     private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resources>) {
@@ -119,16 +119,16 @@ export class MessageValidator {
 
     private static checkAgainstResources(info: TopicInfo, allowedGetResources: Array<Resources>, allowedPubResources: Array<Resources>, allowedSetResources: Array<Resources> = [], allowedDelResources: Array<Resources> = []) {
         switch(info.method) {
-            case TopicMethods.GET: {
+            case Methods.GET: {
                 return !allowedGetResources.includes(info.resource);
                 break;
-            };case TopicMethods.PUB: {
+            };case Methods.PUB: {
                 return !allowedPubResources.includes(info.resource);
                 break;
-            };case TopicMethods.SET: {
+            };case Methods.SET: {
                 return !allowedSetResources.includes(info.resource);
                 break;
-            };case TopicMethods.DEL: {
+            };case Methods.DEL: {
                 return !allowedDelResources.includes(info.resource);
                 break;
             };

@@ -1,36 +1,36 @@
 {
-  "$id": "referenceDesignation.schema.json",
+  "$id": "ReferenceDesignation.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a ReferenceDesignation",
   "type": "object",
   "additionalProperties": false,
   "required": [],
   "properties": {
-    "function": {
+    "Function": {
       "$ref": "#/definitions/referenceDesignationObject"
     },
-    "product": {
+    "Product": {
       "$ref": "#/definitions/referenceDesignationObject"
     },
-    "location": {
+    "Location": {
       "$ref": "#/definitions/referenceDesignationObject"
     }
   },
   "definitions": {
     "referenceDesignationObject": {
       "type": "object",
-      "required": ["value"],
+      "required": ["Value"],
       "additionalProperties": false,
       "properties": {
-        "value": {
+        "Value": {
           "type": "string",
           "readOnly": false
         },
-        "local": {
+        "Local": {
           "type": "string",
           "readOnly": false
         },
-        "parent": {
+        "Parent": {
           "type": "object",
           "$ref": "#/definitions/referenceDesignationParent",
           "readOnly": false
@@ -42,15 +42,15 @@
       "required": ["value"],
       "additionalProperties": false,
       "properties": {
-        "value": {
+        "Value": {
           "type": "string",
           "readOnly": false
         },
-        "local": {
+        "Local": {
           "type": "string",
           "readOnly": false
         },
-        "oi4Identifier": {
+        "Oi4Identifier": {
           "type": "string",
           "readOnly": false
         }

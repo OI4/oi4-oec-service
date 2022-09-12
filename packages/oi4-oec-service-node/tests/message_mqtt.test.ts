@@ -7,7 +7,7 @@ import {
     IOI4ApplicationResources,
     IOI4Resource,
     MasterAssetModel,
-    Resource,
+    Resources,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
@@ -27,10 +27,10 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         oi4Id: new Oi4Identifier('a','b','c','d'),
         getHealth(_: string): Health {
             return {
-                resourceType(): Resource {
-                    return Resource.HEALTH;
+                resourceType(): Resources {
+                    return Resources.HEALTH;
                 },
-                health: EDeviceHealth.NORMAL_0, healthScore: 0
+                Health: EDeviceHealth.NORMAL_0, HealthScore: 0
             };
         },
         mam: MasterAssetModel.clone({

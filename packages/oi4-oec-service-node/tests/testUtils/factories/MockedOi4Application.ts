@@ -2,13 +2,14 @@ import {IOI4Application} from '../../../dist/application/OI4Application';
 import {
     IEvent,
     IOI4ApplicationResources,
-    MasterAssetModel, Resource,
+    MasterAssetModel,
+    Resources,
     StatusEvent,
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {ClientPayloadHelper} from '../../../dist/Utilities/Helpers/ClientPayloadHelper';
+import {ClientPayloadHelper} from '../../../src';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import EventEmitter from 'events';
 
@@ -31,7 +32,7 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
         return Promise.resolve(undefined);
     }
 
-    get oi4Id(){
+    get oi4Id() {
         return this.applicationResources.oi4Id;
     }
 
@@ -69,7 +70,7 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
         return Promise.resolve(undefined);
     }
 
-    sendResource(resource: Resource, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void> {
+    sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void> {
         LOGGER.log(`sendResource called with resource: ${resource}, messageId: ${messageId}, source: ${source}, filter: ${filter}, page: ${page}, perPage: ${perPage}`);
         return Promise.resolve(undefined);
     }

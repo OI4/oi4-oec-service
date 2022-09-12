@@ -1,5 +1,5 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import configSchema from '../src/schemas/configPublish.schema.json'
+import configSchema from '../src/schemas/ConfigPublish.schema.json'
 import localizationSchema from '../src/schemas/LocalizedText.schema.json'
 import localeSchema from '../src/schemas/constants/locale.pattern.schema.json'
 

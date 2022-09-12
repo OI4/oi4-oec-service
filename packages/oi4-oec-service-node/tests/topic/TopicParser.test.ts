@@ -1,10 +1,9 @@
-import {TopicMethods} from '../../../src/utilities/Helpers/Enums';
-import {Resource} from '@oi4/oi4-oec-service-model';
+import {Resources} from '@oi4/oi4-oec-service-model';
 import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicParser} from '../../../src/utilities/Helpers/TopicParser';
-import {TopicWrapper} from '../../../src';
+
+import {TopicWrapper, TopicMethods, TopicParser} from '../../src';
 import {TopicInfo} from '@oi4/oi4-oec-service-node';
-import {MessageFactory, MessageItems} from '../../testUtils/Factories/MessageFactory';
+import {MessageFactory, MessageItems} from '../testUtils/Factories/MessageFactory';
 
 describe('Unit test for TopicParser', () => {
 
@@ -32,7 +31,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('Pub event info are extracted', async () => {
-        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resource.EVENT}/${defaultMessageItems.category}/${defaultMessageItems.filter}`;
+        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/${defaultMessageItems.filter}`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.category).toStrictEqual(defaultMessageItems.category);
@@ -47,10 +46,10 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('Invalid info for Pub event generate an error', async () => {
-        let topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resource.EVENT}//${defaultMessageItems.filter}`;
+        let topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}//${defaultMessageItems.filter}`;
         checkAgainstErrorForPubEvent(topic, `Invalid category: ${topic}`);
 
-        topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resource.EVENT}/${defaultMessageItems.category}/`;
+        topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/`;
         checkAgainstErrorForPubEvent(topic, `Invalid filter: ${topic}`);
     });
 
@@ -76,9 +75,9 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of config, data and metadata, filter is properly extracted', async () => {
-        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.CONFIG}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
-        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.DATA}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
-        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.METADATA}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
+        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.CONFIG}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
+        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.DATA}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
+        checkFilter(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.METADATA}/${defaultMessageItems.oi4Id}/${defaultMessageItems.filter}`);
     });
 
     function checkFilterWithError(topic: string) {
@@ -89,9 +88,9 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of config, data and metadata, invalid filter generates error', async () => {
-        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.CONFIG}/${defaultMessageItems.oi4Id}/`);
-        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.DATA}/${defaultMessageItems.oi4Id}/`);
-        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.METADATA}/${defaultMessageItems.oi4Id}/`);
+        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.CONFIG}/${defaultMessageItems.oi4Id}/`);
+        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.DATA}/${defaultMessageItems.oi4Id}/`);
+        checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.METADATA}/${defaultMessageItems.oi4Id}/`);
     });
 
     function checkLicense(topic: string) {
@@ -101,8 +100,8 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of config, data and metadata, filter is properly extracted', async () => {
-        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.LICENSE}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
-        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
+        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
+        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
     });
 
     function checkLicenseWithError(topic: string) {
@@ -113,8 +112,8 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of config, data and metadata, invalid filter generates error', async () => {
-        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.LICENSE}/${defaultMessageItems.oi4Id}/`);
-        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/`);
+        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE}/${defaultMessageItems.oi4Id}/`);
+        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/`);
     });
 
     function checkList(topic: string, withTag = false) {
@@ -130,11 +129,11 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of publicationList and subscriptionList, source and filter are properly extracted', async () => {
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
 
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
     });
 
     function checkListWithError(topic: string, withTag = false) {
@@ -151,11 +150,11 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('In case of publicationList and subscriptionList, Source and filter are properly extracted', async () => {
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/`);
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/`);
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/`);
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/`);
 
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resource.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
     });
 
 });

@@ -1,5 +1,5 @@
 {
-  "$id": "pagination.schema.json",
+  "$id": "Pagination.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a pagination object",
   "type": "object",
