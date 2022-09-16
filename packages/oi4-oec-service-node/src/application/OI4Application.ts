@@ -172,9 +172,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
+            await this.sendResource(Resource.HEALTH, '', this.oi4Id.toString(), '').then();
             for (const resource of this.applicationResources.subResources.values()) {
-                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
+                await this.sendResource(Resource.HEALTH, '', resource.oi4Id.toString(), '').then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
