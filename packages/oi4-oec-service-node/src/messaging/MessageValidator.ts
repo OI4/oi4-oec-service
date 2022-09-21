@@ -52,7 +52,7 @@ export class MessageValidator {
     }
 
     private static checkForMalformedTopic(wrapper: TopicWrapper) {
-        const allowedGetResourcesLength8And12 = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACE, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedGetResourcesLength8And12 = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACES, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
         let isTopicStructureMalformed;
 
         switch(wrapper.topicArray.length) {
@@ -97,7 +97,7 @@ export class MessageValidator {
     }
 
     private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resources>) {
-        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACE, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACES, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
         const allowedSetDelResources = [Resources.REFERENCE_DESIGNATION];
 
         return this.checkAgainstResources(info, allowedGetResources, allowedPubResources, allowedSetDelResources, allowedSetDelResources);

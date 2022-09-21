@@ -52,7 +52,7 @@ const publisherIdRegEx = `^${serviceTypeRegEx}\\/${oi4IdRegEx}$`
 console.log(`PublisherId RegEx:\n${publisherIdRegEx}`)
 
 // Build RegEx for TopicPath
-const topicPathRegEx = `^oi4\\/${serviceTypeRegEx.replace(
+const topicPathRegEx = `^Oi4\\/${serviceTypeRegEx.replace(
   ')',
   '|\\+|#)'
 )}\\/${oi4IdRegEx.replace(

@@ -2,16 +2,16 @@
   "$id": "LocalizedText.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A representation of a LocalizedText",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["Locale", "Text"],
-  "properties": {
-    "Locale": {
-      "$ref": "constants/locale.pattern.schema.json"
-    },
-    "Text": {
-      "type": "string",
-      "minLength": 1
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["Locale", "Text"],
+    "properties": {
+      "Locale": {
+        "$ref": "constants/locale.pattern.schema.json"
+      },
+      "Text": {
+        "type": "string",
+        "minLength": 1
+      }
     }
-  }
 }

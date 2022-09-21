@@ -15,7 +15,6 @@ import licenseTextSchemaJson from './schemas/LicenseText.schema.json';
 import profileSchemaJson from './schemas/Profile.schema.json';
 import eventSchemaJson from './schemas/Event.schema.json';
 import rtLicenseSchemaJson from './schemas/RtLicense.schema.json';
-import configSchemaJson from './schemas/Config.schema.json';
 import publicationListSchemaJson from './schemas/PublicationList.schema.json';
 import subscriptionListSchemaJson from './schemas/SubscriptionList.schema.json';
 import referenceDesignationSchemaJson from './schemas/ReferenceDesignation.schema.json';
@@ -71,7 +70,6 @@ export {
     profileSchemaJson,
     eventSchemaJson,
     rtLicenseSchemaJson,
-    configSchemaJson,
     publicationListSchemaJson,
     subscriptionListSchemaJson,
     referenceDesignationSchemaJson,
