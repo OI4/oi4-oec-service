@@ -13,7 +13,8 @@ import {
     DataSetClassIds,
     Device,
     EAssetType,
-    ESyslogEventFilter, Methods,
+    ESyslogEventFilter,
+    Methods,
     Resources
 } from '@oi4/oi4-oec-service-model';
 
@@ -77,7 +78,7 @@ export class ConformityValidator {
      * If a resource passes, its entry in the conformity Object is set to 'OK', otherwise, the initialized 'NOK' values persist.
      * @param topicPreamble - The entire topic used to check conformity.
      * @param assetType - Determines whether the asset is an application or an device.
-     * @param Source - The Source.
+     * @param source - The Source.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
     async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resources[]): Promise<IConformity> {
@@ -88,32 +89,17 @@ export class ConformityValidator {
         let errorSoFar = false;
         let licenseList: ItemRef[] = [];
         let dataList: ItemRef[] = [];
-        let oi4Result;
         let resObj: IValidityDetails; // Container for validation results
 
-        try {
-            if (source == undefined) {
-                const topicArray = topicPreamble.split('/');
-                const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-                oi4Result = await ConformityValidator.checkOI4IDConformity(originator);
-            } else {
-                oi4Result = await ConformityValidator.checkOI4IDConformity(source);
-            }
-        } catch (err) {
-            LOGGER.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
+        conformityObject.oi4Id = await this.checkOI4IDConformity(topicPreamble, source);
+        if(conformityObject.oi4Id !== EValidity.ok){
             return conformityObject;
         }
-
-        if (!oi4Result) {
-            LOGGER.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
-            return conformityObject;
-        }
-
-        conformityObject.oi4Id = EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
+        // If we got past the oi4Id check, we can continue with all resources.
 
         try {
             conformityObject.resources[Resources.PROFILE] = await this.checkProfileConformity(topicPreamble, assetType, source);
-            conformityObject.profileResourceList = conformityObject.resources.Profile.dataSetMessages[0].Payload.resource;
+            conformityObject.profileResourceList = conformityObject.resources.Profile.dataSetMessages[0].Payload.Resources;
 
         } catch (e) { // Profile did not return, we fill a dummy conformity entry so that we can continue checking the asset...
             conformityObject.resources[Resources.PROFILE] = {
@@ -174,7 +160,6 @@ export class ConformityValidator {
             LOGGER.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
             try {
                 switch (resource) {
-
                     case Resources.METADATA:
                         for (const data of dataList) {
                             resObj = await this.checkResourceConformity(topicPreamble, Resources.METADATA, data.Source, data.Filter);
@@ -277,6 +262,28 @@ export class ConformityValidator {
         return conformityObject;
     }
 
+    async checkOI4IDConformity(topicPreamble: string, source?: string) {
+        let oi4Result;
+        try {
+            if (source == undefined) {
+                const topicArray = topicPreamble.split('/');
+                const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
+                oi4Result = await ConformityValidator.checkOi4IdConformity(originator);
+            } else {
+                oi4Result = await ConformityValidator.checkOi4IdConformity(source);
+            }
+        } catch (err) {
+            LOGGER.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
+            return EValidity.default;
+        }
+
+        if (!oi4Result) {
+            LOGGER.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
+            return EValidity.default;
+        }
+
+        return EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
+    }
     /**
      * Since the simple resource check does not check for additional logic, we implement those checks here
      * 1) The profile payload needs to contain the mandatory resources for its asset type
@@ -499,13 +506,13 @@ export class ConformityValidator {
             }
             if (!(ConformityValidator.serviceTypes.includes(topicArray[1]))) return false; // throw new Error('Unknown ServiceType');
             const oi4Id = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-            return await ConformityValidator.checkOI4IDConformity(oi4Id);
+            return await ConformityValidator.checkOi4IdConformity(oi4Id);
         } else { /*tslint:disable-line*/
             return false; // For minimum validity, we need oi4ID (length: 6) + method + method
         }
     }
 
-    static async checkOI4IDConformity(oi4Id: string): Promise<boolean> {
+    static async checkOi4IdConformity(oi4Id: string): Promise<boolean> {
         const oi4Array = oi4Id.split('/');
         if (oi4Array.length !== 4) return false; // throw new Error('Wrong number of subTopics');
         // further checks will follow!

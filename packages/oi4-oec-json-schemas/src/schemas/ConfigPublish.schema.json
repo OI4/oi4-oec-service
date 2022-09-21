@@ -103,10 +103,18 @@
         "Name"
       ],
       "additionalProperties": {
-        "$ref": "LocalizedText.schema.json"
+        "Name": {
+          "$ref": "LocalizedText.schema.json"
+        },
+        "Description": {
+          "$ref": "LocalizedText.schema.json"
+        }
       },
       "patternProperties": {
-        "^(?!name|description)[A-z][A-z0-9-_]*$": {
+        "Description": {
+          "$ref": "LocalizedText.schema.json"
+        },
+        "^(?!Name|Description)[A-z][A-z0-9-_]*$": {
           "$ref": "#/definitions/configDefinition"
         }
       }
@@ -114,13 +122,15 @@
   },
   "minProperties": 1,
   "patternProperties": {
-    "^(?!\bcontext\b)[A-z_][A-z0-9-_]*$": {
+    "^(?!\bContext\b)[A-z_][A-z0-9-_]*$": {
       "$ref": "#/definitions/groupConfig"
     },
     "Context": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["Name"],
+      "required": [
+        "Name"
+      ],
       "properties": {
         "Name": {
           "$ref": "LocalizedText.schema.json"
@@ -132,4 +142,3 @@
     }
   }
 }
-

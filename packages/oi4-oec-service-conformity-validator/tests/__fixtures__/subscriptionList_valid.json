@@ -10,7 +10,7 @@
       "Filter": "data",
       "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
       "Payload": {
-        "TopicPath": "oi4/OTConnector/provider.com/FieldDataService/FDS-001/1200-0345/pub/subscriptionList/provider.com/FieldDataService/FDS-001/1200-0345/data/oee",
+        "TopicPath": "Oi4/OTConnector/provider.com/FieldDataService/FDS-001/1200-0345/Pub/SubscriptionList/provider.com/FieldDataService/FDS-001/1200-0345/data/oee",
         "Interval": 0,
         "Config": "CONF_1"
       }

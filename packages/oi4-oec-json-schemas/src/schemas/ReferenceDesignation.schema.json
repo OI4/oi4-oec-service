@@ -39,7 +39,7 @@
     },
     "referenceDesignationParent": {
       "type": "object",
-      "required": ["value"],
+      "required": ["Value"],
       "additionalProperties": false,
       "properties": {
         "Value": {
