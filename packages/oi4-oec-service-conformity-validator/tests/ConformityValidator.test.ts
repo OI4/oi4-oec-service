@@ -96,7 +96,8 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
 
         if (fixCorrelationId)
         {
-            message.correlationId = request.Message.MessageId;
+            const decodedMessage = JSON.parse(request.JsonMessage);
+            message.correlationId = decodedMessage.MessageId;
         }
 
         return new PubResponse(request.getTopic('pub'), Buffer.from(JSON.stringify(message)));
@@ -307,6 +308,18 @@ describe('Unit test for ConformityValidator ', () => {
 
         expect(result.validity).toBe(EValidity.partial);
         expect(result.resource['metadata'].validity).toBe(EValidity.nok);
+    });
+
+    it ('should validate meta data conformity', async () => {
+
+        const messages: ITestData[] = [
+            {resource: Resource.METADATA, subResource: defaultSubResource, message: metadata_valid},
+        ]
+
+        const objectUnderTest = getObjectUnderTest(messages);
+        const result = await objectUnderTest.checkMetaDataConformity(defaultTopic, defaultSubResource, '');
+        
+        expect(result.validity).toBe(EValidity.ok);
     });
 
     it('should evaluate additional resources not included in the profile' , async ()=> {

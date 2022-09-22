@@ -2,6 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {
     IOPCUADataSetMessage,
+    IOPCUADataSetMetaData,
     IOPCUANetworkMessage,
     Oi4Identifier,
     OPCUABuilder,
@@ -11,6 +12,7 @@ import {
     Application,
     buildOecJsonValidator,
     DataSetClassIds,
+    DataSetWriterIdManager,
     Device,
     EAssetType,
     ESyslogEventFilter,
@@ -179,7 +181,7 @@ export class ConformityValidator {
 
                     case Resource.METADATA:
                         for (const data of dataList) {
-                            resObj = await this.checkResourceConformity(topicPreamble, Resource.METADATA, data.subResource, data.filter);
+                            resObj = await this.checkMetaDataConformity(topicPreamble, data.subResource, data.filter);
                             if (resObj.validity != EValidity.ok) {
                                 // meta data not valid --> don't continue
                                 break;
@@ -333,6 +335,53 @@ export class ConformityValidator {
         return mandatoryResources;
     }
 
+    async checkMetaDataConformity(topicPreamble: string, subResource: string, filter: string): Promise<IValidityDetails> {
+        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resource.METADATA, subResource);
+        const conformityPayload = this.builder.buildOPCUAMetaDataMessage('Validator', 'Conformity validator', {}, DataSetClassIds[Resource.METADATA], dataSetWriterId, filter, subResource) as any;
+        conformityPayload.MetaData = {};
+        const getRequest = new GetRequest(topicPreamble, Resource.METADATA, JSON.stringify(conformityPayload), subResource, filter);
+
+        const getTopic = getRequest.getTopic('get');
+        const pubTopic = getRequest.getTopic('pub');
+
+        LOGGER.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        const response = await this.messageBusLookup.getMessage(getRequest);
+        LOGGER.log(`Received MetaData conformity from ${pubTopic}.`, ESyslogEventFilter.warning);
+
+        const errorMsgArr = [];
+        const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUADataSetMetaData;
+        let eRes: number;
+        const schemaResult: ISchemaConformity = await this.checkSchemaConformity(Resource.METADATA, parsedMessage);
+        if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
+            if (parsedMessage.correlationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+                eRes = EValidity.ok;
+            } else {
+                eRes = EValidity.partial;
+                errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
+                LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            }
+        } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
+            LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
+            errorMsgArr.push('Some issue with schema validation, read further array messages');
+            if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
+                LOGGER.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
+            }
+            if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
+                LOGGER.log('Payload wrong', ESyslogEventFilter.warning);
+                errorMsgArr.push(...schemaResult.payload.resultMsgArr);
+            }
+
+            eRes = EValidity.partial;
+        }
+
+        return {
+            validity: eRes,
+            validityErrors: errorMsgArr,
+            dataSetMessages: [],
+        };
+    }
+
     /**
      * Checks the conformity of a resource of an OI4-participant by publishing a /get/<resource> on the bus and expecting a response
      * within a certain timeframe. The response is then superficially checked for validity (mostly NetworkMessage structure) and for correlationID functionality.
@@ -348,7 +397,7 @@ export class ConformityValidator {
     async checkResourceConformity(topicPreamble: string, resource: Resource, subResource?: string, filter?: string): Promise<IValidityDetails> {
 
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
-        const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, subResource, filter);
+        const getRequest = new GetRequest(topicPreamble, resource, JSON.stringify(conformityPayload), subResource, filter);
 
         const getTopic = getRequest.getTopic('get');
         const pubTopic = getRequest.getTopic('pub');
