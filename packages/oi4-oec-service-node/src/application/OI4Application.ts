@@ -270,7 +270,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
         switch (resource) {
             case Resource.MAM:
-                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, subResource);
+                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, this.oi4Id, subResource);
                 break;
             case Resource.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
