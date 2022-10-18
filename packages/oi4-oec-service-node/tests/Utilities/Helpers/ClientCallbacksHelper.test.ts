@@ -1,5 +1,5 @@
 import {LoggerItems, MockedLoggerFactory} from '../../Test-utils/Factories/MockedLoggerFactory';
-import {ClientCallbacksHelper} from '../../../src/Utilities/Helpers/ClientCallbacksHelper';
+import {ClientCallbacksHelper} from '../../../src';
 import mqtt from 'async-mqtt';
 import {getOi4App} from '../../application/OI4Application.test';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
@@ -38,6 +38,10 @@ describe('Unit test for ClientCallbackHelper', () => {
         clientCallbackHelper = new ClientCallbacksHelper();
         // resources = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance();
     });
+
+    afterEach(() => {
+        setLogger(null);
+    })
 
     it('onErrorCallback works', async () => {
         const err = new Error('whatever');
