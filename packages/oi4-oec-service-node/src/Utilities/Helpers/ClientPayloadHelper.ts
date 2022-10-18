@@ -37,10 +37,24 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    createMamResourcePayload(applicationResources: IOI4ApplicationResources, subResource: string): ValidatedPayload {
-        const mam = applicationResources.getMasterAssetModel(Oi4Identifier.fromString(subResource));
-        const payload = [this.createPayload(mam, subResource)];
-        return {abortSending: false, payload: payload};
+    createMamResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, subResource?: string): ValidatedPayload {
+        if (subResource) { // get mam from a specific asset
+            const mam = applicationResources.getMasterAssetModel(Oi4Identifier.fromString(subResource));
+            const payload = [this.createPayload(mam, subResource)];
+            return {abortSending: false, payload: payload};
+        } else { // get all mam's
+            const oi4Identifiers = [...applicationResources.subResources.keys()];
+            const subResourcesPayloads =  oi4Identifiers.map(id => {
+                const oi4Identifier = Oi4Identifier.fromString(id);
+                const mam = applicationResources.getMasterAssetModel(oi4Identifier);
+                return this.createPayload(mam, id);
+            })
+
+            const mam = applicationResources.getMasterAssetModel(oi4Id);
+            const payload = this.createPayload(mam, oi4Id.toString());
+
+            return {abortSending: false, payload: [payload, ... subResourcesPayloads]};
+        } 
     }
 
     createHealthStatePayload(deviceHealth: EDeviceHealth, score: number): Health {
