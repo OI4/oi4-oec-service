@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CallMethodResult schema test invalid values: 0 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'statusCode'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m[31m  must have required property 'inputArgumentResults'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m[31m  must have required property 'outputArguments'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m"
+`;
+
+exports[`CallMethodResult schema test invalid values: 1 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  must have required property 'statusCode'[39m
+[31m    Path:     CallMethodResult.schema.json#/required[39m
+[31m[39m"
+`;
+
+exports[`CallMethodResult schema test invalid values: 2 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /statusCode must be integer[39m
+[31m    Received: [33m<string>[39m[31m a[39m
+[31m    Path:     CallMethodResult.schema.jsondataTypes/uint32.schema.json/type[39m
+[31m[39m"
+`;
+
+exports[`CallMethodResult schema test invalid values: 3 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /statusCode must be >= 0[39m
+[31m    Received: [33m<number>[39m[31m -1[39m
+[31m    Path:     CallMethodResult.schema.jsondataTypes/uint32.schema.json/minimum[39m
+[31m[39m"
+`;
+
+exports[`CallMethodResult schema test invalid values: 4 1`] = `
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+
+received
+[31m  /statusCode must be <= 4294967295[39m
+[31m    Received: [33m<number>[39m[31m 4294967296[39m
+[31m    Path:     CallMethodResult.schema.jsondataTypes/uint32.schema.json/maximum[39m
+[31m[39m"
+`;

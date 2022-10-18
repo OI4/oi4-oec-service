@@ -1,0 +1,78 @@
+[
+  ["empty", {}],
+  [
+    "null values",
+    {
+      "Description": null,
+      "DeviceClass": null,
+      "DeviceManual": null,
+      "DeviceRevision": null,
+      "HardwareRevision": null,
+      "Manufacturer": {
+        "locale": null,
+        "text": null
+      },
+      "ManufacturerUri": null,
+      "Model": {
+        "locale": null,
+        "text": null
+      },
+      "ProductCode": null,
+      "ProductInstanceUri": null,
+      "RevisionCounter": -2147483649,
+      "SerialNumber": null,
+      "SoftwareRevision": null
+    }
+  ],
+  [
+    "invalid property Foobar",
+    {
+      "Foobar": null,
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": 2147483648,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ],
+  [
+    "revision counter exceeds int32",
+    {
+      "Description": {
+        "locale": "en-US",
+        "text": "Descriptive text"
+      },
+      "DeviceClass": "",
+      "DeviceManual": "",
+      "DeviceRevision": "",
+      "HardwareRevision": "1.0.0",
+      "Manufacturer": {
+        "locale": "en-US",
+        "text": "ACME"
+      },
+      "ManufacturerUri": "endress.com",
+      "Model": {
+        "locale": "en-US",
+        "text": "Ajax"
+      },
+      "ProductCode": "AAA",
+      "ProductInstanceUri": "https://acme/ajax/aaa",
+      "RevisionCounter": 2147483648,
+      "SerialNumber": "123",
+      "SoftwareRevision": "1.0.0"
+    }
+  ]
+]

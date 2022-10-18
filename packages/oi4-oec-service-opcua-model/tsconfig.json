@@ -10,10 +10,7 @@
     ],
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules/**/*"
+    "src/**/*",
+    "src/**/*.json"
   ]
 }

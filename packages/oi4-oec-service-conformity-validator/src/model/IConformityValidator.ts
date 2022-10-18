@@ -1,9 +1,12 @@
+import { Resource } from '@oi4/oi4-oec-service-model';
+import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
+
 export interface IConformity {
   oi4Id: EValidity;
-  resource: IValidityLookup;
-  checkedResourceList: string[];
-  profileResourceList: string[];
-  nonProfileResourceList: string[];
+  resource: Record<string, IValidityDetails>;
+  checkedResourceList: Resource[];
+  profileResourceList: Resource[];
+  nonProfileResourceList: Resource[];
   validity: EValidity;
 }
 
@@ -18,13 +21,9 @@ interface ISchemaResult {
   resultMsgArr: string[];
 }
 
-interface IValidityLookup {
-  [key: string]: IValidityDetails;
-}
-
 export interface IValidityDetails {
   validity: EValidity;
-  dataSetMessages: any[];
+  dataSetMessages: IOPCUADataSetMessage[];
   validityErrors: unknown[]; // string to unknown
 }
 

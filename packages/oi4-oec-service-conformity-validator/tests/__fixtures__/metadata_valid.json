@@ -1,0 +1,20 @@
+{
+  "MessageId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
+  "MessageType": "ua-metadata",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+  "DataSetWriterId": 753,
+  "filter": "oee",
+  "subResource": "openindustry4.com/nd/nd/nd",
+  "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "MetaData": {
+    "name": "Dataset1",
+    "description": {
+      "text": "Description",
+      "locale": "en-US"
+    },
+    "namespaces": [],
+    "structureDataTypes": [],
+    "enumDataTypes": [],
+    "simpleDataTypes": []
+  }
+}

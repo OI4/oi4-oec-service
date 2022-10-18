@@ -1,0 +1,65 @@
+{
+  "$id": "DataSetMetaDataType.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a metadata message",
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "TODO: needs to be specified",
+  "required": [
+    "name",
+    "namespaces",
+    "enumDataTypes",
+    "structureDataTypes",
+    "simpleDataTypes"
+  ],
+  "properties": {
+    "configurationVersion": {
+      "$ref": "ConfigurationVersionDataType.schema.json"
+    },
+    "dataSetClassId": {
+      "type": ["string", "null"],
+      "format": "uuid"
+    },
+    "description": {
+      "$ref": "LocalizedText.schema.json"
+    },
+    "fields": {
+	  "type": "array",
+	  "items": {
+        "$ref": "FieldMetaData.schema.json"
+	  }
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of DataSet"
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "For details see OPC UA specification Annex A: Part 14-A1.1"
+    },
+    "enumDataTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "EnumDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.4"
+    },
+    "structureDataTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "StructureDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.3"
+    },
+    "simpleDataTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "SimpleTypeDescription.schema.json"
+      },
+      "description": "For details see OPC UA specification Annex A:  Part 14-A1.5"
+    }
+  }
+}

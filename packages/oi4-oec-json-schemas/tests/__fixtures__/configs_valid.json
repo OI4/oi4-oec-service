@@ -1,0 +1,144 @@
+[
+  [
+    "contains only name and description",
+    {
+      "network1": {
+        "name": {
+          "locale": "de-DE",
+          "text": "Subnetzmaske"
+        },
+        "description": {
+          "locale": "de-DE",
+          "text": "Mein toller Text"
+        }
+      }
+    }
+  ],
+  [
+    "valid complex object",
+    {
+      "device1": {
+        "name": {
+          "locale": "en-US",
+          "text": "Device 1"
+        },
+        "description": {
+          "locale": "en-US",
+          "text": "Describes device one configuration options"
+        },
+        "aut0-r3fr3sh": {
+          "mandatory": true,
+          "name": {
+            "locale": "en-US",
+            "text": "Automatic Refresh Enabled"
+          },
+          "type": "Boolean",
+          "value": "false"
+        },
+        "ip_address": {
+          "description": {
+            "locale": "en-US",
+            "text": "IP address of device to read values from"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "IP Address"
+          },
+          "type": "String",
+          "validation": {
+            "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+          },
+          "value": ""
+        },
+        "password": {
+          "name": {
+            "locale": "en-US",
+            "text": "Password"
+          },
+          "sensitive": true,
+          "type": "String",
+          "value": ""
+        },
+        "port": {
+          "defaultValue": "80",
+          "mandatory": false,
+          "name": {
+            "locale": "en-US",
+            "text": "Port"
+          },
+          "type": "Number",
+          "validation": {
+            "min": 0,
+            "max": 65535
+          },
+          "value": ""
+        },
+        "protocol": {
+          "mandatory": true,
+          "name": {
+            "locale": "en-US",
+            "text": "Protocol"
+          },
+          "type": "String",
+          "value": ""
+        },
+        "readInterval": {
+          "description": {
+            "locale": "en-US",
+            "text": "Interval in which value is read from device"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "Read Interval"
+          },
+          "type": "Number",
+          "value": ""
+        },
+        "unit": {
+          "defaultValue": "°C",
+          "description": {
+            "locale": "en-US",
+            "text": "Unit of measurement"
+          },
+          "mandatory": false,
+          "name": {
+            "locale": "en-US",
+            "text": "Unit"
+          },
+          "type": "String",
+          "unit": "Temperature",
+          "validation": {
+            "values": ["K", "°C", "°De", "°F", "°N", "°R", "°Ré", "°Rø"]
+          },
+          "value": ""
+        },
+        "user-name": {
+          "name": {
+            "locale": "en-US",
+            "text": "Username"
+          },
+          "type": "String",
+          "value": ""
+        }
+      },
+      "general": {
+        "name": {
+          "locale": "en-US",
+          "text": "general configuration"
+        },
+        "date-time": {
+          "description": {
+            "locale": "en-US",
+            "text": "Date Time for service"
+          },
+          "name": {
+            "locale": "en-US",
+            "text": "Date Time"
+          },
+          "type": "DateTime",
+          "value": ""
+        }
+      }
+    }
+  ]
+]

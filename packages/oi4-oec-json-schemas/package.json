@@ -1,0 +1,37 @@
+{
+  "name": "@oi4/oi4-oec-json-schemas",
+  "version": "1.0.0",
+  "description": "OI4 Open Edge Computing JSON schemas",
+  "author": "Open Industry 4.0 Alliance - Community",
+  "license": "MIT",
+  "private": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "oi4",
+    "oec",
+    "json",
+    "schemas"
+  ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OI4/oi4-service.git"
+  },
+  "files": [
+    "dist/schemas/**/*.json"
+  ],
+  "devDependencies": {
+    "@types/jest-json-schema": "^6.1.0",
+    "ajv": "^6.12.6",
+    "jest-json-schema": "^6.1.0"
+  },
+  "scripts": {
+    "build": "yarn run clean && node src/builder/builder.js &&  tsc -b tsconfig.json",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "lint": "eslint ."
+  }
+}

@@ -1,0 +1,43 @@
+[
+  ["empty", {}],
+  [
+    "Invalid Locale",
+    {
+      "locale": "ene",
+      "text": "my text"
+    }
+  ],
+  [
+    "Invalid Locale",
+    {
+      "locale": "en-USofA",
+      "text": "my text"
+    }
+  ],
+  [
+    "Invalid Text",
+    {
+      "locale": "en-US",
+      "text": ""
+    }
+  ],
+  [
+    "missing locale",
+    {
+      "text": "some chinese text"
+    }
+  ],
+  [
+    "empty locale & text",
+    {
+      "locale": "",
+      "text": ""
+    }
+  ],
+  [
+    "missing text",
+    {
+      "locale": "cn-CHS"
+    }
+  ]
+]

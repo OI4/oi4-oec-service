@@ -1,0 +1,94 @@
+[
+  [
+    "valid with null value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": null
+    }
+  ],
+  [
+    "valid with string value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": ""
+    }
+  ],
+  [
+    "valid with integer value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": 1.0
+    }
+  ],
+  [
+    "valid with boolean value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": true
+    }
+  ],
+  [
+    "valid with number value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": 3.14
+    }
+  ],
+  [
+    "valid with empty array value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": []
+    }
+  ],
+  [
+    "valid with string array value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": ["a", "b", "c"]
+    }
+  ],
+  [
+    "valid with empty object value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": {}
+    }
+  ],
+  [
+    "valid with object value",
+    {
+      "key": {
+        "name": "1",
+        "namespaceIndex": 0
+      },
+      "value": {
+        "a": "b"
+      }
+    }
+  ]
+]

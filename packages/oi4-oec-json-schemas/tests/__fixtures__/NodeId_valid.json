@@ -1,0 +1,68 @@
+[
+  [
+    "Numeric Node Id with default namespace",
+    {
+      "Id": 21
+    }
+  ],
+  [
+    "Numeric Node Id with custom namespace",
+    {
+      "Id": 22,
+      "Namespace": 2 
+    }
+  ],
+  [
+    "Numeric Node Id with custom namespace and IdType",
+    {
+      "IdType": 0,
+      "Id": 23,
+      "Namespace": 3 
+    }
+  ],
+  [
+    "String Node Id with default namespace",
+    {
+      "IdType": 1,
+      "Id": "SomeString"
+    }
+  ],
+  [
+    "String Node Id with custom namespace",
+    {
+      "IdType": 1,
+      "Id": "SomeString",
+      "Namespace": 3
+    }
+  ],
+  [
+    "Guid Node Id with default namespace",
+    {
+      "IdType": 2,
+      "Id": "EA014B73-8784-4D37-B4C8-0D366AE59CA2"
+    }
+  ],
+  [
+    "Guid Node Id with custom namespace",
+    {
+      "IdType": 2,
+      "Id": "EA014B73-8784-4D37-B4C8-0D366AE59CA2",
+      "Namespace": 3 
+    }
+  ],
+  [
+    "Opaque Node Id with default namespace",
+    {
+      "IdType": 3,
+      "Id": "SGVsbG9Xb3JsZA=="
+    }
+  ],
+  [
+    "Opaque Node Id with custom namespace",
+    {
+      "IdType": 3,
+      "Id": "SGVsbG9Xb3JsZA==",
+      "Namespace": 4
+    }
+  ]
+]

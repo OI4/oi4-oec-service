@@ -1,0 +1,56 @@
+{
+  "$id": "FieldMetaData.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a metadata message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the field"
+    },
+    "description": {
+      "type": "object",
+      "$ref": "LocalizedText.schema.json"
+    },
+    "fieldFlags": {
+      "type": "integer",
+      "minimum": 0,
+	    "maximum": 1,
+	    "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
+    },
+    "builtInType": {
+      "$type": "integer",
+      "minimum": 1,
+      "maximum": 25,
+      "description": "See https://reference.opcfoundation.org/v104/Core/docs/Part6/5.1.2/"
+    },
+    "dataType": {
+      "$ref": "NodeId.schema.json"
+    },
+    "valueRank": {
+      "$ref": "dataTypes/int32.schema.json"
+    },
+    "arrayDimensions": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "dataTypes/uint32.schema.json"
+      }
+    },
+    "maxStringLength": {
+      "$ref": "dataTypes/uint32.schema.json"
+    },
+    "dataSetFieldId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "properties": {
+	  "type": "array",
+	  "description": "Provides additional semantics for the field",
+	  "items":{
+		  "$ref": "KeyValuePair.schema.json"
+	  }
+    }
+  }
+}

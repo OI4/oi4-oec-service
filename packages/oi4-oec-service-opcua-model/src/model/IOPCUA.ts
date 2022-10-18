@@ -1,10 +1,6 @@
-import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from "./EOPCUA";
+import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from './EOPCUA';
 
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
-
-export interface IOPCUAPayload {
-  [key:string]: any;
-}
 
 export interface IMasterAssetModel {
   Manufacturer: IOPCUALocalizedText;
@@ -23,12 +19,12 @@ export interface IMasterAssetModel {
 }
 
 export interface IOPCUANetworkMessage {
-  MessageId: string; // TODO: Not yet defined
+  MessageId: MessageId;
   MessageType: EOPCUAMessageType;
-  DataSetClassId: GUID; // TODO: STRING for now, validators found below (thanks to node-opcua)
+  PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
+  DataSetClassId: GUID;
+  correlationId?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
-  PublisherId: string; // TODO: string in the OI4-format, need to add validators
-  CorrelationId: string;
 }
 
 // Data Message containing the values
@@ -37,19 +33,21 @@ export interface IOPCUADataSetMessage {
   SequenceNumber?: number;
   MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
-  Status?: number;
-  POI?: string;
+  Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
+  filter?: string;
+  subResource: string; // For 1.0 events still have plain strings as sub-resources. This will change in 1.1 where sub-resources will be renamed to source and always be an OI4 Id
   Payload: any; // TODO: arbitrary object?
 }
 
-interface IOPCUADataSetMetaData {
-  MessageId: string; // TODO: Not yet defined
+export interface IOPCUADataSetMetaData {
+  MessageId: string; // TODO: Not yet defined <unixTimestampInMs-PublisherId>
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
-  CorrelationId: string;
+  filter: string;
+  subResource: string;
+  correlationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
-  POI: string;
 }
 
 // MetaData Message containing information about units etc.
@@ -99,15 +97,11 @@ export interface IOPCUAConfigurationVersionDataType{
   minorVersion: number;
 }
 
-export interface IOPCUAPayload {
-  poi?: string;
-  payload: any;
-  dswid: number;
-  status?: EOPCUAStatusCode;
-}
-
+// TODO: STRING for now, validators found below (thanks to node-opcua)
 type GUID = string;
 
+// TODO: string in the format <unixTimestampInMs-PublisherId>, need to add validators
+type MessageId = string;
 // /***
 //  * @module node-opcua-guid
 //  */

@@ -1,0 +1,42 @@
+[
+  ["empty", {}],
+  [
+    "empty key",
+    {
+      "key": {},
+      "value": ""
+    }
+  ],
+  [
+    "invalid key",
+    {
+      "key": {
+        "name": "",
+        "nameSpaceIndex": 0
+      },
+      "value": "o"
+    }
+  ],
+  [
+    "invalid key property value",
+    {
+      "key": {
+        "name": "",
+        "namespaceIndex": "0"
+      },
+      "value": "o"
+    }
+  ],
+  [
+    "additional properties",
+    {
+      "bar": "foo",
+      "key": {
+        "name": "",
+        "namespaceIndex": 0,
+        "foo": "bar"
+      },
+      "value": "o"
+    }
+  ]
+]

@@ -1,0 +1,25 @@
+{
+  "$id": "subscriptionList.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["topicPath"],
+  "properties": {
+    "topicPath": {
+      "$ref": "constants/topicPath.schema.json",
+      "readOnly": false
+    },
+    "interval": {
+      "description": "The publishing interval might be set between 0 (immediately on change) and <n> ms (if supported). By default, any DataSetMessage gets published on change => interval = 0",
+      "$ref": "dataTypes/uint32.schema.json",
+      "readOnly": false
+    },
+    "config": {
+      "description": "The configurability of subscriptions is limited to create/delete/not manipulable – depending on implementation and/or technical needs: NONE_0: No configuration possible (delete is not possible). CONF_1: Free configurable (delete is possible)",
+      "type": "string",
+      "readOnly": false,
+      "enum": ["NONE_0", "CONF_1"]
+    }
+  }
+}

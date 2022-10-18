@@ -1,0 +1,45 @@
+[
+  [
+    "Request",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "methodsToCall": [
+          {
+            "methodId": "newDataSetWriterId",
+            "inputArguments": [
+              {
+                "resource": "referenceDesignation"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  [
+    "Response",
+    {
+      "MessageId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "MessageType": "MSG",
+      "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
+      "Message": {
+        "results": [
+          {
+            "statusCode": 0,
+            "inputArgumentResults": [0],
+            "outputArguments": [
+              {
+                "resource": "referenceDesignation"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+]
