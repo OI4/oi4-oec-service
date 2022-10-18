@@ -29,6 +29,8 @@ jobs:
       - name: build
         run: |
           yarn build
+        env:
+          PACKAGES_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # No test so far -> skip them for now
       #- name: test
       #  run: npm test
