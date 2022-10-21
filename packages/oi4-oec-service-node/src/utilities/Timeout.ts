@@ -1,4 +1,4 @@
-const promiseTimeout = (promise: any, ms: number, error: string = 'GenericError') => {
+const promiseTimeout = (promise: any, ms: number, error = 'GenericError') => {
   return new Promise((resolve, reject) => {
     setTimeout(() => reject(error), ms);
     promise.then(resolve).catch(reject);

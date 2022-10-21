@@ -1,69 +1,69 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`QualifiedName schema test invalid values: 0 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'Name'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must have required property 'NamespaceIndex'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m[31m  must NOT have additional properties, but found 'namespaceIndex'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m"
+  must have required property 'Name'
+    Path:     QualifiedName.schema.json#/required
+  must have required property 'NamespaceIndex'
+    Path:     QualifiedName.schema.json#/required
+  must NOT have additional properties, but found 'name'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+  must NOT have additional properties, but found 'namespaceIndex'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+"
 `;
 
 exports[`QualifiedName schema test invalid values: 1 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'Name'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must have required property 'NamespaceIndex'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m[31m  must NOT have additional properties, but found 'namespaceIndex'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m"
+  must have required property 'Name'
+    Path:     QualifiedName.schema.json#/required
+  must have required property 'NamespaceIndex'
+    Path:     QualifiedName.schema.json#/required
+  must NOT have additional properties, but found 'name'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+  must NOT have additional properties, but found 'namespaceIndex'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+"
 `;
 
 exports[`QualifiedName schema test invalid values: 2 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'Name'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must have required property 'NamespaceIndex'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m[31m  must NOT have additional properties, but found 'namespaceIndex'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m"
+  must have required property 'Name'
+    Path:     QualifiedName.schema.json#/required
+  must have required property 'NamespaceIndex'
+    Path:     QualifiedName.schema.json#/required
+  must NOT have additional properties, but found 'name'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+  must NOT have additional properties, but found 'namespaceIndex'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+"
 `;
 
 exports[`QualifiedName schema test invalid values: 3 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'Name'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must have required property 'NamespaceIndex'[39m
-[31m    Path:     QualifiedName.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'name'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m[31m  must NOT have additional properties, but found 'namespaceIndex'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     QualifiedName.schema.json#/additionalProperties[39m
-[31m[39m"
+  must have required property 'Name'
+    Path:     QualifiedName.schema.json#/required
+  must have required property 'NamespaceIndex'
+    Path:     QualifiedName.schema.json#/required
+  must NOT have additional properties, but found 'name'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+  must NOT have additional properties, but found 'namespaceIndex'
+    Expected: <boolean> false
+    Path:     QualifiedName.schema.json#/additionalProperties
+"
 `;

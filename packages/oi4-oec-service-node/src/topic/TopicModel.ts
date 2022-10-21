@@ -27,7 +27,7 @@ export type TopicWrapper = {
     topicInfo: TopicInfo;
 }
 
-export function getTopicMethod(method: string) : Methods {
+export function getTopicMethod(method: string): Methods {
     switch (method) {
         case Methods.GET:
             return Methods.GET;

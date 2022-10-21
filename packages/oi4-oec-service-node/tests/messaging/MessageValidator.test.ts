@@ -1,11 +1,10 @@
-import {DataSetClassIds, Resources} from '@oi4/oi4-oec-service-model';
+import {DataSetClassIds, Methods, Resources} from '@oi4/oi4-oec-service-model';
 import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
 import {MessageValidator} from '../../src/messaging/MessageValidator';
 import {MessageFactory, MessageItems} from '../testUtils/Factories/MessageFactory';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
-import {TopicMethods} from '../../src/topic/TopicModel';
 
 describe('Unit test for TopicParser', () => {
 
@@ -43,7 +42,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     // TODO refactor to Jest exception assertion
-    async function checkAgainstError(caller: Function, errMsg: string) {
+    async function checkAgainstError(caller: Function, errMsg: string): Promise<void> {
         let errorThrown = false;
         try {
             await caller.call([]);
@@ -71,31 +70,32 @@ describe('Unit test for TopicParser', () => {
     it('If checkDataSetClassId mismatch, an error is thrown', async () => {
         defaultParsedMessage.DataSetClassId = DataSetClassIds[Resources.CONFIG]
         const errMsg = `DataSetClassId mismatch, got ${defaultParsedMessage.DataSetClassId}, expected ${DataSetClassIds[defaultMessageItems.resource]}`;
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(defaultMessageItems.getDefaultTopicWrapper(), defaultParsedMessage), errMsg);
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(defaultMessageItems.getDefaultTopicWrapper(), defaultParsedMessage), errMsg);
     });
 
     it('If topic string is malformed, an error is thrown', async () => {
         const errMsg = `Invalid topic string structure ${defaultMessageItems.topic}`;
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
         wrapper.topicArray = ['', ''];
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
+        // TODO applied recommendation to remove await...was this a good idea?
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
         wrapper.topicArray = ['', '', '', '', '', '', '', '', ''];
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
         wrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', ''];
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
 
         wrapper.topicArray = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
     });
 
     async function checkAgainstWrongTopicData(newWrapper: TopicWrapper) {
         const errMsg = `Invalid topic string structure ${newWrapper.topicInfo.topic}`;
-        await checkAgainstError(async () => await MessageValidator.doTopicDataValidation(newWrapper, defaultParsedMessage), errMsg);
+        await checkAgainstError(async () => MessageValidator.doTopicDataValidation(newWrapper, defaultParsedMessage), errMsg);
     }
 
-    function createCustomMessageInfo(newTopicString: string, method: TopicMethods, resource: Resources) {
+    function createCustomMessageInfo(newTopicString: string, method: Methods, resource: Resources) {
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
         wrapper.topicInfo.method = method;
         wrapper.topicInfo.topic = newTopicString;
@@ -104,7 +104,7 @@ describe('Unit test for TopicParser', () => {
         return wrapper;
     }
 
-    async function createCustomMessageInfoAndTestAgainstWrongData(newTopicString: string, method: TopicMethods, resource: Resources) {
+    async function createCustomMessageInfoAndTestAgainstWrongData(newTopicString: string, method: Methods, resource: Resources) {
         const wrapper: TopicWrapper = createCustomMessageInfo(newTopicString, method, resource);
         defaultParsedMessage.DataSetClassId = DataSetClassIds[wrapper.topicInfo.resource];
         await checkAgainstWrongTopicData(wrapper);
@@ -114,19 +114,19 @@ describe('Unit test for TopicParser', () => {
         const standardTopicPrefix = `oi4/${ServiceTypes.REGISTRY}/${defaultMessageItems.appId}`;
 
         //length = 8
-        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.SET}/${Resources.MAM}`, TopicMethods.SET, Resources.MAM);
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${Methods.SET}/${Resources.MAM}`, Methods.SET, Resources.MAM);
 
         //length = 10
-        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.PUB}/${Resources.MAM}//`, TopicMethods.GET, Resources.MAM);
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${Methods.PUB}/${Resources.MAM}//`, Methods.GET, Resources.MAM);
 
         //length = 12
-        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.DEL}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}`, TopicMethods.DEL, Resources.SUBSCRIPTION_LIST);
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${Methods.DEL}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}`, Methods.DEL, Resources.SUBSCRIPTION_LIST);
 
         //length = 13
-        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.GET}/${Resources.MAM}/${defaultMessageItems.oi4Id}/`, TopicMethods.GET, Resources.MAM);
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${Methods.GET}/${Resources.MAM}/${defaultMessageItems.oi4Id}/`, Methods.GET, Resources.MAM);
 
         //length = 14
-        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${TopicMethods.GET}/${Resources.MAM}/${defaultMessageItems.oi4Id}//`, TopicMethods.GET, Resources.MAM);
+        await createCustomMessageInfoAndTestAgainstWrongData(`${standardTopicPrefix}/${Methods.GET}/${Resources.MAM}/${defaultMessageItems.oi4Id}//`, Methods.GET, Resources.MAM);
     });
 
 });

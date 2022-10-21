@@ -1,7 +1,7 @@
-import {Resources} from '@oi4/oi4-oec-service-model';
+import {Methods, Resources} from '@oi4/oi4-oec-service-model';
 import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
-import {TopicWrapper, TopicMethods, TopicParser} from '../../src';
+import {TopicWrapper, TopicParser} from '../../src';
 import {TopicInfo} from '@oi4/oi4-oec-service-node';
 import {MessageFactory, MessageItems} from '../testUtils/Factories/MessageFactory';
 
@@ -31,7 +31,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('Pub event info are extracted', async () => {
-        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/${defaultMessageItems.filter}`;
+        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${Methods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/${defaultMessageItems.filter}`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.category).toStrictEqual(defaultMessageItems.category);
@@ -46,10 +46,10 @@ describe('Unit test for TopicParser', () => {
     }
 
     it('Invalid info for Pub event generate an error', async () => {
-        let topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}//${defaultMessageItems.filter}`;
+        let topic = `${topicPrefix}/${defaultMessageItems.appId}/${Methods.PUB}/${Resources.EVENT}//${defaultMessageItems.filter}`;
         checkAgainstErrorForPubEvent(topic, `Invalid category: ${topic}`);
 
-        topic = `${topicPrefix}/${defaultMessageItems.appId}/${TopicMethods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/`;
+        topic = `${topicPrefix}/${defaultMessageItems.appId}/${Methods.PUB}/${Resources.EVENT}/${defaultMessageItems.category}/`;
         checkAgainstErrorForPubEvent(topic, `Invalid filter: ${topic}`);
     });
 

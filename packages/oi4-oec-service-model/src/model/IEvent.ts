@@ -1,5 +1,5 @@
 import {OI4Payload} from './Payload';
-import {Resources} from "./Resources";
+import {Resources} from './Resources';
 
 export enum EventCategory {
     CAT_SYSLOG_0 = 'CAT_SYSLOG_0',

@@ -1,6 +1,6 @@
 import {MqttCredentialsHelper} from '../src/application/OI4ApplicationFactory';
-import {ISettingsPaths} from "../src";
-import path from "path";
+import {ISettingsPaths} from '../src';
+import path from 'path';
 
 describe('Unit test for MqttCredentialsHelper', () => {
 
