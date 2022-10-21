@@ -1,6 +1,6 @@
-import {TopicInfo, TopicValidator, TopicMethods} from '../../src';
+import {TopicInfo, TopicValidator} from '../../src';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
-import {Resources} from '@oi4/oi4-oec-service-model';
+import {Methods, Resources} from '@oi4/oi4-oec-service-model';
 import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for TopicParser', () => {
@@ -8,7 +8,7 @@ describe('Unit test for TopicParser', () => {
     const defaultTopicInfo: TopicInfo = {
         topic: '',
         appId: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
-        method: TopicMethods.GET,
+        method: Methods.GET,
         resource: Resources.MAM,
         oi4Id: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         category: '',

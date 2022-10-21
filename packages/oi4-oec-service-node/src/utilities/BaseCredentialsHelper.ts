@@ -2,7 +2,7 @@ import {Credentials} from '../application/MqttSettings';
 import {existsSync, readFileSync} from 'fs';
 import {indexOf} from 'lodash';
 import {DefaultMqttSettingsPaths, IMqttSettingsPaths} from '../configuration/SettingsPaths';
-import * as path from "path";
+import * as path from 'path';
 
 export class BaseCredentialsHelper {
 

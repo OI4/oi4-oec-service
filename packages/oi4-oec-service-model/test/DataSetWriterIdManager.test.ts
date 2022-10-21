@@ -1,5 +1,5 @@
-import {DataSetWriterIdManager} from "../src";
-import {Resources} from "@oi4/oi4-oec-service-model";
+import {DataSetWriterIdManager} from '../src';
+import {Resources} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for DataSetWriterIdManager', () => {
 

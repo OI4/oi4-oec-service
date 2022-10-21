@@ -46,28 +46,34 @@ export class OPCUABuilder {
         return messageId;
     }
 
-    buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', Page = 0, PerPage = 0): IOPCUANetworkMessage[] {
+    buildPaginatedOPCUANetworkMessageArray(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = '', page = 0, perPage = 0): IOPCUANetworkMessage[] {
         const networkMessageArray: IOPCUANetworkMessage[] = [];
         networkMessageArray.push(this.buildOPCUANetworkMessage([dataSetPayloads[0]], timestamp, dataSetClassId, correlationId));
         let currentNetworkMessageIndex = 0;
+        let firstMessageId: string;
         for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
-            const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(networkMessageArray[currentNetworkMessageIndex]));
-            if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (PerPage === 0 || (PerPage !== 0 && networkMessageArray[currentNetworkMessageIndex].Messages.length < PerPage))) {
-                networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.Filter, remainingPayloads.MetaDataVersion));
+            const currentMessage = networkMessageArray[currentNetworkMessageIndex];
+            if(firstMessageId === undefined){
+                firstMessageId = currentMessage.MessageId;
+            }
+            const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(currentMessage));
+            if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (perPage === 0 || (perPage !== 0 && currentMessage.Messages.length < perPage))) {
+                currentMessage.Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.Filter, remainingPayloads.MetaDataVersion));
             } else {
                 // This is the paginationObject
-                networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
+                currentMessage.Messages.push(this.buildOPCUADataSetMessage(
                     {
                         TotalCount: dataSetPayloads.length,
-                        PerPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+                        PerPage: currentMessage.Messages.length,
                         Page: currentNetworkMessageIndex + 1,
                         HasNext: true,
-                        PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO:
+                        PaginationId: firstMessageId,
                     }, timestamp, parseInt(`${remainingPayloads.DataSetWriterId}${currentNetworkMessageIndex}`, 10)
                 ));
-                if (Page !== 0 && currentNetworkMessageIndex >= Page) {
+                firstMessageId = undefined;
+                if (page !== 0 && currentNetworkMessageIndex >= page) {
                     if (payloadIndex === dataSetPayloads.length) {
-                        networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].Payload.HasNext = false;
+                        currentMessage.Messages.slice(-1)[0].Payload.HasNext = false;
                     }
                     break; // If we request a certain Page, there's no need to build more than necessary
                 }
@@ -75,25 +81,26 @@ export class OPCUABuilder {
                 currentNetworkMessageIndex++;
             }
         }
-        if (Page === 0 || (Page !== 0 && currentNetworkMessageIndex < Page)) {
+        if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
+            const currentMessage = networkMessageArray[currentNetworkMessageIndex];
             // Pagination Object
-            networkMessageArray[currentNetworkMessageIndex].Messages.push(this.buildOPCUADataSetMessage(
+            currentMessage.Messages.push(this.buildOPCUADataSetMessage(
                 {
                     TotalCount: dataSetPayloads.length,
-                    PerPage: networkMessageArray[currentNetworkMessageIndex].Messages.length,
+                    PerPage: currentMessage.Messages.length,
                     Page: currentNetworkMessageIndex + 1,
                     HasNext: false,
-                    PaginationId: 'ToDo: opcUaDataMessage.MessageId', // TODO:
+                    PaginationId: currentMessage.MessageId,
                 },
                 timestamp,
-                parseInt(`${networkMessageArray[currentNetworkMessageIndex].Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
+                parseInt(`${currentMessage.Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
             ));
         }
         // If a specific Page was requested, wo only send that Page
-        if ((Page !== 0 && Page > 0)) {
-            if (Page > networkMessageArray.length) return [];
+        if ((page !== 0 && page > 0)) {
+            if (page > networkMessageArray.length) return [];
             // Since the request was for one specific Page, we always set HasNext to false here
-            const returnedPage = networkMessageArray[Page - 1];
+            const returnedPage = networkMessageArray[page - 1];
             returnedPage.Messages[returnedPage.Messages.length - 1].Payload.HasNext = false;
             return [returnedPage];
         } else {
@@ -103,9 +110,9 @@ export class OPCUABuilder {
 
     /**
      * Builds an OPCUA and OI4-conform Data Message (Including NetworkMessage)
-     * @param actualPayload - the payload that is to be encapsulated inside the OPCUA Packet (key-value pair of valid data)
+     * @param dataSetPayloads
      * @param timestamp - the current timestamp in Date format
-     * @param classId - the DataSetClassId that is used for the data (health, license etc.)
+     * @param dataSetClassId
      * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
      */
     buildOPCUANetworkMessage(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = ''): IOPCUANetworkMessage {
@@ -276,13 +283,13 @@ export class OPCUABuilder {
         return field;
     }
 
-    parseOPCUAData() {
-
-    }
-
-    parseOPCUAMetaData() {
-
-    }
+    // parseOPCUAData() {
+    //
+    // }
+    //
+    // parseOPCUAMetaData() {
+    //
+    // }
 
     checkTopicPath(topicPath: string): boolean {
         return this.topicRex.test(topicPath);

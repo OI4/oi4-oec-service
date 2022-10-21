@@ -15,7 +15,10 @@ export class Oi4Identifier {
         return `${encodeURIComponent(this.manufacturerUri)}/${encodeURIComponent(this.model)}/${encodeURIComponent(this.productCode)}/${encodeURIComponent(this.serialNumber)}`;
     }
 
-    static fromString(oi4Id: string = ''): Oi4Identifier {
+    static fromString(oi4Id: string): Oi4Identifier {
+        if(oi4Id === undefined){
+            throw new Error('No OI4 identifier provided');
+        }
         const oi4IdParts = oi4Id.split('/');
         if (oi4IdParts.length !== 4) {
             throw new Error(`Invalid OI4 identifier: ${oi4Id}`);

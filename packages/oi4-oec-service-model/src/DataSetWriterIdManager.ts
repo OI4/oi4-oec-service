@@ -1,4 +1,4 @@
-import {Resources} from "./model/Resources";
+import {Resources} from './model/Resources';
 
 /**
  * This class handles the creation and management of the DataSetWriterId.
@@ -23,7 +23,7 @@ export namespace DataSetWriterIdManager {
     }
 
     function getDataSetWriterIdKey(resource: Resources, source: string): string {
-        const sub = (resource === Resources.PUBLICATION_LIST ||  resource === Resources.SUBSCRIPTION_LIST) ? "NA" : source;
+        const sub = (resource === Resources.PUBLICATION_LIST ||  resource === Resources.SUBSCRIPTION_LIST) ? 'NA' : source;
         return `${resource}_|_${sub}`;
     }
 
