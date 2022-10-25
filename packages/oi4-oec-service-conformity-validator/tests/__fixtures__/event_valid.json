@@ -14,8 +14,8 @@
       "Payload": {
         "Number": 0,
         "Description": "The operation succeeded.",
-        "category": "CAT_STATUS_1",
-        "details": {
+        "Category": "CAT_STATUS_1",
+        "Details": {
           "SymbolicId": "Good"
         }
       }

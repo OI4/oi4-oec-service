@@ -1,5 +1,5 @@
 import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
-import {Resources} from '@oi4/oi4-oec-service-model';
+import {Methods, Resources} from '@oi4/oi4-oec-service-model';
 
 
 export class GetRequest {
@@ -17,7 +17,7 @@ export class GetRequest {
         this.Filter = filter;
     }
 
-    public getTopic(action = 'pub'): string {
+    public getTopic(action: string = Methods.PUB): string {
         let topic = `${this.TopicPreamble}/${action}/${this.Resource}`;
         if (GetRequest.isNotEmpty(this.Source)) {
             topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;

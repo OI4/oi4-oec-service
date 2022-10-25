@@ -96,7 +96,7 @@ export class ClientPayloadHelper {
                 Filter: resource,
                 Source: applicationResources.oi4Id.toString(),
                 Payload: {... elem,
-                    oi4Identifier: elem.Source.toString()
+                    Source: elem.Source.toString()
                 },
             } as IOPCUADataSetMessage;
         });

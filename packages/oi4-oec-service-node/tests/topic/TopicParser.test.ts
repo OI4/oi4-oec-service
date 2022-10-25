@@ -145,7 +145,7 @@ describe('Unit test for TopicParser', () => {
         } else {
             expect(() => {
                 TopicParser.extractResourceSpecificInfo(wrapper)
-            }).toThrowError('Invalid Source: ');
+            }).toThrowError(`Invalid source: ${topic}`);
         }
     }
 

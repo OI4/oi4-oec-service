@@ -6,7 +6,7 @@
   "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 74,
-      "Sources": "openindustry4.com/nd/nd/nd",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 42,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {

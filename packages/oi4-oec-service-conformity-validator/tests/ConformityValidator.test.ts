@@ -8,6 +8,7 @@ import mam_valid from './__fixtures__/mam_valid.json';
 import health_valid from './__fixtures__/health_valid.json';
 import license_valid from './__fixtures__/license_valid.json';
 import licenseText_valid from './__fixtures__/licenseText_valid.json';
+import licenseText_apache_valid from './__fixtures__/licenseText_apache_valid.json';
 import publicationList_valid from './__fixtures__/publicationList_valid.json';
 import subscriptionList_valid from './__fixtures__/subscriptionList_valid.json';
 import data_valid from './__fixtures__/data_valid.json';
@@ -34,15 +35,22 @@ const publish = jest.fn();
 
 jest.mock('@oi4/oi4-oec-service-logger', () => ({
         LOGGER: {
-            log(logString: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
-                 console.log(`(${level} - ${logString}) `)
-            }
-            // log:jest.fn(),
+            log: jest.fn(),
         },
         initializeLogger: jest.fn(),
     })
 )
 
+interface ITestData {
+    resource: Resources;
+    source?: string;
+    filter?: string;
+    message: any;
+}
+
+const addFilter = (data: ITestData): string => {
+    return data.filter ? `/${data.filter}` : '';
+};
 
 const getMqttClient = (): mqtt.AsyncClient => {
     return {
@@ -63,7 +71,6 @@ function equal(a: string, b: string): boolean {
     return a == b;
 }
 
-
 const validDeviceTestData: ITestData[] = [
     {resource: Resources.MAM, message: mam_valid},
     {resource: Resources.HEALTH, message: health_valid},
@@ -71,12 +78,13 @@ const validDeviceTestData: ITestData[] = [
     {resource: Resources.LICENSE, message: license_valid},
     {resource: Resources.LICENSE, message: license_with_pagination_valid},
     {resource: Resources.LICENSE_TEXT, message: licenseText_valid},
+    {resource: Resources.LICENSE_TEXT, message: licenseText_apache_valid},
     {resource: Resources.PUBLICATION_LIST, message: publicationList_valid},
     {resource: Resources.SUBSCRIPTION_LIST, message: subscriptionList_valid},
     {resource: Resources.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
     {resource: Resources.DATA, message: data_valid},
     {resource: Resources.CONFIG, message: config_valid},
-    {resource: Resources.EVENT, message: event_valid},
+    {resource: Resources.EVENT, message: event_valid, source: defaultSource, filter: 'Status/Good'},
     {resource: Resources.INTERFACES, message: interfaces_valid},
     {resource: Resources.RT_LICENSE, message: rtLicense_valid}];
 
@@ -99,6 +107,8 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
             message.CorrelationId = request.Message.MessageId;
         }
 
+        //const req = request.Resource === Resources.EVENT ? new GetRequest(request.TopicPreamble, request.Resource, request.Message, responseEntry.source, 'Status/Good') : request;
+
         return new PubResponse(request.getTopic(Methods.PUB), Buffer.from(JSON.stringify(message)));
 
     });
@@ -109,15 +119,6 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
 
     return new ConformityValidator(defaultAppId, mqttClient, ServiceTypes.REGISTRY, messageBusLookup);
 }
-
-
-interface ITestData {
-    resource: Resources;
-    source?: string;
-    filter?: string;
-    message: any;
-}
-
 
 describe('Unit test for ConformityValidator ', () => {
 
@@ -307,7 +308,7 @@ describe('Unit test for ConformityValidator ', () => {
 
         expect(result.validity).toBe(EValidity.ok);
         expect(result.resources['unknown'].validity).toBe(EValidity.nok);
-        expect(result.resources['unknown'].validityErrors).toContain('Resource is unknown to oi4');
+        expect(result.resources['unknown'].validityErrors).toContain('Resource is unknown to OI4');
     });
 
     it('should return partial device conformity if health is wrong', async () => {
@@ -363,7 +364,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.ok);
         expect(result.profileResourceList.sort()).toEqual([Resources.HEALTH, Resources.MAM, Resources.PROFILE, Resources.REFERENCE_DESIGNATION])
         expect(result.nonProfileResourceList).toEqual([Resources.CONFIG])
-        expect(result.resources['config'].validity).toBe(EValidity.ok);
+        expect(result.resources[Resources.CONFIG]?.validity).toBe(EValidity.ok);
     });
 
     it.each(allValidDeviceTestData)(
@@ -371,32 +372,31 @@ describe('Unit test for ConformityValidator ', () => {
         async (data: ITestData) => {
 
             const objectUnderTest = getObjectUnderTest([data]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}`;
+            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
+            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.ok);
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
         }
     )
 
     it.each(allValidDeviceTestData)(
         '($#) should return partial conformity for wrong correlationId -> $resource',
         async (data: ITestData) => {
-
             const objectUnderTest = getObjectUnderTest([data], false);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}`;
+            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
+            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
             expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
     )
@@ -411,16 +411,20 @@ describe('Unit test for ConformityValidator ', () => {
             const message = JSON.parse(clonedMessage);
             message.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId
 
-            const objectUnderTest = getObjectUnderTest([{resource: data.resource, message: message}]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source);
+            const objectUnderTest = getObjectUnderTest([{resource: data.resource, message: message, source: data.source, filter: data.filter}]);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}`;
+            const addFilter = (): string => {
+                return data.filter ? `/${data.filter}` : '';
+            };
+
+            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter()}`;
+            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter()}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
             expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
     )
@@ -433,8 +437,8 @@ describe('Unit test for ConformityValidator ', () => {
             expect(result.validity).toBe(EValidity.ok);
 
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/Get/profile (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/Pub/profile.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
         }
     )
 
@@ -446,8 +450,8 @@ describe('Unit test for ConformityValidator ', () => {
             expect(result.validity).toBe(EValidity.ok);
 
             expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/Get/profile (Low-Level).`, ESyslogEventFilter.warning);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/Pub/profile.`, ESyslogEventFilter.warning);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
         }
     )
 
@@ -456,11 +460,11 @@ describe('Unit test for ConformityValidator ', () => {
         const objectUnderTest = getObjectUnderTest([{resource: Resources.PROFILE, message: profile_app_data_invalid}]);
         const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
         expect(result.validity).toBe(EValidity.partial);
-        expect(result.validityErrors).toContain('Profile contains the resource "data" but not "metadata".');
+        expect(result.validityErrors).toContain('Profile contains the resource "Data" but not "Metadata".');
 
         expect(LOGGER.log).toHaveBeenCalledTimes(2);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/Get/profile (Low-Level).`, ESyslogEventFilter.warning);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/Pub/profile.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
     })
 
     it('should return partial conformity for device profile with missing metadata', async () => {
@@ -471,11 +475,11 @@ describe('Unit test for ConformityValidator ', () => {
         }]);
         const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
         expect(result.validity).toBe(EValidity.partial);
-        expect(result.validityErrors).toContain('Profile contains the resource "data" but not "metadata".');
+        expect(result.validityErrors).toContain('Profile contains the resource "Data" but not "Metadata".');
 
         expect(LOGGER.log).toHaveBeenCalledTimes(2);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource profile on ${defaultTopic}/Get/profile (Low-Level).`, ESyslogEventFilter.warning);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on profile from ${defaultTopic}/Pub/profile.`, ESyslogEventFilter.warning);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
     })
 
     it.each(allValidDeviceTestData)(

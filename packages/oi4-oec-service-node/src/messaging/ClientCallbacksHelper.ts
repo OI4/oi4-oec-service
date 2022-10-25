@@ -3,7 +3,7 @@ import {
     EDeviceHealth,
     ESyslogEventFilter,
     Resources,
-    DataSetWriterIdManager
+    DataSetWriterIdManager, Methods
 } from '@oi4/oi4-oec-service-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {OI4Application} from '../application/OI4Application'; /*tslint:disable-line*/
@@ -19,7 +19,7 @@ export class ClientCallbacksHelper {
         const topicPreamble = oi4application.topicPreamble;
 
         await oi4application.client.publish(
-            `${topicPreamble}/pub/mam/${oi4Id}`,
+            `${topicPreamble}/${Methods.PUB}/${Resources.MAM}/${oi4Id}`,
             JSON.stringify(oi4application.builder.buildOPCUANetworkMessage([{
                 Source: oi4Id.toString(),
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
