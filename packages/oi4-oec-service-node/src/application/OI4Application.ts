@@ -9,7 +9,7 @@ import {
     ESyslogEventFilter,
     IEvent,
     IOI4ApplicationResources,
-    MasterAssetModel,
+    MasterAssetModel, Methods,
     Resources,
     StatusEvent,
     SubscriptionList,
@@ -98,7 +98,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         this.clientPayloadHelper = clientPayloadHelper;
 
         mqttSettings.will = {
-            topic: `${OI4_NS}/${this.serviceType}/${this.oi4Id}/Pub/Health/${this.oi4Id}`,
+            topic: `${OI4_NS}/${this.serviceType}/${this.oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${this.oi4Id}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                 Source: this.oi4Id.toString(),
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
@@ -165,9 +165,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private async initIncomingMessageListeners() {
         // Listen to own routes
-        await this.addSubscription(`${this.topicPreamble}/Get/#`);
-        await this.addSubscription(`${this.topicPreamble}/Set/#`);
-        await this.addSubscription(`${this.topicPreamble}/Del/#`);
+        await this.addSubscription(`${this.topicPreamble}/${Methods.GET}/#`);
+        await this.addSubscription(`${this.topicPreamble}/${Methods.SET}/#`);
+        await this.addSubscription(`${this.topicPreamble}/${Methods.DEL}/#`);
         this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder, this));
     }
 
@@ -196,21 +196,21 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param cutTopic - the cutTopic, containing only the tag-element
      */
     async sendMetaData(cutTopic: string) {
-        await this.send(cutTopic, 'metadata', this.applicationResources.metaDataLookup);
+        await this.send(cutTopic, Resources.METADATA, this.applicationResources.metaDataLookup);
     }
 
     //FIXME add a better type for the information send (Either data or metadata)
     private async send(tagName: string, type: string, information: any) {
         if (tagName === '') { // If there is no tag specified, we should send all available metadata
-            await this.client.publish(`${this.topicPreamble}/pub/${type}`, JSON.stringify(information));
-            LOGGER.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}`);
+            await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${type}`, JSON.stringify(information));
+            LOGGER.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}`);
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
         if (tagName in dataLookup) {
-            await this.client.publish(`${this.topicPreamble}/pub/${type}/${tagName}`, JSON.stringify(information[tagName]));
-            LOGGER.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/pub/${type}/${tagName}`);
+            await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`, JSON.stringify(information[tagName]));
+            LOGGER.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`);
         }
     }
 
@@ -354,9 +354,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             }
             for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
                 await this.client.publish(
-                    `${this.topicPreamble}/pub/${resource}${endTag}`,
+                    `${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`,
                     JSON.stringify(networkMessages));
-                LOGGER.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/pub/${resource}${endTag}`, ESyslogEventFilter.informational);
+                LOGGER.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`, ESyslogEventFilter.informational);
             }
         } catch {
             console.log('Error in building paginated NMA');
@@ -373,9 +373,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, source, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
-        const publishAddress = `${this.topicPreamble}/pub/event/${source}/${filter}`;
+        const publishAddress = `${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/${source}/${filter}`;
         await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
-        LOGGER.log(`Published event on ${this.topicPreamble}/event/${source}/${filter}`);
+        LOGGER.log(`Published event on ${this.topicPreamble}/${Resources.EVENT}/${source}/${filter}`);
     }
 
 
@@ -384,9 +384,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             SequenceNumber: 1,
             Source: source,
             Payload: status,
-            DataSetWriterId: CDataSetWriterIdLookup['event'],
+            DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/pub/event/status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
+        await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
     }
 
     async getConfig() {
@@ -394,10 +394,10 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             SequenceNumber: 1,
             Source: this.oi4Id.toString(), // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
             Payload: this.applicationResources.config,
-            DataSetWriterId: CDataSetWriterIdLookup['config'],
+            DataSetWriterId: CDataSetWriterIdLookup[Resources.CONFIG],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/get/config/${this.oi4Id}`, JSON.stringify(opcUAEvent));
-        LOGGER.log(`Published get config on ${this.topicPreamble}/get/config/${this.oi4Id}`);
+        await this.client.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
+        LOGGER.log(`Published get config on ${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`);
     }
 
     /**

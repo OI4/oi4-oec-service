@@ -7,6 +7,7 @@ import {DataSetClassIds, Methods, Resources} from '@oi4/oi4-oec-service-model';
 import {MockOi4Application} from '../testUtils/Factories/MockedOi4Application';
 import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
 import {MqttMessageProcessorEventStatus} from '../../src/messaging/MqttMessageProcessor';
+import {OI4_NS} from '@oi4/oi4-oec-service-node';
 
 interface MockedData {
     oi4Id: Oi4Identifier;
@@ -24,7 +25,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
     const registryFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/2/3');
     const defaultFakeSource = 'fakeSource';
-    const defaultTopicPrefix = 'oi4/Aggregation';
+    const defaultTopicPrefix = `${OI4_NS}/Aggregation`;
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
     const defaultFakeOi4Id = Oi4Identifier.fromString('1/1/1/1');
@@ -46,7 +47,7 @@ describe('Unit test for MqttMessageProcessor', () => {
         return {
             oi4Id: defaultFakeAppId,
             serviceType: ServiceTypes.AGGREGATION,
-            topic: `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/mam/${defaultFakeFilter}`,
+            topic: `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/${Resources.MAM}/${defaultFakeFilter}`,
         }
     }
 
@@ -93,13 +94,13 @@ describe('Unit test for MqttMessageProcessor', () => {
         //await expect(processMessage(jest.fn(), fakeTopic, resourceConfig, new EventEmitter())).rejects.toThrowError(`${errorPrefix}${fakeTopic}`);
     }
 
-    it('If the serviceType is "Registry" the oi4Id is saved', async () => {
+    it('Registry OI4 ID shall be saved if the serviceType is "Registry"', async () => {
         const jsonObj = {
             Messages: [{Payload: 'fakePayload'}],
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
             PublisherId: `Registry/${registryFakeAppId}`,
         };
-        const topic = `oi4/${jsonObj.PublisherId}/${Methods.GET}/mam/${defaultFakeOi4Id}`;
+        const topic = `oi4/${jsonObj.PublisherId}/${Methods.GET}/${Resources.MAM}/${defaultFakeOi4Id}`;
         const mockedData = getMockedData();
         const processor = new MqttMessageProcessor();
         await processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
@@ -136,7 +137,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works without Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
-        const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
+        const resources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION];
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/${resource}`;
             await checkResultGet(resource, fakeTopic);
@@ -146,7 +147,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works with Oi4Id - mam, health, rtLicense, profile, referenceDesignation', async () => {
-        const resources = ['mam', 'health', 'rtLicense', 'profile', 'referenceDesignation'];
+        const resources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION];
         for (const resource of resources) {
             const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/${resource}/${defaultFakeOi4Id}`;
             await checkResultGet(resource, fakeTopic, defaultFakeOi4Id.toString());
@@ -163,7 +164,7 @@ describe('Unit test for MqttMessageProcessor', () => {
                 const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/${resource}/1//1/1`;
                 await processMessage(fakeTopic, resource).then();
                 expect(fakeLogFile.length).toBe(1);
-                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : oi4/Aggregation/mymanufacturer.com/1/1/1/get/${resource}/1//1/1`);
+                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : ${OI4_NS}/${ServiceTypes.AGGREGATION}/mymanufacturer.com/1/1/1/${Methods.GET}/${resource}/1//1/1`);
             }
         });
 
@@ -180,20 +181,19 @@ describe('Unit test for MqttMessageProcessor', () => {
     });
 
     it('extract topic info works - config - set', async () => {
-        const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
+        const setConfigTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultFakeOi4Id}/${defaultFakeFilter}`;
 
         oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
 
         oi4Application.sendEventStatus = jest.fn();
 
-        await processMessage(fakeTopic, Resources.CONFIG, processor);
+        await processMessage(setConfigTopic, Resources.CONFIG, processor);
 
         expect(oi4Application.sendEventStatus).toHaveBeenCalledWith({
-            origin: defaultFakeAppId.toString(),
-            number: 0,
-            description: undefined
-        });
+            Number: 0,
+            Description: undefined
+        }, defaultFakeOi4Id.toString());
 
         expect(oi4Application.sendResource).toHaveBeenCalledWith(Resources.CONFIG, undefined, defaultFakeAppId.toString(), defaultFakeFilter, 0, 0);
     });

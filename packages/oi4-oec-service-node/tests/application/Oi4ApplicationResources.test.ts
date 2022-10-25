@@ -1,8 +1,19 @@
 import {OI4ApplicationResources} from '../../src';
 import {OI4ResourceEvent} from '../../src/application/OI4Resource';
 import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
-import {IMasterAssetModel, Oi4Identifier, EOPCUALocale, EOPCUABaseDataType} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth, Health, IContainerConfig, IOI4Resource, PublicationList, PublicationListMode, PublicationListConfig, Resources, IContainerConfigGroupName, IContainerConfigConfigName} from '@oi4/oi4-oec-service-model';
+import {EOPCUABaseDataType, EOPCUALocale, IMasterAssetModel, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    EDeviceHealth,
+    Health,
+    IContainerConfig,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IOI4Resource,
+    PublicationList,
+    PublicationListConfig,
+    PublicationListMode,
+    Resources
+} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
@@ -74,7 +85,6 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('If oi4Id undefined all licenses are returned', () => {
-        console.log('Wait for it...');
         const license = appResources.getLicense(undefined);
         expect(license.length).toBe(0);
     });
@@ -122,7 +132,7 @@ describe('Test Oi4ApplicationResources', () => {
     }
 
     function createResourceWithConfig(oi4Id: Oi4Identifier): IOI4Resource {
-        const subResource: IOI4Resource = {
+        return {
             oi4Id: oi4Id,
             config: createConfig(),
             profile: undefined,
@@ -133,9 +143,7 @@ describe('Test Oi4ApplicationResources', () => {
             rtLicense: undefined,
             publicationList: [],
             subscriptionList: []
-        }
-
-        return subResource;
+        };
     }
 
     it ('setConfig updates main configuration', ()=> {
@@ -158,10 +166,10 @@ describe('Test Oi4ApplicationResources', () => {
         expect(receivedResource).toBe(Resources.CONFIG);
     });
 
-    it ('setConfig updates subResource configuration', ()=> {
+    it ('setConfig updates source configuration', ()=> {
         const oi4Identifier = new Oi4Identifier('vendor.com', 'a', 'b', 'c');
-        const subResource = createResourceWithConfig(oi4Identifier);
-        appResources.addSource(subResource);
+        const source = createResourceWithConfig(oi4Identifier);
+        appResources.addSource(source);
 
         const setConfig = createConfig();
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
@@ -174,9 +182,9 @@ describe('Test Oi4ApplicationResources', () => {
         })
 
         const result = appResources.setConfig(oi4Identifier, 'filter%201', setConfig);
-
+        const sourceResources = appResources.sources.get(oi4Identifier.toString());
         expect(result).toBeTruthy();
-        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('1000');
+        expect(((sourceResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('1000');
         expect(receivedOi4Id).toStrictEqual(oi4Identifier);
         expect(receivedResource).toBe(Resources.CONFIG);
     });

@@ -61,6 +61,7 @@ export function getResource(resource: string): Resources {
 }
 
 // TODO I am totally wrong remove me for ever...
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const CDataSetWriterIdLookup: Record<string, number> = {
     MAM: 1,
     Health: 2,

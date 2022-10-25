@@ -50,7 +50,7 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
 			getServiceType(): ServiceTypes {return ServiceTypes.REGISTRY}
         } as MasterAssetModel),
         subscriptionList: [],
-        subResources: new Map<string, IOI4Resource>(),
+        sources: new Map<string, IOI4Resource>(),
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on(event: string, listener: Function) {

@@ -96,7 +96,7 @@ export class OPCUABuilder {
                 parseInt(`${currentMessage.Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
             ));
         }
-        // If a specific Page was requested, wo only send that Page
+        // If a specific Page was requested, we only send that Page
         if ((page !== 0 && page > 0)) {
             if (page > networkMessageArray.length) return [];
             // Since the request was for one specific Page, we always set HasNext to false here

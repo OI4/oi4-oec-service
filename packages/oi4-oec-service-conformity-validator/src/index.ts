@@ -128,13 +128,13 @@ export class ConformityValidator {
                 }
             }
         } catch (e) {
-            console.log(e);
+            LOGGER.log(e, ESyslogEventFilter.warning);
         }
 
 
         // Third, if a resourceList is specified, add those to our resources to be checked
         if (resourceList) {
-            console.log(`Got ResourceList from Param: ${resourceList}`);
+            LOGGER.log(`Got ResourceList from Param: ${resourceList}`, ESyslogEventFilter.debug);
             for (const resources of resourceList) {
                 if (!(checkList.includes(resources))) {
                     checkList.push(resources);
@@ -207,6 +207,9 @@ export class ConformityValidator {
                             resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         } else {
                             for (const license of licenseList) {
+                                if(license.Filter === 'Pagination'){
+                                    continue;
+                                }
                                 resObj = await this.checkResourceConformity(topicPreamble, resource, license.Source, license.Filter);
                                 if (resObj.validity != EValidity.ok) {
                                     // text not valid --> don't continue
@@ -292,7 +295,7 @@ export class ConformityValidator {
      * Sidenote: "Custom" Resources will be marked as an error and not checked
      * @param topicPreamble The fullTopic that is used to check the get-route
      * @param assetType  The type of asset being tested (device / application.
-     * @param Source
+     * @param source
      * @param assetType The (optional) Source.
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
@@ -347,7 +350,7 @@ export class ConformityValidator {
      * If we don't receive an answer within the given timeframe, an error is returned.
      * @param topicPreamble - the originator oi4Id of the requestor
      * @param resource - the resource that is to be checked (health, license, etc...)
-     * @param Source - the Source of the requestor, in most cases their oi4Id
+     * @param source - the Source of the requestor, in most cases their oi4Id
      * @param filter - the filter (if available)
      */
     async checkResourceConformity(topicPreamble: string, resource: Resources, source?: string, filter?: string): Promise<IValidityDetails> {
@@ -374,7 +377,7 @@ export class ConformityValidator {
                 errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
                 LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             }
-        } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
+        } else { // Oops, we have schema errors, let's show them to the user so they can fix them...
             LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
@@ -477,7 +480,7 @@ export class ConformityValidator {
             schemaConformity.schemaResult = true;
         } else {
             LOGGER.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
-            console.log(schemaConformity);
+            LOGGER.log(JSON.stringify(schemaConformity), ESyslogEventFilter.debug);
         }
 
         return schemaConformity;
@@ -518,7 +521,7 @@ export class ConformityValidator {
         // further checks will follow!
         const oi4RegEx = new RegExp(/^(([a-z0-9-]+\.)*([a-z0-9-]*)(?:\/[^\/`\\^\r\n]+){3})$/g);
         if (oi4RegEx.test(oi4Id)) return true;
-        console.log('Error in checkOI4IDConformity!');
+        LOGGER.log('Error in checkOI4IDConformity!', ESyslogEventFilter.informational);
         return false;
     }
 
