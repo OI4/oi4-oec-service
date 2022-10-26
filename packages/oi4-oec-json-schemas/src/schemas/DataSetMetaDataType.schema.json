@@ -17,17 +17,20 @@
       "$ref": "ConfigurationVersionDataType.schema.json"
     },
     "DataSetClassId": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "uuid"
     },
     "Description": {
       "$ref": "LocalizedText.schema.json"
     },
     "Fields": {
-	    "type": "array",
-	    "items": {
+      "type": "array",
+      "items": {
         "$ref": "FieldMetaData.schema.json"
-	    }
+      }
     },
     "Name": {
       "type": "string",

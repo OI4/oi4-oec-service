@@ -23,7 +23,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
     it('The factory works, the default methods are mocked', async () => {
         const mockedBuilder = MockedOPCUABuilderFactory.getMockedBuilderWithMockedMethods(oid4Id, ServiceTypes.AGGREGATION);
 
-        expect(await mockedBuilder.checkOPCUAJSONValidity({payload: 'payload'})).toBe(true);
+        expect(await mockedBuilder.checkOPCUAJSONValidity({Payload: 'payload'})).toBe(true);
         expect(mockedBuilder.checkTopicPath('path')).toBe(true);
     });
 
@@ -42,12 +42,12 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
             () => {
                 return {
                     MessageId: '1',
-                    MessageType: EOPCUAMessageType.uaData,
+                    MessageType: EOPCUAMessageType.uaMetadata,
                     PublisherId: '2',
                     DataSetWriterId: 3,
-                    filter: filter,
-                    source: source,
-                    correlationId: correlationId,
+                    Filter: filter,
+                    Source: source,
+                    CorrelationId: correlationId,
                     MetaData: {}
                 }
             });
@@ -58,7 +58,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         expect(checkOPCUAJSONValidityMock).toHaveBeenCalled();
         expect(valid).not.toBe(undefined);
         expect(valid.MessageId).toBe('1');
-        expect(valid.MessageType).toBe(EOPCUAMessageType.uaData);
+        expect(valid.MessageType).toBe(EOPCUAMessageType.uaMetadata);
         expect(valid.PublisherId).toBe('2');
         expect(valid.DataSetWriterId).toBe(3);
         expect(valid.Filter).toBe(filter);

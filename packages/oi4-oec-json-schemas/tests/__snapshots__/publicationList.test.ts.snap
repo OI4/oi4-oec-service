@@ -1,63 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`publicationList schema (0) match fails for invalid publicationList -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Resource'
-    Path:     PublicationList.schema.json#/required
-  must have required property 'DataSetWriterId'
-    Path:     PublicationList.schema.json#/required
-  must have required property 'Source'
-    Path:     PublicationList.schema.json#/required
-"
+[31m  must have required property 'Resource'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m[31m  must have required property 'DataSetWriterId'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Source'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`publicationList schema (1) match fails for invalid publicationList -> publicationList with unknown resource: publicationList with unknown resource 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Resource must be equal to one of the allowed values
-    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\"]
-    Received: <string> unknown
-    Path:     PublicationList.schema.jsonconstants/resources.schema.json/enum
-"
+[31m  /Resource must be equal to one of the allowed values[39m
+[31m    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\"][39m
+[31m    Received: [33m<string>[39m[31m unknown[39m
+[31m    Path:     PublicationList.schema.jsonconstants/resources.schema.json/enum[39m
+[31m[39m"
 `;
 
 exports[`publicationList schema (2) match fails for invalid publicationList -> publicationList with missing Resource: publicationList with missing Resource 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Resource'
-    Path:     PublicationList.schema.json#/required
-"
+[31m  must have required property 'Resource'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`publicationList schema (3) match fails for invalid publicationList -> publicationList with missing DataSetWriterId: publicationList with missing DataSetWriterId 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'DataSetWriterId'
-    Path:     PublicationList.schema.json#/required
-"
+[31m  must have required property 'DataSetWriterId'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`publicationList schema (4) match fails for invalid publicationList -> publicationList with missing Source: publicationList with missing Source 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Source'
-    Path:     PublicationList.schema.json#/required
-"
+[31m  must have required property 'Source'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`publicationList schema (5) match fails for invalid publicationList -> publicationList with invalid Source: publicationList with invalid Source 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Source must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^
-]+){3})$\\"
-    Received: <string> provider.com
-    Path:     PublicationList.schema.jsonOi4Identifier.schema.json/pattern
-"
+[31m  /Source must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com[39m
+[31m    Path:     PublicationList.schema.jsonOi4Identifier.schema.json/pattern[39m
+[31m[39m"
 `;

@@ -102,15 +102,11 @@
       "required": [
         "Name"
       ],
-      "additionalProperties": {
+      "additionalProperties": false,
+      "patternProperties": {
         "Name": {
           "$ref": "LocalizedText.schema.json"
         },
-        "Description": {
-          "$ref": "LocalizedText.schema.json"
-        }
-      },
-      "patternProperties": {
         "Description": {
           "$ref": "LocalizedText.schema.json"
         },

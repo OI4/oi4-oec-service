@@ -1,63 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`KeyValuePair schema (0) match fails for invalid config -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Key'
-    Path:     KeyValuePair.schema.json#/required
-  must have required property 'Value'
-    Path:     KeyValuePair.schema.json#/required
-"
+[31m  must have required property 'Key'[39m
+[31m    Path:     KeyValuePair.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Value'[39m
+[31m    Path:     KeyValuePair.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`KeyValuePair schema (1) match fails for invalid config -> empty key: empty key 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Key must have required property 'Name'
-    Received: <object> {}
-    Path:     KeyValuePair.schema.json#/required
-  /Key must have required property 'NamespaceIndex'
-    Received: <object> {}
-    Path:     KeyValuePair.schema.json#/required
-"
+[31m  /Key must have required property 'Name'[39m
+[31m    Received: [33m<object> [39m[31m{}[39m
+[31m    Path:     KeyValuePair.schema.json#/required[39m
+[31m[39m[31m  /Key must have required property 'NamespaceIndex'[39m
+[31m    Received: [33m<object> [39m[31m{}[39m
+[31m    Path:     KeyValuePair.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`KeyValuePair schema (2) match fails for invalid config -> invalid key: invalid key 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Key must have required property 'NamespaceIndex'
-    Received: <object> {\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}
-    Path:     KeyValuePair.schema.json#/required
-  must NOT have additional properties, but found 'NameSpaceIndex'
-    Expected: <boolean> false
-    Received: <object> {\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}
-    Path:     KeyValuePair.schema.json#/additionalProperties
-"
+[31m  /Key must have required property 'NamespaceIndex'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}[39m
+[31m    Path:     KeyValuePair.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'NameSpaceIndex'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}[39m
+[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
+[31m[39m"
 `;
 
 exports[`KeyValuePair schema (3) match fails for invalid config -> invalid key property value: invalid key property value 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Key/NamespaceIndex must be integer
-    Received: <string> 0
-    Path:     KeyValuePair.schema.jsondataTypes/uint16.schema.json/type
-"
+[31m  /Key/NamespaceIndex must be integer[39m
+[31m    Received: [33m<string>[39m[31m 0[39m
+[31m    Path:     KeyValuePair.schema.jsondataTypes/uint16.schema.json/type[39m
+[31m[39m"
 `;
 
 exports[`KeyValuePair schema (4) match fails for invalid config -> additional properties: additional properties 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must NOT have additional properties, but found 'bar'
-    Expected: <boolean> false
-    Path:     KeyValuePair.schema.json#/additionalProperties
-  must NOT have additional properties, but found 'foo'
-    Expected: <boolean> false
-    Received: <object> {\\"Name\\":\\"\\",\\"NamespaceIndex\\":0,\\"foo\\":\\"bar\\"}
-    Path:     KeyValuePair.schema.json#/additionalProperties
-"
+[31m  must NOT have additional properties, but found 'bar'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
+[31m[39m[31m  must NOT have additional properties, but found 'foo'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"\\",\\"NamespaceIndex\\":0,\\"foo\\":\\"bar\\"}[39m
+[31m    Path:     KeyValuePair.schema.json#/additionalProperties[39m
+[31m[39m"
 `;

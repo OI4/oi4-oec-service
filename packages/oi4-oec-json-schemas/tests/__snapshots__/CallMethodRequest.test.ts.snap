@@ -1,74 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CallMethodRequest schema test invalid values: 0 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'InputArguments'
-    Path:     CallMethodRequest.schema.json#/required
-  must have required property 'MethodId'
-    Path:     CallMethodRequest.schema.json#/required
-"
+[31m  must have required property 'InputArguments'[39m
+[31m    Path:     CallMethodRequest.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MethodId'[39m
+[31m    Path:     CallMethodRequest.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`CallMethodRequest schema test invalid values: 1 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'InputArguments'
-    Path:     CallMethodRequest.schema.json#/required
-  must have required property 'MethodId'
-    Path:     CallMethodRequest.schema.json#/required
-  must NOT have additional properties, but found 'methodId'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-"
+[31m  must have required property 'InputArguments'[39m
+[31m    Path:     CallMethodRequest.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`CallMethodRequest schema test invalid values: 2 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'InputArguments'
-    Path:     CallMethodRequest.schema.json#/required
-  must have required property 'MethodId'
-    Path:     CallMethodRequest.schema.json#/required
-  must NOT have additional properties, but found 'inputArguments'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-"
+[31m  must have required property 'MethodId'[39m
+[31m    Path:     CallMethodRequest.schema.json#/required[39m
+[31m[39m[31m  /InputArguments must be array[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     CallMethodRequest.schema.json#/properties/InputArguments/type[39m
+[31m[39m"
 `;
 
 exports[`CallMethodRequest schema test invalid values: 3 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'InputArguments'
-    Path:     CallMethodRequest.schema.json#/required
-  must have required property 'MethodId'
-    Path:     CallMethodRequest.schema.json#/required
-  must NOT have additional properties, but found 'methodId'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-  must NOT have additional properties, but found 'inputArguments'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-"
+[31m  /MethodId must NOT have fewer than 1 characters[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     CallMethodRequest.schema.json#/properties/MethodId/minLength[39m
+[31m[39m"
 `;
 
 exports[`CallMethodRequest schema test invalid values: 4 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'InputArguments'
-    Path:     CallMethodRequest.schema.json#/required
-  must have required property 'MethodId'
-    Path:     CallMethodRequest.schema.json#/required
-  must NOT have additional properties, but found 'methodId'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-  must NOT have additional properties, but found 'namespaceIndex'
-    Expected: <boolean> false
-    Path:     CallMethodRequest.schema.json#/additionalProperties
-"
+[31m  must have required property 'InputArguments'[39m
+[31m    Path:     CallMethodRequest.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'NamespaceIndex'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Path:     CallMethodRequest.schema.json#/additionalProperties[39m
+[31m[39m[31m  /MethodId must be string[39m
+[31m    Received: [33m<number>[39m[31m 1[39m
+[31m    Path:     CallMethodRequest.schema.json#/properties/MethodId/type[39m
+[31m[39m"
 `;

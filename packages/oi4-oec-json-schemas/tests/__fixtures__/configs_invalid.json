@@ -177,7 +177,7 @@
     }
   ],
   [
-    "group Name contains with invalid character",
+    "group Name contains invalid character",
     {
       "ip#": {
         "Name": {
@@ -472,7 +472,7 @@
     }
   ],
   [
-    "config Name contains with invalid character",
+    "config Name contains invalid character",
     {
       "network1": {
         "Name": {

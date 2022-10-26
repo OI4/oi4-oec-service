@@ -1,73 +1,73 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LocalizedText schema (0) match fails for invalid config -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Locale'
-    Path:     LocalizedText.schema.json#/required
-  must have required property 'Text'
-    Path:     LocalizedText.schema.json#/required
-"
+[31m  must have required property 'Locale'[39m
+[31m    Path:     LocalizedText.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Text'[39m
+[31m    Path:     LocalizedText.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (1) match fails for invalid config -> Invalid Locale: Invalid Locale 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
-    Received: <string> ene
-    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
-"
+[31m  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"[39m
+[31m    Received: [33m<string>[39m[31m ene[39m
+[31m    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (2) match fails for invalid config -> Invalid Locale: Invalid Locale 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
-    Received: <string> en-USofA
-    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
-"
+[31m  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"[39m
+[31m    Received: [33m<string>[39m[31m en-USofA[39m
+[31m    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (3) match fails for invalid config -> Invalid Text: Invalid Text 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Text must NOT have fewer than 1 characters
-    Received: <empty string>
-    Path:     LocalizedText.schema.json#/properties/Text/minLength
-"
+[31m  /Text must NOT have fewer than 1 characters[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     LocalizedText.schema.json#/properties/Text/minLength[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (4) match fails for invalid config -> missing Locale: missing Locale 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Locale'
-    Path:     LocalizedText.schema.json#/required
-"
+[31m  must have required property 'Locale'[39m
+[31m    Path:     LocalizedText.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (5) match fails for invalid config -> empty Locale & Text: empty Locale & Text 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
-    Received: <empty string>
-    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
-  /Text must NOT have fewer than 1 characters
-    Received: <empty string>
-    Path:     LocalizedText.schema.json#/properties/Text/minLength
-"
+[31m  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern[39m
+[31m[39m[31m  /Text must NOT have fewer than 1 characters[39m
+[31m    Received: [33m<empty string>[39m[31m[39m
+[31m    Path:     LocalizedText.schema.json#/properties/Text/minLength[39m
+[31m[39m"
 `;
 
 exports[`LocalizedText schema (6) match fails for invalid config -> missing Text: missing Text 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Text'
-    Path:     LocalizedText.schema.json#/required
-"
+[31m  must have required property 'Text'[39m
+[31m    Path:     LocalizedText.schema.json#/required[39m
+[31m[39m"
 `;

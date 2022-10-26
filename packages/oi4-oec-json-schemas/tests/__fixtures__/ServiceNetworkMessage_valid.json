@@ -7,12 +7,12 @@
       "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
       "Message": {
-        "methodsToCall": [
+        "MethodsToCall": [
           {
-            "methodId": "newDataSetWriterId",
-            "inputArguments": [
+            "MethodId": "newDataSetWriterId",
+            "InputArguments": [
               {
-                "resource": "referenceDesignation"
+                "Resource": "referenceDesignation"
               }
             ]
           }
@@ -28,13 +28,13 @@
       "PublisherId": "ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "DataSetClassId": "2aca55bd-0d6f-41b1-a1c2-2d61afcc21f0",
       "Message": {
-        "results": [
+        "Results": [
           {
-            "statusCode": 0,
-            "inputArgumentResults": [0],
-            "outputArguments": [
+            "StatusCode": 0,
+            "InputArgumentResults": [0],
+            "OutputArguments": [
               {
-                "resource": "referenceDesignation"
+                "Resource": "referenceDesignation"
               }
             ]
           }
