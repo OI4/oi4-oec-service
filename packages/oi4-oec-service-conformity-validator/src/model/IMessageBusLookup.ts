@@ -1,18 +1,16 @@
-import {IOPCUANetworkMessage} from '@oi4/oi4-oec-service-opcua-model';
 import {Methods, Resources} from '@oi4/oi4-oec-service-model';
-
 
 export class GetRequest {
     TopicPreamble: string;
     Resource: Resources;
-    Source? : string;
+    Source?: string;
     Filter?: string;
-    Message: IOPCUANetworkMessage;
+    JsonMessage: string;
 
-    constructor(topicPreamble: string, resource: Resources, message: IOPCUANetworkMessage, source?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resources, jsonMessage: string, source?: string, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
-        this.Message = message;
+        this.JsonMessage = jsonMessage;
         this.Source = source;
         this.Filter = filter;
     }
@@ -38,8 +36,7 @@ export class PubResponse {
     Topic: string;
     RawMessage: Buffer;
 
-    constructor(topic: string, rawMessage: Buffer)
-    {
+    constructor(topic: string, rawMessage: Buffer) {
         this.Topic = topic;
         this.RawMessage = rawMessage;
     }

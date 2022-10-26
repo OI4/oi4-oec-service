@@ -104,7 +104,8 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
         const message = responseEntry.message;
 
         if (fixCorrelationId) {
-            message.CorrelationId = request.Message.MessageId;
+            const decodedMessage = JSON.parse(request.JsonMessage);
+            message.CorrelationId = decodedMessage.MessageId;
         }
 
         //const req = request.Resource === Resources.EVENT ? new GetRequest(request.TopicPreamble, request.Resource, request.Message, responseEntry.source, 'Status/Good') : request;
@@ -348,6 +349,18 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.resources['Metadata'].validity).toBe(EValidity.nok);
     });
 
+    it('should validate meta data conformity', async () => {
+
+        const messages: ITestData[] = [
+            {resource: Resources.METADATA, source: defaultSource, message: metadata_valid},
+        ]
+
+        const objectUnderTest = getObjectUnderTest(messages);
+        const result = await objectUnderTest.checkMetaDataConformity(defaultTopic, defaultSource, '');
+
+        expect(result.validity).toBe(EValidity.ok);
+    });
+
     it('should evaluate additional resources not included in the profile', async () => {
 
         const deviceMessages: ITestData[] = [
@@ -411,7 +424,12 @@ describe('Unit test for ConformityValidator ', () => {
             const message = JSON.parse(clonedMessage);
             message.DataSetClassId = 'C3ECB9BC-D021-4DB7-818B-41403BBA8449'; // enforce wrong DataSetClassId
 
-            const objectUnderTest = getObjectUnderTest([{resource: data.resource, message: message, source: data.source, filter: data.filter}]);
+            const objectUnderTest = getObjectUnderTest([{
+                resource: data.resource,
+                message: message,
+                source: data.source,
+                filter: data.filter
+            }]);
             const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
 
             const addFilter = (): string => {

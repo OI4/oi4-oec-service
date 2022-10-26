@@ -2,6 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {
     IOPCUADataSetMessage,
+    IOPCUADataSetMetaData,
     IOPCUANetworkMessage,
     Oi4Identifier,
     OPCUABuilder,
@@ -11,6 +12,7 @@ import {
     Application,
     buildOecJsonValidator,
     DataSetClassIds,
+    DataSetWriterIdManager,
     Device,
     EAssetType,
     ESyslogEventFilter,
@@ -92,7 +94,7 @@ export class ConformityValidator {
         let resObj: IValidityDetails; // Container for validation results
 
         conformityObject.oi4Id = await this.checkOI4IDConformity(topicPreamble, source);
-        if(conformityObject.oi4Id !== EValidity.ok){
+        if (conformityObject.oi4Id !== EValidity.ok) {
             return conformityObject;
         }
         // If we got past the oi4Id check, we can continue with all resources.
@@ -162,7 +164,7 @@ export class ConformityValidator {
                 switch (resource) {
                     case Resources.METADATA:
                         for (const data of dataList) {
-                            resObj = await this.checkResourceConformity(topicPreamble, Resources.METADATA, data.Source, data.Filter);
+                            resObj = await this.checkMetaDataConformity(topicPreamble, data.Source, data.Filter);
                             if (resObj.validity != EValidity.ok) {
                                 // meta data not valid --> don't continue
                                 break;
@@ -207,7 +209,7 @@ export class ConformityValidator {
                             resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         } else {
                             for (const license of licenseList) {
-                                if(license.Filter === 'Pagination'){
+                                if (license.Filter === 'Pagination') {
                                     continue;
                                 }
                                 resObj = await this.checkResourceConformity(topicPreamble, resource, license.Source, license.Filter);
@@ -287,6 +289,7 @@ export class ConformityValidator {
 
         return EValidity.ok; // If we got past the oi4Id check, we can continue with all resources.
     }
+
     /**
      * Since the simple resource check does not check for additional logic, we implement those checks here
      * 1) The profile payload needs to contain the mandatory resources for its asset type
@@ -341,6 +344,53 @@ export class ConformityValidator {
         return mandatoryResources;
     }
 
+    async checkMetaDataConformity(topicPreamble: string, source: string, filter: string): Promise<IValidityDetails> {
+        const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resources.METADATA, source);
+        const conformityPayload = this.builder.buildOPCUAMetaDataMessage('Validator', 'Conformity validator', {}, DataSetClassIds[Resources.METADATA], dataSetWriterId, filter, source) as any;
+        conformityPayload.MetaData = {};
+        const getRequest = new GetRequest(topicPreamble, Resources.METADATA, JSON.stringify(conformityPayload), source, filter);
+
+        const getTopic = getRequest.getTopic('get');
+        const pubTopic = getRequest.getTopic('pub');
+
+        LOGGER.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        const response = await this.messageBusLookup.getMessage(getRequest);
+        LOGGER.log(`Received MetaData conformity from ${pubTopic}.`, ESyslogEventFilter.warning);
+
+        const errorMsgArr = [];
+        const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUADataSetMetaData;
+        let eRes: number;
+        const schemaResult: ISchemaConformity = await this.checkSchemaConformity(Resources.METADATA, parsedMessage);
+        if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
+            if (parsedMessage.CorrelationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+                eRes = EValidity.ok;
+            } else {
+                eRes = EValidity.partial;
+                errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
+                LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            }
+        } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
+            LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
+            errorMsgArr.push('Some issue with schema validation, read further array messages');
+            if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
+                LOGGER.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
+            }
+            if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
+                LOGGER.log('Payload wrong', ESyslogEventFilter.warning);
+                errorMsgArr.push(...schemaResult.payload.resultMsgArr);
+            }
+
+            eRes = EValidity.partial;
+        }
+
+        return {
+            validity: eRes,
+            validityErrors: errorMsgArr,
+            dataSetMessages: [],
+        };
+    }
+
     /**
      * Checks the conformity of a resource of an OI4-participant by publishing a /get/<resource> on the bus and expecting a response
      * within a certain timeframe. The response is then superficially checked for validity (mostly NetworkMessage structure) and for correlationID functionality.
@@ -356,7 +406,7 @@ export class ConformityValidator {
     async checkResourceConformity(topicPreamble: string, resource: Resources, source?: string, filter?: string): Promise<IValidityDetails> {
 
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
-        const getRequest = new GetRequest(topicPreamble, resource, conformityPayload, source, filter);
+        const getRequest = new GetRequest(topicPreamble, resource, JSON.stringify(conformityPayload), source, filter);
 
         const getTopic = getRequest.getTopic(Methods.GET);
         const pubTopic = getRequest.getTopic(Methods.PUB);
