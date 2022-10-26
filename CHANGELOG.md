@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 </details>
 
+## [1.0.0] - 2022-10-18
+
+### Changed
+- Adopted changes needed to migrate from v0.12 to v1.0
+
 ## [0.12.3] - 2022-03-11
 
 ### Added
@@ -50,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial commit before refactoring
 
-[Unreleased]: https://github.com/OI4/oi4-service/compare/HEAD/compare/0.12.3...HEAD
-[0.12.3]: https://github.com/OI4/oi4-service/compare/HEAD/compare/0.12.2...0.12.3
-[0.12.2]: https://github.com/OI4/oi4-service/compare/HEAD/compare/0.12.1...0.12.2
-[0.12.1]: https://github.com/OI4/oi4-service/releases/tag/0.12.1
+[Unreleased]: https://github.com/OI4/oi4-service/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/OI4/oi4-service/compare/v0.12.3...v1.0.0
+[0.12.3]: https://github.com/OI4/oi4-service/compare/v0.12.2...v0.12.3
+[0.12.2]: https://github.com/OI4/oi4-service/compare/v0.12.1...v0.12.2
+[0.12.1]: https://github.com/OI4/oi4-service/releases/tag/v0.12.1
