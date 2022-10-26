@@ -24,11 +24,13 @@ jobs:
         run: |
           yarn install
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
+          PACKAGES_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # Build packages
       - name: build
         run: |
           yarn build
+        env:
+          PACKAGES_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # No test so far -> skip them for now
       #- name: test
       #  run: npm test
@@ -37,7 +39,7 @@ jobs:
         run: |
           yarn publishIt
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
+          PACKAGES_AUTH_TOKEN: ${{ secrets.OI4_REGISTRY_GITHUB_ACTION }}
       # Push tag to GitHub if package.json version's tag is not tagged
       - name: package-version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
