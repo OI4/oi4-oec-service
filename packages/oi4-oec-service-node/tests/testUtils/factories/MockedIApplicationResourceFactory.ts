@@ -4,24 +4,27 @@ import {
     EOPCUAMessageType,
     IOPCUALocalizedText,
     IOPCUAMetaData,
-    IOPCUANetworkMessage, Oi4Identifier
+    IOPCUANetworkMessage,
+    Oi4Identifier
 } from '@oi4/oi4-oec-service-opcua-model';
 import {
     Application,
     EDeviceHealth,
     Health,
     IContainerConfigConfigName,
-    IOI4ApplicationResources, IOI4Resource,
+    IContainerConfigValidation,
+    IOI4ApplicationResources,
+    IOI4Resource,
     License,
     LicenseText,
     MasterAssetModel,
     Profile,
     PublicationList,
     Resources,
-    RTLicense, SubscriptionList
+    RTLicense,
+    SubscriptionList
 } from '@oi4/oi4-oec-service-model';
 import {extractProductInstanceUri} from '../../../src/application/OI4Resource';
-import { IContainerConfig } from '@oi4/oi4-oec-service-model';
 
 export class MockedIApplicationResourceFactory {
 
@@ -76,48 +79,37 @@ export class MockedIApplicationResourceFactory {
             publicationList: MockedIApplicationResourceFactory.getMockedPublicationList(),
             rtLicense: new RTLicense(),
             subscriptionList: MockedIApplicationResourceFactory.getMockedSubscriptionList(),
-
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            addDataSet(_: string, __: IOPCUANetworkMessage, ___: IOPCUAMetaData): void {
-                console.log('Called mocked addDataSet. Do nothing....');
+            addDataSet(): void {
+                return;
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
-                console.log(`Called mocked addLicenseText with params ${oi4Id} and ${licenseId}. Do nothing....`);
+            getLicense(): License[] {
                 return this.license;
             },
             getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): PublicationList[] {
-                console.log(`Called mocked getPublicationList with params ${oi4Id}, ${resourceType} and ${tag}.`);
                 return this.publicationList.filter((elem: PublicationList) => {
                     if (elem.Source.toString() !== oi4Id.toString()) return false;
                     if (resourceType !== undefined && elem.Resource !== resourceType) return false;
-                    if (tag !== undefined && elem.Filter !== tag) return false;
-                    return true;
+                    return !(tag !== undefined && elem.Filter !== tag);
                 });
             },
-            getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[] {
-                console.log(`Called mocked getSubscriptionList with params ${oi4Id}, ${resourceType} and ${tag}.`);
+            getSubscriptionList(): SubscriptionList[] {
                 return this.subscriptionList;
-            }, getHealth(oi4Id: Oi4Identifier): Health {
-                console.log(`Called mocked getHealth with params ${oi4Id}`);
+
+            }, getHealth(): Health {
                 return this.health;
-            }, getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
-                console.log(`Called mocked getMasterAssetModel with params ${oi4Id}`);
+            }, getMasterAssetModel(): MasterAssetModel {
                 return this.mam;
             },
             getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
-                console.log(`Called mocked getSource with params ${oi4Id}`);
-                if(oi4Id !== undefined) {
+                if (oi4Id !== undefined) {
                     return this.source.get(oi4Id.toString());
                 }
                 return this.source.values();
             },
-            setConfig(_: Oi4Identifier, __: string, ___: IContainerConfig): boolean {
+            setConfig(): boolean {
                 return true;
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            on(_: string, __: Function): IOI4ApplicationResources {
-                console.log('Called mocked on. Do nothing....');
+            on(): IOI4ApplicationResources {
                 return undefined;
             }
         };
@@ -135,11 +127,11 @@ export class MockedIApplicationResourceFactory {
         };
     };
 
-    private static getMockedDefaultIContainerConfigValidation() {
+    private static getMockedDefaultIContainerConfigValidation(): IContainerConfigValidation {
         return {Length: 0, Min: 0, Max: 0, Pattern: 'fakePattern', Values: ['fakeValue']}
     }
 
-    private static getDefaultKeyValueItem() {
+    private static getDefaultKeyValueItem(): Map<string, LicenseText> {
         const licenseText = new Map<string, LicenseText>();
         licenseText.set('fakeKey', new LicenseText('fakeText'));
         return licenseText;

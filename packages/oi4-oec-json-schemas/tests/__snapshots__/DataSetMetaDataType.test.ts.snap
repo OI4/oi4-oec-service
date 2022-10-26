@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DataSetMetaDataType schema (0) match fails for invalid config -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'Name'
-    Path:     DataSetMetaDataType.schema.json#/required
-  must have required property 'Namespaces'
-    Path:     DataSetMetaDataType.schema.json#/required
-  must have required property 'EnumDataTypes'
-    Path:     DataSetMetaDataType.schema.json#/required
-  must have required property 'StructureDataTypes'
-    Path:     DataSetMetaDataType.schema.json#/required
-  must have required property 'SimpleDataTypes'
-    Path:     DataSetMetaDataType.schema.json#/required
-"
+[31m  must have required property 'Name'[39m
+[31m    Path:     DataSetMetaDataType.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Namespaces'[39m
+[31m    Path:     DataSetMetaDataType.schema.json#/required[39m
+[31m[39m[31m  must have required property 'EnumDataTypes'[39m
+[31m    Path:     DataSetMetaDataType.schema.json#/required[39m
+[31m[39m[31m  must have required property 'StructureDataTypes'[39m
+[31m    Path:     DataSetMetaDataType.schema.json#/required[39m
+[31m[39m[31m  must have required property 'SimpleDataTypes'[39m
+[31m    Path:     DataSetMetaDataType.schema.json#/required[39m
+[31m[39m"
 `;

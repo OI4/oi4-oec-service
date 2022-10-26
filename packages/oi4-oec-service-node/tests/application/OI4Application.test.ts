@@ -474,7 +474,7 @@ describe('OI4MessageBus test', () => {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({
                     ...getResourceInfo().publicationList[i],
-                    oi4Identifier: getResourceInfo().publicationList[i].Source.toString()
+                    Source: getResourceInfo().publicationList[i].Source.toString()
                 }));
         }
     });

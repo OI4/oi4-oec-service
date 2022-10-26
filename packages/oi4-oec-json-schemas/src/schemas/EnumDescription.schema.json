@@ -13,7 +13,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "fields"
+        "Fields"
       ],
       "properties": {
         "Fields": {
@@ -23,7 +23,7 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "name"
+              "Name"
             ],
             "properties": {
               "Name": {

@@ -17,8 +17,8 @@
     "FieldFlags": {
       "type": "integer",
       "minimum": 0,
-	    "maximum": 1,
-	    "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
+      "maximum": 1,
+      "description": "See https://reference.opcfoundation.org/v104/Core/DataTypes/DataSetFieldFlags/"
     },
     "BuiltInType": {
       "$type": "integer",
@@ -33,7 +33,10 @@
       "$ref": "dataTypes/int32.schema.json"
     },
     "ArrayDimensions": {
-      "type": ["array", "null"],
+      "type": [
+        "array",
+        "null"
+      ],
       "items": {
         "$ref": "dataTypes/uint32.schema.json"
       }
@@ -46,11 +49,11 @@
       "format": "uuid"
     },
     "Properties": {
-	    "type": "array",
-	    "description": "Provides additional semantics for the field",
-	    "items":{
-		    "$ref": "KeyValuePair.schema.json"
-	    }
+      "type": "array",
+      "description": "Provides additional semantics for the field",
+      "items": {
+        "$ref": "KeyValuePair.schema.json"
+      }
     }
   }
 }

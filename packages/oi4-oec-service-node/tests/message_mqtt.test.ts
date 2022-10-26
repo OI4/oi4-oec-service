@@ -6,11 +6,12 @@ import {
     Health,
     IOI4ApplicationResources,
     IOI4Resource,
-    MasterAssetModel,
+    MasterAssetModel, Methods,
     Resources,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
+import {OI4_NS} from '@oi4/oi4-oec-service-node';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -24,8 +25,8 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
-        oi4Id: new Oi4Identifier('a','b','c','d'),
-        getHealth(_: string): Health {
+        oi4Id: new Oi4Identifier('test','modelText','213dq','23kl41oß3mß132'),
+        getHealth(): Health {
             return {
                 resourceType(): Resources {
                     return Resources.HEALTH;
@@ -36,14 +37,14 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         mam: MasterAssetModel.clone({
             DeviceClass: 'OI4.Registry',
             ManufacturerUri: 'test',
-            Model: {Locale: EOPCUALocale.enUS, Text: 'text'},
-            Description: {Locale: EOPCUALocale.enUS, Text: 'text'},
+            Model: {Locale: EOPCUALocale.enUS, Text: 'modelText'},
+            Description: {Locale: EOPCUALocale.enUS, Text: 'descriptionText'},
             DeviceManual: '',
-            Manufacturer: {Locale: EOPCUALocale.enUS, Text: 'text'},
+            Manufacturer: {Locale: EOPCUALocale.enUS, Text: 'manufacturerText'},
             HardwareRevision: '1.0',
             ProductCode: '213dq',
             DeviceRevision: '1.0',
-            SerialNumber: '23kl41oßmß132',
+            SerialNumber: '23kl41oß3mß132',
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/',
@@ -114,8 +115,8 @@ describe('Connection to MQTT with TLS', () => {
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
-            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0})));
+            expect.stringContaining(`${OI4_NS}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(JSON.stringify({Health: EDeviceHealth.NORMAL_0, HealthScore: 0})));
     });
 
     it('should send close message on close', async () => {

@@ -32,7 +32,7 @@
             "additionalProperties": false,
             "required": [
               "ArrayDimensions",
-              "Datatype",
+              "DataType",
               "Description",
               "IsOptional",
               "MaxStringLength",
@@ -46,7 +46,7 @@
                   "$ref": "dataTypes/uint32.schema.json"
                 }
               },
-              "Datatype": {
+              "DataType": {
                 "$ref": "NodeId.schema.json"
               },
               "Description": {

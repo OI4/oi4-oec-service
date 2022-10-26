@@ -1,55 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DataSetMetaData schema (0) match fails for invalid config -> empty: empty 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  must have required property 'DataSetWriterId'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'Filter'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'MessageId'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'MessageType'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'PublisherId'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'MetaData'
-    Path:     DataSetMetaData.schema.json#/required
-  must have required property 'Source'
-    Path:     DataSetMetaData.schema.json#/required
-"
+[31m  must have required property 'DataSetWriterId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Filter'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MessageId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MessageType'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'PublisherId'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'MetaData'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Source'[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m"
 `;
 
 exports[`DataSetMetaData schema (1) match fails for invalid config -> Invalid message id: Invalid message id 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /MessageId must match pattern \\"^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^
-]+){3})$\\"
-    Received: <string> provider.com/FieldDataService/FDS-001/1200-0345
-    Path:     DataSetMetaData.schema.json#/properties/MessageId/pattern
-  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^
-]+){3})$\\"
-    Received: <string> provider.com/FieldDataService/FDS-001/1200-0345
-    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern
-"
+[31m  /MessageId must match pattern \\"^.{1,}-(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com/FieldDataService/FDS-001/1200-0345[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/MessageId/pattern[39m
+[31m[39m[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com/FieldDataService/FDS-001/1200-0345[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern[39m
+[31m[39m"
 `;
 
 exports[`DataSetMetaData schema (2) match fails for invalid config -> Invalid publisher id: Invalid publisher id 1`] = `
-"expect(received).toMatchSchema(schema)
+"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-  /MetaData must have required property 'StructureDataTypes'
-    Received: <object> {\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}
-    Path:     DataSetMetaData.schema.json#/required
-  must NOT have additional properties, but found 'structureDataTypes'
-    Expected: <boolean> false
-    Received: <object> {\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}
-    Path:     DataSetMetaData.schema.json#/additionalProperties
-  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^
-]+){3})$\\"
-    Received: <string> provider.com
-    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern
-"
+[31m  /MetaData must have required property 'StructureDataTypes'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'structureDataTypes'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}[39m
+[31m    Path:     DataSetMetaData.schema.json#/additionalProperties[39m
+[31m[39m[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m]+){3})$\\"[39m
+[31m    Received: [33m<string>[39m[31m provider.com[39m
+[31m    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern[39m
+[31m[39m"
 `;

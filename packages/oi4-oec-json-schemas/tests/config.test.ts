@@ -8,7 +8,7 @@ import invalidConfigObjs from './__fixtures__/configs_invalid.json'
 
 expect.extend(
     matchersWithOptions({
-        // Loading in a schema which is comprised only of definitions,
+        // Loading in a schema which is only comprised of definitions,
         // which means specific test schemas need to be created.
         // This is good for testing specific conditions for definition schemas.
         schemas: [localizationSchema],
@@ -34,10 +34,6 @@ describe('config schema', () => {
     it.each(invalidConfigObjs)(
         '(%#) match fails for invalid config -> %s',
         (name: string, conf) => {
-            if(name === 'config Name starts with invalid character') {
-                console.log(`conf: ${JSON.stringify(conf)}`);
-                console.log(`configSchema: ${JSON.stringify(configSchema)}`);
-            }
             expect(conf).not.toMatchSchema(configSchema)
             expect(() => {
                 expect(conf).toMatchSchema(configSchema)

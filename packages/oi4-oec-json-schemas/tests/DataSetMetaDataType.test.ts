@@ -20,10 +20,9 @@ import oi4Identifier from '../src/schemas/Oi4Identifier.schema.json'
 import validObjs from './__fixtures__/DataSetMetaDataType_valid.json'
 import invalidObjs from './__fixtures__/DataSetMetaDataType_invalid.json'
 
-
 expect.extend(
   matchersWithOptions({
-    // Loading in a schema which is comprised only of definitions,
+    // Loading in a schema which is only comprised of definitions,
     // which means specific test schemas need to be created.
     // This is good for testing specific conditions for definition schemas.
     schemas: [uint16, uint32, int32, byte, localizedTextSchema, locale,

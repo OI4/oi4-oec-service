@@ -18,30 +18,30 @@ describe('CallMethodRequest schema', () => {
   })
 
   it('test valid values', () => {
-    expect({ methodId: 'a', inputArguments: [''] }).toMatchSchema(schema)
-    expect({ methodId: '1', inputArguments: [1] }).toMatchSchema(schema)
-    expect({ methodId: 'a', inputArguments: [true] }).toMatchSchema(schema)
-    expect({ methodId: 'b', inputArguments: [{}] }).toMatchSchema(schema)
-    expect({ methodId: 'c', inputArguments: [{ a: 'b', b: 1 }] }).toMatchSchema(
+    expect({ MethodId: 'a', InputArguments: [''] }).toMatchSchema(schema)
+    expect({ MethodId: '1', InputArguments: [1] }).toMatchSchema(schema)
+    expect({ MethodId: 'a', InputArguments: [true] }).toMatchSchema(schema)
+    expect({ MethodId: 'b', InputArguments: [{}] }).toMatchSchema(schema)
+    expect({ MethodId: 'c', InputArguments: [{ a: 'b', b: 1 }] }).toMatchSchema(
       schema
     )
-    expect({ methodId: 'c', inputArguments: [[]] }).toMatchSchema(schema)
-    expect({ methodId: 'c', inputArguments: [[1]] }).toMatchSchema(schema)
-    expect({ methodId: 'c', inputArguments: [['']] }).toMatchSchema(schema)
-    expect({ methodId: 'c', inputArguments: [[{}]] }).toMatchSchema(schema)
+    expect({ MethodId: 'c', InputArguments: [[]] }).toMatchSchema(schema)
+    expect({ MethodId: 'c', InputArguments: [[1]] }).toMatchSchema(schema)
+    expect({ MethodId: 'c', InputArguments: [['']] }).toMatchSchema(schema)
+    expect({ MethodId: 'c', InputArguments: [[{}]] }).toMatchSchema(schema)
     expect({
-      methodId: 'c',
-      inputArguments: [[{ a: 'b', b: 1 }]],
+      MethodId: 'c',
+      InputArguments: [[{ a: 'b', b: 1 }]],
     }).toMatchSchema(schema)
   })
 
   it('test invalid values', () => {
     const invalidValues = [
       {},
-      { methodId: 'a' },
-      { inputArguments: '' },
-      { methodId: '', inputArguments: [] },
-      { methodId: 1, namespaceIndex: 1 },
+      { MethodId: 'a' },
+      { InputArguments: '' },
+      { MethodId: '', InputArguments: [] },
+      { MethodId: 1, NamespaceIndex: 1 },
     ]
 
     invalidValues.forEach((value, index) => {
