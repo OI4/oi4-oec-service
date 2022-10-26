@@ -27,7 +27,7 @@ export interface IMqttMessageProcessor extends EventEmitter {
 
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
 
-    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage) {
+    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void> {
         LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 
@@ -38,7 +38,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
      * @param builder
      * @param oi4Application
      */
-    public async processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application) {
+    public async processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void> {
         try {
             const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
             await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
@@ -54,7 +54,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    protected async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
+    protected async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void> {
         // Check if message is from the OI4 registry and save it if it is
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
 
@@ -88,7 +88,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
     }
 
-    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application) {
+    private async executeGetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void> {
 
         if (topicInfo.resource === Resources.DATA) {
             // TODO should handle filter

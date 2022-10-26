@@ -1,4 +1,4 @@
-import {IOI4Application} from '../../../dist/application/OI4Application';
+import {IOI4Application} from '@oi4/oi4-oec-service-node';
 import {
     IEvent,
     IOI4ApplicationResources,
@@ -28,11 +28,11 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
         this.topicPreamble = `${this.serviceType}/${this.applicationResources.oi4Id}`;
     }
 
-    sendData(_oi4Id: Oi4Identifier, _data?: any, _filter?: string, _messageId?: string) {
+    sendData(): Promise<any> {
         return Promise.resolve(undefined);
     }
 
-    get oi4Id() {
+    get oi4Id(): Oi4Identifier {
         return this.applicationResources.oi4Id;
     }
 

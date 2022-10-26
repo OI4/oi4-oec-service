@@ -1,5 +1,5 @@
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
-import {ClientCallbacksHelper} from '../../src/messaging/ClientCallbacksHelper';
+import {ClientCallbacksHelper} from '../../src';
 import mqtt from 'async-mqtt';
 import {getOi4App} from '../application/OI4Application.test';
 import {setLogger} from '@oi4/oi4-oec-service-logger';

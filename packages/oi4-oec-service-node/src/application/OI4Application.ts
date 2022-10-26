@@ -173,9 +173,9 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
     private initClientHealthHeartBeat() {
         setInterval(async () => {
-            await this.sendResource(Resources.HEALTH, '', this.oi4Id.toString(), this.oi4Id.toString()).then();
+            await this.sendResource(Resources.HEALTH, '', this.oi4Id.toString(), '').then();
             for (const resource of this.applicationResources.sources.values()) {
-                await this.sendResource(Resources.HEALTH, '', resource.oi4Id.toString(), resource.oi4Id.toString()).then();
+                await this.sendResource(Resources.HEALTH, '', resource.oi4Id.toString(), '').then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
@@ -271,7 +271,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
 
         switch (resource) {
             case Resources.MAM:
-                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, source);
+                payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, this.oi4Id, source);
                 break;
             case Resources.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
                 payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);

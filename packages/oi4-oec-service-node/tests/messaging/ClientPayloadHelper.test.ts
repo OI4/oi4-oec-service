@@ -39,7 +39,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         DataSetWriterIdManager.resetDataSetWriterIdManager();
     });
 
-    function checkAgainstDefaultPayload(payload: ValidatedPayload) {
+    function checkAgainstDefaultPayload(payload: ValidatedPayload): void {
         expect(payload.abortSending).toBe(false);
         expect(payload.payload).toStrictEqual(default_payload);
     }
@@ -55,16 +55,23 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(statePayload.HealthScore).toBe(0);
     });
 
-    function checkForUndefinedPayload(validatedPayload: ValidatedPayload) {
+    function checkForUndefinedPayload(validatedPayload: ValidatedPayload): void {
         expect(validatedPayload.abortSending).toBe(true);
         expect(validatedPayload.payload).toBe(undefined);
     }
 
-    function checkForEmptyPayload(validatedPayload: ValidatedPayload) {
+    function checkForEmptyPayload(validatedPayload: ValidatedPayload): void {
         expect(validatedPayload.abortSending).toBe(true);
         expect(validatedPayload.payload).toBeDefined()
         expect(validatedPayload.payload.length).toBe(0);
     }
+
+    it ('createMamResourcePayload works for main resource', async()=> {
+        const mamPayload = clientPayloadHelper.createMamResourcePayload(mockedOI4ApplicationResources, OI4_ID);
+        expect(mamPayload.payload.length).toBe(1);
+        expect(mamPayload.payload[0].Payload).toBe(mockedOI4ApplicationResources.mam);
+        expect(mamPayload.abortSending).toBe(false);
+    })
 
     it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is undefined', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'whatever');
