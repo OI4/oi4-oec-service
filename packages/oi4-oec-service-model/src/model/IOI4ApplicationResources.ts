@@ -7,27 +7,27 @@ import {
     Health,
     RTLicense,
     Profile,
-    MasterAssetModel, LicenseText, PublicationList, Resource, SubscriptionList
-} from './Resource';
+    MasterAssetModel, LicenseText, PublicationList, Resources, SubscriptionList
+} from './Resources';
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUAMetaData>;
 
-    subResources: Map<string, IOI4Resource>;
+    sources: Map<string, IOI4Resource>;
 
     getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 
-    getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>;
+    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource>;
 
     getHealth(oi4Id: Oi4Identifier): Health;
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[];
 
-    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[];
+    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[];
 
-    getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[];
+    getPublicationList(oi4Id: Oi4Identifier, resourceType?: Resources, tag?: string): PublicationList[];
 
     setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean;
 

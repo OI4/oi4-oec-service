@@ -1,5 +1,5 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/mam.schema.json'
+import schema from '../src/schemas/MAM.schema.json'
 import LocalizedText from '../src/schemas/LocalizedText.schema.json'
 import int32 from '../src/schemas/dataTypes/int32.schema.json'
 import localeSchema from '../src/schemas/constants/locale.pattern.schema.json'

@@ -6,11 +6,12 @@ import {
     Health,
     IOI4ApplicationResources,
     IOI4Resource,
-    MasterAssetModel,
-    Resource,
+    MasterAssetModel, Methods,
+    Resources,
 } from '@oi4/oi4-oec-service-model';
 import {EOPCUALocale, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
+import {OI4_NS} from '@oi4/oi4-oec-service-node';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -24,33 +25,33 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
-        oi4Id: new Oi4Identifier('a','b','c','d'),
-        getHealth(_: string): Health {
+        oi4Id: new Oi4Identifier('test','modelText','213dq','23kl41oß3mß132'),
+        getHealth(): Health {
             return {
-                resourceType(): Resource {
-                    return Resource.HEALTH;
+                resourceType(): Resources {
+                    return Resources.HEALTH;
                 },
-                health: EDeviceHealth.NORMAL_0, healthScore: 0
+                Health: EDeviceHealth.NORMAL_0, HealthScore: 0
             };
         },
         mam: MasterAssetModel.clone({
             DeviceClass: 'OI4.Registry',
             ManufacturerUri: 'test',
-            Model: {locale: EOPCUALocale.enUS, text: 'text'},
-            Description: {locale: EOPCUALocale.enUS, text: 'text'},
+            Model: {Locale: EOPCUALocale.enUS, Text: 'modelText'},
+            Description: {Locale: EOPCUALocale.enUS, Text: 'descriptionText'},
             DeviceManual: '',
-            Manufacturer: {locale: EOPCUALocale.enUS, text: 'text'},
+            Manufacturer: {Locale: EOPCUALocale.enUS, Text: 'manufacturerText'},
             HardwareRevision: '1.0',
             ProductCode: '213dq',
             DeviceRevision: '1.0',
-            SerialNumber: '23kl41oßmß132',
+            SerialNumber: '23kl41oß3mß132',
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/',
 			getServiceType(): ServiceTypes {return ServiceTypes.REGISTRY}
         } as MasterAssetModel),
         subscriptionList: [],
-        subResources: new Map<string, IOI4Resource>(),
+        sources: new Map<string, IOI4Resource>(),
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         on(event: string, listener: Function) {
@@ -114,8 +115,8 @@ describe('Connection to MQTT with TLS', () => {
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
-            expect.stringContaining(JSON.stringify({health: EDeviceHealth.NORMAL_0, healthScore: 0})));
+            expect.stringContaining(`${OI4_NS}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(JSON.stringify({Health: EDeviceHealth.NORMAL_0, HealthScore: 0})));
     });
 
     it('should send close message on close', async () => {
@@ -146,10 +147,10 @@ describe('Connection to MQTT with TLS', () => {
             .build();
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/pub/mam/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`Oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/Pub/MAM/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({
-                health: EDeviceHealth.NORMAL_0,
-                healthScore: 0
+                Health: EDeviceHealth.NORMAL_0,
+                HealthScore: 0
             } as Health)));
     });
 
@@ -169,7 +170,7 @@ describe('Connection to MQTT with TLS', () => {
             .withMqttSettings(mqttOpts)
             .build();
         expect(oi4Application.mqttClient.options.will?.payload)
-            .toContain(JSON.stringify({health: EDeviceHealth.FAILURE_1, healthScore: 0} as Health));
+            .toContain(JSON.stringify({Health: EDeviceHealth.FAILURE_1, HealthScore: 0} as Health));
     });
 
 });

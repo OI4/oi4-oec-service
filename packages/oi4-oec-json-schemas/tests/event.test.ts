@@ -1,7 +1,7 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/event.schema.json'
+import schema from '../src/schemas/Event.schema.json'
 import uint32 from '../src/schemas/dataTypes/uint32.schema.json'
-import oi4IdentifierSchema from '../src/schemas/oi4Identifier.schema.json'
+import oi4IdentifierSchema from '../src/schemas/Oi4Identifier.schema.json'
 
 import validObjs from './__fixtures__/event_valid.json'
 import invalidObjs from './__fixtures__/event_invalid.json'
@@ -30,7 +30,7 @@ describe('event schema', () => {
         expect(obj).toMatchSchema(schema)
       }
     )
-  
+
     it.each(invalidObjs as [])(
       '(%#) match fails for invalid config -> %s',
       (name: string, obj) => {

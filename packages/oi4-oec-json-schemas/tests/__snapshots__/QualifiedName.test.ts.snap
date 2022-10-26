@@ -4,9 +4,9 @@ exports[`QualifiedName schema test invalid values: 0 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /name must be string[39m
+[31m  /Name must be string[39m
 [31m    Received: [33m<number>[39m[31m 1[39m
-[31m    Path:     QualifiedName.schema.json#/properties/name/type[39m
+[31m    Path:     QualifiedName.schema.json#/properties/Name/type[39m
 [31m[39m"
 `;
 
@@ -14,7 +14,7 @@ exports[`QualifiedName schema test invalid values: 1 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /namespaceIndex must be <= 65535[39m
+[31m  /NamespaceIndex must be <= 65535[39m
 [31m    Received: [33m<number>[39m[31m 65536[39m
 [31m    Path:     QualifiedName.schema.jsondataTypes/uint16.schema.json/maximum[39m
 [31m[39m"
@@ -24,7 +24,7 @@ exports[`QualifiedName schema test invalid values: 2 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /namespaceIndex must be >= 0[39m
+[31m  /NamespaceIndex must be >= 0[39m
 [31m    Received: [33m<number>[39m[31m -1[39m
 [31m    Path:     QualifiedName.schema.jsondataTypes/uint16.schema.json/minimum[39m
 [31m[39m"
@@ -34,7 +34,7 @@ exports[`QualifiedName schema test invalid values: 3 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /namespaceIndex must be integer[39m
+[31m  /NamespaceIndex must be integer[39m
 [31m    Received: [33m<string>[39m[31m 1[39m
 [31m    Path:     QualifiedName.schema.jsondataTypes/uint16.schema.json/type[39m
 [31m[39m"

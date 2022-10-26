@@ -49,23 +49,23 @@ export const buildOecJsonValidator = () => {
     jsonValidator.addSchema(topicPathSchemaJson, 'topicPath.schema.json');
 
     // OI4 OEC payload schemas
-    jsonValidator.addSchema(healthSchemaJson, 'health.schema.json');
-    jsonValidator.addSchema(mamSchemaJson, 'mam.schema.json');
-    jsonValidator.addSchema(licenseSchemaJson, 'license.schema.json');
-    jsonValidator.addSchema(licenseTextSchemaJson, 'licenseText.schema.json');
-    jsonValidator.addSchema(profileSchemaJson, 'profile.schema.json');
-    jsonValidator.addSchema(eventSchemaJson, 'event.schema.json');
-    jsonValidator.addSchema(rtLicenseSchemaJson, 'rtLicense.schema.json');
-    jsonValidator.addSchema(configPublishSchemaJson, 'configPublish.schema.json');
-    jsonValidator.addSchema(configSetSchemaJson, 'configSet.schema.json');
-    jsonValidator.addSchema(publicationListSchemaJson, 'publicationList.schema.json');
-    jsonValidator.addSchema(subscriptionListSchemaJson, 'subscriptionList.schema.json');
-    jsonValidator.addSchema(referenceDesignationSchemaJson, 'referenceDesignation.schema.json');
-    jsonValidator.addSchema(localeSchemaJson, 'locale.schema.json');
-    jsonValidator.addSchema(paginationSchemaJson, 'pagination.schema.json');
-    jsonValidator.addSchema(interfacesSchemaJson, 'interfaces.schema.json');
+    jsonValidator.addSchema(healthSchemaJson, 'Health.schema.json');
+    jsonValidator.addSchema(mamSchemaJson, 'MAM.schema.json');
+    jsonValidator.addSchema(licenseSchemaJson, 'License.schema.json');
+    jsonValidator.addSchema(licenseTextSchemaJson, 'LicenseText.schema.json');
+    jsonValidator.addSchema(profileSchemaJson, 'Profile.schema.json');
+    jsonValidator.addSchema(eventSchemaJson, 'Event.schema.json');
+    jsonValidator.addSchema(rtLicenseSchemaJson, 'RtLicense.schema.json');
+    jsonValidator.addSchema(configPublishSchemaJson, 'ConfigPublish.schema.json');
+    jsonValidator.addSchema(configSetSchemaJson, 'ConfigSet.schema.json');
+    jsonValidator.addSchema(publicationListSchemaJson, 'PublicationList.schema.json');
+    jsonValidator.addSchema(subscriptionListSchemaJson, 'SubscriptionList.schema.json');
+    jsonValidator.addSchema(referenceDesignationSchemaJson, 'ReferenceDesignation.schema.json');
+    jsonValidator.addSchema(localeSchemaJson, 'Locale.schema.json');
+    jsonValidator.addSchema(paginationSchemaJson, 'Pagination.schema.json');
+    jsonValidator.addSchema(interfacesSchemaJson, 'Interfaces.schema.json');
 
-    jsonValidator.addSchema(dataPVSchemaJson, 'dataPV.schema.json');
+    jsonValidator.addSchema(dataPVSchemaJson, 'DataPV.schema.json');
     jsonValidator.addSchema(DataSetMetaDataSchemaJson, 'DataSetMetaData.schema.json');
     jsonValidator.addSchema(DataSetMetaDataTypeSchemaJson, 'DataSetMetaDataType.schema.json');
     jsonValidator.addSchema(FieldMetaDataSchemaJson, 'FieldMetaData.schema.json');

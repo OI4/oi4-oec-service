@@ -1,5 +1,5 @@
 import {OI4Payload} from './Payload';
-import {Resource} from "./Resource";
+import {Resources} from './Resources';
 
 export enum EventCategory {
     CAT_SYSLOG_0 = 'CAT_SYSLOG_0',
@@ -9,87 +9,70 @@ export enum EventCategory {
 }
 
 export interface IEvent extends OI4Payload {
-    origin: string;
-    number: number;
-    description?: string;
-    readonly category: EventCategory;
-    details?: any;
-    subResource(): string;
+    Number: number;
+    Description?: string;
+    readonly Category: EventCategory;
+    Details?: any;
 }
 
 export abstract class BaseEvent implements IEvent {
-    description: string;
-    number: number;
-    origin: string;
+    Description: string;
+    Number: number;
 
-    constructor(origin: string, number: number, description?: string) {
-        this.origin = origin;
-        this.number = number;
-        this.description = description;
+    constructor(number: number, description?: string) {
+        this.Number = number;
+        this.Description = description;
     }
 
     resourceType() {
-        return Resource.EVENT;
+        return Resources.EVENT;
     }
 
-    abstract readonly category: EventCategory;
-    abstract details: any;
-    abstract subResource(): string;
+    abstract readonly Category: EventCategory;
+    abstract Details: any;
 }
 
 
 export class SyslogEvent extends BaseEvent {
-    category: EventCategory.CAT_SYSLOG_0;
+    Category: EventCategory.CAT_SYSLOG_0;
 
-    constructor(origin: string, number: number, description?: string) {
-        super(origin, number, description);
+    constructor(number: number, description?: string) {
+        super(number, description);
     }
 
-    subResource(): string {
-        return 'syslog';
-    };
-    details: {
+    Details: {
         MSG?: string;
         HEADER?: string;
     };
 }
 
 export class StatusEvent extends BaseEvent {
-    category: EventCategory.CAT_STATUS_1;
+    Category: EventCategory.CAT_STATUS_1;
 
-    constructor(origin: string, number: number, description?: string) {
-        super(origin, number, description);
+    constructor(number: number, description?: string) {
+        super(number, description);
     }
 
-    subResource(): string {
-        return 'status';
-    }
-
-    details: {
-        symbolicId?: string;
+    Details: {
+        SymbolicId?: string;
     };
 }
 
 export class NamurNE107Event extends BaseEvent {
-    category: EventCategory.CAT_NE107_2;
+    Category: EventCategory.CAT_NE107_2;
 
-    constructor(origin: string, number: number, description?: string) {
-        super(origin, number, description);
+    constructor(number: number, description?: string) {
+        super(number, description);
     }
 
-    subResource(): string {
-        return 'ne107';
-    };
-    details: {
-        diagnosticCode?: string;
-        location?: string;
+    Details: {
+        DiagnosticCode?: string;
+        Location?: string;
     };
 }
 
 export class GenericEvent extends BaseEvent {
-    category: EventCategory.CAT_GENERIC_99;
-    subResource(): string {
-        return 'generic';
-    };
-    details: any;
+    Category: EventCategory.CAT_GENERIC_99;
+
+    Details: any;
 }

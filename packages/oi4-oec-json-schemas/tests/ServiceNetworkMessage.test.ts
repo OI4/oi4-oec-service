@@ -13,7 +13,7 @@ import invalidObjs from './__fixtures__/ServiceNetworkMessage_invalid.json'
 
 expect.extend(
   matchersWithOptions({
-    // Loading in a schema which is comprised only of definitions,
+    // Loading in a schema which is only comprised of definitions,
     // which means specific test schemas need to be created.
     // This is good for testing specific conditions for definition schemas.
     schemas: [serviceParameterRequest, serviceParameterResponse,
@@ -26,14 +26,14 @@ describe('ServiceNetworkMessage schema', () => {
     it('validate schema', () => {
       expect(schema).toBeValidSchema()
     })
-  
+
     it.each(validObjs as [])(
       '(%#) match valid config object to schema -> %s',
       (_name: string, obj) => {
         expect(obj).toMatchSchema(schema)
       }
     )
-  
+
     it.each(invalidObjs as [])(
       '(%#) match fails for invalid config -> %s',
       (name: string, obj) => {

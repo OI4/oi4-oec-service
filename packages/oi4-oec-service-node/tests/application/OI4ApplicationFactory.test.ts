@@ -48,8 +48,8 @@ describe('Test OI4MessageBusFactory', () => {
                 privateKey: ''
             },
             applicationSpecificStorages: undefined,
-            certificateStorage: "",
-            secretStorage: "",
+            certificateStorage: '',
+            secretStorage: '',
         };
 
         const resources: OI4ApplicationResources = new OI4ApplicationResources(`${__dirname}/../__fixtures__/mam.json`);

@@ -1,9 +1,9 @@
 import { matchersWithOptions } from 'jest-json-schema'
-import schema from '../src/schemas/publicationList.schema.json'
+import schema from '../src/schemas/PublicationList.schema.json'
 import uint16 from '../src/schemas/dataTypes/uint16.schema.json'
 import uint32 from '../src/schemas/dataTypes/uint32.schema.json'
 import resources from '../src/schemas/constants/resources.schema.json'
-import oi4Identifier from '../src/schemas/oi4Identifier.schema.json'
+import oi4Identifier from '../src/schemas/Oi4Identifier.schema.json'
 
 import validObjs from './__fixtures__/publicationList_valid.json'
 import invalidObjs from './__fixtures__/publicationList_invalid.json'

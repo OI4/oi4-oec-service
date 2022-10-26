@@ -3,19 +3,19 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "48017c6a-05c8-48d7-9d85-4b08bbb707f3",
-  "correlationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 74,
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 42,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {
-        "resource": [
-          "mam",
-          "health",
-          "profile",
-          "referenceDesignation",
-		  "unknown"
+        "Resources": [
+          "MAM",
+          "Health",
+          "Profile",
+          "ReferenceDesignation",
+		      "unknown"
         ]
       }
     }

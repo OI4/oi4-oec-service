@@ -52,7 +52,7 @@ const publisherIdRegEx = `^${serviceTypeRegEx}\\/${oi4IdRegEx}$`
 console.log(`PublisherId RegEx:\n${publisherIdRegEx}`)
 
 // Build RegEx for TopicPath
-const topicPathRegEx = `^oi4\\/${serviceTypeRegEx.replace(
+const topicPathRegEx = `^Oi4\\/${serviceTypeRegEx.replace(
   ')',
   '|\\+|#)'
 )}\\/${oi4IdRegEx.replace(
@@ -67,8 +67,8 @@ console.log(`TopicPathRegEx:\n${topicPathRegEx}`)
 // Read Modify Write NetworkSchemaJson
 tempPath = `${rootDir}/src/schemas/NetworkMessage.schema.json`
 tempJson = readJSON(tempPath)
-tempJson.properties.PublisherId.pattern = publisherIdRegEx
-tempJson.properties.MessageId.pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`
+tempJson.properties.PublisherId.Pattern = publisherIdRegEx
+tempJson.properties.MessageId.Pattern = `^.{1,}-${publisherIdRegEx.slice(1)}`
 writeJSON(tempPath, tempJson)
 
 // Read Modify Write topicPathSchemaJson

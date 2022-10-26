@@ -4,8 +4,8 @@ exports[`health schema (0) match fails for invalid config -> empty: empty 1`] = 
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'health'[39m
-[31m    Path:     health.schema.json#/required[39m
+[31m  must have required property 'Health'[39m
+[31m    Path:     Health.schema.json#/required[39m
 [31m[39m"
 `;
 
@@ -13,8 +13,8 @@ exports[`health schema (1) match fails for invalid config -> health is missing: 
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'health'[39m
-[31m    Path:     health.schema.json#/required[39m
+[31m  must have required property 'Health'[39m
+[31m    Path:     Health.schema.json#/required[39m
 [31m[39m"
 `;
 
@@ -22,10 +22,10 @@ exports[`health schema (2) match fails for invalid config -> health is not withi
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /health must be equal to one of the allowed values[39m
+[31m  /Health must be equal to one of the allowed values[39m
 [31m    Expected: [\\"NORMAL_0\\",\\"FAILURE_1\\",\\"CHECK_FUNCTION_2\\",\\"OFF_SPEC_3\\",\\"MAINTENANCE_REQUIRED_4\\"][39m
 [31m    Received: [33m<string>[39m[31m blub[39m
-[31m    Path:     health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum[39m
+[31m    Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum[39m
 [31m[39m"
 `;
 
@@ -33,9 +33,9 @@ exports[`health schema (3) match fails for invalid config -> health score is lar
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /healthScore must be <= 100[39m
+[31m  /HealthScore must be <= 100[39m
 [31m    Received: [33m<number>[39m[31m 101[39m
-[31m    Path:     health.schema.json#/properties/healthScore/maximum[39m
+[31m    Path:     Health.schema.json#/properties/HealthScore/maximum[39m
 [31m[39m"
 `;
 
@@ -43,9 +43,9 @@ exports[`health schema (4) match fails for invalid config -> health score is neg
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /healthScore must be >= 0[39m
+[31m  /HealthScore must be >= 0[39m
 [31m    Received: [33m<number>[39m[31m -1[39m
-[31m    Path:     health.schema.json#/properties/healthScore/minimum[39m
+[31m    Path:     Health.schema.json#/properties/HealthScore/minimum[39m
 [31m[39m"
 `;
 
@@ -53,15 +53,15 @@ exports[`health schema (5) match fails for invalid config -> swapped key and val
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /health must be string[39m
+[31m  /Health must be string[39m
 [31m    Received: [33m<number>[39m[31m 0[39m
-[31m    Path:     health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/type[39m
-[31m[39m[31m  /health must be equal to one of the allowed values[39m
+[31m    Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/type[39m
+[31m[39m[31m  /Health must be equal to one of the allowed values[39m
 [31m    Expected: [\\"NORMAL_0\\",\\"FAILURE_1\\",\\"CHECK_FUNCTION_2\\",\\"OFF_SPEC_3\\",\\"MAINTENANCE_REQUIRED_4\\"][39m
 [31m    Received: [33m<number>[39m[31m 0[39m
-[31m    Path:     health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum[39m
-[31m[39m[31m  /healthScore must be integer[39m
+[31m    Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum[39m
+[31m[39m[31m  /HealthScore must be integer[39m
 [31m    Received: [33m<string>[39m[31m CHECK_FUNCTION_2[39m
-[31m    Path:     health.schema.json#/properties/healthScore/type[39m
+[31m    Path:     Health.schema.json#/properties/HealthScore/type[39m
 [31m[39m"
 `;

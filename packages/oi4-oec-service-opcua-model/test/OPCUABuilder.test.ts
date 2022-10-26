@@ -10,7 +10,7 @@ const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
 
 function createOPCUABuilderWithLastMessageId(prefix: string): OPCUABuilder {
     const pubId = 'pubId';
-    const builder = new OPCUABuilder(oi4Id,ServiceTypes.REGISTRY,undefined);
+    const builder = new OPCUABuilder(oi4Id, ServiceTypes.REGISTRY, undefined);
     builder.lastMessageId = `${prefix}-${pubId}`;
     builder.publisherId = pubId;
     return builder;
@@ -45,129 +45,133 @@ describe('Unit test for MAMStorage reading', () => {
             expect(error).toBe('Validation failed with: can\'t resolve reference DataSetMessage.schema.json from id NetworkMessage.schema.json#');
         }
     });
+
+
+    it('should increase over flow counter when last message equals actual message id when building network message', () => {
+        const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
+        const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => sameMessageIdPrefix);
+        const msg = builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.mam, '0');
+        expect(msg.MessageId.charAt(0)).toEqual('0');
+        dateMock.mockRestore();
+    });
+
+
+    it('should increase over flow counter when last message equals actual message id when building metada message', () => {
+        const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
+        const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => sameMessageIdPrefix);
+        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', 'sub');
+        expect(msg.MessageId.charAt(0)).toEqual('0');
+        dateMock.mockRestore();
+    });
+
+    it('should update last message when building metadata message', () => {
+        const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
+        const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
+        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', 'sub');
+        expect(msg.MessageId).toEqual(builder.lastMessageId);
+    });
+
+    it('should update last message when building network  message', () => {
+        const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
+        const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
+        const msg = builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.mam, '0');
+        expect(msg.MessageId).toEqual(builder.lastMessageId);
+    });
+
+    it('builds two paginated messages if message size is small', () => {
+        const smallMessageSize = 10;
+        const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
+        const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, smallMessageSize);
+
+        const messages: IOPCUADataSetMessage[] = [{
+            DataSetWriterId: 1,
+            Source: 'a/b/c/d',
+            Filter: 'filter',
+            Payload: [],
+            Timestamp: '2022-01-01T12:00:00.000'
+        },
+            {
+                DataSetWriterId: 2,
+                Source: 'e/f/g/h',
+                Filter: 'oee',
+                Payload: [],
+                Timestamp: '2022-01-01T12:00:00.000'
+            }]
+
+        const timeStamp = new Date(2022, 1, 2);
+        const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd');
+
+        expect(paginatedMessages.length).toEqual(2);
+        expect(paginatedMessages[0].Messages.length).toEqual(2);
+        expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
+        expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
+        expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
+        expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+        expect(paginatedMessages[0].Messages[1].Payload.Page).toBe(1);
+        expect(paginatedMessages[0].Messages[1].Payload.PerPage).toBe(1);
+        expect(paginatedMessages[0].Messages[1].Payload.TotalCount).toBe(2);
+        expect(paginatedMessages[0].Messages[1].Payload.HasNext).toBeTruthy();
+        expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
+
+        expect(paginatedMessages[1].Messages[0].DataSetWriterId).toBe(2);
+        expect(paginatedMessages[1].Messages[0].Source).toBe('e/f/g/h');
+        expect(paginatedMessages[1].Messages[0].Filter).toBe('oee');
+        expect(paginatedMessages[1].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+        expect(paginatedMessages[1].Messages[1].Payload.Page).toBe(2);
+        expect(paginatedMessages[1].Messages[1].Payload.PerPage).toBe(1);
+        expect(paginatedMessages[1].Messages[1].Payload.TotalCount).toBe(2);
+        expect(paginatedMessages[1].Messages[1].Payload.HasNext).toBeFalsy();
+        expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
+    })
+
+    it('builds one paginated message if message size is large', () => {
+        const largeMessageSize = 100000;
+        const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
+        const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, largeMessageSize);
+
+        const messages: IOPCUADataSetMessage[] = [{
+            DataSetWriterId: 1,
+            Source: 'a/b/c/d',
+            Filter: 'filter',
+            Payload: [],
+            Timestamp: '2022-01-01T12:00:00.000'
+        },
+            {
+                DataSetWriterId: 2,
+                Source: 'e/f/g/h',
+                Filter: 'oee',
+                Payload: [],
+                Timestamp: '2022-01-01T12:00:00.000'
+            }]
+
+        const timeStamp = new Date(2022, 1, 2);
+        const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd');
+
+        expect(paginatedMessages.length).toEqual(1);
+        expect(paginatedMessages[0].Messages.length).toEqual(3);
+        expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
+        expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
+        expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
+        expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+        expect(paginatedMessages[0].Messages[1].DataSetWriterId).toBe(2);
+        expect(paginatedMessages[0].Messages[1].Source).toBe('e/f/g/h');
+        expect(paginatedMessages[0].Messages[1].Filter).toBe('oee');
+        expect(paginatedMessages[0].Messages[1].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
+
+        expect(paginatedMessages[0].Messages[2].Payload.Page).toBe(1);
+        expect(paginatedMessages[0].Messages[2].Payload.PerPage).toBe(2);
+        expect(paginatedMessages[0].Messages[2].Payload.TotalCount).toBe(2);
+        expect(paginatedMessages[0].Messages[2].Payload.HasNext).toBeFalsy();
+        expect(paginatedMessages[0].Messages[2].Payload.PaginationId).toBe(paginatedMessages[0].MessageId);
+    })
+
 });
-
-test('should increase over flow counter when last message equals actual message id when building network message', () => {
-    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
-    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const dateMock = jest.spyOn(Date, 'now').mockImplementation(()=>sameMessageIdPrefix);
-    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0');
-    expect(msg.MessageId.charAt(0)).toEqual('0');
-    dateMock.mockRestore();
-});
-
-
-test('should increase over flow counter when last message equals actual message id when building metada message', () => {
-    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
-    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    const dateMock = jest.spyOn(Date, 'now').mockImplementation(()=>sameMessageIdPrefix);
-    const msg = builder.buildOPCUAMetaDataMessage('metadata','meda description', {}, '0',0,'0','sub');
-    expect(msg.MessageId.charAt(0)).toEqual('0');
-    dateMock.mockRestore();
-});
-
-test('should update last message when building metadata message', () => {
-    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
-    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    const msg = builder.buildOPCUAMetaDataMessage('metadata','meda description', {}, '0',0,'0','sub');
-    expect(msg.MessageId).toEqual(builder.lastMessageId);
-});
-
-test('should update last message when building network  message', () => {
-    const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
-    const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-    const msg = builder.buildOPCUANetworkMessage([],new Date(), DataSetClassIds.mam, '0');
-    expect(msg.MessageId).toEqual(builder.lastMessageId);
-});
-
-test('builds two paginated messages if message size is small', () => {
-    const smallMessageSize = 10;
-	const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
-    const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, smallMessageSize);
-
-    const messages: IOPCUADataSetMessage[] = [{
-        DataSetWriterId: 1,
-        subResource: 'a/b/c/d',
-        filter: 'filter',
-        Payload: [],
-        Timestamp: '2022-01-01T12:00:00.000'
-    },
-    {
-        DataSetWriterId: 2,
-        subResource: 'e/f/g/h',
-        filter: 'oee',
-        Payload: [],
-        Timestamp: '2022-01-01T12:00:00.000'
-    }]
-
-    const timeStamp = new Date(2022, 1, 2);
-    const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd'); 
-
-    expect(paginatedMessages.length).toEqual(2);
-    expect(paginatedMessages[0].Messages.length).toEqual(2);
-    expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
-    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
-    expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
-
-    expect(paginatedMessages[0].Messages[1].Payload.page).toBe(1);
-    expect(paginatedMessages[0].Messages[1].Payload.perPage).toBe(1);
-    expect(paginatedMessages[0].Messages[1].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[0].Messages[1].Payload.hasNext).toBeTruthy();
-
-    expect(paginatedMessages[1].Messages[0].DataSetWriterId).toBe(2);
-    expect(paginatedMessages[1].Messages[0].subResource).toBe('e/f/g/h');
-    expect(paginatedMessages[1].Messages[0].filter).toBe('oee');
-    expect(paginatedMessages[1].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
-
-    expect(paginatedMessages[1].Messages[1].Payload.page).toBe(2);
-    expect(paginatedMessages[1].Messages[1].Payload.perPage).toBe(1);
-    expect(paginatedMessages[1].Messages[1].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[1].Messages[1].Payload.hasNext).toBeFalsy();
-})
-
-test('builds one paginated message if message size is large', () => {
-    const largeMessageSize = 100000;
-	const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
-    const builder = new OPCUABuilder(oi4Id, ServiceTypes.UTILITY, largeMessageSize);
-
-    const messages: IOPCUADataSetMessage[] = [{
-        DataSetWriterId: 1,
-        subResource: 'a/b/c/d',
-        filter: 'filter',
-        Payload: [],
-        Timestamp: '2022-01-01T12:00:00.000'
-    },
-    {
-        DataSetWriterId: 2,
-        subResource: 'e/f/g/h',
-        filter: 'oee',
-        Payload: [],
-        Timestamp: '2022-01-01T12:00:00.000'
-    }]
-
-    const timeStamp = new Date(2022, 1, 2);
-    const paginatedMessages = builder.buildPaginatedOPCUANetworkMessageArray(messages, timeStamp, DataSetClassIds.mam, 'abcd'); 
-
-    expect(paginatedMessages.length).toEqual(1);
-    expect(paginatedMessages[0].Messages.length).toEqual(3);
-    expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-    expect(paginatedMessages[0].Messages[0].subResource).toBe('a/b/c/d');
-    expect(paginatedMessages[0].Messages[0].filter).toBe('filter');
-    expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
-
-    expect(paginatedMessages[0].Messages[1].DataSetWriterId).toBe(2);
-    expect(paginatedMessages[0].Messages[1].subResource).toBe('e/f/g/h');
-    expect(paginatedMessages[0].Messages[1].filter).toBe('oee');
-    expect(paginatedMessages[0].Messages[1].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
-
-    expect(paginatedMessages[0].Messages[2].Payload.page).toBe(1);
-    expect(paginatedMessages[0].Messages[2].Payload.perPage).toBe(2);
-    expect(paginatedMessages[0].Messages[2].Payload.totalCount).toBe(2);
-    expect(paginatedMessages[0].Messages[2].Payload.hasNext).toBeFalsy();
-})
-

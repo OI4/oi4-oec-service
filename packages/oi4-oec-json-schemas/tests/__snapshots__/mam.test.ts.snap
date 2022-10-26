@@ -5,29 +5,29 @@ exports[`mam schema (0) match fails for invalid config -> empty: empty 1`] = `
 
 received
 [31m  must have required property 'DeviceClass'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'DeviceManual'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'DeviceRevision'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'HardwareRevision'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'Manufacturer'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'ManufacturerUri'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'Model'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'ProductCode'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'ProductInstanceUri'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'RevisionCounter'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'SerialNumber'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m[31m  must have required property 'SoftwareRevision'[39m
-[31m    Path:     mam.schema.json#/required[39m
+[31m    Path:     MAM.schema.json#/required[39m
 [31m[39m"
 `;
 
@@ -37,49 +37,49 @@ exports[`mam schema (1) match fails for invalid config -> null values: null valu
 received
 [31m  /Description must be object[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/type[39m
+[31m    Path:     MAM.schema.json#/type[39m
 [31m[39m[31m  /DeviceClass must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/DeviceClass/type[39m
+[31m    Path:     MAM.schema.json#/properties/DeviceClass/type[39m
 [31m[39m[31m  /DeviceManual must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/DeviceManual/type[39m
+[31m    Path:     MAM.schema.json#/properties/DeviceManual/type[39m
 [31m[39m[31m  /DeviceRevision must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/DeviceRevision/type[39m
+[31m    Path:     MAM.schema.json#/properties/DeviceRevision/type[39m
 [31m[39m[31m  /HardwareRevision must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/HardwareRevision/type[39m
-[31m[39m[31m  /Manufacturer/locale must be string[39m
+[31m    Path:     MAM.schema.json#/properties/HardwareRevision/type[39m
+[31m[39m[31m  /Manufacturer/Locale must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Manufacturer/text must be string[39m
+[31m    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type[39m
+[31m[39m[31m  /Manufacturer/Text must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/text/type[39m
+[31m    Path:     MAM.schema.json#/properties/Text/type[39m
 [31m[39m[31m  /ManufacturerUri must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/ManufacturerUri/type[39m
-[31m[39m[31m  /Model/locale must be string[39m
+[31m    Path:     MAM.schema.json#/properties/ManufacturerUri/type[39m
+[31m[39m[31m  /Model/Locale must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Model/text must be string[39m
+[31m    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type[39m
+[31m[39m[31m  /Model/Text must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/text/type[39m
+[31m    Path:     MAM.schema.json#/properties/Text/type[39m
 [31m[39m[31m  /ProductCode must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/ProductCode/type[39m
+[31m    Path:     MAM.schema.json#/properties/ProductCode/type[39m
 [31m[39m[31m  /ProductInstanceUri must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/ProductInstanceUri/type[39m
+[31m    Path:     MAM.schema.json#/properties/ProductInstanceUri/type[39m
 [31m[39m[31m  /RevisionCounter must be >= -2147483648[39m
 [31m    Received: [33m<number>[39m[31m -2147483649[39m
-[31m    Path:     mam.schema.jsondataTypes/int32.schema.json/minimum[39m
+[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/minimum[39m
 [31m[39m[31m  /SerialNumber must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/SerialNumber/type[39m
+[31m    Path:     MAM.schema.json#/properties/SerialNumber/type[39m
 [31m[39m[31m  /SoftwareRevision must be string[39m
 [31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     mam.schema.json#/properties/SoftwareRevision/type[39m
+[31m    Path:     MAM.schema.json#/properties/SoftwareRevision/type[39m
 [31m[39m"
 `;
 
@@ -89,10 +89,10 @@ exports[`mam schema (2) match fails for invalid config -> invalid property Fooba
 received
 [31m  must NOT have additional properties, but found 'Foobar'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     mam.schema.json#/additionalProperties[39m
+[31m    Path:     MAM.schema.json#/additionalProperties[39m
 [31m[39m[31m  /RevisionCounter must be <= 2147483647[39m
 [31m    Received: [33m<number>[39m[31m 2147483648[39m
-[31m    Path:     mam.schema.jsondataTypes/int32.schema.json/maximum[39m
+[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum[39m
 [31m[39m"
 `;
 
@@ -102,6 +102,6 @@ exports[`mam schema (3) match fails for invalid config -> revision counter excee
 received
 [31m  /RevisionCounter must be <= 2147483647[39m
 [31m    Received: [33m<number>[39m[31m 2147483648[39m
-[31m    Path:     mam.schema.jsondataTypes/int32.schema.json/maximum[39m
+[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum[39m
 [31m[39m"
 `;

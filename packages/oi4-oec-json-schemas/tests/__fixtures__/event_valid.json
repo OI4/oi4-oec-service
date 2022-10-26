@@ -2,22 +2,20 @@
   [
     "Status event",
     {
-      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "number": 0,
-      "description": "The operation succeeded.",
-      "category": "CAT_STATUS_1",
-      "details": {
-        "symbolicId": "Good"
+      "Number": 0,
+      "Description": "The operation succeeded.",
+      "Category": "CAT_STATUS_1",
+      "Details": {
+        "SymbolicId": "Good"
       }
     }
   ],
   [
     "Syslog event",
     {
-      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "number": 1,
-      "category": "CAT_SYSLOG_0",
-      "details": {
+      "Number": 1,
+      "Category": "CAT_SYSLOG_0",
+      "Details": {
         "MSG": "<MSG>",
         "HEADER": "<HEADER>"
       }
@@ -26,25 +24,23 @@
   [
     "NE107 event",
     {
-      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "number": 4,
-      "description": "Maintenance Required",
-      "category": "CAT_NE107_2",
-      "details": {
-        "diagnosticCode": "F-238",
-        "location": "Floor 1"
+      "Number": 4,
+      "Description": "Maintenance Required",
+      "Category": "CAT_NE107_2",
+      "Details": {
+        "DiagnosticCode": "F-238",
+        "Location": "Floor 1"
       }
     }
   ],
   [
     "Generic event",
     {
-      "origin": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "number": 100,
-      "description": "<application defined description>",
-      "category": "CAT_GENERIC_99",
-      "details": {
-        "foo": "bar" 
+      "Number": 100,
+      "Description": "<application defined description>",
+      "Category": "CAT_GENERIC_99",
+      "Details": {
+        "Foo": "bar" 
       }
     }
   ]

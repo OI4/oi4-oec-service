@@ -7,7 +7,7 @@
       "MessageType": "ua-data",
       "PublisherId": "ITConnector/provider.com/model/product/1234",
       "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "Messages": [ ],
       "unsupported": true
     }
@@ -18,7 +18,7 @@
       "MessageType": "ua-data",
       "PublisherId": "ITConnector/provider.com/model/product/1234",
       "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "Messages": [ ]
     }
   ],
@@ -28,7 +28,7 @@
       "MessageId": "1652867880093-ITConnector/provider.com/model/product/1234",
       "PublisherId": "ITConnector/provider.com/model/product/1234",
       "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "Messages": [ ]
     }
   ],
@@ -38,7 +38,7 @@
       "MessageId": "1652867880093-ITConnector/provider.com/model/product/1234",
       "MessageType": "ua-data",
       "DataSetClassId": "360ca8f3-5e66-42a2-8f10-9cdf45f4bf58",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "Messages": [ ]
     }
   ]

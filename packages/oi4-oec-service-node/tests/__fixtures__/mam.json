@@ -1,19 +1,19 @@
 {
-  "Manufacturer":{"locale":"en-US","text":"Hilscher"},
+  "Manufacturer":{"Locale":"en-US","Text":"Hilscher"},
   "ManufacturerUri":"hilscher.com",
-  "Model": {"locale":"en-US","text":"OEC Registry"},
+  "Model": {"Locale":"en-US","Text":"OEC Registry"},
   "ProductCode":"OEC-REG",
   "HardwareRevision":"",
-  "SoftwareRevision":"0.12.1",
+  "SoftwareRevision":"1.1.0",
   "DeviceRevision":"1.0.0",
   "DeviceManual":"1.0",
   "DeviceClass":"Registry",
   "SerialNumber":"OEC-Registry",
-  "ProductInstanceUri":"oi4/appid/service",
+  "ProductInstanceUri":"Oi4/Appid/Service",
   "RevisionCounter":0,
   "Description":
   {
-    "locale":"en-US",
-    "text":"The OEC Registry, an Open Industry 4.0 Alliance application"
+    "Locale":"en-US",
+    "Text":"The OEC Registry, an Open Industry 4.0 Alliance application"
   }
 }

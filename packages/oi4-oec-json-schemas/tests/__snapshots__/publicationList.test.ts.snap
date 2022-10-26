@@ -4,12 +4,12 @@ exports[`publicationList schema (0) match fails for invalid publicationList -> e
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'resource'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
+[31m  must have required property 'Resource'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
 [31m[39m[31m  must have required property 'DataSetWriterId'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
-[31m[39m[31m  must have required property 'oi4Identifier'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
+[31m[39m[31m  must have required property 'Source'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
 [31m[39m"
 `;
 
@@ -17,19 +17,19 @@ exports[`publicationList schema (1) match fails for invalid publicationList -> p
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /resource must be equal to one of the allowed values[39m
-[31m    Expected: [\\"mam\\",\\"health\\",\\"config\\",\\"license\\",\\"licenseText\\",\\"rtLicense\\",\\"data\\",\\"metadata\\",\\"event\\",\\"profile\\",\\"publicationList\\",\\"subscriptionList\\",\\"referenceDesignation\\",\\"interfaces\\"][39m
+[31m  /Resource must be equal to one of the allowed values[39m
+[31m    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\"][39m
 [31m    Received: [33m<string>[39m[31m unknown[39m
-[31m    Path:     publicationList.schema.jsonconstants/resources.schema.json/enum[39m
+[31m    Path:     PublicationList.schema.jsonconstants/resources.schema.json/enum[39m
 [31m[39m"
 `;
 
-exports[`publicationList schema (2) match fails for invalid publicationList -> publicationList with missing resource: publicationList with missing resource 1`] = `
+exports[`publicationList schema (2) match fails for invalid publicationList -> publicationList with missing Resource: publicationList with missing Resource 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'resource'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
+[31m  must have required property 'Resource'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
 [31m[39m"
 `;
 
@@ -38,30 +38,26 @@ exports[`publicationList schema (3) match fails for invalid publicationList -> p
 
 received
 [31m  must have required property 'DataSetWriterId'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
 [31m[39m"
 `;
 
-exports[`publicationList schema (4) match fails for invalid publicationList -> publicationList with missing oi4Identifier: publicationList with missing oi4Identifier 1`] = `
+exports[`publicationList schema (4) match fails for invalid publicationList -> publicationList with missing Source: publicationList with missing Source 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  must have required property 'oi4Identifier'[39m
-[31m    Path:     publicationList.schema.json#/required[39m
+[31m  must have required property 'Source'[39m
+[31m    Path:     PublicationList.schema.json#/required[39m
 [31m[39m"
 `;
 
-exports[`publicationList schema (5) match fails for invalid publicationList -> publicationList with invalid oi4Identifier: publicationList with invalid oi4Identifier 1`] = `
+exports[`publicationList schema (5) match fails for invalid publicationList -> publicationList with invalid Source: publicationList with invalid Source 1`] = `
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /resource must be equal to one of the allowed values[39m
-[31m    Expected: [\\"mam\\",\\"health\\",\\"config\\",\\"license\\",\\"licenseText\\",\\"rtLicense\\",\\"data\\",\\"metadata\\",\\"event\\",\\"profile\\",\\"publicationList\\",\\"subscriptionList\\",\\"referenceDesignation\\",\\"interfaces\\"][39m
-[31m    Received: [33m<string>[39m[31m unknown[39m
-[31m    Path:     publicationList.schema.jsonconstants/resources.schema.json/enum[39m
-[31m[39m[31m  /oi4Identifier must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^[39m
+[31m  /Source must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^[39m
 [31m]+){3})$\\"[39m
 [31m    Received: [33m<string>[39m[31m provider.com[39m
-[31m    Path:     publicationList.schema.jsonoi4Identifier.schema.json/pattern[39m
+[31m    Path:     PublicationList.schema.jsonOi4Identifier.schema.json/pattern[39m
 [31m[39m"
 `;

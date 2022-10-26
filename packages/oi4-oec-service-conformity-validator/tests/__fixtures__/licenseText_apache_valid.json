@@ -1,0 +1,18 @@
+{
+  "MessageId": "1577836800001-Registry/openindustry4.com/nd/nd/nd",
+  "MessageType": "ua-data",
+  "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
+  "DataSetClassId": "a6e6c727-4057-419f-b2ea-3fe9173e71cf",
+  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "Messages": [{
+      "DataSetWriterId": 490,
+      "Filter": "Apache%202.0",
+      "Source": "openindustry4.com/nd/nd/nd",
+      "SequenceNumber": 17,
+      "Timestamp": "2020-01-01T00:00:00.000Z",
+      "Payload": {
+        "LicenseText": "This is the Apache 2.0 licence test text"
+      }
+    }
+  ]
+}

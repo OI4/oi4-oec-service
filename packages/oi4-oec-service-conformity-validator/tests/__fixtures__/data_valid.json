@@ -2,11 +2,11 @@
   "MessageId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
-  "correlationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "CorrelationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 93,
-      "filter": "oee",
-      "subResource": "openindustry4.com/nd/nd/nd",
+      "Filter": "oee",
+      "Source": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 3985,
       "Timestamp": "2021-12-16T22:25:10.094Z",
       "Payload": {

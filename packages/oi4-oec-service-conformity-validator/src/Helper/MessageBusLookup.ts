@@ -3,7 +3,6 @@ import {EventEmitter} from 'events';
 import {promiseTimeout} from './Timeout';
 import {IMessageBusLookup, PubResponse, GetRequest} from '../model/IMessageBusLookup';
 
-
 export class MessageBusLookup implements IMessageBusLookup
 {
     private readonly pubMessages: EventEmitter;
@@ -33,19 +32,19 @@ export class MessageBusLookup implements IMessageBusLookup
         const pubTopic = getRequest.getTopic('pub');
         const getTopic = getRequest.getTopic('get');
 
-        
+
         await this.conformityClient.subscribe(pubTopic);
         await this.conformityClient.publish(getTopic, getRequest.JsonMessage);
 
         return await promiseTimeout(new Promise((resolve) => {
                 this.pubMessages.once(pubTopic, (res) => {
-                    // TODO: Pagination is currently ignored and only the first response message is returned 
+                    // TODO: Pagination is currently ignored and only the first response message is returned
                     this.conformityClient.unsubscribe(pubTopic);
                     resolve(res);
                 });
             }),
-            this.timeOut, 
-            `getMessage-${getRequest.Resource}Error-onTopic-${getTopic}`, 
+            this.timeOut,
+            `getMessage-${getRequest.Resource}Error-onTopic-${getTopic}`,
         );
     }
 }

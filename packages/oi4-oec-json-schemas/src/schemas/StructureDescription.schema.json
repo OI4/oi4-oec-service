@@ -5,70 +5,70 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "structureDefinition"
+    "StructureDefinition"
   ],
   "properties": {
-    "structureDefinition": {
+    "StructureDefinition": {
       "description": "StructureDefinition object (see 9.2.10)",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "baseDataType",
-        "defaultEncodingId",
-        "fields",
-        "structureType"
+        "BaseDataType",
+        "DefaultEncodingId",
+        "Fields",
+        "StructureType"
       ],
       "properties": {
-        "baseDataType": {
+        "BaseDataType": {
           "$ref": "NodeId.schema.json"
         },
-        "defaultEncodingId": {
+        "DefaultEncodingId": {
           "$ref": "NodeId.schema.json"
         },
-        "fields": {
+        "Fields": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "arrayDimensions",
-              "datatype",
-              "description",
-              "isOptional",
-              "maxStringLength",
-              "name",
-              "valueRank"
+              "ArrayDimensions",
+              "DataType",
+              "Description",
+              "IsOptional",
+              "MaxStringLength",
+              "Name",
+              "ValueRank"
             ],
             "properties": {
-              "arrayDimensions": {
+              "ArrayDimensions": {
                 "type": "array",
                 "items": {
                   "$ref": "dataTypes/uint32.schema.json"
                 }
               },
-              "datatype": {
+              "DataType": {
                 "$ref": "NodeId.schema.json"
               },
-              "description": {
+              "Description": {
                 "$ref": "LocalizedText.schema.json"
               },
-              "isOptional": {
+              "IsOptional": {
                 "type": "boolean"
               },
-              "maxStringLength": {
+              "MaxStringLength": {
                 "$ref": "dataTypes/uint32.schema.json"
               },
-              "name": {
+              "Name": {
                 "type": "string",
                 "description": "Unique name for field in StructureDefinition"
               },
-              "valueRank": {
+              "ValueRank": {
                 "$ref": "dataTypes/int32.schema.json"
               }
             }
           }
         },
-        "structureType": {
+        "StructureType": {
           "type": "string",
           "description": "Structure_0: Structure without optional fields, StructureWithOptionalFields_1: Structure with optional fields, Union_2: Only one of the fields defined for the data type is encoded into a value",
           "enum": [

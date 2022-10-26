@@ -1,0 +1,41 @@
+{
+  "$id": "License.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "License Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Components"],
+  "properties": {
+    "Components": {
+      "type": "array",
+      "description": "The components list contains all software components, which are licensed under the same license. Both, the DataSetWriterId and the Filter from the DataSetMessage header are related to that License",
+      "items": {
+        "$ref": "#/definitions/ComponentsObject"
+      }
+    }
+  },
+  "definitions": {
+    "ComponentsObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["Component"],
+      "properties": {
+        "Component": {
+          "description": "This is the name of the component, which uses the license names in the father object",
+          "type": "string"
+        },
+        "LicAuthors": {
+          "description": "This is a list of authors, which are providing this component",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "LicAddText": {
+          "description": "Some components may have extended license information in addition to the license agreements defined for it. This additional information can be placed in licAddText as plain text",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

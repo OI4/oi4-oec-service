@@ -1,0 +1,89 @@
+{
+    "logging": {
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Logging"
+      },
+      "Description": {
+        "Locale": "en-US",
+        "Text": "Everything related to logging"
+      },
+      "auditLevel": {
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Audit Level"
+        },
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Audit Level, use Syslog Enum entries only!"
+        },
+        "Value": "warning",
+        "Type": "String"
+      },
+      "logType": {
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Logging type"
+        },
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Currently used to enable / disable log to storage. Enum"
+        },
+        "Value": "disabled",
+        "Type": "String"
+      },
+      "logFileSize": {
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Size of Logfile (bytes)"
+        },
+        "Description": {
+          "Locale": "en-US",
+          "Text": "After this size, the logfile will cycle to the next one"
+        },
+        "Value": "250000",
+        "Type": "Number",
+        "Unit": "byte"
+      }
+    },
+    "registry": {
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Registry"
+      },
+      "Description": {
+        "Locale": "en-US",
+        "Text": "Everything related to registry specific config"
+      },
+      "developmentMode": {
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Development mode"
+        },
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Enables or disables the development mode of the frontend"
+        },
+        "Value": "false",
+        "Type": "Boolean"
+      },
+      "showRegistry": {
+        "Name": {
+          "Locale": "en-US",
+          "Text": "Show Registry"
+        },
+        "Description": {
+          "Locale": "en-US",
+          "Text": "Decides, whether to save the Registry along the other assets or not"
+        },
+        "Value": "true",
+        "Type": "Boolean"
+      }
+    },
+    "context": {
+      "Name": {
+        "Locale": "en-US",
+        "Text": "Registry Configuration"
+      }
+    }
+  }

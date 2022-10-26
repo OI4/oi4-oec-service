@@ -6,7 +6,7 @@ exports[`DataSetMetaData schema (0) match fails for invalid config -> empty: emp
 received
 [31m  must have required property 'DataSetWriterId'[39m
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
-[31m[39m[31m  must have required property 'filter'[39m
+[31m[39m[31m  must have required property 'Filter'[39m
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
 [31m[39m[31m  must have required property 'MessageId'[39m
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
@@ -16,7 +16,7 @@ received
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
 [31m[39m[31m  must have required property 'MetaData'[39m
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
-[31m[39m[31m  must have required property 'subResource'[39m
+[31m[39m[31m  must have required property 'Source'[39m
 [31m    Path:     DataSetMetaData.schema.json#/required[39m
 [31m[39m"
 `;
@@ -40,7 +40,14 @@ exports[`DataSetMetaData schema (2) match fails for invalid config -> Invalid pu
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
+[31m  /MetaData must have required property 'StructureDataTypes'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}[39m
+[31m    Path:     DataSetMetaData.schema.json#/required[39m
+[31m[39m[31m  must NOT have additional properties, but found 'structureDataTypes'[39m
+[31m    Expected: [33m<boolean>[39m[31m false[39m
+[31m    Received: [33m<object> [39m[31m{\\"Name\\":\\"Dataset1\\",\\"Description\\":{\\"Text\\":\\"Description\\",\\"Locale\\":\\"en-US\\"},\\"Namespaces\\":[],\\"structureDataTypes\\":[],\\"EnumDataTypes\\":[],\\"SimpleDataTypes\\":[]}[39m
+[31m    Path:     DataSetMetaData.schema.json#/additionalProperties[39m
+[31m[39m[31m  /PublisherId must match pattern \\"^(Registry|OTConnector|Utility|Persistence|Aggregation|OOCConnector|ITConnector)\\\\/(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:\\\\/[^\\\\/\`\\\\^[39m
 [31m]+){3})$\\"[39m
 [31m    Received: [33m<string>[39m[31m provider.com[39m
 [31m    Path:     DataSetMetaData.schema.json#/properties/PublisherId/pattern[39m

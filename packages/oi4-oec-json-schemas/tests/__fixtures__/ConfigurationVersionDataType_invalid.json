@@ -3,8 +3,8 @@
   [
     "versions out of range",
     {
-      "majorVersion": 4294967296,
-      "minorVersion": -4294967295
+      "MajorVersion": 4294967296,
+      "MinorVersion": -4294967295
     }
   ]
 ]

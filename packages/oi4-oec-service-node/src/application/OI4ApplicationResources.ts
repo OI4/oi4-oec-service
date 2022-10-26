@@ -25,7 +25,7 @@ import {existsSync, readFileSync} from 'fs';
 import {OI4Resource, OI4ResourceEvent} from './OI4Resource';
 import os from 'os';
 import path = require('path');
-import { Resource } from '@oi4/oi4-oec-service-model';
+import { Resources } from '@oi4/oi4-oec-service-model';
 
 export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
 
@@ -34,7 +34,7 @@ export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
-    readonly subResources: Map<string, IOI4Resource>;
+    readonly sources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -44,33 +44,32 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = DEFAULT_MAM_FILE) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this.subResources = new Map<string, IOI4Resource>();
+        this.sources = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
         this.metaDataLookup = {};
 
         // Fill both pubList and subList
-        for (const resources of this.profile.resource) {
+        for (const resources of this.profile.Resources) {
             let resInterval = 0;
-            if (resources === 'health') {
+            if (resources === 'Health') {
                 resInterval = 60000;
             } else {
                 resInterval = 0;
             }
 
             this._publicationList.push({
-                resource: resources,
-                subResource: this.oi4Id.toString(),
+                Resource: resources,
+                Source: this.oi4Id,
                 DataSetWriterId: 0,
-                oi4Identifier: this.oi4Id,
-                interval: resInterval,
-                config: PublicationListConfig.NONE_0,
+                Interval: resInterval,
+                Config: PublicationListConfig.NONE_0,
             } as PublicationList);
 
             this._subscriptionList.push(SubscriptionList.clone({
-                topicPath: `oi4/${this.mam.getServiceType()}/${this.oi4Id}/get/${resources}/${this.oi4Id}`,
-                interval: 0,
-                config: SubscriptionListConfig.NONE_0,
+                TopicPath: `Oi4/${this.mam.getServiceType()}/${this.oi4Id}/Get/${resources}/${this.oi4Id}`,
+                Interval: 0,
+                Config: SubscriptionListConfig.NONE_0,
             } as SubscriptionList));
         }
     }
@@ -93,7 +92,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if(oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
-        return this.subResources.get(oi4Id.toString()).mam;
+        return this.sources.get(oi4Id.toString()).mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
@@ -101,15 +100,15 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if(this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
-        return this.subResources.get(oi4Id.toString())?.health;
+        return this.sources.get(oi4Id.toString())?.health;
     }
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
         if (oi4Id === undefined) {
             return this.license;
-        } 
-        
-        const license = oi4Id.equals(this.oi4Id) ? this.license : this.subResources.get(oi4Id.toString())?.license;
+        }
+
+        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id.toString())?.license;
         if (license === undefined) {
             return [];
         }
@@ -118,7 +117,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return license;
         }
 
-        return license.filter((elem: License) => elem.licenseId === licenseId ? elem : null);
+        return license.filter((elem: License) => elem.LicenseId === licenseId ? elem : null);
     }
 
     setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean {
@@ -126,9 +125,9 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         let currentConfig: IContainerConfig = undefined;
         if (this.oi4Id.equals(oi4Id)) {
             currentConfig = this.config;
-        } 
-        else if (this.hasSubResource(oi4Id)) {
-            const subResource = this.getSubResource(oi4Id) as IOI4Resource;
+        }
+        else if (this.hasSource(oi4Id)) {
+            const subResource = this.getSource(oi4Id) as IOI4Resource;
             currentConfig = subResource?.config;
         }
 
@@ -136,14 +135,14 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             // no existing config found --> add
             if (this.oi4Id.equals(oi4Id)) {
                 this.config = config;
-            } else if (this.hasSubResource(oi4Id)) {
-                const subResource = this.getSubResource(oi4Id) as IOI4Resource;
+            } else if (this.hasSource(oi4Id)) {
+                const subResource = this.getSource(oi4Id) as IOI4Resource;
                 subResource.config = config;
             }
             else { return false; }
 
-            this.emit(OI4ResourceEvent.RESOURCE_ADDED, oi4Id, Resource.CONFIG);
-            return true; 
+            this.emit(OI4ResourceEvent.RESOURCE_ADDED, oi4Id, Resources.CONFIG);
+            return true;
         }
 
         // update existing config:
@@ -153,7 +152,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return false;
         }
 
-        if ('context' in currentConfig && encodeURIComponent(currentConfig['context'].name.text) !== filter) {
+        if ('context' in currentConfig && encodeURIComponent(currentConfig['context'].Name.Text) !== filter) {
             return false; // no matching filter
         }
 
@@ -169,42 +168,41 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
 
                 const oldSetting = (currentConfig[groupName] as IContainerConfigGroupName)?.[settingName] as IContainerConfigConfigName;
                 const newSetting = (config[groupName] as IContainerConfigGroupName)[settingName] as IContainerConfigConfigName;
-                if (oldSetting && this.validateConfigValue(newSetting.value, oldSetting.validation)) {
-                    oldSetting.value = newSetting.value; // currently we only accept a new value
+                if (oldSetting && OI4ApplicationResources.validateConfigValue(newSetting.Value, oldSetting.Validation)) {
+                    oldSetting.Value = newSetting.Value; // currently we only accept a new value
                     configUpdated = true;
                 }
             }
         }
 
         if (configUpdated) {
-            this.emit(OI4ResourceEvent.RESOURCE_CHANGED, oi4Id, Resource.CONFIG);
+            this.emit(OI4ResourceEvent.RESOURCE_CHANGED, oi4Id, Resources.CONFIG);
             return true;
         }
 
         return false;
     }
 
-
-    hasSubResource(oi4Id: Oi4Identifier): boolean {
-        return this.subResources.has(oi4Id.toString());
+    hasSource(oi4Id: Oi4Identifier): boolean {
+        return this.sources.has(oi4Id.toString());
     }
 
-    getSubResource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
+    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
         if(oi4Id !== undefined) {
-            return this.subResources.get(oi4Id.toString());
+            return this.sources.get(oi4Id.toString());
         }
-        return this.subResources.values();
+        return this.sources.values();
     }
 
-    addSubResource(subResource: IOI4Resource): void {
-        this.subResources.set(subResource.oi4Id.toString(), subResource);
+    addSource(source: IOI4Resource): void {
+        this.sources.set(source.oi4Id.toString(), source);
         // TODO add sub resource to publication and subscription list
-        this.emit(OI4ResourceEvent.RESOURCE_ADDED, subResource.oi4Id);
+        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
     }
 
-    removeSubResource(oi4Id: Oi4Identifier): boolean {
+    removeSource(oi4Id: Oi4Identifier): boolean {
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
-        return this.subResources.delete(oi4Id.toString());
+        return this.sources.delete(oi4Id.toString());
         // TODO remove sub resource to publication and subscription list
     }
 
@@ -221,35 +219,31 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         }
     }
 
-    private validateConfigValue(value: string, validation?: IContainerConfigValidation): boolean {
+    private static validateConfigValue(value: string, validation?: IContainerConfigValidation): boolean {
         if (!validation) {
             return true;
         }
 
-        if (validation.length !== undefined && value.length > validation.length)  {
-            return false; 
-        } 
-
-        if (validation.min !== undefined && Number(value) < validation.min) {
+        if (validation.Length !== undefined && value.length > validation.Length)  {
             return false;
         }
 
-        if (validation.max !== undefined && Number(value) > validation.max) { 
+        if (validation.Min !== undefined && Number(value) < validation.Min) {
             return false;
         }
 
-        if (validation.pattern !== undefined) {
-            const regexp = new RegExp(validation.pattern);
+        if (validation.Max !== undefined && Number(value) > validation.Max) {
+            return false;
+        }
+
+        if (validation.Pattern !== undefined) {
+            const regexp = new RegExp(validation.Pattern);
             if (!regexp.test(value)) {
                 return false;
             }
         }
 
-        if (validation.values != undefined && !validation.values.includes(value)) {
-            return false;
-        }
-
-        return true;
+        return !(validation.Values != undefined && !validation.Values.includes(value));
     }
 }
 

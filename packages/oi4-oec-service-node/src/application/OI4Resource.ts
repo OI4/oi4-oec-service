@@ -9,7 +9,7 @@ import {
     MasterAssetModel,
     Profile,
     PublicationList,
-    Resource,
+    Resources,
     RTLicense,
     SubscriptionList,
 } from '@oi4/oi4-oec-service-model';
@@ -72,9 +72,9 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     }
 
     set health(health: Health) {
-        if (health.healthScore >= 100 && health.healthScore <= 0) throw new RangeError('healthState out of range');
+        if (health.HealthScore >= 100 && health.HealthScore <= 0) throw new RangeError('healthState out of range');
         this._health = health;
-        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.HEALTH);
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.HEALTH);
     }
 
     // --- MAM ---
@@ -124,23 +124,23 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = publicationList;
     }
 
-    getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): PublicationList[] {
+    getPublicationList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): PublicationList[] {
         return this._publicationList.filter((elem: PublicationList) => {
-            if (oi4Id !== undefined && !oi4Id.equals(elem.oi4Identifier)) return false;
-            if (resourceType !== undefined && elem.resource !== resourceType) return false;
-            if (tag !== undefined && elem.filter !== tag) return false;
+            if (oi4Id !== undefined && !oi4Id.equals(elem.Source)) return false;
+            if (resourceType !== undefined && elem.Resource !== resourceType) return false;
+            if (tag !== undefined && elem.Filter !== tag) return false;
             return true;
         });
     }
 
-    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resource, tag?: string): SubscriptionList[] {
+    getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[] {
         console.log(`subscriptionList elements make no sense and further specification by the OI4 working group ${oi4Id}, ${resourceType}, ${tag}`);
         return this._subscriptionList;
     }
 
     addPublication(publicationObj: PublicationList): void {
         this.publicationList.push(publicationObj);
-        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.PUBLICATION_LIST);
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.PUBLICATION_LIST);
     }
 
     // --- subscriptionList ---
@@ -154,9 +154,9 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
     addSubscription(subscriptionObj: SubscriptionList): void {
         this.subscriptionList.push(subscriptionObj);
-        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resource.SUBSCRIPTION_LIST);
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.SUBSCRIPTION_LIST);
     }
 
 }
 
-export const extractProductInstanceUri = (mam: MasterAssetModel) => `${mam.ManufacturerUri}/${encodeURIComponent(mam.Model.text)}/${encodeURIComponent(mam.ProductCode)}/${encodeURIComponent(mam.SerialNumber)}`;
+export const extractProductInstanceUri = (mam: MasterAssetModel) => `${mam.ManufacturerUri}/${encodeURIComponent(mam.Model.Text)}/${encodeURIComponent(mam.ProductCode)}/${encodeURIComponent(mam.SerialNumber)}`;

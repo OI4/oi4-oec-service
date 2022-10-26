@@ -1,35 +1,34 @@
-import {Resource} from '@oi4/oi4-oec-service-model';
-
+import {Methods, Resources} from '@oi4/oi4-oec-service-model';
 
 export class GetRequest {
     TopicPreamble: string;
-    Resource: Resource;
-    SubResource? : string;
+    Resource: Resources;
+    Source?: string;
     Filter?: string;
     JsonMessage: string;
 
-    constructor(topicPreamble: string, resource: Resource, jsonMessage: string, subResource?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resources, jsonMessage: string, source?: string, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
         this.JsonMessage = jsonMessage;
-        this.SubResource = subResource;
+        this.Source = source;
         this.Filter = filter;
     }
 
-    public getTopic(action = 'pub'): string {
+    public getTopic(action: string = Methods.PUB): string {
         let topic = `${this.TopicPreamble}/${action}/${this.Resource}`;
-        if (GetRequest.isNotEmpty(this.SubResource)) {
-            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.SubResource}`;
+        if (GetRequest.isNotEmpty(this.Source)) {
+            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;
         }
-        if (GetRequest.isNotEmpty(this.SubResource) && GetRequest.isNotEmpty(this.Filter)) {
-            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.SubResource}/${this.Filter}`;
+        if (GetRequest.isNotEmpty(this.Source) && GetRequest.isNotEmpty(this.Filter)) {
+            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}/${this.Filter}`;
         }
 
         return topic;
     }
 
     private static isNotEmpty(input: string | undefined): boolean {
-        return input != undefined && input != null && input.length > 0;
+        return input != undefined && true && input.length > 0;
     }
 }
 
@@ -37,8 +36,7 @@ export class PubResponse {
     Topic: string;
     RawMessage: Buffer;
 
-    constructor(topic: string, rawMessage: Buffer)
-    {
+    constructor(topic: string, rawMessage: Buffer) {
         this.Topic = topic;
         this.RawMessage = rawMessage;
     }

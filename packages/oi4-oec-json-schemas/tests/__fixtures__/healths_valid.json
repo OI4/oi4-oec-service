@@ -2,42 +2,42 @@
   [
     "health is NORMAL_0",
     {
-      "health": "NORMAL_0",
-      "healthScore": 100
+      "Health": "NORMAL_0",
+      "HealthScore": 100
     }
   ],
   [
     "health is CHECK_FUNCTION_2",
     {
-      "health": "CHECK_FUNCTION_2",
-      "healthScore": 25
+      "Health": "CHECK_FUNCTION_2",
+      "HealthScore": 25
     }
   ],
   [
     "health is OFF_SPEC_3",
     {
-      "health": "OFF_SPEC_3",
-      "healthScore": 50
+      "Health": "OFF_SPEC_3",
+      "HealthScore": 50
     }
   ],
   [
     "health score is not set",
     {
-      "health": "CHECK_FUNCTION_2"
+      "Health": "CHECK_FUNCTION_2"
     }
   ],
   [
     "health is MAINTENANCE_REQUIRED_4",
     {
-      "health": "MAINTENANCE_REQUIRED_4",
-      "healthScore": 36
+      "Health": "MAINTENANCE_REQUIRED_4",
+      "HealthScore": 36
     }
   ],
   [
     "health is FAILURE_1",
     {
-      "health": "FAILURE_1",
-      "healthScore": 0
+      "Health": "FAILURE_1",
+      "HealthScore": 0
     }
   ]
 ]

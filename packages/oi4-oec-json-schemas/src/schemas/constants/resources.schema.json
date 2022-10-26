@@ -4,19 +4,19 @@
   "description": "A list of acceptable resources",
   "type": "string",
   "enum": [
-    "mam",
-    "health",
-    "config",
-    "license",
-    "licenseText",
-    "rtLicense",
-    "data",
-    "metadata",
-    "event",
-    "profile",
-    "publicationList",
-    "subscriptionList",
-    "referenceDesignation",
-	"interfaces"
+    "MAM",
+    "Health",
+    "Config",
+    "License",
+    "LicenseText",
+    "RtLicense",
+    "Data",
+    "Metadata",
+    "Event",
+    "Profile",
+    "PublicationList",
+    "SubscriptionList",
+    "ReferenceDesignation",
+    "Interfaces"
   ]
 }

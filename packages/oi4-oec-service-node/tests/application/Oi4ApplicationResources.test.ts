@@ -1,128 +1,159 @@
 import {OI4ApplicationResources} from '../../src';
 import {OI4ResourceEvent} from '../../src/application/OI4Resource';
-import {MockedIApplicationResourceFactory} from '../Test-utils/Factories/MockedIApplicationResourceFactory';
-import {IMasterAssetModel, Oi4Identifier, EOPCUALocale, EOPCUABaseDataType} from '@oi4/oi4-oec-service-opcua-model';
-import {EDeviceHealth, Health, IContainerConfig, IOI4Resource, PublicationList, PublicationListMode, PublicationListConfig, Resource, IContainerConfigGroupName, IContainerConfigConfigName} from '@oi4/oi4-oec-service-model';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
+import {EOPCUABaseDataType, EOPCUALocale, IMasterAssetModel, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    EDeviceHealth,
+    Health,
+    IContainerConfig,
+    IContainerConfigConfigName,
+    IContainerConfigGroupName,
+    IOI4Resource,
+    PublicationList,
+    PublicationListConfig,
+    PublicationListMode,
+    Resources
+} from '@oi4/oi4-oec-service-model';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
 
-    const oi4Id01 = new Oi4Identifier('registry.com','1','1','1');
-    const oi4Id02 = new Oi4Identifier('registry.com','2','2','2');
-    const oi4Id03 = new Oi4Identifier('registry.com','3','3','3');
+    const oi4Id01 = new Oi4Identifier('registry.com', '1', '1', '1');
+    const oi4Id02 = new Oi4Identifier('registry.com', '2', '2', '2');
+    const oi4Id03 = new Oi4Identifier('registry.com', '3', '3', '3');
 
     const mam: IMasterAssetModel = MockedIApplicationResourceFactory.getMockedIApplicationResourceInstance().mam;
-    let resources: OI4ApplicationResources;
+    let appResources: OI4ApplicationResources;
 
     beforeEach(() => {
+        jest.resetModules();
+        jest.resetAllMocks();
+
         jest.spyOn(fs, 'existsSync').mockReturnValue(true);
         jest.spyOn(fs, 'readFileSync').mockReturnValue(Buffer.from(JSON.stringify(mam)));
-        resources = new OI4ApplicationResources();
+        appResources = new OI4ApplicationResources();
+    });
+
+    afterEach(() => {
+        jest.resetModules();
+        jest.resetAllMocks();
     });
 
     it('should initializes sub resource class field', () => {
-        expect(resources.subResources).not.toBeUndefined();
+        expect(appResources.sources).not.toBeUndefined();
     });
 
     it('should be able to set sub resource', () => {
-        const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-       resources.addSubResource(value);
-       expect(resources.subResources.has(oi4Id01.toString())).toBeTruthy();
-       expect(resources.subResources.get(oi4Id01.toString())).toEqual(value);
+        const value = {
+            oi4Id: oi4Id01,
+            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)
+        } as OI4ApplicationResources;
+        appResources.addSource(value);
+        expect(appResources.sources.has(oi4Id01.toString())).toBeTruthy();
+        expect(appResources.sources.get(oi4Id01.toString())).toEqual(value);
     });
 
     it('should be able to get sub resource', () => {
-        const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.subResources.set(oi4Id01.toString(), value);
-        expect(resources.getSubResource(oi4Id01)).toEqual(value);
+        const value = {
+            oi4Id: oi4Id01,
+            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)
+        } as OI4ApplicationResources;
+        appResources.sources.set(oi4Id01.toString(), value);
+        expect(appResources.getSource(oi4Id01)).toEqual(value);
     });
 
     it('should be able to check sub resource', () => {
-        const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        expect(resources.hasSubResource(oi4Id01)).toBeFalsy();
-        resources.subResources.set(oi4Id01.toString(), value);
-        expect(resources.hasSubResource(oi4Id01)).toBeTruthy();
+        const value = {
+            oi4Id: oi4Id01,
+            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)
+        } as OI4ApplicationResources;
+        expect(appResources.hasSource(oi4Id01)).toBeFalsy();
+        appResources.sources.set(oi4Id01.toString(), value);
+        expect(appResources.hasSource(oi4Id01)).toBeTruthy();
     });
 
     it('should be able to delete sub resource', () => {
-        const value = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as OI4ApplicationResources;
-        resources.subResources.set(oi4Id01.toString(), value);
-        expect(resources.hasSubResource(oi4Id01)).toBeTruthy();
-        expect(resources.removeSubResource(oi4Id01)).toBeTruthy();
-        expect(resources.removeSubResource(oi4Id01)).toBeFalsy();
+        const value = {
+            oi4Id: oi4Id01,
+            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)
+        } as OI4ApplicationResources;
+        appResources.sources.set(oi4Id01.toString(), value);
+        expect(appResources.hasSource(oi4Id01)).toBeTruthy();
+        expect(appResources.removeSource(oi4Id01)).toBeTruthy();
+        expect(appResources.removeSource(oi4Id01)).toBeFalsy();
     });
 
-    it('should be able to get all sub resources if oi4id not specified', () => {
+    it('should be able to get all sub appResources if oi4id not specified', () => {
 
-        const value01 = {oi4Id:oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as IOI4Resource;
-        const value02 = {oi4Id:oi4Id02, health: new Health(EDeviceHealth.CHECK_FUNCTION_2, 75)} as IOI4Resource;
-        const value03 = {oi4Id:oi4Id03, health: new Health(EDeviceHealth.NORMAL_0, 100)} as IOI4Resource;
-        expect(resources.hasSubResource(oi4Id01)).toBeFalsy();
-        expect(resources.hasSubResource(oi4Id02)).toBeFalsy();
-        expect(resources.hasSubResource(oi4Id03)).toBeFalsy();
-        resources.subResources.set(oi4Id01.toString(), value01);
-        resources.subResources.set(oi4Id02.toString(), value02);
-        resources.subResources.set(oi4Id03.toString(), value03);
-        const subResources: IterableIterator<IOI4Resource> = resources.getSubResource() as IterableIterator<IOI4Resource>;
-        expect(subResources.next().value).toEqual(value01);
-        expect(subResources.next().value).toEqual(value02);
-        expect(subResources.next().value).toEqual(value03);
+        const value01 = {oi4Id: oi4Id01, health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)} as IOI4Resource;
+        const value02 = {oi4Id: oi4Id02, health: new Health(EDeviceHealth.CHECK_FUNCTION_2, 75)} as IOI4Resource;
+        const value03 = {oi4Id: oi4Id03, health: new Health(EDeviceHealth.NORMAL_0, 100)} as IOI4Resource;
+        expect(appResources.hasSource(oi4Id01)).toBeFalsy();
+        expect(appResources.hasSource(oi4Id02)).toBeFalsy();
+        expect(appResources.hasSource(oi4Id03)).toBeFalsy();
+        appResources.sources.set(oi4Id01.toString(), value01);
+        appResources.sources.set(oi4Id02.toString(), value02);
+        appResources.sources.set(oi4Id03.toString(), value03);
+        const sources: IterableIterator<IOI4Resource> = appResources.getSource() as IterableIterator<IOI4Resource>;
+        expect(sources.next().value).toEqual(value01);
+        expect(sources.next().value).toEqual(value02);
+        expect(sources.next().value).toEqual(value03);
     });
 
     it('If oi4Id not valid then an empty list is returned', () => {
-        expect(resources.getLicense(resources.oi4Id)).toStrictEqual([]);
+        expect(appResources.getLicense(appResources.oi4Id)).toStrictEqual([]);
     });
 
     it('If oi4Id undefined all licenses are returned', () => {
-        console.log('Wait for it...');
-        const license = resources.getLicense(undefined);
+        const license = appResources.getLicense(undefined);
         expect(license.length).toBe(0);
     });
 
     it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
-        expect(resources.getLicense(new Oi4Identifier('a','b', 'c','d')).length).toBe(0);
+        expect(appResources.getLicense(new Oi4Identifier('a', 'b', 'c', 'd')).length).toBe(0);
     });
 
-    it('should filter publicationList', ()=> {
+    it('should filter publicationList', () => {
         const publicationList = new PublicationList();
-        publicationList.resource = Resource.DATA;
-        publicationList.oi4Identifier = resources.oi4Id;
-        publicationList.filter = 'oee';
-        publicationList.mode = PublicationListMode.APPLICATION_SUBRESOURCE_FILTER_8;
-        publicationList.config = PublicationListConfig.MODE_AND_INTERVAL_3;
-        resources.publicationList.push(publicationList);
+        publicationList.Resource = Resources.DATA;
+        publicationList.Source = appResources.oi4Id;
+        publicationList.Filter = 'oee';
+        publicationList.Mode = PublicationListMode.APPLICATION_SOURCE_FILTER_8;
+        publicationList.Config = PublicationListConfig.MODE_AND_INTERVAL_3;
+        appResources.publicationList.push(publicationList);
 
-        expect(resources.getPublicationList()).toContain(publicationList);
-        expect(resources.getPublicationList(Oi4Identifier.fromString('unknown.com/1/2/3'))).toEqual([]);
-        expect(resources.getPublicationList(resources.oi4Id, Resource.EVENT)).toEqual([]);
-        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'wrong')).toEqual([]);
-        expect(resources.getPublicationList(resources.oi4Id, Resource.DATA, 'oee')).toContain(publicationList);
+        expect(appResources.getPublicationList()).toContain(publicationList);
+        expect(appResources.getPublicationList(Oi4Identifier.fromString('unknown.com/1/2/3'))).toEqual([]);
+        expect(appResources.getPublicationList(appResources.oi4Id, Resources.EVENT)).toEqual([]);
+        expect(appResources.getPublicationList(appResources.oi4Id, Resources.DATA, 'wrong')).toEqual([]);
+        expect(appResources.getPublicationList(appResources.oi4Id, Resources.DATA, 'oee')).toContain(publicationList);
     });
 
 
     function createConfig(): IContainerConfig {
         const containerConfig: IContainerConfig = {
             'group-a': {
-                name: {locale: EOPCUALocale.enUS, text: 'group-a'},
+                Name: {Locale: EOPCUALocale.enUS, Text: 'group-a'},
                 'config_a': {
-                    name: {locale: EOPCUALocale.enUS, text: 'config_a'},
-                    value: '2000',
-                    type: EOPCUABaseDataType.Number,
-                    validation: {
-                        min: 0,
-                        max: 2000
+                    Name: {Locale: EOPCUALocale.enUS, Text: 'config_a'},
+                    Value: '2000',
+                    Type: EOPCUABaseDataType.Number,
+                    Validation: {
+                        Min: 0,
+                        Max: 2000
                     }
                 }
             },
             'context': {
-                name: {locale: EOPCUALocale.enUS, text: 'filter 1'}}
+                Name: {Locale: EOPCUALocale.enUS, Text: 'filter 1'}
+            }
         };
 
         return containerConfig;
     }
 
     function createResourceWithConfig(oi4Id: Oi4Identifier): IOI4Resource {
-        const subResource: IOI4Resource = {
+        return {
             oi4Id: oi4Id,
             config: createConfig(),
             profile: undefined,
@@ -133,130 +164,128 @@ describe('Test Oi4ApplicationResources', () => {
             rtLicense: undefined,
             publicationList: [],
             subscriptionList: []
-        }
-        
-        return subResource;
+        };
     }
 
-    it ('setConfig updates main configuration', ()=> {
-        resources.config =  createConfig();
+    it('setConfig updates main configuration', () => {
+        appResources.config = createConfig();
         const setConfig = createConfig();
-        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value = '1000';
+        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        let receivedResource: Resource = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resource)=> {
+        let receivedResource: Resources = undefined;
+        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
 
-        const result = resources.setConfig(resources.oi4Id, 'filter%201', setConfig);
+        const result = appResources.setConfig(appResources.oi4Id, 'filter%201', setConfig);
 
         expect(result).toBeTruthy();
-        expect(((resources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('1000');
-        expect(receivedOi4Id).toStrictEqual(resources.oi4Id);
-        expect(receivedResource).toBe(Resource.CONFIG);
+        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('1000');
+        expect(receivedOi4Id).toStrictEqual(appResources.oi4Id);
+        expect(receivedResource).toBe(Resources.CONFIG);
     });
 
-    it ('setConfig updates subResource configuration', ()=> {
+    it('setConfig updates source configuration', () => {
         const oi4Identifier = new Oi4Identifier('vendor.com', 'a', 'b', 'c');
-        const subResource = createResourceWithConfig(oi4Identifier);
-        resources.addSubResource(subResource);
-        
+        const source = createResourceWithConfig(oi4Identifier);
+        appResources.addSource(source);
+
         const setConfig = createConfig();
-        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value = '1000';
+        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        let receivedResource: Resource = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resource)=> {
+        let receivedResource: Resources = undefined;
+        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
 
-        const result = resources.setConfig(oi4Identifier, 'filter%201', setConfig);
-
+        const result = appResources.setConfig(oi4Identifier, 'filter%201', setConfig);
+        const sourceResources = appResources.sources.get(oi4Identifier.toString());
         expect(result).toBeTruthy();
-        expect(((subResource.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('1000');
+        expect(((sourceResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('1000');
         expect(receivedOi4Id).toStrictEqual(oi4Identifier);
-        expect(receivedResource).toBe(Resource.CONFIG);
+        expect(receivedResource).toBe(Resources.CONFIG);
     });
 
-    it ('setConfig updates nothing if filter is wrong', ()=> {
-        resources.config =  createConfig();
+    it('setConfig updates nothing if filter is wrong', () => {
+        appResources.config = createConfig();
         const setConfig = createConfig();
-        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value = '1000';
+        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier)=> {
+        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
-        const result = resources.setConfig(resources.oi4Id, 'WRONG_FILTER', setConfig);
+        const result = appResources.setConfig(appResources.oi4Id, 'WRONG_FILTER', setConfig);
 
         expect(result).toBeFalsy();
-        expect(((resources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('2000');
+        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('2000');
         expect(receivedOi4Id).toBe(undefined);
     });
 
-    it ('setConfig updates nothing if new setting is unknown ', ()=> {
-        resources.config =  createConfig();
+    it('setConfig updates nothing if new setting is unknown ', () => {
+        appResources.config = createConfig();
         const setConfig: IContainerConfig = {
             'group-xyz': {
-                name: {locale: EOPCUALocale.enUS, text: 'group-xyz'},
+                Name: {Locale: EOPCUALocale.enUS, Text: 'group-xyz'},
                 'config_a': {
-                    name: {locale: EOPCUALocale.enUS, text: 'config_a'},
-                    value: '1000',
-                    type: EOPCUABaseDataType.Number
+                    Name: {Locale: EOPCUALocale.enUS, Text: 'config_a'},
+                    Value: '1000',
+                    Type: EOPCUABaseDataType.Number
                 }
             }
         };
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier)=> {
+        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
-        const result = resources.setConfig(resources.oi4Id, 'filter%201', setConfig);
+        const result = appResources.setConfig(appResources.oi4Id, 'filter%201', setConfig);
 
         expect(result).toBeFalsy();
-        expect(((resources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('2000');
+        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('2000');
         expect(receivedOi4Id).toBe(undefined);
     });
 
-    it ('setConfig updates nothing if new value is out of range', ()=> {
-        resources.config =  createConfig();
+    it('setConfig updates nothing if new value is out of range', () => {
+        appResources.config = createConfig();
         const setConfig = createConfig();
-        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value = '56789';
+        ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '56789';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier)=> {
+        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
-        const result = resources.setConfig(resources.oi4Id, 'filter%201', setConfig);
+        const result = appResources.setConfig(appResources.oi4Id, 'filter%201', setConfig);
 
         expect(result).toBeFalsy();
-        expect(((resources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('2000');
+        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('2000');
         expect(receivedOi4Id).toBe(undefined);
     });
 
 
-    it ('setConfig sets main configuration', ()=> {
+    it('setConfig sets main configuration', () => {
         const setConfig = createConfig();
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        let receivedResource: Resource = undefined;
-        resources.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resource)=> {
+        let receivedResource: Resources = undefined;
+        appResources.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
 
-        const result = resources.setConfig(resources.oi4Id, 'filter%201', setConfig);
+        const result = appResources.setConfig(appResources.oi4Id, 'filter%201', setConfig);
 
         expect(result).toBeTruthy();
-        expect(((resources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).value).toBe('2000');
-        expect(receivedOi4Id).toStrictEqual(resources.oi4Id);
-        expect(receivedResource).toBe(Resource.CONFIG);
+        expect(((appResources.config['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value).toBe('2000');
+        expect(receivedOi4Id).toStrictEqual(appResources.oi4Id);
+        expect(receivedResource).toBe(Resources.CONFIG);
     });
 
 });

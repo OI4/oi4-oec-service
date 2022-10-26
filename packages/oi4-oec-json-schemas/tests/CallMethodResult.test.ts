@@ -20,24 +20,24 @@ describe('CallMethodResult schema', () => {
 
   it('test valid values', () => {
     expect({
-      statusCode: 0,
-      inputArgumentResults: [],
-      outputArguments: [],
+      StatusCode: 0,
+      InputArgumentResults: [],
+      OutputArguments: [],
     }).toMatchSchema(schema)
     expect({
-      statusCode: 4294967295,
-      inputArgumentResults: [],
-      outputArguments: [],
+      StatusCode: 4294967295,
+      InputArgumentResults: [],
+      OutputArguments: [],
     }).toMatchSchema(schema)
   })
 
   it('test invalid values', () => {
     const invalidValues = [
       {},
-      { inputArgumentResults: [], outputArguments: [] },
-      { statusCode: 'a', inputArgumentResults: [], outputArguments: [] },
-      { statusCode: -1, inputArgumentResults: [], outputArguments: [] },
-      { statusCode: 4294967296, inputArgumentResults: [], outputArguments: [] },
+      { InputArgumentResults: [], OutputArguments: [] },
+      { StatusCode: 'a', InputArgumentResults: [], OutputArguments: [] },
+      { StatusCode: -1, InputArgumentResults: [], OutputArguments: [] },
+      { StatusCode: 4294967296, InputArgumentResults: [], OutputArguments: [] },
     ]
 
     invalidValues.forEach((value, index) => {

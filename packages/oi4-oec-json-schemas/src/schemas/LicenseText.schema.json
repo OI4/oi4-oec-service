@@ -1,0 +1,14 @@
+{
+  "$id": "LicenseText.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of an event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["LicenseText"],
+  "properties": {
+    "LicenseText": {
+      "type": "string",
+      "description": "License Text"
+    }
+  }
+}

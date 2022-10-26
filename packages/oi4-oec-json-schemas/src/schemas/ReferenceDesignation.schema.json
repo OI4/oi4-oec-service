@@ -1,0 +1,60 @@
+{
+  "$id": "ReferenceDesignation.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a ReferenceDesignation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "Function": {
+      "$ref": "#/definitions/referenceDesignationObject"
+    },
+    "Product": {
+      "$ref": "#/definitions/referenceDesignationObject"
+    },
+    "Location": {
+      "$ref": "#/definitions/referenceDesignationObject"
+    }
+  },
+  "definitions": {
+    "referenceDesignationObject": {
+      "type": "object",
+      "required": ["Value"],
+      "additionalProperties": false,
+      "properties": {
+        "Value": {
+          "type": "string",
+          "readOnly": false
+        },
+        "Local": {
+          "type": "string",
+          "readOnly": false
+        },
+        "Parent": {
+          "type": "object",
+          "$ref": "#/definitions/referenceDesignationParent",
+          "readOnly": false
+        }
+      }
+    },
+    "referenceDesignationParent": {
+      "type": "object",
+      "required": ["Value"],
+      "additionalProperties": false,
+      "properties": {
+        "Value": {
+          "type": "string",
+          "readOnly": false
+        },
+        "Local": {
+          "type": "string",
+          "readOnly": false
+        },
+        "Oi4Identifier": {
+          "type": "string",
+          "readOnly": false
+        }
+      }
+    }
+  }
+}

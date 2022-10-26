@@ -19,19 +19,19 @@ exports[`ServiceNetworkMessage schema (1) match fails for invalid config -> Miss
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /Message/methodsToCall/0 must have required property 'methodId'[39m
-[31m    Received: [33m<object> [39m[31m{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}[39m
+[31m  /Message/MethodsToCall/0 must have required property 'MethodId'[39m
+[31m    Received: [33m<object> [39m[31m{\\"InputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  /Message must have required property 'results'[39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m[39m[31m  /Message must have required property 'Results'[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"InputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'methodsToCall'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MethodsToCall'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"InputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/additionalProperties[39m
 [31m[39m[31m  /Message must match exactly one schema in oneOf[39m
 [31m    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}][39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"inputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"InputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf[39m
 [31m[39m"
 `;
@@ -40,19 +40,19 @@ exports[`ServiceNetworkMessage schema (2) match fails for invalid config -> Miss
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /Message/methodsToCall/0 must have required property 'inputArguments'[39m
-[31m    Received: [33m<object> [39m[31m{\\"methodId\\":\\"newDataSetWriterId\\"}[39m
+[31m  /Message/MethodsToCall/0 must have required property 'InputArguments'[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodId\\":\\"newDataSetWriterId\\"}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  /Message must have required property 'results'[39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}[39m
+[31m[39m[31m  /Message must have required property 'Results'[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"MethodId\\":\\"newDataSetWriterId\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'methodsToCall'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'MethodsToCall'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"MethodId\\":\\"newDataSetWriterId\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/additionalProperties[39m
 [31m[39m[31m  /Message must match exactly one schema in oneOf[39m
 [31m    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}][39m
-[31m    Received: [33m<object> [39m[31m{\\"methodsToCall\\":[{\\"methodId\\":\\"newDataSetWriterId\\"}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"MethodsToCall\\":[{\\"MethodId\\":\\"newDataSetWriterId\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf[39m
 [31m[39m"
 `;
@@ -61,19 +61,19 @@ exports[`ServiceNetworkMessage schema (3) match fails for invalid config -> Miss
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /Message must have required property 'methodsToCall'[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m  /Message must have required property 'MethodsToCall'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"InputArgumentResults\\":[0],\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'results'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'Results'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"InputArgumentResults\\":[0],\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/additionalProperties[39m
-[31m[39m[31m  /Message/results/0 must have required property 'statusCode'[39m
-[31m    Received: [33m<object> [39m[31m{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}[39m
+[31m[39m[31m  /Message/Results/0 must have required property 'StatusCode'[39m
+[31m    Received: [33m<object> [39m[31m{\\"InputArgumentResults\\":[0],\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
 [31m[39m[31m  /Message must match exactly one schema in oneOf[39m
 [31m    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}][39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"inputArgumentResults\\":[0],\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"InputArgumentResults\\":[0],\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf[39m
 [31m[39m"
 `;
@@ -82,19 +82,19 @@ exports[`ServiceNetworkMessage schema (4) match fails for invalid config -> Miss
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /Message must have required property 'methodsToCall'[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m  /Message must have required property 'MethodsToCall'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'results'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'Results'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/additionalProperties[39m
-[31m[39m[31m  /Message/results/0 must have required property 'inputArgumentResults'[39m
-[31m    Received: [33m<object> [39m[31m{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}[39m
+[31m[39m[31m  /Message/Results/0 must have required property 'InputArgumentResults'[39m
+[31m    Received: [33m<object> [39m[31m{\\"StatusCode\\":0,\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
 [31m[39m[31m  /Message must match exactly one schema in oneOf[39m
 [31m    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}][39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"outputArguments\\":[{\\"resource\\":\\"referenceDesignation\\"}]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"OutputArguments\\":[{\\"Resource\\":\\"referenceDesignation\\"}]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf[39m
 [31m[39m"
 `;
@@ -103,19 +103,19 @@ exports[`ServiceNetworkMessage schema (5) match fails for invalid config -> Miss
 "[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
 
 received
-[31m  /Message must have required property 'methodsToCall'[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}[39m
+[31m  /Message must have required property 'MethodsToCall'[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"InputArgumentResults\\":[0]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
-[31m[39m[31m  must NOT have additional properties, but found 'results'[39m
+[31m[39m[31m  must NOT have additional properties, but found 'Results'[39m
 [31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"InputArgumentResults\\":[0]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/additionalProperties[39m
-[31m[39m[31m  /Message/results/0 must have required property 'outputArguments'[39m
-[31m    Received: [33m<object> [39m[31m{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}[39m
+[31m[39m[31m  /Message/Results/0 must have required property 'OutputArguments'[39m
+[31m    Received: [33m<object> [39m[31m{\\"StatusCode\\":0,\\"InputArgumentResults\\":[0]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/required[39m
 [31m[39m[31m  /Message must match exactly one schema in oneOf[39m
 [31m    Expected: [{\\"$ref\\":\\"ServiceParametersRequest.schema.json\\"},{\\"$ref\\":\\"ServiceParametersResponse.schema.json\\"}][39m
-[31m    Received: [33m<object> [39m[31m{\\"results\\":[{\\"statusCode\\":0,\\"inputArgumentResults\\":[0]}]}[39m
+[31m    Received: [33m<object> [39m[31m{\\"Results\\":[{\\"StatusCode\\":0,\\"InputArgumentResults\\":[0]}]}[39m
 [31m    Path:     ServiceNetworkMessage.schema.json#/properties/Message/oneOf[39m
 [31m[39m"
 `;

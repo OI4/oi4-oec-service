@@ -7,19 +7,19 @@
       "MessageType": "ua-metadata",
       "PublisherId": "provider.com/FieldDataService/FDS-001/1200-0345",
       "DataSetWriterId": 753,
-      "filter": "oee",
-      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "Filter": "oee",
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "MetaData": {
-        "name": "Dataset1",
-        "description": {
-          "text": "Description",
-          "locale":  "en-US" 
+        "Name": "Dataset1",
+        "Description": {
+          "Text": "Description",
+          "Locale":  "en-US" 
         },
-        "namespaces": [],
-        "structureDataTypes": [], 
-        "enumDataTypes":  [], 
-        "simpleDataTypes": [] 
+        "Namespaces": [],
+        "StructureDataTypes": [], 
+        "EnumDataTypes":  [], 
+        "SimpleDataTypes": [] 
       }
     }
   ],
@@ -30,19 +30,19 @@
       "MessageType": "ua-metadata",
       "PublisherId": "provider.com",
       "DataSetWriterId": 753,
-      "filter": "oee",
-      "subResource": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "correlationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "Filter": "oee",
+      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "MetaData": {
-        "name": "Dataset1",
-        "description": {
-          "text": "Description",
-          "locale":  "en-US" 
+        "Name": "Dataset1",
+        "Description": {
+          "Text": "Description",
+          "Locale":  "en-US" 
         },
-        "namespaces": [],
+        "Namespaces": [],
         "structureDataTypes": [], 
-        "enumDataTypes":  [], 
-        "simpleDataTypes": [] 
+        "EnumDataTypes":  [], 
+        "SimpleDataTypes": [] 
       }
     }
   ]

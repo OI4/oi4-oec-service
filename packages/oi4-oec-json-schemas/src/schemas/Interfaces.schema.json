@@ -1,0 +1,6 @@
+{
+  "$id": "Interfaces.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The DataSet for interfaces is used by the resource interfaces, which is explained in 8.1.5.1 and used in 10.1.13. The object represents the physically available interfaces such as connectors, switches, leds for a single device",
+  "type": "object"
+}

@@ -1,0 +1,16 @@
+{
+  "$id": "PaginationGet.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of a pagination object for get messages",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["PerPage", "Page"],
+  "properties": {
+    "PerPage": {
+      "$ref": "dataTypes/uint32.schema.json"
+    },
+    "Page": {
+      "$ref": "dataTypes/uint32.schema.json"
+    }
+  }
+}

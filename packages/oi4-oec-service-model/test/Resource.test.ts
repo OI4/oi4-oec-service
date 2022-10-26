@@ -1,4 +1,4 @@
-import {MasterAssetModel, Profile, Resource} from '../src';
+import {MasterAssetModel, Profile, Resources} from '../src';
 import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 
@@ -32,12 +32,12 @@ describe('Unit tests for Resources', () => {
     });
 
     it ('changing the profile should not affect the original resource list', ()=> {
-        const resources = [Resource.MAM, Resource.HEALTH];
+        const resources = [Resources.MAM, Resources.HEALTH];
         const profile = new Profile(resources);
-        profile.resource.push(Resource.EVENT);
+        profile.Resources.push(Resources.EVENT);
 
-        expect(profile.resource).toEqual([Resource.MAM, Resource.HEALTH, Resource.EVENT]);
-        expect(resources).toEqual([Resource.MAM, Resource.HEALTH]);
+        expect(profile.Resources).toEqual([Resources.MAM, Resources.HEALTH, Resources.EVENT]);
+        expect(resources).toEqual([Resources.MAM, Resources.HEALTH]);
     })
 
 });

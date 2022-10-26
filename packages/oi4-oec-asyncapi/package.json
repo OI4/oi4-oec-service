@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-asyncapi",
-  "version": "1.0.0",
+  "version": "1.1.0-preview.1",
   "description": "AsyncAPI description of the OI4 OEC topics and messages",
   "license": "MIT",
   "publishConfig": {
@@ -16,13 +16,13 @@
     "AsynchAPI"
   ],
   "devDependencies": {
+    "@asyncapi/cli": "^0.17.0",
     "@asyncapi/generator": "^1.9.0",
     "@asyncapi/html-template": "^0.24.8",
-    "@asyncapi/markdown-template": "^1.0.1",
-    "@asyncapi/cli": "^0.17.0"
+    "@asyncapi/markdown-template": "^1.0.1"
   },
   "scripts": {
-    "build": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
+    "buildAsyncAPI": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
     "validate": "asyncapi validate asyncapi.yaml"
   }
 }

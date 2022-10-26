@@ -1,8 +1,0 @@
-{
-  "$id": "empty.schema.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Validate empty json payload",
-  "additionalProperties": false,
-  "type": "object",
-  "properties": {}
-}
