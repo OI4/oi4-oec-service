@@ -267,7 +267,7 @@ export class ConformityValidator {
         return conformityObject;
     }
 
-    async checkOI4IDConformity(topicPreamble: string, source?: string) {
+    async checkOI4IDConformity(topicPreamble: string, source?: string): Promise<EValidity> {
         let oi4Result;
         try {
             if (source == undefined) {
