@@ -1,4 +1,4 @@
-import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 export class MockedOPCUABuilderFactory {
 

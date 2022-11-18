@@ -1,5 +1,5 @@
 import {MockedOPCUABuilderFactory} from '../MockedOPCUABuilderFactory';
-import {EOPCUAMessageType, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUAMessageType, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for MockedOPCUABuilderFactory.test', () => {
 

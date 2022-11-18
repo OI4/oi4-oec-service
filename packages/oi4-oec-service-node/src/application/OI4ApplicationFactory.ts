@@ -1,12 +1,10 @@
-// @ts-ignore
 import os from 'os';
-import {ESyslogEventFilter, IOI4ApplicationResources} from '@oi4/oi4-oec-service-model';
-import {OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {ESyslogEventFilter, IOI4ApplicationResources, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
 import {BrokerConfiguration, Credentials, MqttSettings} from './MqttSettings';
-import {DefaultSettingsPaths, ISettingsPaths} from '../configuration/SettingsPaths';
+import {defaultSettingsPaths, ISettingsPaths} from '../configuration/SettingsPaths';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
 import {ClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
 import {MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
@@ -35,7 +33,7 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
     private readonly mqttSettingsHelper: MqttCredentialsHelper;
     private readonly serviceType: ServiceTypes;
 
-    constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = DefaultSettingsPaths) {
+    constructor(resources: IOI4ApplicationResources, settingsPaths: ISettingsPaths = defaultSettingsPaths) {
         this.resources = resources;
         this.settingsPaths = settingsPaths;
         this.serviceType = this.resources.mam.getServiceType();

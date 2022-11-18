@@ -1,14 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {
-    IOPCUADataSetMessage,
-    IOPCUADataSetMetaData,
-    IOPCUANetworkMessage,
-    Oi4Identifier,
-    OPCUABuilder,
-    ServiceTypes
-} from '@oi4/oi4-oec-service-opcua-model';
-import {
     Application,
     buildOecJsonValidator,
     DataSetClassIds,
@@ -16,8 +8,14 @@ import {
     Device,
     EAssetType,
     ESyslogEventFilter,
+    IOPCUADataSetMessage,
+    IOPCUADataSetMetaData,
+    IOPCUANetworkMessage,
     Methods,
-    Resources
+    Oi4Identifier,
+    OPCUABuilder,
+    Resources,
+    ServiceTypes
 } from '@oi4/oi4-oec-service-model';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/

@@ -1,5 +1,4 @@
-import {Resources} from '@oi4/oi4-oec-service-model';
-import {IOPCUADataSetMessage} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUADataSetMessage, Resources} from '@oi4/oi4-oec-service-model';
 
 export interface IConformity {
     oi4Id: EValidity;

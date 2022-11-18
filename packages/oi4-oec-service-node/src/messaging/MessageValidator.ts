@@ -1,7 +1,6 @@
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
+import {IOPCUANetworkMessage, OPCUABuilder, DataSetClassIds, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
 
 /**
  The MessageValidator makes a qualitative validation on the publisherId and on the dataSetClassId,

@@ -1,5 +1,4 @@
-import {Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Methods, Resources, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 import {TopicWrapper, TopicParser} from '../../src';
 import {TopicInfo} from '@oi4/oi4-oec-service-node';

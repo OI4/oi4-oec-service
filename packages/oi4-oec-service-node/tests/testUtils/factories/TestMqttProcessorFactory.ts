@@ -1,4 +1,5 @@
-import { MqttMessageProcessor, TopicMethods } from '../../../src';
+import { MqttMessageProcessor } from '../../../src';
+import {Methods} from '@oi4/oi4-oec-service-model';
 
 export type ProcessorAndMockedData = {
     processor: MqttMessageProcessor;
@@ -22,7 +23,7 @@ export class TestMqttProcessorFactory {
             mockedData: {
                 oi4Id: appId,
                 serviceType: 'fakeServiceType',
-                topic: `${topicPrefix}/${appId}/${TopicMethods.GET}/mam`,
+                topic: `${topicPrefix}/${appId}/${Methods.GET}/mam`,
             },
         }
     }

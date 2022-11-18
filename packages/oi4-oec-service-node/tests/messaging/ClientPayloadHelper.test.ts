@@ -1,5 +1,4 @@
-import {ClientPayloadHelper} from '../../src/messaging/ClientPayloadHelper';
-import {ValidatedPayload} from '../../src';
+import {ClientPayloadHelper, ValidatedPayload} from '../../src';
 import {
     DataSetWriterIdManager,
     EDeviceHealth,
@@ -9,9 +8,11 @@ import {
     Resources,
     SubscriptionList,
     SyslogEvent,
+    IOPCUADataSetMessage,
+    EOPCUALocale,
+    Oi4Identifier
 } from '@oi4/oi4-oec-service-model';
 import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
-import {IOPCUADataSetMessage, EOPCUALocale, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 
 describe('Unit test for ClientPayloadHelper', () => {
 
@@ -66,7 +67,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.payload.length).toBe(0);
     }
 
-    it ('createMamResourcePayload works for main resource', async()=> {
+    it('createMamResourcePayload works for main resource', async () => {
         const mamPayload = clientPayloadHelper.createMamResourcePayload(mockedOI4ApplicationResources, OI4_ID);
         expect(mamPayload.payload.length).toBe(1);
         expect(mamPayload.payload[0].Payload).toBe(mockedOI4ApplicationResources.mam);
@@ -182,16 +183,21 @@ describe('Unit test for ClientPayloadHelper', () => {
     function createConfigAppResource(): IOI4ApplicationResources {
         const applicationResources: IOI4ApplicationResources = {
             ...mockedOI4ApplicationResources,
-            config: {'group1': {Name: {Text: 'group 1', Locale: EOPCUALocale.enUS}},
-                    'context': {Name: {Text: 'filter1', Locale: EOPCUALocale.enUS}}}
+            config: {
+                'group1': {Name: {Text: 'group 1', Locale: EOPCUALocale.enUS}},
+                'context': {Name: {Text: 'filter1', Locale: EOPCUALocale.enUS}}
+            }
         }
 
         const source = 'vendor.com/1/2/3';
         applicationResources.sources.clear();
         applicationResources.sources.set(source, {
             ...mockedOI4ApplicationResources,
-            config: {'group2': {Name: {Text: 'group 2', Locale: EOPCUALocale.enUS}},
-                    'context': {Name: {Text: 'filter2', Locale: EOPCUALocale.enUS}}}});
+            config: {
+                'group2': {Name: {Text: 'group 2', Locale: EOPCUALocale.enUS}},
+                'context': {Name: {Text: 'filter2', Locale: EOPCUALocale.enUS}}
+            }
+        });
 
         return applicationResources;
     }
@@ -245,7 +251,7 @@ describe('Unit test for ClientPayloadHelper', () => {
         const payload1 = validatedPayload.payload[0];
         expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
         expect(payload1.Filter).toBe('filter1');
-        expect(payload1.Payload['group1'] .Name.Text).toBe('group 1');
+        expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
     it('createConfigSendResourcePayload returns nothing with unknown filter', async () => {

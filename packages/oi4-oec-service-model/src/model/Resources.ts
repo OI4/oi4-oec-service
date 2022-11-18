@@ -1,12 +1,8 @@
 import {OI4Payload} from './Payload';
 import {EDeviceHealth} from './EContainer';
-import {
-    IMasterAssetModel,
-    IOPCUALocalizedText,
-    Oi4Identifier,
-    ServiceTypes,
-    getServiceType
-} from '@oi4/oi4-oec-service-opcua-model';
+import {IMasterAssetModel, IOPCUALocalizedText} from '../opcua/model/IOPCUA';
+import {Oi4Identifier} from './Oi4Identifier';
+import {ServiceTypes, getServiceType} from './ServiceTypes';
 
 export enum Resources {
     MAM = 'MAM',

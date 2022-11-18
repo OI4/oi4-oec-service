@@ -1,11 +1,13 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {
     DataSetWriterIdManager,
     ESyslogEventFilter,
     EventCategory,
     IEvent,
+    Oi4Identifier,
+    OPCUABuilder,
     Resources,
+    ServiceTypes,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
 import winston, {Logger as WinstonLogger, transports} from 'winston';
@@ -150,7 +152,7 @@ class Logger {
         this._enabled = en;
     }
 
-    get level() {
+    get level(): ESyslogEventFilter {
         return this._level;
     }
 
@@ -160,7 +162,7 @@ class Logger {
         this._level = lvl;
     }
 
-    get publishLevel() {
+    get publishLevel(): ESyslogEventFilter {
         return this._publishLevel;
     }
 
@@ -170,7 +172,7 @@ class Logger {
         this._publishLevel = lvl;
     }
 
-    get name() {
+    get name(): ESyslogEventFilter {
         return this._level;
     }
 
@@ -183,7 +185,7 @@ class Logger {
         this._mqttClient = client;
     }
 
-    log(logString: string, level: ESyslogEventFilter = ESyslogEventFilter.debug) {
+    log(logString: string, level: ESyslogEventFilter = ESyslogEventFilter.debug): string {
         if (this.enabled) {
             if (this.syslogFilterToEnum[level] <= this.syslogFilterToEnum[this.level]) {
                 console.log(logString);
@@ -231,20 +233,20 @@ class Logger {
 
 
 let log: Logger;
-let LOGGER: Readonly<Logger> = log;
+let logger: Readonly<Logger> = log;
 
 function initializeLogger(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient): void {
     log = new Logger(enabled, name, level, publishLevel, oi4Id, serviceType, mqttClient);
-    LOGGER = log;
+    logger = log;
 }
 
 function updateMqttClient(client: mqtt.AsyncClient): void {
     log.mqttClient = client;
 }
 
-function setLogger(logger: Logger) {
-    log = logger;
-    LOGGER = log;
+function setLogger(newLogger: Logger): void {
+    log = newLogger;
+    logger = log;
 }
 
-export {LOGGER, Logger, initializeLogger, updateMqttClient, setLogger};
+export {logger, Logger, initializeLogger, updateMqttClient, setLogger};

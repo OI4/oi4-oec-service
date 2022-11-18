@@ -5,9 +5,8 @@ import {
     MasterAssetModel,
     Resources,
     StatusEvent,
-    SubscriptionListConfig
+    SubscriptionListConfig, Oi4Identifier, OPCUABuilder, ServiceTypes
 } from '@oi4/oi4-oec-service-model';
-import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {ClientPayloadHelper} from '../../../src';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';

@@ -1,6 +1,5 @@
-import {getResource, Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {getServiceType, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicInfo, TopicWrapper, getTopicMethod} from './TopicModel';
+import {getResource, getServiceType, Methods, Oi4Identifier, Resources} from '@oi4/oi4-oec-service-model';
+import {getTopicMethod, TopicInfo, TopicWrapper} from './TopicModel';
 
 /**
  This TopicParser make a qualitative validation of the topic info, for example checking

@@ -1,6 +1,13 @@
-import {DataSetClassIds, Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {EOPCUAMessageType, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
-import {TopicInfo, TopicWrapper} from '@oi4/oi4-oec-service-node';
+import {
+    DataSetClassIds,
+    Methods,
+    Resources,
+    EOPCUAMessageType,
+    IOPCUANetworkMessage,
+    Oi4Identifier,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-model';
+import {TopicInfo, TopicWrapper} from '../../../src';
 
 export type MessageItems = {
     serviceType: ServiceTypes;

@@ -1,10 +1,9 @@
 import {OI4RegistryManager} from '../../src';
-import {IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {initializeLogger} from '@oi4/oi4-oec-service-logger';
-import {ESyslogEventFilter} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
 
-const defaultOI4Id = new Oi4Identifier('a','b','c','d');
+const defaultOI4Id = new Oi4Identifier('a', 'b', 'c', 'd');
 const parsedMessage: IOPCUANetworkMessage = {
     MessageId: '',
     MessageType: undefined,
@@ -38,13 +37,13 @@ describe('Unit test for OI4RegistryManager', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
         const callback = jest.fn();
-        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.OI4_REGISTRY_CHANGED, callback);
+        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.oi4RegistryChanged, callback);
 
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(callback).toBeCalledTimes(1);
         expect(callback).toBeCalledWith(undefined, defaultOI4Id);
 
-        const newOI4ID = new Oi4Identifier('4','5','6','7');
+        const newOI4ID = new Oi4Identifier('4', '5', '6', '7');
         parsedMessage.PublisherId = `Registry/${newOI4ID.toString()}`;
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(callback).toBeCalledTimes(2);

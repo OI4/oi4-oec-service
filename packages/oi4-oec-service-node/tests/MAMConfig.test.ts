@@ -1,6 +1,6 @@
-import {OI4ApplicationResources} from '../src/application/OI4ApplicationResources';
+import {OI4ApplicationResources} from '../src';
 import fs from 'fs';
-import {IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
+import {IMasterAssetModel} from '@oi4/oi4-oec-service-model';
 import os from 'os';
 
 describe('Unit test for MAMStorage reading', () => {

@@ -1,5 +1,11 @@
-import {DataSetClassIds, Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {IOPCUANetworkMessage, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {
+    DataSetClassIds,
+    IOPCUANetworkMessage,
+    Methods,
+    OPCUABuilder,
+    Resources,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-model';
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
 import {MessageValidator} from '../../src/messaging/MessageValidator';

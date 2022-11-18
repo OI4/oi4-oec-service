@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@oi4/oi4-oec-service-model": "^1.1.0-preview.2",
-    "@oi4/oi4-oec-service-opcua-model": "^1.1.0-preview.2",
     "async-mqtt": "^2.5.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",

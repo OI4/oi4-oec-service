@@ -1,4 +1,4 @@
-import {ServiceTypes} from '../src';
+import {ServiceTypes, getServiceType} from '../../src';
 
 describe('Unit test for ServiceTypes', () => {
 
@@ -12,4 +12,10 @@ describe('Unit test for ServiceTypes', () => {
         expect(ServiceTypes.OOC_CONNECTOR).toBe('OOCConnector');
         expect(ServiceTypes.IT_CONNECTOR).toBe('ITConnector');
     });
+
+    it('Check error is thrown for invalid service type string', () => {
+        expect(() => getServiceType('abc')).toThrowError('Unknown service type: abc');
+        expect(() => getServiceType('')).toThrowError('Unknown service type: ');
+        expect(() => getServiceType(undefined)).toThrowError('Unknown service type: ');
+    })
 });

@@ -2,7 +2,7 @@ import mqtt = require('async-mqtt');
 import {ConformityValidator, EValidity} from '../src';
 import {GetRequest, IMessageBusLookup, PubResponse} from '../src/model/IMessageBusLookup';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
-import {EAssetType, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
+import {EAssetType, ESyslogEventFilter, Methods, Resources, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 import mam_valid from './__fixtures__/mam_valid.json';
 import health_valid from './__fixtures__/health_valid.json';
@@ -28,7 +28,6 @@ import profile_app_data_invalid from './__fixtures__/profile_app_data_invalid.js
 import profile_device_data_invalid from './__fixtures__/profile_device_data_invalid.json';
 import profile_device_unknown_resource from './__fixtures__/profile_device_unknown_resource.json';
 import profile_full_valid from './__fixtures__/profile_full_valid.json';
-import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 
 
 const publish = jest.fn();

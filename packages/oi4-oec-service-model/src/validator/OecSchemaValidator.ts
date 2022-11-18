@@ -34,8 +34,8 @@ import {
     localeSchemaJson,
     paginationSchemaJson,
 } from '@oi4/oi4-oec-json-schemas';
+import {buildOpcUaJsonValidator} from '../opcua/OpcUaSchemaProvider';
 
-import {buildOpcUaJsonValidator} from '@oi4/oi4-oec-service-opcua-model';
 
 /**
  * Builder method to create an Ajv based JSon Schema validator for OPC UA JSon messages

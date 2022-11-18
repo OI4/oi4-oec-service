@@ -1,14 +1,17 @@
-import {IOPCUAMetaData, IOPCUANetworkMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+import {IContainerConfig} from './IContainer';
 import {
-    IContainerConfig
-} from './IContainer';
-import {
-    License,
     Health,
-    RTLicense,
+    License,
+    LicenseText,
+    MasterAssetModel,
     Profile,
-    MasterAssetModel, LicenseText, PublicationList, Resources, SubscriptionList
+    PublicationList,
+    Resources,
+    RTLicense,
+    SubscriptionList
 } from './Resources';
+import {IOPCUAMetaData, IOPCUANetworkMessage} from '../opcua/model/IOPCUA';
+import {Oi4Identifier} from './Oi4Identifier';
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 

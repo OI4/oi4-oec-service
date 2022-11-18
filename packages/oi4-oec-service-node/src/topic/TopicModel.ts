@@ -2,11 +2,12 @@ import {
     IOPCUADataSetMessage,
     IOPCUANetworkMessage,
     Oi4Identifier,
-    ServiceTypes
-} from '@oi4/oi4-oec-service-opcua-model';
-import {Methods, Resources} from '@oi4/oi4-oec-service-model';
+    ServiceTypes,
+    Methods,
+    Resources
+} from '@oi4/oi4-oec-service-model';
 
-export const OI4_NS = 'Oi4';
+export const oi4Namespace = 'Oi4';
 
 export type TopicInfo = {
     topic: string;

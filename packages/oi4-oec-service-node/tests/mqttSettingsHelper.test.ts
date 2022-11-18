@@ -1,4 +1,4 @@
-import {MqttCredentialsHelper} from '../src/application/OI4ApplicationFactory';
+import {MqttCredentialsHelper} from '../src';
 import {ISettingsPaths} from '../src';
 import path from 'path';
 

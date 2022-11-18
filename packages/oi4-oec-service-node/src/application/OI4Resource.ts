@@ -12,9 +12,9 @@ import {
     Resources,
     RTLicense,
     SubscriptionList,
+    Oi4Identifier
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
-import {Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 
 export enum OI4ResourceEvent {
     RESOURCE_CHANGED = 'resourceChanged',

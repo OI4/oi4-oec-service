@@ -8,4 +8,10 @@ export * from './model/Methods';
 export * from './model/Profiles';
 export * from './model/Payload';
 export * from './model/IOI4ApplicationResources'
+export * from './model/Oi4Identifier'
+export * from './model/ServiceTypes'
 export * from './DataSetWriterIdManager';
+export * from './opcua/model/IOPCUA'
+export * from './opcua/model/EOPCUA'
+export * from './opcua/OpcUaSchemaProvider'
+export * from './opcua/OPCUABuilder'

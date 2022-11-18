@@ -5,9 +5,7 @@ import {
     IOPCUALocalizedText,
     IOPCUAMetaData,
     IOPCUANetworkMessage,
-    Oi4Identifier
-} from '@oi4/oi4-oec-service-opcua-model';
-import {
+    Oi4Identifier,
     Application,
     EDeviceHealth,
     Health,

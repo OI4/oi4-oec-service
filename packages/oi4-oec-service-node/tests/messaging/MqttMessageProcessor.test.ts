@@ -1,13 +1,19 @@
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
 import {MqttMessageProcessor, OI4RegistryManager} from '../../src';
-import {Oi4Identifier, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
-import {DataSetClassIds, Methods, Resources} from '@oi4/oi4-oec-service-model';
+import {
+    DataSetClassIds,
+    Methods,
+    Oi4Identifier,
+    OPCUABuilder,
+    Resources,
+    ServiceTypes
+} from '@oi4/oi4-oec-service-model';
 import {MockOi4Application} from '../testUtils/Factories/MockedOi4Application';
 import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
 import {MqttMessageProcessorEventStatus} from '../../src/messaging/MqttMessageProcessor';
-import {OI4_NS} from '@oi4/oi4-oec-service-node';
+import {oi4Namespace} from '@oi4/oi4-oec-service-node';
 
 interface MockedData {
     oi4Id: Oi4Identifier;
@@ -25,7 +31,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     const defaultFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/1/1');
     const registryFakeAppId = Oi4Identifier.fromString('mymanufacturer.com/1/2/3');
     const defaultFakeSource = 'fakeSource';
-    const defaultTopicPrefix = `${OI4_NS}/Aggregation`;
+    const defaultTopicPrefix = `${oi4Namespace}/Aggregation`;
     const defaultFakeLicenseId = '1234';
     const defaultFakeFilter = 'oi4_pv';
     const defaultFakeOi4Id = Oi4Identifier.fromString('1/1/1/1');
@@ -164,7 +170,7 @@ describe('Unit test for MqttMessageProcessor', () => {
                 const fakeTopic = `${defaultTopicPrefix}/${defaultFakeAppId}/${Methods.GET}/${resource}/1//1/1`;
                 await processMessage(fakeTopic, resource).then();
                 expect(fakeLogFile.length).toBe(1);
-                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : ${OI4_NS}/${ServiceTypes.AGGREGATION}/mymanufacturer.com/1/1/1/${Methods.GET}/${resource}/1//1/1`);
+                expect(fakeLogFile[0]).toBe(`Error while processing Mqtt Message: Malformed Oi4Id : ${oi4Namespace}/${ServiceTypes.AGGREGATION}/mymanufacturer.com/1/1/1/${Methods.GET}/${resource}/1//1/1`);
             }
         });
 

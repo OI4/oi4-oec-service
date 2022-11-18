@@ -1,11 +1,13 @@
 import {
+    EOPCUAStatusCode,
     ESyslogEventFilter,
     IContainerConfig,
+    IOPCUANetworkMessage,
     Methods,
+    OPCUABuilder,
     Resources,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUAStatusCode, IOPCUANetworkMessage, OPCUABuilder} from '@oi4/oi4-oec-service-opcua-model';
 import {LOGGER} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {TopicParser} from '../topic/TopicParser';
@@ -22,6 +24,7 @@ export enum MqttMessageProcessorEventStatus {
 
 export interface IMqttMessageProcessor extends EventEmitter {
     processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
+
     handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void>;
 }
 
@@ -127,8 +130,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         let subResource: string;
         let filter = undefined;
         const oi4IdSubResource = topicInfo.oi4Id?.toString();
-        switch (topicInfo.resource)
-        {
+        switch (topicInfo.resource) {
             case Resources.EVENT:
                 subResource = `${topicInfo.category}/${topicInfo.filter}`;
                 break;

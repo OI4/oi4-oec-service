@@ -1,7 +1,6 @@
 import {TopicInfo, TopicValidator} from '../../src';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
-import {Methods, Resources} from '@oi4/oi4-oec-service-model';
-import {Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
+import {Methods, Resources, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 describe('Unit test for TopicParser', () => {
 

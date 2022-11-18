@@ -6,28 +6,25 @@ import {
     IContainerConfigValidation,
     IOI4ApplicationResources,
     IOI4Resource,
-    MasterAssetModel,
-    PublicationList,
-    PublicationListConfig,
-    RTLicense,
-    SubscriptionList,
-    SubscriptionListConfig,
-    License
-} from '@oi4/oi4-oec-service-model';
-
-import {
     IOPCUADataSetMetaData,
     IOPCUAMetaData,
     IOPCUANetworkMessage,
-    Oi4Identifier
-} from '@oi4/oi4-oec-service-opcua-model';
+    License,
+    MasterAssetModel,
+    Oi4Identifier,
+    PublicationList,
+    PublicationListConfig,
+    Resources,
+    RTLicense,
+    SubscriptionList,
+    SubscriptionListConfig
+} from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource, OI4ResourceEvent} from './OI4Resource';
 import os from 'os';
 import path = require('path');
-import { Resources } from '@oi4/oi4-oec-service-model';
 
-export const DEFAULT_MAM_FILE = '/etc/oi4/config/mam.json';
+export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
 /**
  * class that initializes the container state
@@ -41,7 +38,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     /**
      * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
      * */
-    constructor(mamFile = DEFAULT_MAM_FILE) {
+    constructor(mamFile = defaultMAMFile) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
         this.sources = new Map<string, IOI4Resource>();
@@ -89,7 +86,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     public getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel {
-        if(oi4Id.equals(this.oi4Id)) {
+        if (oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
         return this.sources.get(oi4Id.toString()).mam;
@@ -97,7 +94,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
 
     public getHealth(oi4Id: Oi4Identifier): Health {
         // TODO check why oi4Id is escaped and this.oi4Id is not
-        if(this.oi4Id.equals(oi4Id)) {
+        if (this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
         return this.sources.get(oi4Id.toString())?.health;
@@ -125,8 +122,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         let currentConfig: IContainerConfig = undefined;
         if (this.oi4Id.equals(oi4Id)) {
             currentConfig = this.config;
-        }
-        else if (this.hasSource(oi4Id)) {
+        } else if (this.hasSource(oi4Id)) {
             const subResource = this.getSource(oi4Id) as IOI4Resource;
             currentConfig = subResource?.config;
         }
@@ -138,8 +134,9 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             } else if (this.hasSource(oi4Id)) {
                 const subResource = this.getSource(oi4Id) as IOI4Resource;
                 subResource.config = config;
+            } else {
+                return false;
             }
-            else { return false; }
 
             this.emit(OI4ResourceEvent.RESOURCE_ADDED, oi4Id, Resources.CONFIG);
             return true;
@@ -188,7 +185,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
-        if(oi4Id !== undefined) {
+        if (oi4Id !== undefined) {
             return this.sources.get(oi4Id.toString());
         }
         return this.sources.values();
@@ -224,7 +221,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return true;
         }
 
-        if (validation.Length !== undefined && value.length > validation.Length)  {
+        if (validation.Length !== undefined && value.length > validation.Length) {
             return false;
         }
 

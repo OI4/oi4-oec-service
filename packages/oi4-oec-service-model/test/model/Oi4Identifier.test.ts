@@ -1,4 +1,4 @@
-import {Oi4Identifier} from '../../src/model/Oi4Identifier';
+import {Oi4Identifier} from '../../src';
 
 describe('Unit test for Oi4Identifier', () => {
 

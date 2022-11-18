@@ -1,10 +1,8 @@
-import {OPCUABuilder} from '../src';
+import {DataSetClassIds, IOPCUADataSetMessage, Oi4Identifier, OPCUABuilder, ServiceTypes} from '../../src';
 import {NetworkMessageSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import mam from './__fixtures__/mam_network_message.json';
-import invalidMam from './__fixtures__/invalid_mam_network_message.json';
-import {DataSetClassIds} from '@oi4/oi4-oec-service-model';
-import {ServiceTypes, IOPCUADataSetMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
+import mam from '../__fixtures__/mam_network_message.json';
+import invalidMam from '../__fixtures__/invalid_mam_network_message.json';
 
 const oi4Id = new Oi4Identifier('vendor.com', '13', '2', '3');
 

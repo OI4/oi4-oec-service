@@ -31,7 +31,7 @@ export const DefaultMqttSettingsPaths: IMqttSettingsPaths = {
     credentials: '/run/secrets/mqtt_credentials'
 }
 
-export const DefaultSettingsPaths: ISettingsPaths = {
+export const defaultSettingsPaths: ISettingsPaths = {
     mqttSettings: DefaultMqttSettingsPaths,
     certificateStorage: '/etc/oi4/certs',
     secretStorage: '/run/secrets',

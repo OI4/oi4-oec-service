@@ -12,8 +12,9 @@ import {
     Resources,
     SubscriptionList,
     IContainerConfig,
+    IOPCUADataSetMessage,
+    Oi4Identifier
 } from '@oi4/oi4-oec-service-model';
-import {IOPCUADataSetMessage, Oi4Identifier} from '@oi4/oi4-oec-service-opcua-model';
 import { IOI4Resource } from '@oi4/oi4-oec-service-model';
 
 export class ClientPayloadHelper {

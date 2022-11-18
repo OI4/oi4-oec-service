@@ -1,6 +1,6 @@
-import {EOPCUALocale, IMasterAssetModel} from '@oi4/oi4-oec-service-opcua-model';
+import {EOPCUALocale, IMasterAssetModel} from '@oi4/oi4-oec-service-model';
 
-export const ServiceMasterAssetModel: IMasterAssetModel = {
+export const serviceMasterAssetModel: IMasterAssetModel = {
     Manufacturer: {
         Locale: EOPCUALocale.enUS,
         Text: 'Hilscher'

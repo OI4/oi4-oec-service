@@ -1,8 +1,8 @@
-import { EOPCUABaseDataType } from '@oi4/oi4-oec-service-opcua-model';
-import { IOPCUALocalizedText } from '@oi4/oi4-oec-service-opcua-model';
-
 // TODO move config interfaces to Resouces.ts and replace them by classes
 // Common Container config interfaces
+import {IOPCUALocalizedText} from '../opcua/model/IOPCUA';
+import {EOPCUABaseDataType} from '../opcua/model/EOPCUA';
+
 export type IContainerConfig = Record<string, IContainerConfigGroupName | IContainerConfigContext>;
 
 export interface IContainerConfigContext {

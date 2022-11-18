@@ -5,7 +5,7 @@ import {
     IOPCUAFieldMetaData,
     IOPCUAMetaData,
     IOPCUANetworkMessage
-} from '../model/IOPCUA';
+} from './model/IOPCUA';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
 import {topicPathSchemaJson} from '@oi4/oi4-oec-json-schemas';
@@ -13,7 +13,7 @@ import {topicPathSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {buildOpcUaJsonValidator} from './OpcUaSchemaProvider';
 
 import {v4 as uuid} from 'uuid'; /*tslint:disable-line*/
-import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from '../model/EOPCUA';
+import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from './model/EOPCUA';
 import {ServiceTypes} from '../model/ServiceTypes';
 import {Oi4Identifier} from '../model/Oi4Identifier';
 

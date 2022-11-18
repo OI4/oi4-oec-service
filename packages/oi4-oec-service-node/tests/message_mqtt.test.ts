@@ -8,10 +8,10 @@ import {
     IOI4Resource,
     MasterAssetModel, Methods,
     Resources,
+    EOPCUALocale, Oi4Identifier, ServiceTypes
 } from '@oi4/oi4-oec-service-model';
-import {EOPCUALocale, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-opcua-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {OI4_NS} from '@oi4/oi4-oec-service-node';
+import {oi4Namespace} from '@oi4/oi4-oec-service-node';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -25,7 +25,7 @@ const getStandardMqttConfig = (): MqttSettings => {
 
 const getOi4ApplicationResources = (): IOI4ApplicationResources => {
     return {
-        oi4Id: new Oi4Identifier('test','modelText','213dq','23kl41oß3mß132'),
+        oi4Id: new Oi4Identifier('test', 'modelText', '213dq', '23kl41oß3mß132'),
         getHealth(): Health {
             return {
                 resourceType(): Resources {
@@ -48,7 +48,9 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/',
-			getServiceType(): ServiceTypes {return ServiceTypes.REGISTRY}
+            getServiceType(): ServiceTypes {
+                return ServiceTypes.REGISTRY
+            }
         } as MasterAssetModel),
         subscriptionList: [],
         sources: new Map<string, IOI4Resource>(),
@@ -115,7 +117,7 @@ describe('Connection to MQTT with TLS', () => {
             .build()
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`${OI4_NS}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`${oi4Namespace}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
             expect.stringContaining(JSON.stringify({Health: EDeviceHealth.NORMAL_0, HealthScore: 0})));
     });
 
