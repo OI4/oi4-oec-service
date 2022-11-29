@@ -1,0 +1,29 @@
+{
+  "name": "@oi4/dnp-encoding-helper",
+  "version": "1.1.0-preview.3",
+  "description": "helper functions to encode & decode from/into dnp-encoding",
+  "author": "sebastian.heinze@burkert.com",
+  "license": "MIT",
+  "private": false,
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "keywords": [
+    "dnp-encoding",
+    "oi4"
+  ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OI4/oi4-service.git"
+  },
+  "scripts": {
+    "build": "yarn run clean && tsc -b tsconfig.json",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
+    "test": "jest ",
+    "linkIt": "yarn link"
+  }
+}
