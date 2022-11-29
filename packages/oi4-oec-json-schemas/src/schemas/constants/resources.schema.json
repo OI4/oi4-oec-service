@@ -17,6 +17,11 @@
     "PublicationList",
     "SubscriptionList",
     "ReferenceDesignation",
-    "Interfaces"
+    "Interfaces",
+    "FileUpload",
+    "FileDownload",
+    "FirmwareUpdate",
+    "Blink",
+    "NewDataSetWriterId"
   ]
 }
