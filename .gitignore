@@ -103,11 +103,15 @@ dist
 # oi4-oec-service-demo docker configs
 /packages/oec-service-demo/docker_configs/
 
+# vscode config files
+.devcontainer
+.vscode
+.prettierrc
+
 # Custom
 out
-.vscode
 .idea
 /oi4-service.iml
 .DS_Store
 ./prepare.sh
-coverage
+*/coverage
