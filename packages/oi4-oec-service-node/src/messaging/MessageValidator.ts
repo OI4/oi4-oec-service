@@ -1,6 +1,13 @@
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {logger} from '@oi4/oi4-oec-service-logger';
-import {IOPCUANetworkMessage, OPCUABuilder, DataSetClassIds, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
+import {
+    DataSetClassIds,
+    ESyslogEventFilter,
+    IOPCUANetworkMessage,
+    Methods,
+    OPCUABuilder,
+    Resources
+} from '@oi4/oi4-oec-service-model';
 
 /**
  The MessageValidator makes a qualitative validation on the publisherId and on the dataSetClassId,
@@ -44,8 +51,11 @@ export class MessageValidator {
     }
 
     private static checkDataSetClassId(wrapper: TopicWrapper, parsedMessage: IOPCUANetworkMessage) {
-        // Safety-Check: DataSetClassId
-        if (parsedMessage.DataSetClassId !== DataSetClassIds[wrapper.topicInfo.resource]) {
+        const resource = wrapper.topicInfo.resource;
+        if(resource === Resources.DATA){
+            return;
+        }
+        if (parsedMessage.DataSetClassId !== DataSetClassIds[resource]) {
             throw new Error(`DataSetClassId mismatch, got ${parsedMessage.DataSetClassId}, expected ${DataSetClassIds[wrapper.topicInfo.resource]}`);
         }
     }
