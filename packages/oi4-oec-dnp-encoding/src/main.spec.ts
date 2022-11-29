@@ -15,6 +15,7 @@ describe('encode functionality', () => {
     ['ABC@home', 'ABC,40home'],
     ['ABC*33<4', 'ABC,2A33,3C4'],
     ['20123.4', '20123.4'],
+    ['a/asd asd/dddd', 'a,2Fasd,20asd,2Fdddd'],
   ])('should encode %s to a valid dnp-encoded string', (text, result) => {
     expect(encode(text)).toEqual(result);
   });
