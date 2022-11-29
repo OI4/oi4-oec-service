@@ -1,5 +1,5 @@
 import {ESyslogEventFilter, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
-import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {EventEmitter} from 'events';
 
 /**
@@ -15,13 +15,13 @@ export namespace OI4RegistryManager {
 
     function saveCurrentOi4Id(newId: Oi4Identifier): void {
         if (newId === undefined) {
-            LOGGER.log('Invalid oi4Id: either undefined or empty')
+            logger.log('Invalid oi4Id: either undefined or empty')
             return;
         }
         if (!newId.equals(oi4Id)) {
             emitter.emit(oi4RegistryChanged, oi4Id, newId);
             oi4Id = newId;
-            LOGGER.log(`Saved registry OI4 ID: ${oi4Id}`);
+            logger.log(`Saved registry OI4 ID: ${oi4Id}`);
         }
     }
 
@@ -36,7 +36,7 @@ export namespace OI4RegistryManager {
     export function checkForOi4Registry(parsedMessage: IOPCUANetworkMessage) {
         const publisherId = parsedMessage.PublisherId || '';
         if (publisherId.indexOf('/') == -1) {
-            LOGGER.log('PublisherId does not respect the structure serviceType/appId')
+            logger.log('PublisherId does not respect the structure serviceType/appId')
             return;
         }
 
@@ -50,7 +50,7 @@ export namespace OI4RegistryManager {
             const oi4Id = Oi4Identifier.fromString(publisherId.substring(separatorPosition + 1));
             saveCurrentOi4Id(oi4Id);
         } catch (err) {
-            LOGGER.log(`Couldn't retrieve oi4id while checking if the publisherid contained an oi4 registry: ${err.message}`, ESyslogEventFilter.debug);
+            logger.log(`Couldn't retrieve oi4id while checking if the publisherid contained an oi4 registry: ${err.message}`, ESyslogEventFilter.debug);
         }
     }
 

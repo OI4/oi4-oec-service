@@ -8,7 +8,7 @@ import {
     Resources,
     StatusEvent
 } from '@oi4/oi4-oec-service-model';
-import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {TopicParser} from '../topic/TopicParser';
 import {PayloadTypes} from './MessagingModel';
@@ -16,6 +16,8 @@ import {OI4RegistryManager} from '../application/OI4RegistryManager';
 import EventEmitter from 'events';
 import {MessageValidator} from './MessageValidator';
 import {IOI4Application} from '../application/OI4Application';
+
+export const foreignMessage = Symbol('foreignMessage');
 
 export enum MqttMessageProcessorEventStatus {
     GET_DATA = 'getData',
@@ -31,7 +33,7 @@ export interface IMqttMessageProcessor extends EventEmitter {
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
 
     async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void> {
-        LOGGER.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
+        logger.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
     }
 
     /**
@@ -52,7 +54,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
             await this.processMessage(topicInfo, parsedMessage, builder, oi4Application);
         } catch (e) {
-            LOGGER.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
+            logger.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
             return;
         }
     }
@@ -70,7 +72,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
                     break;
                 }
                 case Methods.PUB: {
-                    LOGGER.log('No reaction needed to our own publish event', ESyslogEventFilter.informational);
+                    logger.log('No reaction needed to our own publish event', ESyslogEventFilter.informational);
                     break; // Only break here, because we should not react to our own publication messages
                 }
                 case Methods.SET: {
@@ -87,7 +89,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             }
             // External Request (External device put this on the message bus, we need this for birth messages)
         } else {
-            await this.handleForeignMessage(topicInfo, parsedMessage);
+            this.emit(foreignMessage, topicInfo, parsedMessage);
         }
     }
 
@@ -110,18 +112,18 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             for (const messages of parsedMessage.Messages) {
                 payloadType = await builder.checkPayloadType(messages.Payload);
                 if (payloadType === PayloadTypes.LOCALE) {
-                    LOGGER.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
+                    logger.log('Detected a locale request, but we can only send en-US!', ESyslogEventFilter.informational);
                 }
                 if (payloadType === PayloadTypes.PAGINATION) {
                     page = messages.Payload.page;
                     perPage = messages.Payload.perPage;
                     if (page === 0 || perPage === 0) {
-                        LOGGER.log('Pagination requested either page or perPage 0, aborting send...');
+                        logger.log('Pagination requested either page or perPage 0, aborting send...');
                         return;
                     }
                 }
                 if (payloadType === PayloadTypes.NONE) { // Not empty, locale or pagination
-                    LOGGER.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
+                    logger.log('Message must be either empty, locale or pagination type in a /get/ request. Aboring get operation.', ESyslogEventFilter.informational);
                     return;
                 }
             }
@@ -189,10 +191,10 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
         if (!(filter in dataLookup)) {
             applicationResources.dataLookup[filter] = data;
-            LOGGER.log(`Added ${filter} to dataLookup`);
+            logger.log(`Added ${filter} to dataLookup`);
         } else {
             applicationResources.dataLookup[filter] = data; // No difference if we create the data or just update it with an object
-            LOGGER.log(`${filter} already exists in dataLookup`);
+            logger.log(`${filter} already exists in dataLookup`);
         }
     }
 
@@ -238,9 +240,9 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         }
         if ((tagName in dataLookup)) {
             delete applicationResources.dataLookup[tagName];
-            LOGGER.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
+            logger.log(`Deleted ${tagName} from dataLookup`, ESyslogEventFilter.warning);
         } else {
-            LOGGER.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);
+            logger.log(`Cannot find ${tagName} in lookup`, ESyslogEventFilter.warning);
         }
     }
 
