@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`topicPath schema test invalid values: -1.5 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must be string
+    Path:     constants/topicPath.schema.json#/type
+"
+`;
+
+exports[`topicPath schema test invalid values: -129 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must be string
+    Path:     constants/topicPath.schema.json#/type
+"
+`;
+
+exports[`topicPath schema test invalid values: 128 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  must be string
+    Path:     constants/topicPath.schema.json#/type
+"
+`;
