@@ -1,15 +1,14 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const baseConfig = require('../../.eslintrc.js')
+
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  ...baseConfig,
   parserOptions: {
     ecmaVersion: 'latest',
     project: 'tsconfig.json',
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
   root: true,
   env: {
     node: true,
