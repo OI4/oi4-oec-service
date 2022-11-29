@@ -1,4 +1,7 @@
+const baseConfig = require('../../jest.config');
+
 module.exports = {
+  ...baseConfig,
   roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',
