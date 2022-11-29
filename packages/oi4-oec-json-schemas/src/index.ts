@@ -52,8 +52,6 @@ import int32SchemaJson from './schemas/dataTypes/int32.schema.json';
 import uint16SchemaJson from './schemas/dataTypes/uint16.schema.json';
 import uint32SchemaJson from './schemas/dataTypes/uint32.schema.json';
 
-
-
 export {
     // Base
     oi4IdentifierSchemaJson,

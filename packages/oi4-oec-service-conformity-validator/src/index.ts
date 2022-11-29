@@ -19,7 +19,7 @@ import {
 } from '@oi4/oi4-oec-service-model';
 
 import Ajv from 'ajv'; /*tslint:disable-line*/
-import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
+import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
 import {serviceTypeSchemaJson} from '@oi4/oi4-oec-json-schemas';
 import {MessageBusLookup} from './Helper/MessageBusLookup';
 import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
@@ -83,7 +83,7 @@ export class ConformityValidator {
      */
     async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resources[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
-        LOGGER.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.informational);
+        logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.informational);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
@@ -128,13 +128,13 @@ export class ConformityValidator {
                 }
             }
         } catch (e) {
-            LOGGER.log(e, ESyslogEventFilter.warning);
+            logger.log(e, ESyslogEventFilter.warning);
         }
 
 
         // Third, if a resourceList is specified, add those to our resources to be checked
         if (resourceList) {
-            LOGGER.log(`Got ResourceList from Param: ${resourceList}`, ESyslogEventFilter.debug);
+            logger.log(`Got ResourceList from Param: ${resourceList}`, ESyslogEventFilter.debug);
             for (const resources of resourceList) {
                 if (!(checkList.includes(resources))) {
                     checkList.push(resources);
@@ -157,7 +157,7 @@ export class ConformityValidator {
 
         // Actually start checking the resources
         for (const resource of checkList) {
-            LOGGER.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
+            logger.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
             try {
                 switch (resource) {
                     case Resources.METADATA:
@@ -229,7 +229,7 @@ export class ConformityValidator {
                         resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                 }
             } catch (err) {
-                LOGGER.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
+                logger.log(`${resource} did not pass check with ${err}`, ESyslogEventFilter.error);
                 resObj = {
                     validity: EValidity.nok,
                     validityErrors: [err],
@@ -259,7 +259,7 @@ export class ConformityValidator {
             conformityObject.validity = EValidity.ok;
         }
 
-        LOGGER.log(`Final conformity object: ${JSON.stringify(conformityObject)}`, ESyslogEventFilter.debug);
+        logger.log(`Final conformity object: ${JSON.stringify(conformityObject)}`, ESyslogEventFilter.debug);
 
         // Convert to old style:
         return conformityObject;
@@ -276,12 +276,12 @@ export class ConformityValidator {
                 oi4Result = await ConformityValidator.checkOi4IdConformity(source);
             }
         } catch (err) {
-            LOGGER.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
+            logger.log(`OI4-ID of the tested asset does not match the specified format: ${err}`, ESyslogEventFilter.error);
             return EValidity.default;
         }
 
         if (!oi4Result) {
-            LOGGER.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
+            logger.log('OI4-ID of the tested asset does not match the specified format', ESyslogEventFilter.error);
             return EValidity.default;
         }
 
@@ -307,7 +307,7 @@ export class ConformityValidator {
         try {
             resObj = await this.checkResourceConformity(topicPreamble, Resources.PROFILE, source);
         } catch (e) {
-            LOGGER.log(`Error in checkProfileConformity: ${e}`);
+            logger.log(`Error in checkProfileConformity: ${e}`);
             throw e;
         }
 
@@ -351,9 +351,9 @@ export class ConformityValidator {
         const getTopic = getRequest.getTopic('get');
         const pubTopic = getRequest.getTopic('pub');
 
-        LOGGER.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        logger.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
         const response = await this.messageBusLookup.getMessage(getRequest);
-        LOGGER.log(`Received MetaData conformity from ${pubTopic}.`, ESyslogEventFilter.warning);
+        logger.log(`Received MetaData conformity from ${pubTopic}.`, ESyslogEventFilter.warning);
 
         const errorMsgArr = [];
         const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUADataSetMetaData;
@@ -365,17 +365,17 @@ export class ConformityValidator {
             } else {
                 eRes = EValidity.partial;
                 errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
-                LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+                logger.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             }
         } else { // Oops, we have schema erros, let's show them to the user so they can fix them...
-            LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
+            logger.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
-                LOGGER.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
                 errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
             }
             if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
-                LOGGER.log('Payload wrong', ESyslogEventFilter.warning);
+                logger.log('Payload wrong', ESyslogEventFilter.warning);
                 errorMsgArr.push(...schemaResult.payload.resultMsgArr);
             }
 
@@ -409,9 +409,9 @@ export class ConformityValidator {
         const getTopic = getRequest.getTopic(Methods.GET);
         const pubTopic = getRequest.getTopic(Methods.PUB);
 
-        LOGGER.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+        logger.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
         const response = await this.messageBusLookup.getMessage(getRequest);
-        LOGGER.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
+        logger.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
 
         const errorMsgArr = [];
         const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUANetworkMessage;
@@ -423,17 +423,17 @@ export class ConformityValidator {
             } else {
                 eRes = EValidity.partial;
                 errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
-                LOGGER.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+                logger.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             }
         } else { // Oops, we have schema errors, let's show them to the user so they can fix them...
-            LOGGER.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
+            logger.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
-                LOGGER.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
                 errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
             }
             if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
-                LOGGER.log('Payload wrong', ESyslogEventFilter.warning);
+                logger.log('Payload wrong', ESyslogEventFilter.warning);
                 errorMsgArr.push(...schemaResult.payload.resultMsgArr);
             }
 
@@ -441,7 +441,7 @@ export class ConformityValidator {
         }
 
         if (!(parsedMessage.DataSetClassId === DataSetClassIds[resource])) { // Check if the dataSetClassId matches our development guideline
-            LOGGER.log(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            logger.log(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             errorMsgArr.push(`DataSetClassId did not pass for ${pubTopic}.`);
             eRes = EValidity.partial;
         }
@@ -471,14 +471,14 @@ export class ConformityValidator {
             const schema = resource == Resources.METADATA ? 'DataSetMetaData.schema.json' : 'NetworkMessage.schema.json';
             messageValidationResult = await this.jsonValidator.validate(schema, payload);
         } catch (networkMessageValidationErr) {
-            LOGGER.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
+            logger.log(`AJV (Catch NetworkMessage): (${resource}):${networkMessageValidationErr}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(JSON.stringify(networkMessageValidationErr));
             messageValidationResult = false;
         }
 
         if (!messageValidationResult) {
             const errText = JSON.stringify(this.jsonValidator.errors);
-            LOGGER.log(`AJV: NetworkMessage invalid (${resource}): ${JSON.stringify(errText)}`, ESyslogEventFilter.error);
+            logger.log(`AJV: NetworkMessage invalid (${resource}): ${JSON.stringify(errText)}`, ESyslogEventFilter.error);
             networkMessageResultMsgArr.push(errText);
         }
 
@@ -500,13 +500,13 @@ export class ConformityValidator {
                         }
                     }
                 } catch (payloadValidationErr) {
-                    LOGGER.log(`AJV (Catch Payload): (${resource}):${payloadValidationErr}`, ESyslogEventFilter.error);
+                    logger.log(`AJV (Catch Payload): (${resource}):${payloadValidationErr}`, ESyslogEventFilter.error);
                     payloadResultMsgArr.push(JSON.stringify(payloadValidationErr));
                     payloadValidationResult = false;
                 }
                 if (!payloadValidationResult) {
                     const errText = JSON.stringify(this.jsonValidator.errors);
-                    LOGGER.log(`AJV: Payload invalid (${resource}): ${errText}`, ESyslogEventFilter.error);
+                    logger.log(`AJV: Payload invalid (${resource}): ${errText}`, ESyslogEventFilter.error);
                     payloadResultMsgArr.push(errText);
                 }
             }
@@ -527,8 +527,8 @@ export class ConformityValidator {
         if (messageValidationResult && payloadValidationResult) {
             schemaConformity.schemaResult = true;
         } else {
-            LOGGER.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
-            LOGGER.log(JSON.stringify(schemaConformity), ESyslogEventFilter.debug);
+            logger.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
+            logger.log(JSON.stringify(schemaConformity), ESyslogEventFilter.debug);
         }
 
         return schemaConformity;
@@ -569,7 +569,7 @@ export class ConformityValidator {
         // further checks will follow!
         const oi4RegEx = new RegExp(/^(([a-z0-9-]+\.)*([a-z0-9-]*)(?:\/[^\/`\\^\r\n]+){3})$/g);
         if (oi4RegEx.test(oi4Id)) return true;
-        LOGGER.log('Error in checkOI4IDConformity!', ESyslogEventFilter.informational);
+        logger.log('Error in checkOI4IDConformity!', ESyslogEventFilter.informational);
         return false;
     }
 
@@ -585,7 +585,7 @@ export class ConformityValidator {
 
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
-                LOGGER.log(`Found pagination in ${resource}!`);
+                logger.log(`Found pagination in ${resource}!`);
             } else if (ConformityValidator.isNotEmpty(dataSetMessage.Filter) && ConformityValidator.isNotEmpty(dataSetMessage.Source)) {
                 result.push({Source: dataSetMessage.Source, Filter: dataSetMessage.Filter});
             }

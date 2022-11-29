@@ -1,8 +1,8 @@
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-model';
-import {initializeLogger, LOGGER} from '@oi4/oi4-oec-service-logger';
+import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
 import {existsSync, readFileSync} from 'fs';
-import {OI4Application, OI4ApplicationBuilder} from './OI4Application';
+import {IOI4Application, OI4Application, OI4ApplicationBuilder} from './OI4Application';
 import {BrokerConfiguration, Credentials, MqttSettings} from './MqttSettings';
 import {defaultSettingsPaths, ISettingsPaths} from '../configuration/SettingsPaths';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
@@ -14,7 +14,7 @@ import {BaseCredentialsHelper} from '../utilities/BaseCredentialsHelper';
 const MQTTS = 'mqtts';
 
 export interface IOI4ApplicationFactory {
-    createOI4Application: () => OI4Application;
+    createOI4Application: () => IOI4Application;
     initialize: () => IOI4ApplicationFactory;
     builder: OI4ApplicationBuilder;
 }
@@ -46,20 +46,20 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
         this.mqttMessageProcessor = new MqttMessageProcessor();
     }
 
-    createOI4Application(): OI4Application {
+    createOI4Application(): IOI4Application {
         if (this.builder === undefined) {
             this.initialize();
         }
         return this.builder.build();
     }
 
-    initialize(builder = OI4Application.builder()) {
+    initialize(builder = OI4Application.builder()): IOI4ApplicationFactory {
         const brokerConfiguration: BrokerConfiguration = JSON.parse(readFileSync(this.settingsPaths.mqttSettings.brokerConfig, 'utf8'));
         const maximumPacketSize = OI4ApplicationFactory.getMaxPacketSize(brokerConfiguration);
         const mqttSettings: MqttSettings = {
             clientId: os.hostname(),
-            host: brokerConfiguration.address,
-            port: brokerConfiguration.secure_port,
+            host: brokerConfiguration.Address,
+            port: brokerConfiguration.SecurePort,
             protocol: MQTTS,
             properties: {
                 maximumPacketSize: maximumPacketSize
@@ -80,16 +80,16 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
         return this;
     }
 
-    private initCredentials(mqttSettings: MqttSettings) {
+    private initCredentials(mqttSettings: MqttSettings): void {
         if (this.hasRequiredCertCredentials()) {
-            LOGGER.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
+            logger.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
             const mqttSettingsPaths = this.settingsPaths.mqttSettings;
             mqttSettings.ca = readFileSync(mqttSettingsPaths.caCertificate);
             mqttSettings.cert = readFileSync(mqttSettingsPaths.clientCertificate);
             mqttSettings.key = readFileSync(mqttSettingsPaths.privateKey);
             mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
         } else {
-            LOGGER.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
+            logger.log('Username and password will be used to connect to the broker', ESyslogEventFilter.debug);
             const userCredentials: Credentials = this.mqttSettingsHelper.loadUserCredentials();
             mqttSettings.username = userCredentials.username;
             mqttSettings.password = userCredentials.password;
@@ -110,7 +110,7 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
      * @private
      */
     private static getMaxPacketSize(brokerConfiguration: BrokerConfiguration): number {
-        const maxPacketSize = brokerConfiguration.max_packet_size | 256;
+        const maxPacketSize = brokerConfiguration.MaxPacketSize | 256;
         return maxPacketSize >= 256 ? maxPacketSize : 256;
     }
 

@@ -1,7 +1,7 @@
 import mqtt = require('async-mqtt');
 import {ConformityValidator, EValidity} from '../src';
 import {GetRequest, IMessageBusLookup, PubResponse} from '../src/model/IMessageBusLookup';
-import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {EAssetType, ESyslogEventFilter, Methods, Resources, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
 import mam_valid from './__fixtures__/mam_valid.json';
@@ -33,7 +33,7 @@ import profile_full_valid from './__fixtures__/profile_full_valid.json';
 const publish = jest.fn();
 
 jest.mock('@oi4/oi4-oec-service-logger', () => ({
-        LOGGER: {
+        logger: {
             log: jest.fn(),
         },
         initializeLogger: jest.fn(),
@@ -328,7 +328,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.resources['Health'].validity).toBe(EValidity.partial);
         expect(result.resources['Profile'].validity).toBe(EValidity.ok);
         expect(result.resources['ReferenceDesignation'].validity).toBe(EValidity.ok);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Schema validation of message ${defaultTopic}/Pub/Health/${defaultSource} was not successful.`, ESyslogEventFilter.error);
+        expect(logger.log).toHaveBeenCalledWith(`Schema validation of message ${defaultTopic}/Pub/Health/${defaultSource} was not successful.`, ESyslogEventFilter.error);
     });
 
     it('should detect missing meta data', async () => {
@@ -390,9 +390,9 @@ describe('Unit test for ConformityValidator ', () => {
             const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.ok);
-            expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledTimes(2);
+            expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
         }
     )
 
@@ -406,10 +406,10 @@ describe('Unit test for ConformityValidator ', () => {
             const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.partial);
-            expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            expect(logger.log).toHaveBeenCalledTimes(3);
+            expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
     )
 
@@ -439,10 +439,10 @@ describe('Unit test for ConformityValidator ', () => {
             const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter()}`;
 
             expect(result.validity).toBe(EValidity.partial);
-            expect(LOGGER.log).toHaveBeenCalledTimes(3);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            expect(logger.log).toHaveBeenCalledTimes(3);
+            expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`DataSetClassId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
     )
 
@@ -453,9 +453,9 @@ describe('Unit test for ConformityValidator ', () => {
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.application);
             expect(result.validity).toBe(EValidity.ok);
 
-            expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledTimes(2);
+            expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
         }
     )
 
@@ -466,9 +466,9 @@ describe('Unit test for ConformityValidator ', () => {
             const result = await objectUnderTest.checkProfileConformity(defaultTopic, EAssetType.device);
             expect(result.validity).toBe(EValidity.ok);
 
-            expect(LOGGER.log).toHaveBeenCalledTimes(2);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
-            expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledTimes(2);
+            expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+            expect(logger.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
         }
     )
 
@@ -479,9 +479,9 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.partial);
         expect(result.validityErrors).toContain('Profile contains the resource "Data" but not "Metadata".');
 
-        expect(LOGGER.log).toHaveBeenCalledTimes(2);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
+        expect(logger.log).toHaveBeenCalledTimes(2);
+        expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+        expect(logger.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
     })
 
     it('should return partial conformity for device profile with missing metadata', async () => {
@@ -494,9 +494,9 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.validity).toBe(EValidity.partial);
         expect(result.validityErrors).toContain('Profile contains the resource "Data" but not "Metadata".');
 
-        expect(LOGGER.log).toHaveBeenCalledTimes(2);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
-        expect(LOGGER.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
+        expect(logger.log).toHaveBeenCalledTimes(2);
+        expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource Profile on ${defaultTopic}/Get/Profile (Low-Level).`, ESyslogEventFilter.informational);
+        expect(logger.log).toHaveBeenCalledWith(`Received conformity message on Profile from ${defaultTopic}/Pub/Profile.`, ESyslogEventFilter.informational);
     })
 
     it.each(allValidDeviceTestData)(

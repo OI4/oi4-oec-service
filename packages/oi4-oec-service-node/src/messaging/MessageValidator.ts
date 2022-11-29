@@ -1,5 +1,5 @@
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
-import {LOGGER} from '@oi4/oi4-oec-service-logger';
+import {logger} from '@oi4/oi4-oec-service-logger';
 import {IOPCUANetworkMessage, OPCUABuilder, DataSetClassIds, ESyslogEventFilter, Methods, Resources} from '@oi4/oi4-oec-service-model';
 
 /**
@@ -11,7 +11,7 @@ export class MessageValidator {
 
     static async doPreliminaryValidation(topic: string, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder) {
         if (parsedMessage.Messages.length === 0) {
-            LOGGER.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
+            logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
         }
 
         //If a check fails, an error is thrown

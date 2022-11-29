@@ -114,7 +114,7 @@ describe('Connection to MQTT with TLS', () => {
         const oi4Application: OI4Application = OI4Application.builder()
             .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
-            .build()
+            .build() as OI4Application;
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`${oi4Namespace}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
@@ -146,7 +146,7 @@ describe('Connection to MQTT with TLS', () => {
         const oi4Application: OI4Application = OI4Application.builder()
             .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
-            .build();
+            .build() as OI4Application;
         expect(oi4Application.mqttClient.connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`Oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/Pub/MAM/${getOi4ApplicationResources().oi4Id}`),
@@ -170,7 +170,7 @@ describe('Connection to MQTT with TLS', () => {
         const oi4Application: OI4Application = OI4Application.builder()
             .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
-            .build();
+            .build() as OI4Application;
         expect(oi4Application.mqttClient.options.will?.payload)
             .toContain(JSON.stringify({Health: EDeviceHealth.FAILURE_1, HealthScore: 0} as Health));
     });

@@ -256,7 +256,7 @@ export function getOi4App(): OI4Application {
     return OI4Application.builder()
         .withApplicationResources(resources)
         .withMqttSettings(mqttOpts)
-        .build()
+        .build() as OI4Application;
 }
 
 describe('OI4MessageBus test', () => {

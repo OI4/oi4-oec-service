@@ -106,12 +106,12 @@ describe('Unit test for MqttMessageProcessor', () => {
             DataSetClassId: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
             PublisherId: `Registry/${registryFakeAppId}`,
         };
-        const topic = `oi4/${jsonObj.PublisherId}/${Methods.GET}/${Resources.MAM}/${defaultFakeOi4Id}`;
+        const topic = `${oi4Namespace}/${jsonObj.PublisherId}/${Methods.GET}/${Resources.MAM}/${defaultFakeOi4Id}`;
         const mockedData = getMockedData();
         const processor = new MqttMessageProcessor();
         await processor.processMqttMessage(topic, Buffer.from(JSON.stringify(jsonObj)), mockBuilder(mockedData.serviceType), oi4Application);
 
-        expect(fakeLogFile.length).toBe(2);
+        expect(fakeLogFile.length).toBe(1);
         expect(fakeLogFile[0]).toBe(`Saved registry OI4 ID: ${registryFakeAppId}`);
         expect(OI4RegistryManager.getOi4Id().toString()).toBe(registryFakeAppId.toString());
     });
