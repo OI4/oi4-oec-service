@@ -10,5 +10,5 @@ export * from './topic/TopicValidator';
 export {FileLogger} from './utilities/FileLogger';
 export {ClientCallbacksHelper} from './messaging/ClientCallbacksHelper';
 export {ClientPayloadHelper} from './messaging/ClientPayloadHelper';
-export {MqttMessageProcessor} from './messaging/MqttMessageProcessor';
+export {MqttMessageProcessor, foreignMessage} from './messaging/MqttMessageProcessor';
 export * from './messaging/MessagingModel';

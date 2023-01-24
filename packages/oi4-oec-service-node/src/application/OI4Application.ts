@@ -57,6 +57,10 @@ export interface IOI4Application {
     sendEventStatus(status: StatusEvent, source: string): Promise<void>;
 
     getConfig(): Promise<void>;
+
+    addListener(event: string | symbol, listener: (...args: never[]) => void): void;
+
+    removeListener(event: string | symbol, listener: (...args: never[]) => void): void;
 }
 
 export class OI4Application implements IOI4Application {
