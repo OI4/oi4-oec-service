@@ -1,20 +1,27 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttCredentialsHelper, MqttSettings, oi4Namespace, OI4Application} from '../../src';
+import {MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
 import {
     Application,
     CDataSetWriterIdLookup,
     DataSetClassIds,
     EDeviceHealth,
+    EOPCUABaseDataType,
+    EOPCUALocale,
+    EOPCUAMessageType,
+    EOPCUAStatusCode,
     EventCategory,
     getResource,
     Health,
     IOI4ApplicationResources,
+    IOPCUANetworkMessage,
     License,
     LicenseText,
     MasterAssetModel,
     Methods,
     NamurNE107Event,
+    Oi4Identifier,
+    OPCUABuilder,
     Profile,
     PublicationList,
     PublicationListConfig,
@@ -23,13 +30,6 @@ import {
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig,
-    EOPCUABaseDataType,
-    EOPCUALocale,
-    EOPCUAMessageType,
-    EOPCUAStatusCode,
-    IOPCUANetworkMessage,
-    Oi4Identifier,
-    OPCUABuilder,
 } from '@oi4/oi4-oec-service-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {OI4ResourceEvent} from '../../src/application/OI4Resource';

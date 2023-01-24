@@ -26,15 +26,9 @@ export enum MqttMessageProcessorEventStatus {
 
 export interface IMqttMessageProcessor extends EventEmitter {
     processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
-
-    handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void>;
 }
 
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
-
-    async handleForeignMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage): Promise<void> {
-        logger.log(`Detected Message from: ${topicInfo.appId} with messageId: ${parsedMessage.MessageId}`, ESyslogEventFilter.informational);
-    }
 
     /**
      * Processes the incoming mqtt message by parsing the different elements of the topic and reacting to it

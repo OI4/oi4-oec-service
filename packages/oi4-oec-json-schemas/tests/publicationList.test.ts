@@ -8,10 +8,9 @@ import oi4Identifier from '../src/schemas/Oi4Identifier.schema.json'
 import validObjs from './__fixtures__/publicationList_valid.json'
 import invalidObjs from './__fixtures__/publicationList_invalid.json'
 
-
 expect.extend(
     matchersWithOptions({
-      // Loading in a schema which is comprised only of definitions,
+      // Loading in a schema which is composed only of definitions,
       // which means specific test schemas need to be created.
       // This is good for testing specific conditions for definition schemas.
       schemas: [uint16, uint32, resources, oi4Identifier],

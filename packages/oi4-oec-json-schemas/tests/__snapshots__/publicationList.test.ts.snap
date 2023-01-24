@@ -18,7 +18,7 @@ exports[`publicationList schema (1) match fails for invalid publicationList -> p
 
 received
 [31m  /Resource must be equal to one of the allowed values[39m
-[31m    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\"][39m
+[31m    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\",\\"FileUpload\\",\\"FileDownload\\",\\"FirmwareUpdate\\",\\"Blink\\",\\"NewDataSetWriterId\\"][39m
 [31m    Received: [33m<string>[39m[31m unknown[39m
 [31m    Path:     PublicationList.schema.jsonconstants/resources.schema.json/enum[39m
 [31m[39m"

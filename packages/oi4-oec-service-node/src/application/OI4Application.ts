@@ -1,5 +1,5 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {EventEmitter} from 'events';
+// import {EventEmitter} from 'events';
 import {initializeLogger, logger, updateMqttClient} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
 import {
@@ -30,7 +30,7 @@ import {OI4ResourceEvent} from './OI4Resource';
 import {oi4Namespace} from '../topic/TopicModel';
 import {ISubscriptionGrant} from 'mqtt';
 
-export interface IOI4Application extends EventEmitter {
+export interface IOI4Application {
 
     readonly oi4Id: Oi4Identifier;
     serviceType: ServiceTypes;
@@ -44,7 +44,7 @@ export interface IOI4Application extends EventEmitter {
 
     removeSubscription(topic: string): Promise<boolean>;
 
-    sendResource(resource: Resources, messageId: string, source: string, filter: string, page?: number, perPage?: number): Promise<void>;
+    sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void>;
 
     sendMetaData(cutTopic: string): Promise<void>;
 
@@ -59,7 +59,7 @@ export interface IOI4Application extends EventEmitter {
     getConfig(): Promise<void>;
 }
 
-export class OI4Application extends EventEmitter implements IOI4Application {
+export class OI4Application implements IOI4Application {
 
     public serviceType: ServiceTypes;
     public applicationResources: IOI4ApplicationResources;
@@ -89,7 +89,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
      * @param mqttMessageProcessor
      */
     constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper, mqttMessageProcessor: MqttMessageProcessor) {
-        super();
+        //  super();
         this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
         this.applicationResources = applicationResources;
@@ -118,7 +118,7 @@ export class OI4Application extends EventEmitter implements IOI4Application {
         updateMqttClient(this.client);
         logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
-        this.on('setConfig', this.sendEventStatus);
+        // this.on('setConfig', this.sendEventStatus);
         this.mqttMessageProcessor = mqttMessageProcessor;
 
         this.initClientCallbacks();
@@ -161,6 +161,14 @@ export class OI4Application extends EventEmitter implements IOI4Application {
             this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(subscription => subscription.TopicPath !== topic);
             return true;
         });
+    }
+
+    addListener(event: string | symbol, listener: (...args: never[]) => void): void {
+        this.mqttMessageProcessor.addListener(event, listener);
+    }
+
+    removeListener(event: string | symbol, listener: (...args: never[]) => void): void {
+        this.mqttMessageProcessor.removeListener(event, listener);
     }
 
     private async initIncomingMessageListeners(): Promise<void> {
