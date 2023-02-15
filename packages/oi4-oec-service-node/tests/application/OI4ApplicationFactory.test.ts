@@ -4,7 +4,7 @@ import {OI4ApplicationResources, IMqttSettingsPaths, OI4ApplicationFactory} from
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import os = require('os');
-import {ISettingsPaths, OI4Application} from '@oi4/oi4-oec-service-node';
+import {ISettingsPaths, OI4Application} from '../../src';
 
 describe('Test OI4MessageBusFactory', () => {
     let mockConnection: any = jest.fn();
@@ -56,9 +56,9 @@ describe('Test OI4MessageBusFactory', () => {
         const factory: OI4ApplicationFactory = new OI4ApplicationFactory(resources, settingsPaths);
         const oi4Application = factory.createOI4Application() as OI4Application;
         expect(oi4Application).toBeDefined();
-        expect(oi4Application.mqttClient).toBeDefined();
-        expect(oi4Application.mqttClient.connected).toBeTruthy();
-        const options = oi4Application.mqttClient.options;
+        expect(oi4Application.messageBus.client).toBeDefined();
+        expect(oi4Application.messageBus.client.connected).toBeTruthy();
+        const options = oi4Application.messageBus.client.options;
         expect(options).toBeDefined();
         expect(options.clientId).toBe(os.hostname());
     });

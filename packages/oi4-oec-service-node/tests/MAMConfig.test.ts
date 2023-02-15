@@ -2,6 +2,7 @@ import {OI4ApplicationResources} from '../src';
 import fs from 'fs';
 import {IMasterAssetModel} from '@oi4/oi4-oec-service-model';
 import os from 'os';
+import {dnpEncode} from '@oi4/oi4-oec-dnp-encoding';
 
 describe('Unit test for MAMStorage reading', () => {
 
@@ -23,7 +24,7 @@ describe('Unit test for MAMStorage reading', () => {
         const resources = new OI4ApplicationResources(`${__dirname}/__fixtures__/mam.json`);
 
         expect(resources.mam.DeviceClass).toEqual(expectedMAM.DeviceClass);
-        expect(resources.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${encodeURIComponent(expectedMAM.Model.Text)}/${encodeURIComponent(expectedMAM.ProductCode)}/${encodeURIComponent(os.hostname())}`);
+        expect(resources.mam.ProductInstanceUri).toEqual(`${expectedMAM.ManufacturerUri}/${dnpEncode(expectedMAM.Model.Text)}/${dnpEncode(expectedMAM.ProductCode)}/${dnpEncode(os.hostname())}`);
         expect(resources.mam.Model).toEqual(expectedMAM.Model);
         expect(resources.mam.HardwareRevision).toEqual(expectedMAM.HardwareRevision);
         expect(resources.mam.SerialNumber).toEqual(os.hostname());

@@ -1,7 +1,6 @@
 import {Methods, Resources, ServiceTypes} from '@oi4/oi4-oec-service-model';
 
-import {TopicWrapper, TopicParser} from '../../src';
-import {TopicInfo} from '@oi4/oi4-oec-service-node';
+import {TopicInfo, TopicWrapper, TopicParser} from '../../src';
 import {MessageFactory, MessageItems} from '../testUtils/Factories/MessageFactory';
 
 describe('Unit test for TopicParser', () => {

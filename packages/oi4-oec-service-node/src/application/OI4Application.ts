@@ -9,26 +9,26 @@ import {
     ESyslogEventFilter,
     IEvent,
     IOI4ApplicationResources,
-    MasterAssetModel, Methods,
-    Resources,
-    StatusEvent,
-    SubscriptionList,
-    SubscriptionListConfig,
     IOPCUADataSetMessage,
     IOPCUANetworkMessage,
+    MasterAssetModel,
+    Methods,
     Oi4Identifier,
     OPCUABuilder,
-    ServiceTypes
+    Resources,
+    ServiceTypes,
+    StatusEvent,
+    SubscriptionList,
+    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
-import {ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
+import {oi4Namespace, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
-import {ClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
-import {AsyncClientEvents} from '../messaging/MessagingModel';
-import {MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
+import {ClientCallbacksHelper, IClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
+import {IMqttMessageProcessor, MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
 import {MqttSettings} from './MqttSettings';
 import {OI4ResourceEvent} from './OI4Resource';
-import {oi4Namespace} from '../topic/TopicModel';
 import {ISubscriptionGrant} from 'mqtt';
+import {IOI4MessageBus, OI4MessageBus} from '../messaging/OI4MessageBus';
 
 export interface IOI4Application {
 
@@ -37,14 +37,16 @@ export interface IOI4Application {
     applicationResources: IOI4ApplicationResources;
     topicPreamble: string;
     builder: OPCUABuilder;
-    readonly client: mqtt.AsyncClient;
+    readonly messageBus: IOI4MessageBus;
     readonly clientPayloadHelper: ClientPayloadHelper;
+
+    readonly mqttMessageProcessor: IMqttMessageProcessor;
 
     addSubscription(topic: string, config: SubscriptionListConfig, interval: number): Promise<mqtt.ISubscriptionGrant[]>;
 
     removeSubscription(topic: string): Promise<boolean>;
 
-    sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void>;
+    sendResource(resource: Resources, messageId: string, source: Oi4Identifier, filter: string, page: number, perPage: number): Promise<void>;
 
     sendMetaData(cutTopic: string): Promise<void>;
 
@@ -52,15 +54,17 @@ export interface IOI4Application {
 
     sendMasterAssetModel(mam: MasterAssetModel, messageId?: string): Promise<void>;
 
-    sendEvent(event: IEvent, source: string, filter: string): Promise<void>;
+    sendEvent(event: IEvent, source: Oi4Identifier, filter: string): Promise<void>;
 
-    sendEventStatus(status: StatusEvent, source: string): Promise<void>;
+    sendEventStatus(status: StatusEvent, source: Oi4Identifier): Promise<void>;
 
     getConfig(): Promise<void>;
 
     addListener(event: string | symbol, listener: (...args: never[]) => void): void;
 
     removeListener(event: string | symbol, listener: (...args: never[]) => void): void;
+
+    preparePayload(resource: Resources, source: Oi4Identifier, filter?: string): Promise<ValidatedPayload>;
 }
 
 export class OI4Application implements IOI4Application {
@@ -69,13 +73,13 @@ export class OI4Application implements IOI4Application {
     public applicationResources: IOI4ApplicationResources;
     public topicPreamble: string;
     public builder: OPCUABuilder;
-    public readonly client: mqtt.AsyncClient;
+    public readonly messageBus: IOI4MessageBus;
     public readonly clientPayloadHelper: ClientPayloadHelper;
+    readonly mqttMessageProcessor: IMqttMessageProcessor;
 
     private readonly clientHealthHeartbeatInterval: number = 60000;
 
-    private clientCallbacksHelper: ClientCallbacksHelper;
-    private readonly mqttMessageProcessor: MqttMessageProcessor;
+    private readonly clientCallbacksHelper: ClientCallbacksHelper;
 
     static builder(): OI4ApplicationBuilder {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -92,19 +96,19 @@ export class OI4Application implements IOI4Application {
      * @param clientCallbacksHelper
      * @param mqttMessageProcessor
      */
-    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: ClientCallbacksHelper, mqttMessageProcessor: MqttMessageProcessor) {
+    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: IClientCallbacksHelper, mqttMessageProcessor: IMqttMessageProcessor) {
         //  super();
         this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
         this.applicationResources = applicationResources;
-        this.topicPreamble = `${oi4Namespace}/${this.serviceType}/${this.oi4Id}`;
+        this.topicPreamble = `${oi4Namespace}/${this.serviceType}/${this.oi4Id.toString()}`;
 
         this.clientPayloadHelper = clientPayloadHelper;
 
         mqttSettings.will = {
-            topic: `${oi4Namespace}/${this.serviceType}/${this.oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${this.oi4Id}`,
+            topic: `${oi4Namespace}/${this.serviceType}/${this.oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${this.oi4Id.toString()}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                Source: this.oi4Id.toString(),
+                Source: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: CDataSetWriterIdLookup[Resources.HEALTH]
             }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
@@ -117,29 +121,20 @@ export class OI4Application implements IOI4Application {
 
         initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, this.oi4Id, this.serviceType);
         logger.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
-        this.client = mqtt.connect(mqttSettings);
+        //TODO move to constructor attribute
+        this.messageBus = new OI4MessageBus(mqttSettings, this, mqttMessageProcessor);
 
-        updateMqttClient(this.client);
+        updateMqttClient(this.messageBus.client);
         logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
         // this.on('setConfig', this.sendEventStatus);
         this.mqttMessageProcessor = mqttMessageProcessor;
 
-        this.initClientCallbacks();
+        this.messageBus.initClientCallbacks(this.clientCallbacksHelper, this, this.initClientConnectCallback());
     }
 
     get oi4Id(): Oi4Identifier {
         return this.applicationResources.oi4Id;
-    }
-
-    private initClientCallbacks(): void {
-        this.client.on(AsyncClientEvents.ERROR, async (err: Error) => this.clientCallbacksHelper.onErrorCallback(err));
-        this.client.on(AsyncClientEvents.CLOSE, async () => this.clientCallbacksHelper.onCloseCallback(this));
-        this.client.on(AsyncClientEvents.DISCONNECT, async () => this.clientCallbacksHelper.onDisconnectCallback());
-        this.client.on(AsyncClientEvents.RECONNECT, async () => this.clientCallbacksHelper.onReconnectCallback());
-        this.client.on(AsyncClientEvents.OFFLINE, async () => this.clientCallbacksHelper.onOfflineCallback());
-        // Publish Birth Message and start listening to topics
-        this.client.on(AsyncClientEvents.CONNECT, async () => this.initClientConnectCallback());
     }
 
     private async initClientConnectCallback(): Promise<void> {
@@ -151,17 +146,17 @@ export class OI4Application implements IOI4Application {
     }
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0): Promise<ISubscriptionGrant[]> {
-        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(item => item.TopicPath !== topic);
+        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter((item: { TopicPath: string }) => item.TopicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             TopicPath: topic,
             Config: config,
             Interval: interval,
         } as SubscriptionList));
-        return await this.client.subscribe(topic);
+        return await this.messageBus.subscribe(topic);
     }
 
     async removeSubscription(topic: string): Promise<boolean> {
-        return this.client.unsubscribe(topic).then(() => {
+        return this.messageBus.unsubscribe(topic).then(() => {
             this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter(subscription => subscription.TopicPath !== topic);
             return true;
         });
@@ -180,26 +175,25 @@ export class OI4Application implements IOI4Application {
         await this.addSubscription(`${this.topicPreamble}/${Methods.GET}/#`);
         await this.addSubscription(`${this.topicPreamble}/${Methods.SET}/#`);
         await this.addSubscription(`${this.topicPreamble}/${Methods.DEL}/#`);
-        this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => this.mqttMessageProcessor.processMqttMessage(topic, payload, this.builder, this));
     }
 
     private initClientHealthHeartBeat(): void {
         setInterval(async () => {
-            await this.sendResource(Resources.HEALTH, '', this.oi4Id.toString(), '').then();
+            await this.sendResource(Resources.HEALTH, '', this.oi4Id, '').then();
             for (const resource of this.applicationResources.sources.values()) {
-                await this.sendResource(Resources.HEALTH, '', resource.oi4Id.toString(), '').then();
+                await this.sendResource(Resources.HEALTH, '', resource.oi4Id, '').then();
             }
         }, this.clientHealthHeartbeatInterval); // send all health messages every 60 seconds!
     }
 
     private resourceChangedCallback(oi4Id: Oi4Identifier, resource: Resources): void {
         if (resource === Resources.HEALTH) {
-            this.sendResource(Resources.HEALTH, '', oi4Id.toString(), '').then();
+            this.sendResource(Resources.HEALTH, '', oi4Id, '').then();
         }
     }
 
     private resourceAddedCallback(oi4Id: Oi4Identifier): void {
-        this.sendResource(Resources.MAM, '', oi4Id.toString(), '').then();
+        this.sendResource(Resources.MAM, '', oi4Id, '').then();
     }
 
     // GET SECTION ----------------//
@@ -214,14 +208,14 @@ export class OI4Application implements IOI4Application {
     //FIXME add a better type for the information send (Either data or metadata)
     private async send(tagName: string, type: string, information: any): Promise<void> {
         if (tagName === '') { // If there is no tag specified, we should send all available metadata
-            await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${type}`, JSON.stringify(information));
+            await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${type}`, JSON.stringify(information));
             logger.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}`);
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
         if (tagName in dataLookup) {
-            await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`, JSON.stringify(information[tagName]));
+            await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`, JSON.stringify(information[tagName]));
             logger.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`);
         }
     }
@@ -233,8 +227,8 @@ export class OI4Application implements IOI4Application {
      * @param messageId - original messageId used as correlation ID
      */
     async sendMasterAssetModel(mam: MasterAssetModel, messageId?: string): Promise<void> {
-        const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id().toString())];
-        await this.sendPayload(payload, Resources.MAM, messageId, 0, 0, mam.getOI4Id().toString());
+        const payload = [this.clientPayloadHelper.createPayload(mam, mam.getOI4Id())];
+        await this.sendPayload(payload, Resources.MAM, messageId, 0, 0, mam.getOI4Id());
     }
 
     /**
@@ -249,8 +243,8 @@ export class OI4Application implements IOI4Application {
             // TODO is is most likely not right
             data = this.applicationResources.dataLookup[oi4Id.toString()];
         }
-        const payload = [this.clientPayloadHelper.createPayload(data, oi4Id.toString())];
-        await this.sendPayload(payload, Resources.DATA, messageId, 0, 0, oi4Id.toString(), filter);
+        const payload = [this.clientPayloadHelper.createPayload(data, oi4Id)];
+        await this.sendPayload(payload, Resources.DATA, messageId, 0, 0, oi4Id, filter);
     }
 
     /**
@@ -262,7 +256,7 @@ export class OI4Application implements IOI4Application {
      * @param page
      * @param perPage
      */
-    async sendResource(resource: Resources, messageId: string, source: string, filter: string, page = 0, perPage = 0): Promise<void> {
+    async sendResource(resource: Resources, messageId: string, source: Oi4Identifier, filter: string, page = 0, perPage = 0): Promise<void> {
         const validatedPayload: ValidatedPayload = await this.preparePayload(resource, source, filter);
 
         if (validatedPayload === undefined || validatedPayload.abortSending) {
@@ -272,7 +266,7 @@ export class OI4Application implements IOI4Application {
         await this.sendPayload(validatedPayload.payload, resource, messageId, page, perPage, source, filter);
     }
 
-    async preparePayload(resource: Resources, source: string, filter?: string): Promise<ValidatedPayload> {
+    async preparePayload(resource: Resources, source: Oi4Identifier, filter?: string): Promise<ValidatedPayload> {
         const validatedFilter: ValidatedFilter = OI4Application.validateFilter(filter);
         if (!validatedFilter.isValid) {
             logger.log('Invalid filter, abort sending...');
@@ -294,7 +288,7 @@ export class OI4Application implements IOI4Application {
                 break;
             }
             case Resources.HEALTH: {
-                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, Oi4Identifier.fromString(source));
+                payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, source);
                 break;
             }
             case Resources.LICENSE_TEXT: {
@@ -307,15 +301,15 @@ export class OI4Application implements IOI4Application {
             }
             case Resources.PUBLICATION_LIST: {
                 // TODO TAG is missing in topic element
-                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
+                payloadResult = this.clientPayloadHelper.createPublicationListSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
             case Resources.SUBSCRIPTION_LIST: {
-                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
+                payloadResult = this.clientPayloadHelper.createSubscriptionListSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
             case Resources.CONFIG: {
-                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, Oi4Identifier.fromString(source), filter);
+                payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
             default: {
@@ -349,10 +343,10 @@ export class OI4Application implements IOI4Application {
         return {isValid: true, dswidFilter: dswidFilter};
     }
 
-    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, source: string, filter?: string): Promise<void> {
+    private async sendPayload(payload: IOPCUADataSetMessage[], resource: string, messageId: string, page: number, perPage: number, source: Oi4Identifier, filter?: string): Promise<void> {
         // Don't forget the slash
         let endTag = '';
-        if (source && source.length > 0) {
+        if (source !== undefined) {
             endTag = `/${source}`;
         }
         if (filter && filter.length > 0 && endTag.length > 0) {
@@ -365,7 +359,7 @@ export class OI4Application implements IOI4Application {
                 logger.log('Error in paginated NetworkMessage creation, most likely a page was requested which is out of range', ESyslogEventFilter.warning);
             }
             for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
-                await this.client.publish(
+                await this.messageBus.publish(
                     `${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`,
                     JSON.stringify(networkMessages));
                 logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`, ESyslogEventFilter.informational);
@@ -381,42 +375,42 @@ export class OI4Application implements IOI4Application {
      * @param filter
      */
     // TODO figure out how the determine the filter from the actual object/interface, whatever
-    async sendEvent(event: IEvent, source: string, filter: string) {
+    async sendEvent(event: IEvent, source: Oi4Identifier, filter: string) {
         const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, source, event);
 
         const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
         const publishAddress = `${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/${source}/${filter}`;
-        await this.client.publish(publishAddress, JSON.stringify(opcUAEvent));
+        await this.messageBus.publish(publishAddress, JSON.stringify(opcUAEvent));
         logger.log(`Published event on ${this.topicPreamble}/${Resources.EVENT}/${source}/${filter}`);
     }
 
 
-    public async sendEventStatus(status: StatusEvent, source: string) {
+    public async sendEventStatus(status: StatusEvent, source: Oi4Identifier) {
         const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
             Source: source,
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
+        await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
     }
 
     async getConfig() {
         const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            Source: this.oi4Id.toString(), // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
+            Source: this.oi4Id, // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.CONFIG],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.client.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
+        await this.messageBus.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
         logger.log(`Published get config on ${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`);
     }
 
     /**
      * Makes the MQTT Client available to be used by other applications
      */
-    get mqttClient(): mqtt.AsyncClient {
-        return this.client;
+    get oi4MessageBus(): IOI4MessageBus {
+        return this.messageBus;
     }
 
     get mqttMessageProcess() {
@@ -429,7 +423,7 @@ export class OI4ApplicationBuilder {
     protected mqttSettings: MqttSettings;
     protected opcUaBuilder: OPCUABuilder;
     protected clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
-    protected clientCallbacksHelper: ClientCallbacksHelper = new ClientCallbacksHelper();
+    protected clientCallbacksHelper: IClientCallbacksHelper = new ClientCallbacksHelper();
     protected mqttMessageProcessor: MqttMessageProcessor = new MqttMessageProcessor();
 
     withApplicationResources(applicationResources: IOI4ApplicationResources): OI4ApplicationBuilder {
@@ -452,7 +446,7 @@ export class OI4ApplicationBuilder {
         return this;
     }
 
-    withClientCallbacksHelper(clientCallbacksHelper: ClientCallbacksHelper): OI4ApplicationBuilder {
+    withClientCallbacksHelper(clientCallbacksHelper: IClientCallbacksHelper): OI4ApplicationBuilder {
         this.clientCallbacksHelper = clientCallbacksHelper;
         return this;
     }

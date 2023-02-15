@@ -31,7 +31,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
  * Initializes the mam settings by a json file and build oi4id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
-    readonly sources: Map<string, IOI4Resource>;
+    readonly sources: Map<Oi4Identifier, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -41,7 +41,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = defaultMAMFile) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this.sources = new Map<string, IOI4Resource>();
+        this.sources = new Map<Oi4Identifier, IOI4Resource>();
 
         this.dataLookup = {};
         this.metaDataLookup = {};
@@ -89,7 +89,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
-        return this.sources.get(oi4Id.toString()).mam;
+        return this.sources.get(oi4Id).mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
@@ -97,7 +97,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
-        return this.sources.get(oi4Id.toString())?.health;
+        return this.sources.get(oi4Id)?.health;
     }
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
@@ -105,7 +105,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.license;
         }
 
-        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id.toString())?.license;
+        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id)?.license;
         if (license === undefined) {
             return [];
         }
@@ -181,25 +181,25 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     }
 
     hasSource(oi4Id: Oi4Identifier): boolean {
-        return this.sources.has(oi4Id.toString());
+        return this.sources.has(oi4Id);
     }
 
     getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
         if (oi4Id !== undefined) {
-            return this.sources.get(oi4Id.toString());
+            return this.sources.get(oi4Id);
         }
         return this.sources.values();
     }
 
     addSource(source: IOI4Resource): void {
-        this.sources.set(source.oi4Id.toString(), source);
+        this.sources.set(source.oi4Id, source);
         // TODO add sub resource to publication and subscription list
         this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
     }
 
     removeSource(oi4Id: Oi4Identifier): boolean {
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
-        return this.sources.delete(oi4Id.toString());
+        return this.sources.delete(oi4Id);
         // TODO remove sub resource to publication and subscription list
     }
 

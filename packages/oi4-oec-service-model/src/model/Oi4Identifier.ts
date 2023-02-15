@@ -1,3 +1,5 @@
+import {dnpEncode, dnpDecode} from '@oi4/oi4-oec-dnp-encoding';
+
 export class Oi4Identifier {
     manufacturerUri: string;
     model: string;
@@ -12,18 +14,24 @@ export class Oi4Identifier {
     }
 
     toString(): string {
-        return `${encodeURIComponent(this.manufacturerUri)}/${encodeURIComponent(this.model)}/${encodeURIComponent(this.productCode)}/${encodeURIComponent(this.serialNumber)}`;
+        return `${dnpEncode(this.manufacturerUri)}/${dnpEncode(this.model)}/${dnpEncode(this.productCode)}/${dnpEncode(this.serialNumber)}`;
     }
 
-    static fromString(oi4Id: string): Oi4Identifier {
-        if(oi4Id === undefined){
+    static fromString(oi4Id: string, isEncoded = true): Oi4Identifier {
+        if (oi4Id === undefined) {
             throw new Error('No OI4 identifier provided');
         }
         const oi4IdParts = oi4Id.split('/');
         if (oi4IdParts.length !== 4) {
             throw new Error(`Invalid OI4 identifier: ${oi4Id}`);
         }
-        return new Oi4Identifier(oi4IdParts[0], oi4IdParts[1], oi4IdParts[2], oi4IdParts[3], true);
+        const getPart = (pos: number) => isEncoded ? dnpDecode(oi4IdParts[pos]) : oi4IdParts[pos];
+
+        return new Oi4Identifier(getPart(0), getPart(1), getPart(2), getPart(3), true);
+    }
+
+    static fromDNPString(oi4Id: string): Oi4Identifier {
+        return this.fromString(dnpDecode(oi4Id));
     }
 
     equals(other: Oi4Identifier): boolean {

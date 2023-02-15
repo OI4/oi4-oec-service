@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {encode, decode} from '../src/main';
+import {dnpEncode, dnpDecode} from '../src/main';
 
 describe('encode functionality', () => {
     it('should be defined', () => {
-        expect(encode).toBeDefined();
+        expect(dnpEncode).toBeDefined();
     });
 
     test.each([
@@ -18,14 +18,15 @@ describe('encode functionality', () => {
         ['ABC*33<4', 'ABC,2A33,3C4'],
         ['20123.4', '20123.4'],
         ['a/asd asd/dddd', 'a,2Fasd,20asd,2Fdddd'],
+        ['aæc', 'a,C3,A6c'],
     ])('should encode %s to a valid dnp-encoded string', (text, result) => {
-        expect(encode(text)).toEqual(result);
+        expect(dnpEncode(text)).toEqual(result);
     });
 });
 
 describe('decode functionality', () => {
     it('should be defined', () => {
-        expect(decode).toBeDefined();
+        expect(dnpDecode).toBeDefined();
     });
 
     test.each([
@@ -39,7 +40,8 @@ describe('decode functionality', () => {
         ['ABC,2A33,3C4', 'ABC*33<4'],
         ['20123.4', '20123.4'],
         ['a,2Fasd,20asd,2Fdddd', 'a/asd asd/dddd'],
+        ['a,C3,A6c', 'aæc'],
     ])('should decode %s to a valid string', (text, result) => {
-        expect(decode(text)).toEqual(result);
+        expect(dnpDecode(text)).toEqual(result);
     });
 });

@@ -1,6 +1,6 @@
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
 import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
-import {MqttMessageProcessor, OI4RegistryManager} from '../../src';
+import {MqttMessageProcessor, OI4RegistryManager, oi4Namespace} from '../../src';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {
     DataSetClassIds,
@@ -13,7 +13,6 @@ import {
 import {MockOi4Application} from '../testUtils/Factories/MockedOi4Application';
 import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
 import {MqttMessageProcessorEventStatus} from '../../src/messaging/MqttMessageProcessor';
-import {oi4Namespace} from '@oi4/oi4-oec-service-node';
 
 interface MockedData {
     oi4Id: Oi4Identifier;

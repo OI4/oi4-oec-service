@@ -1,6 +1,6 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
+import {IOI4Application, MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
 import {
     Application,
     CDataSetWriterIdLookup,
@@ -42,6 +42,7 @@ const onEvent = () => jest.fn(async (event, cb) => {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const publish = jest.fn((topic, _) => {
+    console.log(topic);
     return topic;
 });
 
@@ -60,6 +61,7 @@ const defaultTopicPrefix = `${oi4Namespace}/Registry`;
 const defaultValidFilter = '1';
 const defaultAppId = new Oi4Identifier('1', '1', '1', '1');
 const defaultOI4Id = defaultAppId;
+export const serialNumber = '23kl41oßmß132';
 
 const getResourceInfo = (): IOI4ApplicationResources => {
     const licenseText = new Map<string, LicenseText>();
@@ -165,7 +167,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             HardwareRevision: '1.0',
             ProductCode: '213dq',
             DeviceRevision: '1.0',
-            SerialNumber: '23kl41oßmß132',
+            SerialNumber: serialNumber,
             SoftwareRevision: '1.0',
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
@@ -248,15 +250,15 @@ const getResourceInfo = (): IOI4ApplicationResources => {
 }
 
 let defaultOi4ApplicationResources: IOI4ApplicationResources;
-let defaultOi4Application: OI4Application;
+let defaultOi4Application: IOI4Application;
 
-export function getOi4App(): OI4Application {
+export function getOi4App(): IOI4Application {
     const mqttOpts: MqttSettings = getStandardMqttConfig();
     const resources = getResourceInfo();
     return OI4Application.builder()
         .withApplicationResources(resources)
         .withMqttSettings(mqttOpts)
-        .build() as OI4Application;
+        .build();
 }
 
 describe('OI4MessageBus test', () => {
@@ -399,14 +401,14 @@ describe('OI4MessageBus test', () => {
     // });
 
     it('should send resource with valid filter', async () => {
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 1, 1);
         const expectedAddress = `${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/`;
         expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
         const filter = '0'
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', filter);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', filter, 1, 1);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
@@ -415,7 +417,7 @@ describe('OI4MessageBus test', () => {
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    async function getPayload(filter: string, resource: string, source?: string, oi4Application: OI4Application = defaultOi4Application) {
+    async function getPayload(filter: string, resource: string, source?: string, oi4Application: IOI4Application = defaultOi4Application) {
         return await oi4Application.preparePayload(getResource(resource), source, filter);
     }
 
@@ -563,7 +565,7 @@ describe('OI4MessageBus test', () => {
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
         defaultOi4Application.sendEventStatus = jest.fn();
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
+        await defaultOi4Application.mqttMessageProcessor.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(status)), defaultOi4Application.builder, defaultOi4Application);
 
         expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(EOPCUAStatusCode.Good), '1/1/1/1');
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
@@ -585,7 +587,7 @@ describe('OI4MessageBus test', () => {
 
         defaultOi4Application.sendEventStatus = jest.fn();
 
-        await defaultOi4Application.mqttMessageProcess.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(setConfig)), defaultOi4Application.builder, defaultOi4Application);
+        await defaultOi4Application.mqttMessageProcessor.processMqttMessage(`${defaultTopicPrefix}/${defaultAppId}/${Methods.SET}/${Resources.CONFIG}/${defaultOI4Id}/group-a`, Buffer.from(JSON.stringify(setConfig)), defaultOi4Application.builder, defaultOi4Application);
 
         expect(defaultOi4Application.sendEventStatus).toHaveBeenCalledWith(new StatusEvent(EOPCUAStatusCode.Good), '1/1/1/1');
         expect(defaultOi4Application.applicationResources).toBe(defaultOi4ApplicationResources);
