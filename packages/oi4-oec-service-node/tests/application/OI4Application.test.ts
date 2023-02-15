@@ -401,28 +401,28 @@ describe('OI4MessageBus test', () => {
     // });
 
     it('should send resource with valid filter', async () => {
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 1, 1);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', defaultOI4Id, defaultValidFilter, 1, 1);
         const expectedAddress = `${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/`;
         expect(publish).toHaveBeenCalledWith(expect.stringContaining(expectedAddress), expect.stringContaining(JSON.stringify(getResourceInfo().mam)));
     });
 
     it('should not send resource with invalid zero filter', async () => {
         const filter = '0'
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', filter, 1, 1);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', defaultOI4Id, filter, 1, 1);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${filter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
     it('should not send resource if page is out of range', async () => {
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 20, 20);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', defaultOI4Id, defaultValidFilter, 20, 20);
         expect(publish).not.toHaveBeenCalledWith(expect.stringMatching(`${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${defaultValidFilter}`), expect.stringContaining(JSON.stringify(getResourceInfo().health)))
     });
 
-    async function getPayload(filter: string, resource: string, source?: string, oi4Application: IOI4Application = defaultOi4Application) {
+    async function getPayload(filter: string, resource: string, source?: Oi4Identifier, oi4Application: IOI4Application = defaultOi4Application) {
         return await oi4Application.preparePayload(getResource(resource), source, filter);
     }
 
     it('should prepare mam payload', async () => {
-        const result = await getPayload('', Resources.MAM, defaultAppId.toString());
+        const result = await getPayload('', Resources.MAM, defaultAppId);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().mam));
     });
 
@@ -449,7 +449,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare health payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.Health.toString(), Resources.HEALTH, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.Health.toString(), Resources.HEALTH, defaultOI4Id);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
@@ -460,7 +460,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.License.toString(), Resources.LICENSE, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.License.toString(), Resources.LICENSE, defaultOI4Id);
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({components: getResourceInfo().license[i].Components}));
@@ -468,7 +468,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare publicationList  payload', async () => {
-        const result = await getPayload(Resources.PUBLICATION_LIST, Resources.PUBLICATION_LIST, defaultOI4Id.toString());
+        const result = await getPayload(Resources.PUBLICATION_LIST, Resources.PUBLICATION_LIST, defaultOI4Id);
         for (let i = 0; i < result.payload.length; i++) {
             // TODO change from oi4 to source...just in case it fails
             expect(JSON.stringify(result.payload[i].Payload))
@@ -480,7 +480,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should prepare subscriptionList  payload', async () => {
-        const result = await getPayload(Resources.SUBSCRIPTION_LIST, Resources.SUBSCRIPTION_LIST, defaultOI4Id.toString());
+        const result = await getPayload(Resources.SUBSCRIPTION_LIST, Resources.SUBSCRIPTION_LIST, defaultOI4Id);
         for (let i = 0; i < result.payload.length; i++) {
             const resourceInfo = defaultOi4ApplicationResources.subscriptionList[i];
             expect(JSON.stringify(result.payload[i].Payload)).toBe(JSON.stringify(resourceInfo));
@@ -489,7 +489,7 @@ describe('OI4MessageBus test', () => {
 
     // TODO refactor this test
     it('should prepare config payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.Config.toString(), Resources.CONFIG, defaultOI4Id.toString());
+        const result = await getPayload(CDataSetWriterIdLookup.Config.toString(), Resources.CONFIG, defaultOI4Id);
         expect(result).toBeDefined();
         //expect(JSON.stringify(result.payload[0].Payload))
         //    .toBe(JSON.stringify(getResourceInfo().config));
@@ -505,7 +505,7 @@ describe('OI4MessageBus test', () => {
     it('should not send resource if error occured in pagination', async () => {
         const mockOPCUABuilder = jest.spyOn(OPCUABuilder.prototype, 'buildPaginatedOPCUANetworkMessageArray').mockReturnValue(undefined);
         jest.clearAllMocks();
-        await defaultOi4Application.sendResource(Resources.HEALTH, '', '', defaultValidFilter, 1, 20);
+        await defaultOi4Application.sendResource(Resources.HEALTH, '', defaultOI4Id, defaultValidFilter, 1, 20);
         expect(publish).toBeCalledTimes(0);
         mockOPCUABuilder.mockRestore();
     });
@@ -522,18 +522,16 @@ describe('OI4MessageBus test', () => {
     it('should send event', async () => {
         const event = createEvent();
         jest.clearAllMocks();
-        const oi4IdString = defaultOi4ApplicationResources.oi4Id.toString();
-        await defaultOi4Application.sendEvent(event, oi4IdString, defaultValidFilter);
+        await defaultOi4Application.sendEvent(event, defaultOi4ApplicationResources.oi4Id, defaultValidFilter);
 
-        const expectedPublishAddress = `${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.EVENT}/${oi4IdString}/${defaultValidFilter}`;
+        const expectedPublishAddress = `${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.EVENT}/${defaultOi4ApplicationResources.oi4Id.toString()}/${defaultValidFilter}`;
         expect(publish).toHaveBeenCalled();
         expect(publish.mock.calls[0][0]).toBe(expectedPublishAddress);
     });
 
     it('should send status', async () => {
-        const oi4IdString = defaultOi4ApplicationResources.oi4Id.toString();
         const status: StatusEvent = new StatusEvent(EOPCUAStatusCode.Good, 'fake');
-        await defaultOi4Application.sendEventStatus(status, oi4IdString);
+        await defaultOi4Application.sendEventStatus(status, defaultOi4ApplicationResources.oi4Id);
         expect(publish).toHaveBeenCalledWith(
             expect.stringMatching(`${oi4Namespace}/${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(`${getResourceInfo().mam.getServiceType()}/${getResourceInfo().oi4Id}`)}`),
             expect.stringContaining(JSON.stringify(status)));
