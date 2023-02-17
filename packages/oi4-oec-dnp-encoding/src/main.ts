@@ -103,7 +103,7 @@ export function decode(input: string): string {
     // match all 2 hex digits after each comma, get it as iterator and flatten the array as we only have one element per match with our regex
     const encHexDigits = [...input.matchAll(/(?<=,)\S{2}/g)].flat();
 
-    let output = input;
+    let output = decodeURI(input);
     encHexDigits.forEach((elem) => {
         // we add the comma only for matching in the string so the encHexDigits array is clean and can directly be converted to ASCII
         output = output.replaceAll(
@@ -112,5 +112,5 @@ export function decode(input: string): string {
         );
     });
 
-    return decodeURIComponent(output);
+    return decodeURI(output);
 }
