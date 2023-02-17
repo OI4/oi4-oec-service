@@ -71,7 +71,6 @@ function replaceProhibitedChars(input: string): string {
     return output;
 }
 
-
 /**
  * Masks all characters forbidden by DIN 91406
  * @param input string to encode into dnp-encoding
@@ -104,7 +103,7 @@ export function decode(input: string): string {
     // match all 2 hex digits after each comma, get it as iterator and flatten the array as we only have one element per match with our regex
     const encHexDigits = [...input.matchAll(/(?<=,)\S{2}/g)].flat();
 
-    let output = decodeURIComponent(input);
+    let output = input;
     encHexDigits.forEach((elem) => {
         // we add the comma only for matching in the string so the encHexDigits array is clean and can directly be converted to ASCII
         output = output.replaceAll(
@@ -113,5 +112,5 @@ export function decode(input: string): string {
         );
     });
 
-    return output;
+    return decodeURIComponent(output);
 }
