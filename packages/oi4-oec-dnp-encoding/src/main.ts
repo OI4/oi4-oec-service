@@ -8,9 +8,9 @@ const reservedChars = new Map([
 ]);
 
 /**
- * Masks all characters forbidden by DIN 91406
- * @param input string to encode into dnp-encoding
- * @returns string with all reserved & prohibited printable characters masked
+ * Masks all reserved characters by DIN 91406 in a given string
+ * @param input string to be encoded into dnp-encoding
+ * @returns string with all reserved chars masked
  */
 export function dnpEncode(input = ''): string {
     input = encodeURIComponent(input).replaceAll('%', ',');
@@ -21,7 +21,7 @@ export function dnpEncode(input = ''): string {
 }
 
 /**
- * Unmasks all dnp-encoded characters in a string
+ * Masks all prohibited characters by DIN 91406 in a given string
  * @param input
  * @returns
  */
