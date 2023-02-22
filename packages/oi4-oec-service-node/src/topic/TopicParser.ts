@@ -138,8 +138,8 @@ export class TopicParser {
     }
 
     private static extractListInfo(wrapper: TopicWrapper) {
-        wrapper.topicInfo.source = TopicParser.extractItem(wrapper, 12, 'Invalid source: ');
-        wrapper.topicInfo.filter = wrapper.topicInfo.source;
+        wrapper.topicInfo.source = Oi4Identifier.fromDNPString(TopicParser.extractItem(wrapper, 12, 'Invalid source: '));
+        wrapper.topicInfo.filter = wrapper.topicInfo.source.toString();
         if (wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
             wrapper.topicInfo.filter += `/${wrapper.topicInfo.tag}`;

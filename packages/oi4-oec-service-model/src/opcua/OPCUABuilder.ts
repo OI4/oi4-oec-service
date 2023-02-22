@@ -53,7 +53,7 @@ export class OPCUABuilder {
         let firstMessageId: string;
         for (const [payloadIndex, remainingPayloads] of dataSetPayloads.slice(1).entries()) {
             const currentMessage = networkMessageArray[currentNetworkMessageIndex];
-            if(firstMessageId === undefined){
+            if (firstMessageId === undefined) {
                 firstMessageId = currentMessage.MessageId;
             }
             const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(currentMessage));
@@ -155,7 +155,7 @@ export class OPCUABuilder {
      * @param source - The Source is mandatory, but does not belong to OPC UA DataSetMessage according to Part 14-7.2.3.3-Table 92. In combination with the used resource in the topic, the Source, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present.
      * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
      */
-    buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, source: string, correlationId = ''): IOPCUAMetaData {
+    buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, source: Oi4Identifier, correlationId = ''): IOPCUAMetaData {
         const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
         const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
         const opcUaMetaDataMessage: IOPCUAMetaData = {
@@ -179,8 +179,13 @@ export class OPCUABuilder {
      * Encapsulates Payload inside "Messages" Object of OPCUAData
      * @param actualPayload - the payload (valid key-values) that is to be encapsulated
      * @param timestamp - the current timestamp in Date format
+     * @param dataSetWriterId
+     * @param source
+     * @param status
+     * @param filter
+     * @param metaDataVersion
      */
-    private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, source: string = this.oi4Id.toString(), status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
+    private buildOPCUADataSetMessage(actualPayload: any, timestamp: Date, dataSetWriterId: number, source: Oi4Identifier = this.oi4Id, status: EOPCUAStatusCode = EOPCUAStatusCode.Good, filter?: string, metaDataVersion?: IOPCUAConfigurationVersionDataType): IOPCUADataSetMessage {
         const opcUaDataPayload: IOPCUADataSetMessage = { // TODO: More elements
             DataSetWriterId: dataSetWriterId,
             Timestamp: timestamp.toISOString(),

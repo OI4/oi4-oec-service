@@ -1,9 +1,10 @@
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
 import {ClientCallbacksHelper, oi4Namespace} from '../../src';
 import mqtt from 'async-mqtt';
-import {getOi4App} from '../application/OI4Application.test';
+import {getOi4Application, serialNumber} from '../application/OI4Application.test';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {Methods, Resources, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {dnpEncode} from '@oi4/oi4-oec-dnp-encoding';
 
 describe('Unit test for ClientCallbackHelper', () => {
 
@@ -25,7 +26,7 @@ describe('Unit test for ClientCallbackHelper', () => {
         }
     );
 
-    const mockOi4Application = getOi4App();
+    const mockOi4Application = getOi4Application();
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const logContainsOnly: Function = loggerItems.logContainsOnly;
@@ -67,7 +68,7 @@ describe('Unit test for ClientCallbackHelper', () => {
         await clientCallbackHelper.onClientConnectCallback(mockOi4Application); // resources, mockedMqttClient, 'fakePreamble', 'fakeOi4Id', mockedBuilder);
         expect(fakeLogFile.length).toBe(3);
         expect(fakeLogFile[0]).toBe('Connected successfully');
-        expect(fakeLogFile[1]).toBe(`Published ${Resources.MAM} Pagination: 0 of 1 on ${oi4Namespace}/${ServiceTypes.AGGREGATION}/1/1/1/1/${Methods.PUB}/${Resources.MAM}/test/text/213dq/23kl41o%C3%9Fm%C3%9F132`);
+        expect(fakeLogFile[1]).toBe(`Published ${Resources.MAM} Pagination: 0 of 1 on ${oi4Namespace}/${ServiceTypes.AGGREGATION}/1/1/1/1/${Methods.PUB}/${Resources.MAM}/test/text/213dq/${dnpEncode(serialNumber)}`);
         expect(fakeLogFile[2]).toBe('Published birth message');
     });
 

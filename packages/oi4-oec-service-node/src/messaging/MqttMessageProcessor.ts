@@ -3,7 +3,7 @@ import {
     ESyslogEventFilter,
     IContainerConfig,
     IOPCUANetworkMessage,
-    Methods,
+    Methods, Oi4Identifier,
     OPCUABuilder,
     Resources,
     StatusEvent
@@ -122,38 +122,39 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
                 }
             }
         }
-// TODO: this needs a rework. old subResource (now Source) is always an Oi4Identifier since V1.1 of the Guideline
-        let subResource: string;
+// TODO: this needs a rework. old source (now Source) is always an Oi4Identifier since V1.1 of the Guideline
+        let source: Oi4Identifier;
         let filter = undefined;
-        const oi4IdSubResource = topicInfo.oi4Id?.toString();
+        const oi4IdSubResource = topicInfo.oi4Id;
         switch (topicInfo.resource) {
             case Resources.EVENT:
-                subResource = `${topicInfo.category}/${topicInfo.filter}`;
+                // TODO rework the events
+                source = undefined; // `${topicInfo.category}/${topicInfo.filter}`;
                 break;
 
             case Resources.LICENSE:
             case Resources.LICENSE_TEXT:
-                subResource = oi4IdSubResource;
+                source = oi4IdSubResource;
                 filter = topicInfo.licenseId;
                 break;
 
             case Resources.CONFIG:
-                subResource = oi4IdSubResource;
+                source = oi4IdSubResource;
                 filter = topicInfo.filter;
                 break;
 
             case Resources.PUBLICATION_LIST:
             case Resources.SUBSCRIPTION_LIST:
-                subResource = oi4IdSubResource;
+                source = oi4IdSubResource;
                 filter = topicInfo.tag;
                 break;
 
             default:
-                subResource = oi4IdSubResource;
+                source = oi4IdSubResource;
                 break;
         }
 
-        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, subResource, filter, page, perPage)
+        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, source, filter, page, perPage)
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {
@@ -202,8 +203,8 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         const statusCode = result ? EOPCUAStatusCode.Good : EOPCUAStatusCode.Bad;
 
         const status: StatusEvent = new StatusEvent(statusCode);
-        await oi4Application.sendEventStatus(status, oi4Id.toString());
-        await oi4Application.sendResource(Resources.CONFIG, config.MessageId, applicationResources.oi4Id.toString(), filter, 0, 0); // TODO set source. Still valid?!
+        await oi4Application.sendEventStatus(status, oi4Id);
+        await oi4Application.sendResource(Resources.CONFIG, config.MessageId, applicationResources.oi4Id, filter, 0, 0); // TODO set source. Still valid?!
     }
 
 

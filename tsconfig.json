@@ -53,6 +53,9 @@
       "@oi4-oec-json-schemas": [
         "oi4-oec-json-schemas/dist"
       ],
+      "@oi4-oec-dnp-encoding": [
+        "oi4-oec-dnp-encoding/dist"
+      ],
       "@oi4-oec-service-conformity-validator": [
         "oi4-oec-service-conformity-validator/dist"
       ],

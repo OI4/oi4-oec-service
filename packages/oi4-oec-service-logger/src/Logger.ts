@@ -115,7 +115,6 @@ class Logger {
                 date: new Date(),
                 message: data.message,
             });
-            const oi4IdString = oi4Id.toString();
             glossyParser.parse(msg, (parsedMessage: any) => {
                 let syslogDataMessage;
                 if (this._builder) {
@@ -126,9 +125,9 @@ class Logger {
                         HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                     };
                     syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                        Source: oi4IdString,
+                        Source: oi4Id,
                         Payload: event,
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4IdString),
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
                     }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */

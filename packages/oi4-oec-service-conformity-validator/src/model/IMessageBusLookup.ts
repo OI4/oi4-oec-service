@@ -1,13 +1,13 @@
-import {Methods, Resources} from '@oi4/oi4-oec-service-model';
+import {Methods, Oi4Identifier, Resources} from '@oi4/oi4-oec-service-model';
 
 export class GetRequest {
     TopicPreamble: string;
     Resource: Resources;
-    Source?: string;
+    Source?: Oi4Identifier;
     Filter?: string;
     JsonMessage: string;
 
-    constructor(topicPreamble: string, resource: Resources, jsonMessage: string, source?: string, filter?: string) {
+    constructor(topicPreamble: string, resource: Resources, jsonMessage: string, source?: Oi4Identifier, filter?: string) {
         this.TopicPreamble = topicPreamble;
         this.Resource = resource;
         this.JsonMessage = jsonMessage;
@@ -17,10 +17,12 @@ export class GetRequest {
 
     public getTopic(action: string = Methods.PUB): string {
         let topic = `${this.TopicPreamble}/${action}/${this.Resource}`;
-        if (GetRequest.isNotEmpty(this.Source)) {
-            topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;
+        if (this.Source === undefined) {
+            return;
         }
-        if (GetRequest.isNotEmpty(this.Source) && GetRequest.isNotEmpty(this.Filter)) {
+        topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;
+
+        if (GetRequest.isNotEmpty(this.Filter)) {
             topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}/${this.Filter}`;
         }
 

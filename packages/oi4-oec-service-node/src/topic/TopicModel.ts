@@ -9,18 +9,19 @@ import {
 
 export const oi4Namespace = 'Oi4';
 
-export type TopicInfo = {
-    topic: string;
-    appId: Oi4Identifier;
-    method: Methods;
-    resource: Resources;
-    oi4Id: Oi4Identifier;
-    category?: string;
-    serviceType: ServiceTypes;
-    tag?: string;
-    filter?: string;
-    licenseId?: string;
-    source?: string;
+export class TopicInfo {
+
+    public topic: string;
+    public appId: Oi4Identifier;
+    public method: Methods;
+    public resource: Resources;
+    public oi4Id: Oi4Identifier;
+    public category?: string;
+    public serviceType: ServiceTypes;
+    public tag?: string;
+    public filter?: string;
+    public licenseId?: string;
+    public source?: Oi4Identifier;
 }
 
 export type TopicWrapper = {

@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import {encode, decode} from '../src/main';
+import {dnpEncode, dnpDecode} from '../src/main';
 
 describe('encode functionality', () => {
     it('should be defined', () => {
-        expect(encode).toBeDefined();
+        expect(dnpEncode).toBeDefined();
     });
 
     test.each([
@@ -21,15 +21,16 @@ describe('encode functionality', () => {
         ['¥',',25C2,25A5'],
         ['a¥,bא, ٺ,cD', 'a,25C2,25A5,2Cb,25D7,2590,2C,20,25D9,25BA,2CcD'],
         ['🂢🂣🂮🂹🃱',',25F0,259F,2582,25A2,25F0,259F,2582,25A3,25F0,259F,2582,25AE,25F0,259F,2582,25B9,25F0,259F,2583,25B1'],
-        ['🫒🪕',',25F0,259F,25AB,2592,25F0,259F,25AA,2595']
+        ['🫒🪕',',25F0,259F,25AB,2592,25F0,259F,25AA,2595'],
+        ['aæc', 'a,C3,A6c'],
     ])('should encode %s to a valid dnp-encoded string', (text, result) => {
-        expect(encode(text)).toEqual(result);
+        expect(dnpEncode(text)).toEqual(result);
     });
 });
 
 describe('decode functionality', () => {
     it('should be defined', () => {
-        expect(decode).toBeDefined();
+        expect(dnpDecode).toBeDefined();
     });
 
     test.each([
@@ -46,8 +47,9 @@ describe('decode functionality', () => {
         [',25C2,25A5','¥'],
         ['a,25C2,25A5,2Cb,25D7,2590,2C,20,25D9,25BA,2CcD', 'a¥,bא, ٺ,cD',],
         [',25F0,259F,2582,25A2,25F0,259F,2582,25A3,25F0,259F,2582,25AE,25F0,259F,2582,25B9,25F0,259F,2583,25B1','🂢🂣🂮🂹🃱'],
-        [',25F0,259F,25AB,2592,25F0,259F,25AA,2595','🫒🪕']
+        [',25F0,259F,25AB,2592,25F0,259F,25AA,2595','🫒🪕'],
+        ['a,C3,A6c', 'aæc'],
     ])('should decode %s to a valid string', (text, result) => {
-        expect(decode(text)).toEqual(result);
+        expect(dnpDecode(text)).toEqual(result);
     });
 });

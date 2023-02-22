@@ -1,4 +1,5 @@
 import { EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode } from './EOPCUA';
+import {Oi4Identifier} from '../../model/Oi4Identifier';
 
 export type IOPCUAMetaData = IOPCUADataSetMetaData;
 
@@ -35,7 +36,7 @@ export interface IOPCUADataSetMessage {
   Timestamp?: string; // TODO: Date type?
   Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
   Filter?: string;
-  Source: string; // For 1.0 events still have plain strings as sub-resources. This will change in 1.1 where sub-resources will be renamed to source and always be an OI4 Id
+  Source: Oi4Identifier;
   Payload: any; // TODO: arbitrary object?
 }
 
@@ -45,7 +46,7 @@ export interface IOPCUADataSetMetaData {
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
   Filter: string;
-  Source: string;
+  Source: Oi4Identifier;
   CorrelationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
 }

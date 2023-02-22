@@ -10,21 +10,22 @@ import {
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {ClientPayloadHelper} from '../../../src';
 import {logger} from '@oi4/oi4-oec-service-logger';
-import EventEmitter from 'events';
+import {IOI4MessageBus} from '../../../src/messaging/OI4MessageBus';
+import {MockOI4MessageBus} from './MockOI4MessageBus';
 
-export class MockOi4Application extends EventEmitter implements IOI4Application {
+export class MockOi4Application implements IOI4Application {
     applicationResources: IOI4ApplicationResources;
     builder: OPCUABuilder;
-    client: mqtt.AsyncClient;
+    readonly messageBus: IOI4MessageBus;
     clientPayloadHelper: ClientPayloadHelper;
     serviceType: ServiceTypes;
     topicPreamble: string;
 
     constructor(applicationResources: IOI4ApplicationResources, serviceType: ServiceTypes) {
-        super();
         this.applicationResources = applicationResources;
         this.serviceType = serviceType;
         this.topicPreamble = `${this.serviceType}/${this.applicationResources.oi4Id}`;
+        this.messageBus = new MockOI4MessageBus();
     }
 
     sendData(): Promise<any> {
@@ -72,6 +73,14 @@ export class MockOi4Application extends EventEmitter implements IOI4Application 
     sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void> {
         logger.log(`sendResource called with resource: ${resource}, messageId: ${messageId}, source: ${source}, filter: ${filter}, page: ${page}, perPage: ${perPage}`);
         return Promise.resolve(undefined);
+    }
+
+    addListener(event: string | symbol, listener: (...args: never[]) => void): void {
+        logger.log(`addListener called with event: ${String(event)}, listener: ${listener}`);
+    }
+
+    removeListener(event: string | symbol, listener: (...args: never[]) => void): void {
+        logger.log(`removeListener called with event: ${String(event)}, listener: ${listener}`);
     }
 
 }
