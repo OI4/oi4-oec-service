@@ -35,11 +35,11 @@ export class ClientCallbacksHelper implements IClientCallbacksHelper {
 
         await oi4application.messageBus.publish(
             `${topicPreamble}/${Methods.PUB}/${Resources.MAM}/${oi4Id}`,
-            JSON.stringify(oi4application.builder.buildOPCUANetworkMessage([{
+            oi4application.builder.buildOPCUANetworkMessage([{
                 Source: oi4Id,
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.HEALTH, oi4Id),
-            }], new Date(), DataSetClassIds.mam)),
+            }], new Date(), DataSetClassIds.mam),
         );
         logger.log('Connection to mqtt broker closed');
     };

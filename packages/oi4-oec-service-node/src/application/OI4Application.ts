@@ -9,7 +9,7 @@ import {
     ESyslogEventFilter,
     IEvent,
     IOI4ApplicationResources,
-    IOPCUADataSetMessage,
+    IOPCUADataSetMessage, IOPCUADataSetMetaData,
     IOPCUANetworkMessage,
     MasterAssetModel,
     Methods,
@@ -90,13 +90,14 @@ export class OI4Application implements IOI4Application {
      * The constructor initializes the mqtt settings and establish a conection and listeners
      * In Addition birth, will and close messages will be also created
      * @param applicationResources -> is the applicationResources state of the app. Contains mam settings oi4id, health and so on
+     * @param messageBus
      * @param mqttSettings
      * @param opcUaBuilder
      * @param clientPayloadHelper
      * @param clientCallbacksHelper
      * @param mqttMessageProcessor
      */
-    constructor(applicationResources: IOI4ApplicationResources, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: IClientCallbacksHelper, mqttMessageProcessor: IMqttMessageProcessor) {
+    constructor(applicationResources: IOI4ApplicationResources, messageBus: IOI4MessageBus, mqttSettings: MqttSettings, opcUaBuilder: OPCUABuilder, clientPayloadHelper: ClientPayloadHelper, clientCallbacksHelper: IClientCallbacksHelper, mqttMessageProcessor: IMqttMessageProcessor) {
         //  super();
         this.serviceType = applicationResources.mam.getServiceType();
         this.builder = opcUaBuilder;
@@ -121,13 +122,13 @@ export class OI4Application implements IOI4Application {
 
         initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, this.oi4Id, this.serviceType);
         logger.log(`MQTT: Trying to connect with ${mqttSettings.host}:${mqttSettings.port} and client ID: ${mqttSettings.clientId}`);
-        //TODO move to constructor attribute
-        this.messageBus = new OI4MessageBus(mqttSettings, this, mqttMessageProcessor);
+        this.messageBus = messageBus;
+        this.messageBus.connect(mqttSettings, this);
 
-        updateMqttClient(this.messageBus.client);
+        updateMqttClient(this.messageBus.getClient());
         logger.log(`Standardroute: ${this.topicPreamble}`, ESyslogEventFilter.informational);
         this.clientCallbacksHelper = clientCallbacksHelper;
-        // this.on('setConfig', this.sendEventStatus);
+
         this.mqttMessageProcessor = mqttMessageProcessor;
 
         this.messageBus.initClientCallbacks(this.clientCallbacksHelper, this, this.initClientConnectCallback());
@@ -201,22 +202,21 @@ export class OI4Application implements IOI4Application {
      * Sends all available metadata of the applicationResources to the bus
      * @param cutTopic - the cutTopic, containing only the tag-element
      */
-    async sendMetaData(cutTopic: string): Promise<void> {
-        await this.send(cutTopic, Resources.METADATA, this.applicationResources.metaDataLookup);
-    }
-
-    //FIXME add a better type for the information send (Either data or metadata)
-    private async send(tagName: string, type: string, information: any): Promise<void> {
+    async sendMetaData(tagName: string): Promise<void> {
+        // TODO create proper IOPCUADataSetMetaData
+        //const information = this.applicationResources.metaDataLookup;
+        const metaData = {} as IOPCUADataSetMetaData;
         if (tagName === '') { // If there is no tag specified, we should send all available metadata
-            await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${type}`, JSON.stringify(information));
-            logger.log(`Published ALL available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}`);
+            await this.messageBus.publishMetaData(`${this.topicPreamble}/${Methods.PUB}/${Resources.METADATA}`, metaData);
+            logger.log(`Published ALL available ${Resources.METADATA} on ${this.topicPreamble}/${Methods.PUB}/${Resources.METADATA}`);
             return;
         }
         // This topicObject is also specific to the resource. The data resource will include the TagName!
         const dataLookup = this.applicationResources.dataLookup;
         if (tagName in dataLookup) {
-            await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`, JSON.stringify(information[tagName]));
-            logger.log(`Published available ${type.toUpperCase()} on ${this.topicPreamble}/${Methods.PUB}/${type}/${tagName}`);
+            // JSON.stringify(information[tagName])
+            await this.messageBus.publishMetaData(`${this.topicPreamble}/${Methods.PUB}/${Resources.METADATA}/${tagName}`, metaData);
+            logger.log(`Published available ${Resources.METADATA} on ${this.topicPreamble}/${Methods.PUB}/${Resources.METADATA}/${tagName}`);
         }
     }
 
@@ -361,7 +361,7 @@ export class OI4Application implements IOI4Application {
             for (const [nmIdx, networkMessages] of networkMessageArray.entries()) {
                 await this.messageBus.publish(
                     `${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`,
-                    JSON.stringify(networkMessages));
+                    networkMessages);
                 logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`, ESyslogEventFilter.informational);
             }
         } catch {
@@ -375,34 +375,34 @@ export class OI4Application implements IOI4Application {
      * @param filter
      */
     // TODO figure out how the determine the filter from the actual object/interface, whatever
-    async sendEvent(event: IEvent, source: Oi4Identifier, filter: string) {
+    async sendEvent(event: IEvent, source: Oi4Identifier, filter: string): Promise<void> {
         const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, source, event);
 
-        const opcUAEvent = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
+        const networkMessage = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
         const publishAddress = `${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/${source}/${filter}`;
-        await this.messageBus.publish(publishAddress, JSON.stringify(opcUAEvent));
+        await this.messageBus.publish(publishAddress, networkMessage);
         logger.log(`Published event on ${this.topicPreamble}/${Resources.EVENT}/${source}/${filter}`);
     }
 
 
-    public async sendEventStatus(status: StatusEvent, source: Oi4Identifier) {
-        const opcUAStatus = this.builder.buildOPCUANetworkMessage([{
+    public async sendEventStatus(status: StatusEvent, source: Oi4Identifier): Promise<void> {
+        const networkMessage = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
             Source: source,
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, JSON.stringify(opcUAStatus));
+        await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, networkMessage);
     }
 
-    async getConfig() {
-        const opcUAEvent = this.builder.buildOPCUANetworkMessage([{
+    async getConfig(): Promise<void> {
+        const networkMessage = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            Source: this.oi4Id, // With 1.0 subResource is still a string a not a Oi4Identifier and source as with 1.1
+            Source: this.oi4Id,
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.CONFIG],
         }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
-        await this.messageBus.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, JSON.stringify(opcUAEvent));
+        await this.messageBus.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, networkMessage);
         logger.log(`Published get config on ${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`);
     }
 
@@ -421,6 +421,7 @@ export class OI4Application implements IOI4Application {
 export class OI4ApplicationBuilder {
     protected applicationResources: IOI4ApplicationResources;
     protected mqttSettings: MqttSettings;
+    protected messageBus: IOI4MessageBus;
     protected opcUaBuilder: OPCUABuilder;
     protected clientPayloadHelper: ClientPayloadHelper = new ClientPayloadHelper();
     protected clientCallbacksHelper: IClientCallbacksHelper = new ClientCallbacksHelper();
@@ -433,6 +434,11 @@ export class OI4ApplicationBuilder {
 
     withMqttSettings(mqttSettings: MqttSettings): OI4ApplicationBuilder {
         this.mqttSettings = mqttSettings;
+        return this;
+    }
+
+    withMessageBus(messageBus: IOI4MessageBus): OI4ApplicationBuilder {
+        this.messageBus = messageBus;
         return this;
     }
 
@@ -463,10 +469,13 @@ export class OI4ApplicationBuilder {
             const maximumPackageSize: number = this.mqttSettings?.properties?.maximumPacketSize | 262144;
             this.opcUaBuilder = new OPCUABuilder(oi4Id, serviceType, maximumPackageSize);
         }
+        if (this.messageBus === undefined) {
+            this.messageBus = new OI4MessageBus()
+        }
         return this.newOI4Application();
     }
 
     protected newOI4Application(): IOI4Application {
-        return new OI4Application(this.applicationResources, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper, this.mqttMessageProcessor);
+        return new OI4Application(this.applicationResources, this.messageBus, this.mqttSettings, this.opcUaBuilder, this.clientPayloadHelper, this.clientCallbacksHelper, this.mqttMessageProcessor);
     }
 }

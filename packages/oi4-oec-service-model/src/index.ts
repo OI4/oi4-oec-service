@@ -12,6 +12,7 @@ export * from './model/Oi4Identifier'
 export * from './model/ServiceTypes'
 export * from './DataSetWriterIdManager';
 export * from './opcua/model/IOPCUA'
+export * from './opcua/model/IOPCUARaw'
 export * from './opcua/model/EOPCUA'
 export * from './opcua/OpcUaSchemaProvider'
 export * from './opcua/OPCUABuilder'

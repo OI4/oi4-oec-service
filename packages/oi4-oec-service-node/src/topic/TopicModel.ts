@@ -21,7 +21,7 @@ export class TopicInfo {
     public tag?: string;
     public filter?: string;
     public licenseId?: string;
-    public source?: string;
+    public source?: Oi4Identifier;
 }
 
 export type TopicWrapper = {

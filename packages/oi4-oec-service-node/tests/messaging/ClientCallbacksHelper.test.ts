@@ -1,7 +1,7 @@
 import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
 import {ClientCallbacksHelper, oi4Namespace} from '../../src';
 import mqtt from 'async-mqtt';
-import {getOi4App, serialNumber} from '../application/OI4Application.test';
+import {getOi4Application, serialNumber} from '../application/OI4Application.test';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {Methods, Resources, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {dnpEncode} from '@oi4/oi4-oec-dnp-encoding';
@@ -26,7 +26,7 @@ describe('Unit test for ClientCallbackHelper', () => {
         }
     );
 
-    const mockOi4Application = getOi4App();
+    const mockOi4Application = getOi4Application();
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
     const fakeLogFile: Array<string> = loggerItems.fakeLogFile;
     const logContainsOnly: Function = loggerItems.logContainsOnly;

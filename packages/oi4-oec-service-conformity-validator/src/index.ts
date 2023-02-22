@@ -27,7 +27,7 @@ import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
 export * from './model/IConformityValidator';
 
 interface ItemRef {
-    Source: string;
+    Source: Oi4Identifier;
     Filter: string;
 }
 
@@ -81,7 +81,7 @@ export class ConformityValidator {
      * @param source - The Source.
      * @param resourceList - Additional resources for which conformity shall be checked. Leave empty in case that only mandatory resources shall be checked.
      */
-    async checkConformity(assetType: EAssetType, topicPreamble: string, source?: string, resourceList?: Resources[]): Promise<IConformity> {
+    async checkConformity(assetType: EAssetType, topicPreamble: string, source?: Oi4Identifier, resourceList?: Resources[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
         logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.informational);
 
@@ -265,13 +265,13 @@ export class ConformityValidator {
         return conformityObject;
     }
 
-    async checkOI4IDConformity(topicPreamble: string, source?: string): Promise<EValidity> {
+    async checkOI4IDConformity(topicPreamble: string, source?: Oi4Identifier): Promise<EValidity> {
         let oi4Result;
         try {
             if (source == undefined) {
                 const topicArray = topicPreamble.split('/');
                 const originator = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-                oi4Result = await ConformityValidator.checkOi4IdConformity(originator);
+                oi4Result = await ConformityValidator.checkOi4IdStringConformity(originator);
             } else {
                 oi4Result = await ConformityValidator.checkOi4IdConformity(source);
             }
@@ -301,7 +301,7 @@ export class ConformityValidator {
      * @returns {IValidityDetails} A validity object containing information about the conformity of the profile resource
      */
 
-    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, source?: string): Promise<IValidityDetails> {
+    async checkProfileConformity(topicPreamble: string, assetType: EAssetType, source?: Oi4Identifier): Promise<IValidityDetails> {
         let resObj: IValidityDetails;
 
         try {
@@ -342,7 +342,7 @@ export class ConformityValidator {
         return mandatoryResources;
     }
 
-    async checkMetaDataConformity(topicPreamble: string, source: string, filter: string): Promise<IValidityDetails> {
+    async checkMetaDataConformity(topicPreamble: string, source: Oi4Identifier, filter: string): Promise<IValidityDetails> {
         const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resources.METADATA, source);
         const conformityPayload = this.builder.buildOPCUAMetaDataMessage('Validator', 'Conformity validator', {}, DataSetClassIds[Resources.METADATA], dataSetWriterId, filter, source) as any;
         conformityPayload.MetaData = {};
@@ -401,7 +401,7 @@ export class ConformityValidator {
      * @param source - the Source of the requestor, in most cases their oi4Id
      * @param filter - the filter (if available)
      */
-    async checkResourceConformity(topicPreamble: string, resource: Resources, source?: string, filter?: string): Promise<IValidityDetails> {
+    async checkResourceConformity(topicPreamble: string, resource: Resources, source?: Oi4Identifier, filter?: string): Promise<IValidityDetails> {
 
         const conformityPayload = this.builder.buildOPCUANetworkMessage([], new Date, DataSetClassIds[resource]);
         const getRequest = new GetRequest(topicPreamble, resource, JSON.stringify(conformityPayload), source, filter);
@@ -557,13 +557,13 @@ export class ConformityValidator {
             }
             if (!(ConformityValidator.serviceTypes.includes(topicArray[1]))) return false; // throw new Error('Unknown ServiceType');
             const oi4Id = `${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`;
-            return await ConformityValidator.checkOi4IdConformity(oi4Id);
+            return await ConformityValidator.checkOi4IdStringConformity(oi4Id);
         } else { /*tslint:disable-line*/
             return false; // For minimum validity, we need oi4ID (length: 6) + method + method
         }
     }
 
-    static async checkOi4IdConformity(oi4Id: string): Promise<boolean> {
+    static async checkOi4IdStringConformity(oi4Id: string): Promise<boolean> {
         const oi4Array = oi4Id.split('/');
         if (oi4Array.length !== 4) return false; // throw new Error('Wrong number of subTopics');
         // further checks will follow!
@@ -571,6 +571,9 @@ export class ConformityValidator {
         if (oi4RegEx.test(oi4Id)) return true;
         logger.log('Error in checkOI4IDConformity!', ESyslogEventFilter.informational);
         return false;
+    }
+    static async checkOi4IdConformity(oi4Id: Oi4Identifier): Promise<boolean> {
+        return oi4Id !== undefined;
     }
 
     private static moveToEnd<Type>(array: Type[], item: Type): void {
@@ -586,7 +589,7 @@ export class ConformityValidator {
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 logger.log(`Found pagination in ${resource}!`);
-            } else if (ConformityValidator.isNotEmpty(dataSetMessage.Filter) && ConformityValidator.isNotEmpty(dataSetMessage.Source)) {
+            } else if (ConformityValidator.isNotEmpty(dataSetMessage.Filter) && this.checkOi4IdConformity(dataSetMessage.Source)) {
                 result.push({Source: dataSetMessage.Source, Filter: dataSetMessage.Filter});
             }
         }
