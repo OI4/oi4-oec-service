@@ -48,20 +48,20 @@ class Logger {
         emergency: 0,
     }
     private readonly syslogToWinston: { [index: string]: string } = {
-        debug: 'debug',
-        informational: 'info',
-        notice: 'info',
-        warning: 'warn',
-        error: 'error',
-        critical: 'error',
-        alert: 'error',
-        emergency: 'error',
+        debug: 'Debug',
+        informational: 'Info',
+        notice: 'Info',
+        warning: 'Warning',
+        error: 'Error',
+        critical: 'Error',
+        alert: 'Error',
+        emergency: 'Error',
     }
     private readonly categoryToTopic = {
-        CAT_SYSLOG_0: 'syslog',
-        CAT_OPCSC_1: 'opcSC',
-        CAT_NE107_2: 'ne107',
-        CAT_GENERIC_99: 'generic',
+        CAT_SYSLOG_0: 'Syslog',
+        CAT_OPCSC_1: 'OpcSC',
+        CAT_NE107_2: 'Ne107',
+        CAT_GENERIC_99: 'Generic',
     }
 
     constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
@@ -131,10 +131,10 @@ class Logger {
                     }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */
-                        this._mqttClient.publish(
-                            `oi4/${this._serviceType}/${this._oi4Id}/pub/event/${this.categoryToTopic[EventCategory.CAT_SYSLOG_0]}/${data.level}`,
-                            JSON.stringify(syslogDataMessage)
-                        );
+                        // this._mqttClient.publish(
+                        //     `Oi4/${this._serviceType}/${this._oi4Id}/Pub/Event/${this._oi4Id}/${this.categoryToTopic[EventCategory.CAT_SYSLOG_0]}/${data.level}`,
+                        //     JSON.stringify(syslogDataMessage)
+                        // );
                     }
                 }
             });
