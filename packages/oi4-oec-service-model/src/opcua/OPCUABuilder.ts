@@ -190,7 +190,7 @@ export class OPCUABuilder {
             DataSetWriterId: dataSetWriterId,
             Timestamp: timestamp.toISOString(),
             Filter: filter,
-            Source: source,
+            Source: source.toString() as any,
             Payload: actualPayload,
         };
         if (typeof metaDataVersion !== 'undefined' && metaDataVersion !== null) {

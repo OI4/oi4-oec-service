@@ -34,7 +34,7 @@ let methodRegEx = createRegExFromArr(methodArr)
 console.log('Method RegEx:');
 console.log(methodRegEx);
 
-tempPath = `${rootDir}/src/schemas/oi4Identifier.schema.json`
+tempPath = `${rootDir}/src/schemas/Oi4Identifier.schema.json`
 tempJson = readJSON(tempPath)
 
 console.log('Oi4Identifier.ts Orig Pattern: ');

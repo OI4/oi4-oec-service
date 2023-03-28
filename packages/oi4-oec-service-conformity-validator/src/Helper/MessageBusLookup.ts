@@ -2,6 +2,7 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EventEmitter} from 'events';
 import {promiseTimeout} from './Timeout';
 import {IMessageBusLookup, PubResponse, GetRequest} from '../model/IMessageBusLookup';
+import { Methods } from '@oi4/oi4-oec-service-model';
 
 export class MessageBusLookup implements IMessageBusLookup
 {
@@ -15,7 +16,7 @@ export class MessageBusLookup implements IMessageBusLookup
         this.timeOut = timeOut;
 
         this.conformityClient.on('message', async (topic, rawMsg) => {
-            if (topic.includes('pub')) {
+            if (topic.includes(Methods.PUB)) {
                 const pubResponse = new PubResponse(topic, rawMsg);
                 this.pubMessages.emit(topic, pubResponse);
             }
@@ -29,8 +30,8 @@ export class MessageBusLookup implements IMessageBusLookup
      * @param getRequest - The asset information and the message that is used to request the resource.
      */
      async getMessage(getRequest: GetRequest): Promise<PubResponse> {
-        const pubTopic = getRequest.getTopic('pub');
-        const getTopic = getRequest.getTopic('get');
+        const pubTopic = getRequest.getTopic(Methods.PUB);
+        const getTopic = getRequest.getTopic(Methods.GET);
 
 
         await this.conformityClient.subscribe(pubTopic);

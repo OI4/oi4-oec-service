@@ -348,8 +348,8 @@ export class ConformityValidator {
         conformityPayload.MetaData = {};
         const getRequest = new GetRequest(topicPreamble, Resources.METADATA, JSON.stringify(conformityPayload), source, filter);
 
-        const getTopic = getRequest.getTopic('get');
-        const pubTopic = getRequest.getTopic('pub');
+        const getTopic = getRequest.getTopic(Methods.GET);
+        const pubTopic = getRequest.getTopic(Methods.PUB);
 
         logger.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
         const response = await this.messageBusLookup.getMessage(getRequest);
