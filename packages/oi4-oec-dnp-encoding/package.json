@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-dnp-encoding",
-  "version": "1.1.0-preview.5",
+  "version": "1.1.0-preview.6",
   "description": "helper functions to encode & decode from/into dnp-encoding",
   "license": "MIT",
   "private": false,

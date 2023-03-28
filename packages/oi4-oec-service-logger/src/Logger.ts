@@ -1,12 +1,9 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {
-    DataSetWriterIdManager,
     ESyslogEventFilter,
-    EventCategory,
     IEvent,
     Oi4Identifier,
     OPCUABuilder,
-    Resources,
     ServiceTypes,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
@@ -34,8 +31,8 @@ class Logger {
     private _publishLevel: ESyslogEventFilter; /*tslint:disable-line*/
     private _name: string; /*tslint:disable-line*/
     private _mqttClient?: mqtt.AsyncClient;
-    private readonly _oi4Id?: Oi4Identifier;
-    private readonly _serviceType?: string;
+    // private readonly _oi4Id?: Oi4Identifier;
+    // private readonly _serviceType?: string;
     private readonly _builder?: OPCUABuilder;
     private readonly syslogFilterToEnum = {
         debug: 7,
@@ -57,12 +54,12 @@ class Logger {
         alert: 'Error',
         emergency: 'Error',
     }
-    private readonly categoryToTopic = {
-        CAT_SYSLOG_0: 'Syslog',
-        CAT_OPCSC_1: 'OpcSC',
-        CAT_NE107_2: 'Ne107',
-        CAT_GENERIC_99: 'Generic',
-    }
+    // private readonly categoryToTopic = {
+    //     CAT_SYSLOG_0: 'Syslog',
+    //     CAT_OPCSC_1: 'OpcSC',
+    //     CAT_NE107_2: 'Ne107',
+    //     CAT_GENERIC_99: 'Generic',
+    // }
 
     constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
         /**
@@ -96,8 +93,8 @@ class Logger {
         // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create messages that contain one event.
         // A message with one event cannot be split into smaller messages and shall never exceed the maximum package size.
         this._builder = new OPCUABuilder(oi4Id, serviceType);
-        this._oi4Id = oi4Id;
-        this._serviceType = serviceType;
+        // this._oi4Id = oi4Id;
+        // this._serviceType = serviceType;
 
         this._syslogTransport = new Syslog({type: '5424'});
         this._winstonLogger = winston.createLogger({
@@ -116,7 +113,7 @@ class Logger {
                 message: data.message,
             });
             glossyParser.parse(msg, (parsedMessage: any) => {
-                let syslogDataMessage;
+                // let syslogDataMessage;
                 if (this._builder) {
                     // TODO handle the source
                     const event: IEvent = new SyslogEvent(parsedMessage.prival);
@@ -124,11 +121,11 @@ class Logger {
                         MSG: parsedMessage.message,
                         HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                     };
-                    syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                        Source: oi4Id,
-                        Payload: event,
-                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
-                    }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
+                    // syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
+                    //     Source: oi4Id,
+                    //     Payload: event,
+                    //     DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
+                    // }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */
                         // this._mqttClient.publish(
