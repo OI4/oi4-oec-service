@@ -100,7 +100,7 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
         return getServiceType(serviceType);
     }
 
-    static clone(source: MasterAssetModel): MasterAssetModel {
+    static clone(source: IMasterAssetModel): MasterAssetModel {
         const copy = new MasterAssetModel();
         Object.assign(copy, source);
         return copy;

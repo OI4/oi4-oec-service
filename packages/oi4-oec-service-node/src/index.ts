@@ -1,4 +1,4 @@
-export {IOI4Application, OI4Application} from './application/OI4Application';
+export * from './application/OI4Application';
 export {OI4ApplicationResources, defaultMAMFile} from './application/OI4ApplicationResources';
 export {OI4RegistryManager} from './application/OI4RegistryManager';
 export * from './application/MqttSettings';
@@ -8,8 +8,8 @@ export * from './topic/TopicModel';
 export * from './topic/TopicParser';
 export * from './topic/TopicValidator';
 export {FileLogger} from './utilities/FileLogger';
-export {ClientCallbacksHelper} from './messaging/ClientCallbacksHelper';
-export {ClientPayloadHelper} from './messaging/ClientPayloadHelper';
+export * from './messaging/ClientCallbacksHelper';
+export * from './messaging/ClientPayloadHelper';
 export {IOI4MessageBus, OI4MessageBus} from './messaging/OI4MessageBus';
-export {MqttMessageProcessor, foreignMessage} from './messaging/MqttMessageProcessor';
+export * from './messaging/MqttMessageProcessor';
 export * from './messaging/MessagingModel';
