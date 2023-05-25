@@ -59,7 +59,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
         // The following switch/case reacts depending on the different topic elements
         // The message is directed directly at us
-        if (topicInfo?.appId?.equals(oi4Application.oi4Id)) {
+        if (topicInfo?.serviceType === oi4Application?.serviceType && topicInfo?.appId?.equals(oi4Application.oi4Id)) {
             switch (topicInfo.method) {
                 case Methods.GET: {
                     await this.executeGetActions(topicInfo, parsedMessage, builder, oi4Application);

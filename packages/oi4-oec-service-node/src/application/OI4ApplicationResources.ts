@@ -28,7 +28,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
 /**
  * class that initializes the container state
- * Initializes the mam settings by a json file and build oi4id and Serialnumbers
+ * Initializes the mam settings by a json file and build OI4Id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
     readonly sources: Map<Oi4Identifier, IOI4Resource>;
@@ -89,7 +89,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
-        return this.sources.get(oi4Id).mam;
+        return this.sources.get(oi4Id)?.mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
@@ -98,6 +98,26 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.health;
         }
         return this.sources.get(oi4Id)?.health;
+    }
+
+    public hasSource(oi4Id: Oi4Identifier): boolean {
+        return this.sources.has(oi4Id);
+    }
+
+    public getSource(oi4Id: Oi4Identifier): IOI4Resource {
+        return this.sources.get(oi4Id);
+    }
+
+    public addSource(source: IOI4Resource): void {
+        this.sources.set(source.oi4Id, source);
+        // TODO add sub resource to publication and subscription list
+        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
+    }
+
+    public removeSource(oi4Id: Oi4Identifier): boolean {
+        this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
+        return this.sources.delete(oi4Id);
+        // TODO remove sub resource to publication and subscription list
     }
 
     getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
@@ -178,29 +198,6 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         }
 
         return false;
-    }
-
-    hasSource(oi4Id: Oi4Identifier): boolean {
-        return this.sources.has(oi4Id);
-    }
-
-    getSource(oi4Id?: Oi4Identifier): IOI4Resource | IterableIterator<IOI4Resource> {
-        if (oi4Id !== undefined) {
-            return this.sources.get(oi4Id);
-        }
-        return this.sources.values();
-    }
-
-    addSource(source: IOI4Resource): void {
-        this.sources.set(source.oi4Id, source);
-        // TODO add sub resource to publication and subscription list
-        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
-    }
-
-    removeSource(oi4Id: Oi4Identifier): boolean {
-        this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
-        return this.sources.delete(oi4Id);
-        // TODO remove sub resource to publication and subscription list
     }
 
     /**

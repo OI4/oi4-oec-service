@@ -3,6 +3,8 @@ export {OI4ApplicationResources, defaultMAMFile} from './application/OI4Applicat
 export {OI4RegistryManager} from './application/OI4RegistryManager';
 export * from './application/MqttSettings';
 export * from './application/OI4ApplicationFactory';
+export * from './application/OI4ApplicationResources';
+export * from './application/OI4Resource';
 export * from './configuration/SettingsPaths';
 export * from './topic/TopicModel';
 export * from './topic/TopicParser';
