@@ -89,6 +89,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (oi4Id.equals(this.oi4Id)) {
             return this.mam;
         }
+        // TODO source found with the OI4Identifier as key...
         return this.sources.get(oi4Id)?.mam;
     }
 
