@@ -42,11 +42,12 @@ export class ClientPayloadHelper {
     createMamResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, source?: Oi4Identifier): ValidatedPayload {
         if (source) { // get mam from a specific asset
             const mam = applicationResources.getMasterAssetModel(source);
-            const payload = [this.createPayload(mam, source)];
+            const payload = mam !== undefined ? [this.createPayload(mam, source)]: [];
             return {abortSending: false, payload: payload};
         } else { // get all mam's
             const oi4Identifiers = [...applicationResources.sources.keys()];
-            const subResourcesPayloads = oi4Identifiers.map(id => {
+            const subResourcesPayloads = oi4Identifiers.map(dnp => {
+                const id = Oi4Identifier.fromDNPString(dnp);
                 const mam = applicationResources.getMasterAssetModel(id);
                 return this.createPayload(mam, id);
             })
@@ -166,8 +167,8 @@ export class ClientPayloadHelper {
                 messages.push(mainConfig);
             }
 
-            applicationResources.sources.forEach((value: IOI4Resource, key: Oi4Identifier) => {
-                const subConfig = createDataSetMessage(value.config, key);
+            applicationResources.sources.forEach((value: IOI4Resource, key: string) => {
+                const subConfig = createDataSetMessage(value.config, Oi4Identifier.fromDNPString(key));
                 if (subConfig) {
                     messages.push(subConfig);
                 }
@@ -180,8 +181,8 @@ export class ClientPayloadHelper {
         let config: IOPCUADataSetMessage | undefined;
         if (applicationResources.oi4Id.equals(oi4Id)) {
             config = createDataSetMessage(applicationResources.config, applicationResources.oi4Id, filter);
-        } else if (applicationResources.sources.has(oi4Id)) {
-            config = createDataSetMessage(applicationResources.sources.get(oi4Id).config, oi4Id, filter);
+        } else if (applicationResources.sources.has(oi4Id.toString())) {
+            config = createDataSetMessage(applicationResources.sources.get(oi4Id.toString()).config, oi4Id, filter);
         }
 
         const messages: IOPCUADataSetMessage[] = config ? [config] : [];

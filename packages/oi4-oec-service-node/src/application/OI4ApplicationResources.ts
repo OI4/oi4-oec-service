@@ -31,7 +31,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
  * Initializes the mam settings by a json file and build OI4Id and Serialnumbers
  * */
 class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
-    readonly sources: Map<Oi4Identifier, IOI4Resource>;
+    readonly sources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
 
@@ -41,7 +41,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     constructor(mamFile = defaultMAMFile) {
         super(OI4ApplicationResources.extractMamFile(mamFile));
 
-        this.sources = new Map<Oi4Identifier, IOI4Resource>();
+        this.sources = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
         this.metaDataLookup = {};
@@ -90,7 +90,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.mam;
         }
         // TODO source found with the OI4Identifier as key...
-        return this.sources.get(oi4Id)?.mam;
+        return this.sources.get(oi4Id?.toString())?.mam;
     }
 
     public getHealth(oi4Id: Oi4Identifier): Health {
@@ -98,26 +98,26 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         if (this.oi4Id.equals(oi4Id)) {
             return this.health;
         }
-        return this.sources.get(oi4Id)?.health;
+        return this.sources.get(oi4Id?.toString())?.health;
     }
 
     public hasSource(oi4Id: Oi4Identifier): boolean {
-        return this.sources.has(oi4Id);
+        return this.sources.has(oi4Id?.toString());
     }
 
     public getSource(oi4Id: Oi4Identifier): IOI4Resource {
-        return this.sources.get(oi4Id);
+        return this.sources.get(oi4Id?.toString());
     }
 
     public addSource(source: IOI4Resource): void {
-        this.sources.set(source.oi4Id, source);
+        this.sources.set(source.oi4Id?.toString(), source);
         // TODO add sub resource to publication and subscription list
         this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
     }
 
     public removeSource(oi4Id: Oi4Identifier): boolean {
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
-        return this.sources.delete(oi4Id);
+        return this.sources.delete(oi4Id?.toString());
         // TODO remove sub resource to publication and subscription list
     }
 
@@ -126,7 +126,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.license;
         }
 
-        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id)?.license;
+        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id?.toString())?.license;
         if (license === undefined) {
             return [];
         }

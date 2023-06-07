@@ -96,7 +96,7 @@ export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
     }
 
     getServiceType(): ServiceTypes {
-        const serviceType = this.DeviceClass.startsWith('OI4.') ? this.DeviceClass.substring(4) : this.DeviceClass;
+        const serviceType = this.DeviceClass.startsWith('Oi4.') ? this.DeviceClass.substring(4) : this.DeviceClass;
         return getServiceType(serviceType);
     }
 

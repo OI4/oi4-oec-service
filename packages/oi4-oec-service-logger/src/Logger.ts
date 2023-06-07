@@ -45,14 +45,14 @@ class Logger {
         emergency: 0,
     }
     private readonly syslogToWinston: { [index: string]: string } = {
-        debug: 'Debug',
-        informational: 'Info',
-        notice: 'Info',
-        warning: 'Warning',
-        error: 'Error',
-        critical: 'Error',
-        alert: 'Error',
-        emergency: 'Error',
+        debug: 'debug',
+        informational: 'info',
+        notice: 'info',
+        warning: 'warn',
+        error: 'error',
+        critical: 'error',
+        alert: 'error',
+        emergency: 'error',
     }
     // private readonly categoryToTopic = {
     //     CAT_SYSLOG_0: 'Syslog',
