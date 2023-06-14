@@ -81,6 +81,14 @@ export class OI4Application implements IOI4Application {
 
     private readonly clientCallbacksHelper: ClientCallbacksHelper;
 
+    private readonly initClientConnectCallback = async (): Promise<void> => {
+        await this.clientCallbacksHelper.onClientConnectCallback(this);
+        await this.initIncomingMessageListeners();
+        this.initClientHealthHeartBeat();
+        this.applicationResources.on(OI4ResourceEvent.RESOURCE_CHANGED, this.resourceChangedCallback.bind(this));
+        this.applicationResources.on(OI4ResourceEvent.RESOURCE_ADDED, this.resourceAddedCallback.bind(this));
+    }
+
     static builder(): OI4ApplicationBuilder {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         return new OI4ApplicationBuilder();
@@ -117,7 +125,7 @@ export class OI4Application implements IOI4Application {
             retain: false,
         }
 
-        const publishingLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
+        const publishingLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL ? process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter : ESyslogEventFilter.warning;
         const logLevel = process.env.OI4_EDGE_LOG_LEVEL ? process.env.OI4_EDGE_LOG_LEVEL as ESyslogEventFilter : publishingLevel;
 
         initializeLogger(true, mqttSettings.clientId, logLevel, publishingLevel, this.oi4Id, this.serviceType);
@@ -131,23 +139,25 @@ export class OI4Application implements IOI4Application {
 
         this.mqttMessageProcessor = mqttMessageProcessor;
 
-        this.messageBus.initClientCallbacks(this.clientCallbacksHelper, this, this.initClientConnectCallback());
+        this.messageBus.initClientCallbacks(this.clientCallbacksHelper, this, this.initClientConnectCallback);
     }
 
     get oi4Id(): Oi4Identifier {
         return this.applicationResources.oi4Id;
     }
 
-    private async initClientConnectCallback(): Promise<void> {
-        await this.clientCallbacksHelper.onClientConnectCallback(this);
-        await this.initIncomingMessageListeners();
-        this.initClientHealthHeartBeat();
-        this.applicationResources.on(OI4ResourceEvent.RESOURCE_CHANGED, this.resourceChangedCallback.bind(this));
-        this.applicationResources.on(OI4ResourceEvent.RESOURCE_ADDED, this.resourceAddedCallback.bind(this));
-    }
+    // private async initClientConnectCallback(): Promise<void> {
+    //     await this.clientCallbacksHelper.onClientConnectCallback(this);
+    //     await this.initIncomingMessageListeners();
+    //     this.initClientHealthHeartBeat();
+    //     this.applicationResources.on(OI4ResourceEvent.RESOURCE_CHANGED, this.resourceChangedCallback.bind(this));
+    //     this.applicationResources.on(OI4ResourceEvent.RESOURCE_ADDED, this.resourceAddedCallback.bind(this));
+    // }
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0): Promise<ISubscriptionGrant[]> {
-        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter((item: { TopicPath: string }) => item.TopicPath !== topic);
+        this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter((item: {
+            TopicPath: string
+        }) => item.TopicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             TopicPath: topic,
             Config: config,

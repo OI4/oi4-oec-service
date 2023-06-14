@@ -26,7 +26,7 @@ export interface IClientCallbacksHelper {
 export class ClientCallbacksHelper implements IClientCallbacksHelper {
 
     async onErrorCallback(err: Error): Promise<void> {
-        logger.log(`Error in mqtt client: ${err}`);
+        logger.log(`Error in mqtt client: ${err}`, ESyslogEventFilter.warning);
     };
 
     async onCloseCallback(oi4application: IOI4Application): Promise<void> {

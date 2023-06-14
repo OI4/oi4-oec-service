@@ -14,7 +14,7 @@ export class MockOI4MessageBus implements IOI4MessageBus {
         this.connected = mqttSettings !== undefined && oi4Application !== undefined;
     }
 
-    initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4application: IOI4Application, clientConnectCallback: Promise<void>): void {
+    initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4application: IOI4Application, clientConnectCallback: () => Promise<void>): void {
         logger.log(`initClientCallbacks called with clientCallbacksHelper: ${clientCallbacksHelper}, oi4application: ${oi4application}, clientConnectCallback: ${clientConnectCallback}`);
     }
 

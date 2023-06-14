@@ -12,7 +12,7 @@ export interface IOI4MessageBus {
 
     connect(mqttSettings: MqttSettings, oi4Application: IOI4Application): void;
 
-    initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4application: IOI4Application, clientConnectCallback: Promise<void>): void;
+    initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4application: IOI4Application, clientConnectCallback: () => Promise<void>): void;
 
     subscribe(topic: string): Promise<ISubscriptionGrant[]>;
 
@@ -32,14 +32,14 @@ export class OI4MessageBus implements IOI4MessageBus {
         this.client.on(AsyncClientEvents.MESSAGE, async (topic: string, payload: Buffer) => oi4Application.mqttMessageProcessor.processMqttMessage(topic, payload, oi4Application.builder, oi4Application));
     }
 
-    public initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4Application: IOI4Application, clientConnectCallback: Promise<void>): void {
+    public initClientCallbacks(clientCallbacksHelper: IClientCallbacksHelper, oi4application: IOI4Application, clientConnectCallback: () => Promise<void>): void {
         this.client.on(AsyncClientEvents.ERROR, async (err: Error) => clientCallbacksHelper.onErrorCallback(err));
-        this.client.on(AsyncClientEvents.CLOSE, async () => clientCallbacksHelper.onCloseCallback(oi4Application));
+        this.client.on(AsyncClientEvents.CLOSE, async () => clientCallbacksHelper.onCloseCallback(oi4application));
         this.client.on(AsyncClientEvents.DISCONNECT, async () => clientCallbacksHelper.onDisconnectCallback());
         this.client.on(AsyncClientEvents.RECONNECT, async () => clientCallbacksHelper.onReconnectCallback());
         this.client.on(AsyncClientEvents.OFFLINE, async () => clientCallbacksHelper.onOfflineCallback());
         // Publish Birth Message and start listening to topics
-        this.client.on(AsyncClientEvents.CONNECT, async () => clientConnectCallback);
+        this.client.on(AsyncClientEvents.CONNECT, clientConnectCallback);
     }
 
     public getClient(): mqtt.AsyncClient {
