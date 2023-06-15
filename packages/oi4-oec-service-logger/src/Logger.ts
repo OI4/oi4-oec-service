@@ -54,12 +54,6 @@ class Logger {
         alert: 'error',
         emergency: 'error',
     }
-    // private readonly categoryToTopic = {
-    //     CAT_SYSLOG_0: 'Syslog',
-    //     CAT_OPCSC_1: 'OpcSC',
-    //     CAT_NE107_2: 'Ne107',
-    //     CAT_GENERIC_99: 'Generic',
-    // }
 
     constructor(enabled = true, name: string, level = ESyslogEventFilter.warning, publishLevel = ESyslogEventFilter.warning, oi4Id: Oi4Identifier, serviceType: ServiceTypes, mqttClient?: mqtt.AsyncClient) {
         /**

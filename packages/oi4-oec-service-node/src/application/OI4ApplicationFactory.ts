@@ -1,7 +1,7 @@
 import os from 'os';
 import {ESyslogEventFilter, IOI4ApplicationResources, OPCUABuilder, ServiceTypes} from '@oi4/oi4-oec-service-model';
 import {initializeLogger, logger} from '@oi4/oi4-oec-service-logger';
-import {existsSync, readFileSync} from 'fs';
+import {existsSync, readdirSync, readFileSync} from 'fs';
 import {IOI4Application, OI4Application, OI4ApplicationBuilder} from './OI4Application';
 import {BrokerConfiguration, Credentials, MqttSettings} from './MqttSettings';
 import {defaultSettingsPaths, ISettingsPaths} from '../configuration/SettingsPaths';
@@ -39,7 +39,7 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
         this.serviceType = this.resources.mam.getServiceType();
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         this.mqttSettingsHelper = new MqttCredentialsHelper(this.settingsPaths);
-        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, this.serviceType);
+        initializeLogger(true, 'OI4MessageBusFactory', process.env.OI4_EDGE_LOG_LEVEL as ESyslogEventFilter, ESyslogEventFilter.error, resources.oi4Id, this.serviceType);
 
         this.clientPayloadHelper = new ClientPayloadHelper();
         this.clientCallbacksHelper = new ClientCallbacksHelper();
@@ -63,7 +63,8 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
             protocol: MQTTS,
             properties: {
                 maximumPacketSize: maximumPacketSize
-            }
+            },
+            ca: OI4ApplicationFactory.getCaFiles(this.settingsPaths)
         }
 
         if (this.opcUaBuilder === undefined) {
@@ -84,7 +85,7 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
         if (this.hasRequiredCertCredentials()) {
             logger.log('Client certificates will be used to connect to the broker', ESyslogEventFilter.debug);
             const mqttSettingsPaths = this.settingsPaths.mqttSettings;
-            mqttSettings.ca = readFileSync(mqttSettingsPaths.caCertificate);
+            //mqttSettings.ca = readFileSync(mqttSettingsPaths.caCertificate);
             mqttSettings.cert = readFileSync(mqttSettingsPaths.clientCertificate);
             mqttSettings.key = readFileSync(mqttSettingsPaths.privateKey);
             mqttSettings.passphrase = this.mqttSettingsHelper.loadPassphrase();
@@ -112,6 +113,29 @@ export class OI4ApplicationFactory implements IOI4ApplicationFactory {
     private static getMaxPacketSize(brokerConfiguration: BrokerConfiguration): number {
         const maxPacketSize = brokerConfiguration.MaxPacketSize | 256;
         return maxPacketSize >= 256 ? maxPacketSize : 256;
+    }
+
+    private static getCaFiles(settingsPaths: ISettingsPaths): Buffer[] {
+        const path = settingsPaths?.certificateStorage;
+        if (path === undefined || settingsPaths?.mqttSettings === undefined) {
+            return;
+        }
+
+        const readCa = (fileName: string): Buffer => {
+            logger.log(`Reading CA certificate: ${fileName}`);
+            return existsSync(fileName) ? readFileSync(fileName) : undefined;
+        };
+
+        const subPaths = readdirSync(settingsPaths.certificateStorage, {
+            withFileTypes: true
+        });
+
+        const cas = subPaths.filter((file) =>
+            file.isFile() && file.name.startsWith('ca_')
+        ).map((dir) => readCa(`${settingsPaths.certificateStorage}/${dir.name}`));
+        cas.push(readCa(settingsPaths.mqttSettings.caCertificate));
+
+        return cas;
     }
 
 }
