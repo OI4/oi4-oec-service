@@ -112,7 +112,7 @@ export class ClientPayloadHelper {
                 Source: applicationResources.oi4Id,
                 Payload: {
                     ...elem,
-                    Source: elem.Source
+                    Source: elem.Source.toString()
                 },
             } as IOPCUADataSetMessage;
         });
