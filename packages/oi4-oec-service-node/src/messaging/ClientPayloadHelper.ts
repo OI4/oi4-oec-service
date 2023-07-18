@@ -93,7 +93,7 @@ export class ClientPayloadHelper {
                 Filter: license.LicenseId,
                 Source: source ?? applicationResources.oi4Id,
                 Timestamp: new Date().toISOString(),
-                Payload: {components: license.Components},
+                Payload: {Components: license.Components},
             })
         }
 
