@@ -43,10 +43,13 @@ export class ConformityValidator {
     static completeProfileList: Resources[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
-    constructor(oi4Id: Oi4Identifier, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator()) {
+    private readonly conformityErrorLogLevel: ESyslogEventFilter;
+
+    constructor(oi4Id: Oi4Identifier, mqttClient: mqtt.AsyncClient, serviceType: ServiceTypes, messageBusLookup: IMessageBusLookup = new MessageBusLookup(mqttClient), oecJsonValidator = buildOecJsonValidator(), conformityErrorLogLevel = ESyslogEventFilter.debug) {
         this.jsonValidator = oecJsonValidator;
         this.conformityClient = mqttClient;
         this.messageBusLookup = messageBusLookup;
+        this.conformityErrorLogLevel = conformityErrorLogLevel;
 
         const logLevel: ESyslogEventFilter = process.env.OI4_EDGE_EVENT_LEVEL as ESyslogEventFilter | ESyslogEventFilter.warning;
         const publishingLevel = process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL ? process.env.OI4_EDGE_EVENT_PUBLISHING_LEVEL as ESyslogEventFilter : logLevel;
@@ -83,7 +86,7 @@ export class ConformityValidator {
      */
     async checkConformity(assetType: EAssetType, topicPreamble: string, source?: Oi4Identifier, resourceList?: Resources[]): Promise<IConformity> {
         const mandatoryResourceList = ConformityValidator.getMandatoryResources(assetType);
-        logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.informational);
+        logger.log(`MandatoryResourceList of tested Asset: ${mandatoryResourceList}`, ESyslogEventFilter.debug);
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
@@ -128,7 +131,7 @@ export class ConformityValidator {
                 }
             }
         } catch (e) {
-            logger.log(e, ESyslogEventFilter.warning);
+            logger.log(e, this.conformityErrorLogLevel);
         }
 
 
@@ -157,7 +160,7 @@ export class ConformityValidator {
 
         // Actually start checking the resources
         for (const resource of checkList) {
-            logger.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.informational);
+            logger.log(`Checking Resource ${resource} (High-Level)`, ESyslogEventFilter.debug);
             try {
                 switch (resource) {
                     case Resources.METADATA:
@@ -351,9 +354,9 @@ export class ConformityValidator {
         const getTopic = getRequest.getTopic(Methods.GET);
         const pubTopic = getRequest.getTopic(Methods.PUB);
 
-        logger.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, ESyslogEventFilter.warning);
+        logger.log(`Trying to validate MetaData on ${getTopic} (Low-Level).`, this.conformityErrorLogLevel);
         const response = await this.messageBusLookup.getMessage(getRequest);
-        logger.log(`Received MetaData conformity from ${pubTopic}.`, ESyslogEventFilter.warning);
+        logger.log(`Received MetaData conformity from ${pubTopic}.`, this.conformityErrorLogLevel);
 
         const errorMsgArr = [];
         const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUADataSetMetaData;
@@ -371,11 +374,11 @@ export class ConformityValidator {
             logger.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
-                logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                logger.log('NetworkMessage wrong', this.conformityErrorLogLevel);
                 errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
             }
             if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
-                logger.log('Payload wrong', ESyslogEventFilter.warning);
+                logger.log('Payload wrong', this.conformityErrorLogLevel);
                 errorMsgArr.push(...schemaResult.payload.resultMsgArr);
             }
 
@@ -409,9 +412,9 @@ export class ConformityValidator {
         const getTopic = getRequest.getTopic(Methods.GET);
         const pubTopic = getRequest.getTopic(Methods.PUB);
 
-        logger.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.informational);
+        logger.log(`Trying to validate resource ${resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.debug);
         const response = await this.messageBusLookup.getMessage(getRequest);
-        logger.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.informational);
+        logger.log(`Received conformity message on ${resource} from ${pubTopic}.`, ESyslogEventFilter.debug);
 
         const errorMsgArr = [];
         const parsedMessage = JSON.parse(response.RawMessage.toString()) as IOPCUANetworkMessage;
@@ -429,11 +432,11 @@ export class ConformityValidator {
             logger.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);
             errorMsgArr.push('Some issue with schema validation, read further array messages');
             if (!(schemaResult.networkMessage.schemaResult)) { // NetworkMessage seems wrong
-                logger.log('NetworkMessage wrong', ESyslogEventFilter.warning);
+                logger.log('NetworkMessage wrong', this.conformityErrorLogLevel);
                 errorMsgArr.push(...schemaResult.networkMessage.resultMsgArr);
             }
             if (!(schemaResult.payload.schemaResult)) { // Payload seems wrong
-                logger.log('Payload wrong', ESyslogEventFilter.warning);
+                logger.log('Payload wrong', this.conformityErrorLogLevel);
                 errorMsgArr.push(...schemaResult.payload.resultMsgArr);
             }
 
@@ -527,7 +530,7 @@ export class ConformityValidator {
         if (messageValidationResult && payloadValidationResult) {
             schemaConformity.schemaResult = true;
         } else {
-            logger.log('Faulty payload, see Conformity Result object for further information', ESyslogEventFilter.warning);
+            logger.log('Faulty payload, see Conformity Result object for further information', this.conformityErrorLogLevel);
             logger.log(JSON.stringify(schemaConformity), ESyslogEventFilter.debug);
         }
 
@@ -569,7 +572,7 @@ export class ConformityValidator {
         // further checks will follow!
         const oi4RegEx = new RegExp(/^(([a-z0-9-]+\.)*([a-z0-9-]*)(?:\/[^\/`\\^\r\n]+){3})$/g);
         if (oi4RegEx.test(oi4Id)) return true;
-        logger.log('Error in checkOI4IDConformity!', ESyslogEventFilter.informational);
+        logger.log('Error in checkOI4IDConformity!', ESyslogEventFilter.debug);
         return false;
     }
     static async checkOi4IdConformity(oi4Id: Oi4Identifier): Promise<boolean> {
