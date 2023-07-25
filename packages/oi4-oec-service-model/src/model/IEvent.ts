@@ -18,27 +18,21 @@ export interface IEvent extends OI4Payload {
 export abstract class BaseEvent implements IEvent {
     Description: string;
     Number: number;
+    abstract readonly Category: EventCategory;
+    abstract Details: any;
 
     constructor(number: number, description?: string) {
         this.Number = number;
         this.Description = description;
     }
 
-    resourceType() {
+    resourceType(): Resources {
         return Resources.EVENT;
     }
-
-    abstract readonly Category: EventCategory;
-    abstract Details: any;
 }
 
-
 export class SyslogEvent extends BaseEvent {
-    Category: EventCategory.CAT_SYSLOG_0;
-
-    constructor(number: number, description?: string) {
-        super(number, description);
-    }
+    Category: EventCategory = EventCategory.CAT_SYSLOG_0;
 
     Details: {
         MSG?: string;
@@ -47,11 +41,7 @@ export class SyslogEvent extends BaseEvent {
 }
 
 export class StatusEvent extends BaseEvent {
-    Category: EventCategory.CAT_STATUS_1;
-
-    constructor(number: number, description?: string) {
-        super(number, description);
-    }
+    Category: EventCategory = EventCategory.CAT_STATUS_1;
 
     Details: {
         SymbolicId?: string;
@@ -59,11 +49,7 @@ export class StatusEvent extends BaseEvent {
 }
 
 export class NamurNE107Event extends BaseEvent {
-    Category: EventCategory.CAT_NE107_2;
-
-    constructor(number: number, description?: string) {
-        super(number, description);
-    }
+    Category: EventCategory = EventCategory.CAT_NE107_2;
 
     Details: {
         DiagnosticCode?: string;
@@ -72,7 +58,7 @@ export class NamurNE107Event extends BaseEvent {
 }
 
 export class GenericEvent extends BaseEvent {
-    Category: EventCategory.CAT_GENERIC_99;
+    Category: EventCategory = EventCategory.CAT_GENERIC_99;
 
     Details: any;
 }
