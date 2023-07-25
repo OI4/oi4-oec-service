@@ -121,7 +121,7 @@ export class MessageValidator {
     }
 
     private static checkAgainstMalformedTopicLength14(info: TopicInfo) {
-        const allowedGetPubSetDelResources = [Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedGetPubSetDelResources = [Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST, Resources.EVENT];
 
         return this.checkAgainstResources(info, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources, allowedGetPubSetDelResources);
     }
