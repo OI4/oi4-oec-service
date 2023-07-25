@@ -48,7 +48,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
             await this.processMessage(topicInfo, parsedMessage, builder, oi4Application);
         } catch (e) {
-            logger.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.warning);
+            logger.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.notice);
             return;
         }
     }
