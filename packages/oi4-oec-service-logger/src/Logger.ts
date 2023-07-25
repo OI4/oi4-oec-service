@@ -1,9 +1,12 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {
+    DataSetClassIds,
+    DataSetWriterIdManager,
     ESyslogEventFilter,
-    IEvent,
+    EventCategory,
     Oi4Identifier,
     OPCUABuilder,
+    Resources,
     ServiceTypes,
     SyslogEvent
 } from '@oi4/oi4-oec-service-model';
@@ -31,8 +34,8 @@ class Logger {
     private _publishLevel: ESyslogEventFilter; /*tslint:disable-line*/
     private _name: string; /*tslint:disable-line*/
     private _mqttClient?: mqtt.AsyncClient;
-    // private readonly _oi4Id?: Oi4Identifier;
-    // private readonly _serviceType?: string;
+    private readonly _oi4Id?: Oi4Identifier;
+     private readonly _serviceType?: string;
     private readonly _builder?: OPCUABuilder;
     private readonly syslogFilterToEnum = {
         debug: 7,
@@ -87,8 +90,8 @@ class Logger {
         // Ignore the maximumPackageSize argument of the builder, because we only use the builder to create messages that contain one event.
         // A message with one event cannot be split into smaller messages and shall never exceed the maximum package size.
         this._builder = new OPCUABuilder(oi4Id, serviceType);
-        // this._oi4Id = oi4Id;
-        // this._serviceType = serviceType;
+        this._oi4Id = oi4Id;
+        this._serviceType = serviceType;
 
         this._syslogTransport = new Syslog({type: '5424'});
         this._winstonLogger = winston.createLogger({
@@ -107,25 +110,25 @@ class Logger {
                 message: data.message,
             });
             glossyParser.parse(msg, (parsedMessage: any) => {
-                // let syslogDataMessage;
                 if (this._builder) {
-                    // TODO handle the source
-                    const event: IEvent = new SyslogEvent(parsedMessage.prival);
+                    const event : SyslogEvent = new SyslogEvent(parsedMessage.prival);
+                    event.Category = EventCategory.CAT_SYSLOG_0,
                     event.Details = {
                         MSG: parsedMessage.message,
                         HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
                     };
-                    // syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                    //     Source: oi4Id,
-                    //     Payload: event,
-                    //     DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
-                    // }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
+
+                    const syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
+                         Source: oi4Id,
+                         Payload: event,
+                         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
+                     }], new Date(),  DataSetClassIds.Event); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */
-                        // this._mqttClient.publish(
-                        //     `Oi4/${this._serviceType}/${this._oi4Id}/Pub/Event/${this._oi4Id}/${this.categoryToTopic[EventCategory.CAT_SYSLOG_0]}/${data.level}`,
-                        //     JSON.stringify(syslogDataMessage)
-                        // );
+                        this._mqttClient.publish(
+                             `Oi4/${this._serviceType}/${this._oi4Id}/Pub/Event/${this._oi4Id}/${EventCategory.CAT_SYSLOG_0}/${data.level}`,
+                             JSON.stringify(syslogDataMessage)
+                        );
                     }
                 }
             });
@@ -186,39 +189,6 @@ class Logger {
         }
         return logString;
     }
-
-    /**
-     * Wrapper for console.log()
-     * @param {string} logstring - string that is to be logged to the console
-     * @param {string} color - either the chalk-color or the abbreviated version (e.g 'r' = chalk.red)
-     * @param {number} level - the level that the log is to be logged to
-     */
-    // log(logstring: string, level = ESyslogEventFilter.debug, category: EContainerEventCategory = EContainerEventCategory.CAT_GENERIC_99) {
-    //   if (this.enabled) {
-    //     if (this.genericFilterToEnum[level] >= this.genericFilterToEnum[this.level]) {
-    //       console.log(`${this._name}: ${logstring}`); // eslint-disable-line no-console
-    //       if (this._mqttClient) {
-    //         let logDataMessage;
-    //         if (this._builder) {
-    //           const logPayload: IContainerEvent = {
-    //             category: category,
-    //             number: 0,
-    //             description: logstring,
-    //             details: {
-    //               logLevel: level,
-    //               logOrigin: this._name,
-    //             }
-    //           };
-    //           logDataMessage = this._builder.buildOPCUADataMessage([{ payload: logPayload }], new Date(), '543ae05e-b6d9-4161-a0a3-350a0fac5976'); /*tslint:disable-line*/
-    //         }
-    //         const topicCategory = this.categoryToTopic[category];
-    //         /* Optimistic log...if we want to be certain, we have to convert this to async */
-    //         this._mqttClient.publish(`oi4/${this._serviceType}/${this._oi4Id}/pub/event/${topicCategory}/${level}/${this._oi4Id}`, JSON.stringify(logDataMessage));
-    //       }
-    //     }
-    //   }
-    //   return logstring;
-    // }
 }
 
 
