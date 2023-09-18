@@ -35,12 +35,13 @@ import {
     paginationSchemaJson,
 } from '@oi4/oi4-oec-json-schemas';
 import {buildOpcUaJsonValidator} from '../opcua/OpcUaSchemaProvider';
+import Ajv from 'ajv';
 
 
 /**
  * Builder method to create an Ajv based JSon Schema validator for OPC UA JSon messages
  */
-export const buildOecJsonValidator = () => {
+export const buildOecJsonValidator = (): Ajv => {
     const jsonValidator = buildOpcUaJsonValidator();
 
     // Then constants

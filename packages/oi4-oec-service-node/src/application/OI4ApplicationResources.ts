@@ -74,7 +74,7 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     private static extractMamFile(filePath: string): MasterAssetModel {
         if (existsSync(filePath)) {
             const mam = MasterAssetModel.clone(JSON.parse(readFileSync(filePath, 'utf8')));
-            mam.SerialNumber = os.hostname();
+            mam.SerialNumber = process.env.IS_LOCAL ? mam.SerialNumber : os.hostname();
             mam.ProductInstanceUri = mam.getOI4Id().toString();
             return mam;
         }

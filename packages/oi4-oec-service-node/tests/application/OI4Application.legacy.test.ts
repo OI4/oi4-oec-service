@@ -551,7 +551,7 @@ describe('OI4MessageBus legacy test', () => {
         return {
             MessageId: '',
             MessageType: EOPCUAMessageType.uaData,
-            DataSetClassId: DataSetClassIds[Resources.CONFIG],
+            DataSetClassId: DataSetClassIds.Config,
             PublisherId: `Registry/${appId}`,
             Messages: [
                 {

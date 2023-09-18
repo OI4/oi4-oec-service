@@ -59,7 +59,7 @@ const getMqttClient = (): mqtt.AsyncClient => {
 }
 
 const defaultAppId = Oi4Identifier.fromString('openindustry4.com/nd/nd/nd');
-const defaultSource = 'vendor.com/a/b/c'
+const defaultSource = Oi4Identifier.fromString('vendor.com/a/b/c');
 const defaultTopic = `Oi4/Registry/${defaultAppId}`;
 
 function equal(a: string, b: string): boolean {
@@ -83,7 +83,7 @@ const validDeviceTestData: ITestData[] = [
     {resource: Resources.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
     {resource: Resources.DATA, message: data_valid},
     {resource: Resources.CONFIG, message: config_valid},
-    {resource: Resources.EVENT, message: event_valid, source: defaultSource, filter: 'Status/Good'},
+    {resource: Resources.EVENT, message: event_valid, source: defaultSource.toString(), filter: 'Status/Good'},
     {resource: Resources.INTERFACES, message: interfaces_valid},
     {resource: Resources.RT_LICENSE, message: rtLicense_valid}];
 
@@ -98,7 +98,7 @@ function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true)
 
         const responseEntry = response.find((entry) =>
             entry.resource == request.Resource &&
-            equal(entry.source, request.Source) &&
+            equal(entry.source, request.Source?.toString()) &&
             equal(entry.filter, request.Filter));
         const message = responseEntry.message;
 
@@ -279,12 +279,12 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     it('should return full device conformity', async () => {
-
+        const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: defaultSource, message: mam_valid},
-            {resource: Resources.HEALTH, source: defaultSource, message: health_valid},
-            {resource: Resources.PROFILE, source: defaultSource, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: defaultSource, message: referenceDesignation_valid}
+            {resource: Resources.MAM, source: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -295,12 +295,12 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     it('should detect unknown resource in profile', async () => {
-
+        const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: defaultSource, message: mam_valid},
-            {resource: Resources.HEALTH, source: defaultSource, message: health_valid},
-            {resource: Resources.PROFILE, source: defaultSource, message: profile_device_unknown_resource},
-            {resource: Resources.REFERENCE_DESIGNATION, source: defaultSource, message: referenceDesignation_valid}
+            {resource: Resources.MAM, source: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, source: sourceString, message: profile_device_unknown_resource},
+            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -312,12 +312,12 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     it('should return partial device conformity if health is wrong', async () => {
-
+        const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: defaultSource, message: mam_valid},
-            {resource: Resources.HEALTH, source: defaultSource, message: mam_valid}, // return mam for health
-            {resource: Resources.PROFILE, source: defaultSource, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: defaultSource, message: referenceDesignation_valid}
+            {resource: Resources.MAM, source: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, source: sourceString, message: mam_valid}, // return mam for health
+            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -332,13 +332,13 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     it('should detect missing meta data', async () => {
-
+        const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: defaultSource, message: mam_valid},
-            {resource: Resources.HEALTH, source: defaultSource, message: health_valid},
-            {resource: Resources.PROFILE, source: defaultSource, message: profile_device_data_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: defaultSource, message: referenceDesignation_valid},
-            {resource: Resources.DATA, source: defaultSource, message: data_valid}
+            {resource: Resources.MAM, source: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, source: sourceString, message: profile_device_data_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid},
+            {resource: Resources.DATA, source: sourceString, message: data_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -351,7 +351,7 @@ describe('Unit test for ConformityValidator ', () => {
     it('should validate meta data conformity', async () => {
 
         const messages: ITestData[] = [
-            {resource: Resources.METADATA, source: defaultSource, message: metadata_valid},
+            {resource: Resources.METADATA, source: defaultSource.toString(), message: metadata_valid},
         ]
 
         const objectUnderTest = getObjectUnderTest(messages);
@@ -361,13 +361,13 @@ describe('Unit test for ConformityValidator ', () => {
     });
 
     it('should evaluate additional resources not included in the profile', async () => {
-
+        const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: defaultSource, message: mam_valid},
-            {resource: Resources.HEALTH, source: defaultSource, message: health_valid},
-            {resource: Resources.PROFILE, source: defaultSource, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: defaultSource, message: referenceDesignation_valid},
-            {resource: Resources.CONFIG, source: defaultSource, message: config_valid}
+            {resource: Resources.MAM, source: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid},
+            {resource: Resources.CONFIG, source: sourceString, message: config_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -384,7 +384,7 @@ describe('Unit test for ConformityValidator ', () => {
         async (data: ITestData) => {
 
             const objectUnderTest = getObjectUnderTest([data]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, Oi4Identifier.fromString(data.source), data.filter);
 
             const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
             const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
@@ -400,7 +400,7 @@ describe('Unit test for ConformityValidator ', () => {
         '($#) should return partial conformity for wrong correlationId -> $resource',
         async (data: ITestData) => {
             const objectUnderTest = getObjectUnderTest([data], false);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, Oi4Identifier.fromString(data.source), data.filter);
 
             const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
             const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
@@ -429,7 +429,7 @@ describe('Unit test for ConformityValidator ', () => {
                 source: data.source,
                 filter: data.filter
             }]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, data.source, data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, Oi4Identifier.fromString(data.source), data.filter);
 
             const addFilter = (): string => {
                 return data.filter ? `/${data.filter}` : '';
@@ -522,7 +522,7 @@ describe('Unit test for ConformityValidator ', () => {
 
 
     it('should check oi4 conformity', async () => {
-        const result = await ConformityValidator.checkOi4IdConformity(defaultAppId.toString());
+        const result = await ConformityValidator.checkOi4IdConformity(defaultAppId);
         expect(result).toBe(true);
     })
 });

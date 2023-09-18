@@ -37,7 +37,7 @@ export class MessageFactory {
         const method: Methods = Methods.GET;
         const resource: Resources = Resources.MAM;
         const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;
-        const source = 'fakeSource';
+        const source ='2/2/2/fakeSource';
         const licenseId = '1234';
         const filter = 'oi4_pv';
         const tag = 'tag';
@@ -56,7 +56,7 @@ export class MessageFactory {
                 tag: tag,
                 filter: filter,
                 licenseId: licenseId,
-                source: source
+                source:  Oi4Identifier.fromString(source)
             }
         };
 
@@ -73,7 +73,6 @@ export class MessageFactory {
         const getTopicPrefix = (): string => {
             return `oi4/${serviceType}`;
         }
-
         return {
             serviceType,
             resource,

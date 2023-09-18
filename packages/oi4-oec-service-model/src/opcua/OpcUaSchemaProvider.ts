@@ -14,8 +14,11 @@ import {
 } from '@oi4/oi4-oec-json-schemas';
 import Ajv from 'ajv';
 
-export const buildOpcUaJsonValidator = () => {
+import addFormats from 'ajv-formats';
+
+export const buildOpcUaJsonValidator = (): Ajv => {
     const jsonValidator = new Ajv();
+    addFormats(jsonValidator)
 
     // OPC UA common Schemas
     jsonValidator.addSchema(NetworkMessageSchemaJson, 'NetworkMessage.schema.json');

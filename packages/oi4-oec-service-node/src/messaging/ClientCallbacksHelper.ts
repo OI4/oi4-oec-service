@@ -39,7 +39,7 @@ export class ClientCallbacksHelper implements IClientCallbacksHelper {
                 Source: oi4Id,
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.HEALTH, oi4Id),
-            }], new Date(), DataSetClassIds.mam),
+            }], new Date(), DataSetClassIds.MAM),
         );
         logger.log('Connection to mqtt broker closed');
     };

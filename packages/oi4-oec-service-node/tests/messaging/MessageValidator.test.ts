@@ -1,7 +1,7 @@
 import {
     DataSetClassIds,
     IOPCUANetworkMessage,
-    Methods,
+    Methods, Oi4Identifier,
     OPCUABuilder,
     Resources,
     ServiceTypes
@@ -40,7 +40,7 @@ describe('Unit test for TopicParser', () => {
     it('If payload messages are not empty no message is written in in the log', async () => {
         defaultParsedMessage.Messages = [{
             DataSetWriterId: 1,
-            Source: 'asd',
+            Source: Oi4Identifier.fromString('a/b/c/d'),
             Payload: {}
         }]
         await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
@@ -74,7 +74,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('If checkDataSetClassId mismatch, an error is thrown', async () => {
-        defaultParsedMessage.DataSetClassId = DataSetClassIds[Resources.CONFIG]
+        defaultParsedMessage.DataSetClassId = DataSetClassIds.Config;
         const errMsg = `DataSetClassId mismatch, got ${defaultParsedMessage.DataSetClassId}, expected ${DataSetClassIds[defaultMessageItems.resource]}`;
         await checkAgainstError(async () => MessageValidator.doTopicDataValidation(defaultMessageItems.getDefaultTopicWrapper(), defaultParsedMessage), errMsg);
     });

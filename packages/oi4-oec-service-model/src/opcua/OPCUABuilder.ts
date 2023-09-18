@@ -7,7 +7,8 @@ import {
     IOPCUANetworkMessage
 } from './model/IOPCUA';
 
-import Ajv from 'ajv'; /*tslint:disable-line*/
+import Ajv from 'ajv';
+
 import {topicPathSchemaJson} from '@oi4/oi4-oec-json-schemas';
 
 import {buildOpcUaJsonValidator} from './OpcUaSchemaProvider';
@@ -21,7 +22,7 @@ export class OPCUABuilder {
     oi4Id: Oi4Identifier;
     serviceType: ServiceTypes;
     publisherId: string;
-    jsonValidator: Ajv.Ajv;
+    jsonValidator: Ajv;
     lastMessageId: string;
     private topicRex: RegExp;
     private readonly msgSizeOffset: number;
@@ -81,6 +82,9 @@ export class OPCUABuilder {
                 currentNetworkMessageIndex++;
             }
         }
+        if(dataSetPayloads.length === 0){
+            return networkMessageArray;
+        }
         if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
             const currentMessage = networkMessageArray[currentNetworkMessageIndex];
             // Pagination Object
@@ -116,22 +120,21 @@ export class OPCUABuilder {
      * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
      */
     buildOPCUANetworkMessage(dataSetPayloads: IOPCUADataSetMessage[], timestamp: Date, dataSetClassId: string, correlationId = ''): IOPCUANetworkMessage {
-        const opcUaDataPayload: IOPCUADataSetMessage[] = [];
         // Not sure why empty objects were converted to an empty array. The correct behaviour is building an Empty DataSetMessage...
         // if (Object.keys(actualPayload).length === 0 && actualPayload.constructor === Object) {
         //   opcUaDataPayload = [];
         // } else {
         //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
         // }
-        for (const payload of dataSetPayloads) {
-            opcUaDataPayload.push(this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.Filter, payload.MetaDataVersion));
-        }
+        const opcUaDataPayload: IOPCUADataSetMessage[] = dataSetPayloads.filter(payload => payload !== undefined).//
+            map(payload => this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.Filter, payload.MetaDataVersion));
+
         const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
         const opcUaDataMessage: IOPCUANetworkMessage = {
             MessageId: this.getUniqueMessageId(proposedMessageId),
             MessageType: EOPCUAMessageType.uaData,
-            DataSetClassId: dataSetClassId, // TODO: Generate UUID, but not here, make a lookup,
-            PublisherId: this.publisherId,
+            DataSetClassId: dataSetClassId,
+            PublisherId: this.publisherId, // TODO: Generate UUID, but not here, make a lookup,
             Messages: opcUaDataPayload,
             CorrelationId: correlationId,
         };
@@ -309,7 +312,7 @@ export class OPCUABuilder {
      */
     async checkOPCUAJSONValidity(payload: any): Promise<boolean> {
         try {
-            return await this.jsonValidator.validate('NetworkMessage.schema.json', payload);
+            return this.jsonValidator.validate('NetworkMessage.schema.json', payload);
         } catch (validateErr) {
             throw `Validation failed with: ${validateErr.message}`
         }
@@ -336,4 +339,8 @@ export class OPCUABuilder {
         }
         return 'none';
     }
+
+    // getLastValidationErrors(): ErrorObject[] {
+    //     return this.jsonValidator.errors;
+    // }
 }

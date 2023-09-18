@@ -39,7 +39,7 @@ export class ConformityValidator {
     private readonly conformityClient: mqtt.AsyncClient;
     private readonly messageBusLookup: IMessageBusLookup;
     private builder: OPCUABuilder;
-    private readonly jsonValidator: Ajv.Ajv;
+    private readonly jsonValidator: Ajv;
     static completeProfileList: Resources[] = Application.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
@@ -347,6 +347,7 @@ export class ConformityValidator {
 
     async checkMetaDataConformity(topicPreamble: string, source: Oi4Identifier, filter: string): Promise<IValidityDetails> {
         const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(Resources.METADATA, source);
+        // TODO DataSetClassIds[Resources.METADATA] will not return something
         const conformityPayload = this.builder.buildOPCUAMetaDataMessage('Validator', 'Conformity validator', {}, DataSetClassIds[Resources.METADATA], dataSetWriterId, filter, source) as any;
         conformityPayload.MetaData = {};
         const getRequest = new GetRequest(topicPreamble, Resources.METADATA, JSON.stringify(conformityPayload), source, filter);

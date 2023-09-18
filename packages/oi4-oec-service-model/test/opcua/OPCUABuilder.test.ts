@@ -51,7 +51,7 @@ describe('Unit test for MAMStorage reading', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => sameMessageIdPrefix);
-        const msg = builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.mam, '0');
+        const msg = builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.MAM, '0');
         expect(msg.MessageId.charAt(0)).toEqual('0');
         dateMock.mockRestore();
     });
@@ -137,14 +137,14 @@ describe('Unit test for MAMStorage reading', () => {
 
         const messages: IOPCUADataSetMessage[] = [{
             DataSetWriterId: 1,
-            Source: 'a/b/c/d',
+            Source: Oi4Identifier.fromString('a/b/c/d'),
             Filter: 'filter',
             Payload: [],
             Timestamp: '2022-01-01T12:00:00.000'
         },
             {
                 DataSetWriterId: 2,
-                Source: 'e/f/g/h',
+                Source: Oi4Identifier.fromString('e/f/g/h'),
                 Filter: 'oee',
                 Payload: [],
                 Timestamp: '2022-01-01T12:00:00.000'

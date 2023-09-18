@@ -119,8 +119,8 @@ export class OI4Application implements IOI4Application {
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
                 Source: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
-                DataSetWriterId: CDataSetWriterIdLookup[Resources.HEALTH]
-            }], new Date(), DataSetClassIds.health)), /*tslint:disable-line*/
+                DataSetWriterId: 0,
+            }], new Date(), DataSetClassIds.Health)), /*tslint:disable-line*/
             qos: 0,
             retain: false,
         }
@@ -374,8 +374,8 @@ export class OI4Application implements IOI4Application {
                     networkMessages);
                 logger.log(`Published ${resource} Pagination: ${nmIdx} of ${networkMessageArray.length} on ${this.topicPreamble}/${Methods.PUB}/${resource}${endTag}`, ESyslogEventFilter.informational);
             }
-        } catch {
-            console.log('Error in building paginated NMA');
+        } catch (error) {
+            logger.log(`Error in building paginated NMA:  ${error}`, ESyslogEventFilter.informational);
         }
     }
 
@@ -388,7 +388,7 @@ export class OI4Application implements IOI4Application {
     async sendEvent(event: IEvent, source: Oi4Identifier, filter: string): Promise<void> {
         const payload: IOPCUADataSetMessage[] = this.clientPayloadHelper.createPublishEventMessage(filter, source, event);
 
-        const networkMessage = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.event);
+        const networkMessage = this.builder.buildOPCUANetworkMessage(payload, new Date(), DataSetClassIds.Event);
         const publishAddress = `${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/${source}/${filter}`;
         await this.messageBus.publish(publishAddress, networkMessage);
         logger.log(`Published event on ${this.topicPreamble}/${Resources.EVENT}/${source}/${filter}`);
@@ -401,7 +401,7 @@ export class OI4Application implements IOI4Application {
             Source: source,
             Payload: status,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
+        }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
         await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, networkMessage);
     }
 
@@ -411,7 +411,7 @@ export class OI4Application implements IOI4Application {
             Source: this.oi4Id,
             Payload: this.applicationResources.config,
             DataSetWriterId: CDataSetWriterIdLookup[Resources.CONFIG],
-        }], new Date(), DataSetClassIds.event); /*tslint:disable-line*/
+        }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
         await this.messageBus.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, networkMessage);
         logger.log(`Published get config on ${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`);
     }
