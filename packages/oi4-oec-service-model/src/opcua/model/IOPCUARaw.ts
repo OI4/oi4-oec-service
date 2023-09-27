@@ -1,5 +1,6 @@
 import {EOPCUAMessageType, EOPCUAStatusCode} from './EOPCUA';
-import {IOPCUAConfigurationVersionDataType, IOPCUANetworkMessage} from './IOPCUA';
+import {IOPCUAConfigurationVersionDataType, IOPCUADataSetMessage, IOPCUANetworkMessage} from './IOPCUA';
+import {Oi4Identifier} from '../../model/Oi4Identifier';
 
 export function toOPCUANetworkMessageRaw(networkMessage: IOPCUANetworkMessage): IOPCUANetworkMessageRaw {
     const messages: IOPCUADataSetMessageRaw[] = networkMessage.Messages.map(message => {
@@ -12,6 +13,19 @@ export function toOPCUANetworkMessageRaw(networkMessage: IOPCUANetworkMessage): 
         ...networkMessage,
         Messages: messages
     } as IOPCUANetworkMessageRaw;
+}
+
+export function toOPCUANetworkMessage(networkMessage: IOPCUANetworkMessageRaw): IOPCUANetworkMessage {
+    const messages: IOPCUADataSetMessage[] = networkMessage.Messages.map(message => {
+        return {
+            ...message,
+            Source: Oi4Identifier.fromDNPString(message.Source)
+        }
+    });
+    return {
+        ...networkMessage,
+        Messages: messages
+    } as IOPCUANetworkMessage;
 }
 
 export interface IOPCUANetworkMessageRaw {

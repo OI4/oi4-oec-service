@@ -9,13 +9,12 @@ describe('Unit test for TopicParser', () => {
         appId: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         method: Methods.GET,
         resource: Resources.MAM,
-        oi4Id: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
         category: '',
         serviceType: ServiceTypes.REGISTRY,
         tag: '',
         filter: '',
         licenseId: '',
-        source: ''
+        source: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
     }
 
     const defaultTopicWrapper: TopicWrapper = {

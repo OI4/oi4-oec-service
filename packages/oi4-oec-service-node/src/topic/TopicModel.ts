@@ -15,7 +15,6 @@ export class TopicInfo {
     public appId: Oi4Identifier;
     public method: Methods;
     public resource: Resources;
-    public oi4Id: Oi4Identifier;
     public category?: string;
     public serviceType: ServiceTypes;
     public tag?: string;

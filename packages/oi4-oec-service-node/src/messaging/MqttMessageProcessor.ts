@@ -6,7 +6,7 @@ import {
     Methods, Oi4Identifier,
     OPCUABuilder,
     Resources,
-    StatusEvent
+    StatusEvent, toOPCUANetworkMessage,
 } from '@oi4/oi4-oec-service-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
@@ -26,9 +26,20 @@ export enum MqttMessageProcessorEventStatus {
 
 export interface IMqttMessageProcessor extends EventEmitter {
     processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
+
+    addRequestedMAM(topic: string, subscribed: boolean): void;
+
+    hasMAMRequest(topic: string): boolean;
 }
 
 export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
+
+    private readonly requestedMAMTopics: Map<string, boolean>;
+
+    constructor() {
+        super();
+        this.requestedMAMTopics = new Map();
+    }
 
     /**
      * Processes the incoming mqtt message by parsing the different elements of the topic and reacting to it
@@ -39,11 +50,13 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
      */
     public async processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void> {
         try {
-            const parsedMessage: IOPCUANetworkMessage = JSON.parse(message.toString());
+            const parsedMessage: IOPCUANetworkMessage = toOPCUANetworkMessage(JSON.parse(message.toString()));
             await MessageValidator.doPreliminaryValidation(topic, parsedMessage, builder);
 
             const wrapper: TopicWrapper = TopicParser.getTopicWrapperWithCommonInfo(topic);
             MessageValidator.doTopicDataValidation(wrapper, parsedMessage);
+
+            await this.removeMAMRequest(topic, oi4Application);
 
             const topicInfo: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
             await this.processMessage(topicInfo, parsedMessage, builder, oi4Application);
@@ -51,6 +64,22 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             logger.log(`Error while processing Mqtt Message: ${e.message}`, ESyslogEventFilter.notice);
             return;
         }
+    }
+
+    public addRequestedMAM(topic: string, subscribed: boolean): void {
+        this.requestedMAMTopics.set(topic, subscribed);
+    }
+
+    public hasMAMRequest(topic: string): boolean {
+        return this.requestedMAMTopics.has(topic);
+    }
+
+    protected async removeMAMRequest(topic: string, oi4Application: IOI4Application): Promise<void> {
+        const subscribed = this.requestedMAMTopics.get(topic);
+        if (subscribed === false) {
+            await oi4Application.messageBus.unsubscribe(topic);
+        }
+        this.requestedMAMTopics.delete(topic);
     }
 
     protected async processMessage(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void> {
@@ -91,7 +120,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
         if (topicInfo.resource === Resources.DATA) {
             // TODO should handle filter
-            await oi4Application.sendData(topicInfo.oi4Id);
+            await oi4Application.sendData(topicInfo.source);
             return;
         } else if (topicInfo.resource === Resources.METADATA) {
             await oi4Application.sendMetaData(topicInfo.filter);
@@ -125,7 +154,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 // TODO: this needs a rework. old source (now Source) is always an Oi4Identifier since V1.1 of the Guideline
         let source: Oi4Identifier;
         let filter = undefined;
-        const oi4IdSubResource = topicInfo.oi4Id;
+        const oi4IdSource = topicInfo.source;
         switch (topicInfo.resource) {
             case Resources.EVENT:
                 // TODO rework the events
@@ -134,23 +163,23 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
 
             case Resources.LICENSE:
             case Resources.LICENSE_TEXT:
-                source = oi4IdSubResource;
+                source = oi4IdSource;
                 filter = topicInfo.licenseId;
                 break;
 
             case Resources.CONFIG:
-                source = oi4IdSubResource;
+                source = oi4IdSource;
                 filter = topicInfo.filter;
                 break;
 
             case Resources.PUBLICATION_LIST:
             case Resources.SUBSCRIPTION_LIST:
-                source = oi4IdSubResource;
+                source = oi4IdSource;
                 filter = topicInfo.tag;
                 break;
 
             default:
-                source = oi4IdSubResource;
+                source = oi4IdSource;
                 break;
         }
 
@@ -196,14 +225,14 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     private async setConfig(topicInfo: TopicInfo, config: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
         const applicationResources = oi4Application.applicationResources;
         const filter = topicInfo.filter;
-        const oi4Id = topicInfo.oi4Id;
+        const source = topicInfo.source;
 
         const message = config.Messages[0]; // only one message is allowed for set/config so we ignore further messages
-        const result = applicationResources.setConfig(oi4Id, filter, message.Payload as IContainerConfig);
+        const result = applicationResources.setConfig(source, filter, message.Payload as IContainerConfig);
         const statusCode = result ? EOPCUAStatusCode.Good : EOPCUAStatusCode.Bad;
 
         const status: StatusEvent = new StatusEvent(statusCode);
-        await oi4Application.sendEventStatus(status, oi4Id);
+        await oi4Application.sendEventStatus(status, source);
         await oi4Application.sendResource(Resources.CONFIG, config.MessageId, applicationResources.oi4Id, filter, 0, 0); // TODO set source. Still valid?!
     }
 

@@ -63,7 +63,7 @@ describe('Unit test for TopicParser', () => {
         const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}/${defaultMessageItems.oi4Id}`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
-        expect(info.oi4Id).toStrictEqual(defaultMessageItems.oi4Id);
+        expect(info.source).toStrictEqual(defaultMessageItems.oi4Id);
     });
 
     function checkFilter(topic: string) {

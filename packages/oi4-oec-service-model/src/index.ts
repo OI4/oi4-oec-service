@@ -1,6 +1,7 @@
 export * from './validator/OecSchemaValidator';
 export * from './model/EContainer';
 export * from './model/DatatSetClassIds';
+export * from './model/DataSetWriterIds';
 export * from './model/Resources';
 export * from './model/IContainer';
 export * from './model/IEvent';

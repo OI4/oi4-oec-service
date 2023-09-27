@@ -67,7 +67,6 @@ export class TopicParser {
             appId: Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
             method: getTopicMethod(topicArray[6]),
             resource: getResource(topicArray[7]),
-            oi4Id: undefined,
             filter: undefined,
             category: undefined,
             serviceType: getServiceType(topicArray[1]),
@@ -87,15 +86,15 @@ export class TopicParser {
         return wrapper.topicInfo;
     }
 
-    private static extractPubEventInfo(wrapper: TopicWrapper) {
+    private static extractPubEventInfo(wrapper: TopicWrapper): void {
         wrapper.topicInfo.category = TopicParser.extractItem(wrapper, 8, 'Invalid category: ');
         wrapper.topicInfo.filter = TopicParser.extractItem(wrapper, 9, 'Invalid filter: ');
     }
 
-    private static extractResourceInfo(wrapper: TopicWrapper) {
+    private static extractResourceInfo(wrapper: TopicWrapper): void {
         if (wrapper.topicArray.length >= 12) {
 
-            TopicParser.extractOi4Id(wrapper);
+            TopicParser.extractSource(wrapper);
 
             if (wrapper.topicArray.length > 12) {
                 switch (wrapper.topicInfo.resource) {
@@ -122,18 +121,18 @@ export class TopicParser {
         }
     }
 
-    private static extractOi4Id(wrapper: TopicWrapper) {
+    private static extractSource(wrapper: TopicWrapper): void {
         if (TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
             throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
         }
-        wrapper.topicInfo.oi4Id = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11], true);
+        wrapper.topicInfo.source = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11], true);
     }
 
-    private static extractFilter(wrapper: TopicWrapper) {
+    private static extractFilter(wrapper: TopicWrapper): void {
         wrapper.topicInfo.filter = TopicParser.extractItem(wrapper, 12, 'Invalid filter: ');
     }
 
-    private static extractLicense(wrapper: TopicWrapper) {
+    private static extractLicense(wrapper: TopicWrapper): void {
         wrapper.topicInfo.licenseId = TopicParser.extractItem(wrapper, 12, 'Invalid licenseId: ');
     }
 

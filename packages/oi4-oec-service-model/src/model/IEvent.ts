@@ -8,6 +8,13 @@ export enum EventCategory {
     CAT_GENERIC_99 = 'CAT_GENERIC_99',
 }
 
+export enum EventFilter {
+    Syslog = 'Syslog',
+    Status = 'Status',
+    Ne107 = 'Ne107',
+    Generic = 'Generic',
+}
+
 export interface IEvent extends OI4Payload {
     Number: number;
     Description?: string;

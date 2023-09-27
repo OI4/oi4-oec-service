@@ -56,22 +56,6 @@ export function getResource(resource: string): Resources {
     }
 }
 
-// TODO I am totally wrong remove me for ever...
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const CDataSetWriterIdLookup: Record<string, number> = {
-    MAM: 1,
-    Health: 2,
-    License: 3,
-    LicenseText: 4,
-    RtLicense: 5,
-    Event: 6,
-    Profile: 7,
-    Config: 8,
-    PublicationList: 9,
-    SubscriptionList: 10,
-    Interfaces: 11
-}
-
 export class MasterAssetModel implements OI4Payload, IMasterAssetModel {
     Description: IOPCUALocalizedText;
     DeviceClass: string;

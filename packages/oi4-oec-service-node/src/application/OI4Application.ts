@@ -3,13 +3,14 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {initializeLogger, logger, updateMqttClient} from '@oi4/oi4-oec-service-logger';
 // DataSetClassIds
 import {
-    CDataSetWriterIdLookup,
     DataSetClassIds,
+    DataSetWriterIdManager,
     EDeviceHealth,
     ESyslogEventFilter,
     IEvent,
     IOI4ApplicationResources,
-    IOPCUADataSetMessage, IOPCUADataSetMetaData,
+    IOPCUADataSetMessage,
+    IOPCUADataSetMetaData,
     IOPCUANetworkMessage,
     MasterAssetModel,
     Methods,
@@ -21,7 +22,7 @@ import {
     SubscriptionList,
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
-import {oi4Namespace, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
+import {oi4Namespace, TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
 import {ClientCallbacksHelper, IClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
 import {IMqttMessageProcessor, MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
@@ -65,6 +66,8 @@ export interface IOI4Application {
     removeListener(event: string | symbol, listener: (...args: never[]) => void): void;
 
     preparePayload(resource: Resources, source: Oi4Identifier, filter?: string): Promise<ValidatedPayload>;
+
+    requestMAM(topicInfo: TopicInfo): Promise<void>;
 }
 
 export class OI4Application implements IOI4Application {
@@ -156,7 +159,7 @@ export class OI4Application implements IOI4Application {
 
     async addSubscription(topic: string, config: SubscriptionListConfig = SubscriptionListConfig.NONE_0, interval = 0): Promise<ISubscriptionGrant[]> {
         this.applicationResources.subscriptionList = this.applicationResources.subscriptionList.filter((item: {
-            TopicPath: string
+            TopicPath: string;
         }) => item.TopicPath !== topic);
         this.applicationResources.subscriptionList.push(SubscriptionList.clone({
             TopicPath: topic,
@@ -331,6 +334,34 @@ export class OI4Application implements IOI4Application {
         return payloadResult;
     }
 
+    public async requestMAM(topicInfo: TopicInfo): Promise<void> {
+
+        const networkMessage = this.builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.MAM, this.builder.getMessageId());
+
+        const topic = (method: Methods) => `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}/${method}/${Resources.MAM}/${topicInfo.source.toString()}`;
+        //const baseTopic = `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}`;
+        //const topic = `${baseTopic}/${Methods.PUB}/${Resources.MAM}/${topicInfo.source.toString()}`;
+        // Check if MAM has been requested already
+        const pubTopic = topic(Methods.PUB);
+        if (!this.mqttMessageProcess.hasMAMRequest(pubTopic)) {
+            // Check if MAM is part of the regular subscriptions...
+            const subscribed = !!this.applicationResources.subscriptionList.find(subscription => subscription.TopicPath == pubTopic);
+            this.mqttMessageProcess.addRequestedMAM(pubTopic, subscribed);
+            // ...and if not subscribe
+            if (!subscribed) {
+                const grants = await this.messageBus.subscribe(pubTopic);
+                logger.log(`Subscribed to ${topic} with ${grants.length}`, ESyslogEventFilter.debug);
+            }
+            // Send request
+            const getTopic = topic(Methods.GET);
+            await this.messageBus.publish(getTopic, networkMessage);
+            logger.log(`Published MAM request to app: ${topicInfo.appId} for resource: ${topicInfo.source}`, ESyslogEventFilter.informational);
+        } else {
+            logger.log(`MAM for app ${topicInfo.appId} and resource: ${topicInfo.source} already requested.`, ESyslogEventFilter.debug);
+        }
+
+    }
+
     // Basic Error Functions
     async sendError(error: string): Promise<void> {
         logger.log(`Error: ${error}`, ESyslogEventFilter.error);
@@ -400,7 +431,7 @@ export class OI4Application implements IOI4Application {
             SequenceNumber: 1,
             Source: source,
             Payload: status,
-            DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, source),
         }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
         await this.messageBus.publish(`${this.topicPreamble}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(this.builder.publisherId)}`, networkMessage);
     }
@@ -410,7 +441,7 @@ export class OI4Application implements IOI4Application {
             SequenceNumber: 1,
             Source: this.oi4Id,
             Payload: this.applicationResources.config,
-            DataSetWriterId: CDataSetWriterIdLookup[Resources.CONFIG],
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.CONFIG, this.oi4Id),
         }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
         await this.messageBus.publish(`${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`, networkMessage);
         logger.log(`Published get config on ${this.topicPreamble}/${Methods.GET}/${Resources.CONFIG}/${this.oi4Id}`);
@@ -423,7 +454,7 @@ export class OI4Application implements IOI4Application {
         return this.messageBus;
     }
 
-    get mqttMessageProcess() {
+    get mqttMessageProcess(): IMqttMessageProcessor {
         return this.mqttMessageProcessor;
     }
 }

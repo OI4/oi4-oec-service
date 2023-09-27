@@ -50,7 +50,6 @@ export class MessageFactory {
                 appId: appId,
                 method: method,
                 resource: resource,
-                oi4Id: oi4Id,
                 category: category,
                 serviceType: serviceType,
                 tag: tag,

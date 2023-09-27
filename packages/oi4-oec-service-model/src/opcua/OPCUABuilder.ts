@@ -17,6 +17,7 @@ import {v4 as uuid} from 'uuid'; /*tslint:disable-line*/
 import {EOPCUABuiltInType, EOPCUALocale, EOPCUAMessageType, EOPCUAStatusCode, EOPCUAValueRank} from './model/EOPCUA';
 import {ServiceTypes} from '../model/ServiceTypes';
 import {Oi4Identifier} from '../model/Oi4Identifier';
+import {EDataSetWriterIds} from '../model/DataSetWriterIds';
 
 export class OPCUABuilder {
     oi4Id: Oi4Identifier;
@@ -69,7 +70,7 @@ export class OPCUABuilder {
                         Page: currentNetworkMessageIndex + 1,
                         HasNext: true,
                         PaginationId: firstMessageId,
-                    }, timestamp, parseInt(`${remainingPayloads.DataSetWriterId}${currentNetworkMessageIndex}`, 10)
+                    }, timestamp, EDataSetWriterIds.Pagination,
                 ));
                 firstMessageId = undefined;
                 if (page !== 0 && currentNetworkMessageIndex >= page) {
@@ -82,7 +83,7 @@ export class OPCUABuilder {
                 currentNetworkMessageIndex++;
             }
         }
-        if(dataSetPayloads.length === 0){
+        if (dataSetPayloads.length === 0) {
             return networkMessageArray;
         }
         if (page === 0 || (page !== 0 && currentNetworkMessageIndex < page)) {
@@ -97,7 +98,7 @@ export class OPCUABuilder {
                     PaginationId: currentMessage.MessageId,
                 },
                 timestamp,
-                parseInt(`${currentMessage.Messages.slice(-1)[0].DataSetWriterId}${currentNetworkMessageIndex}`, 10)
+                EDataSetWriterIds.Pagination,
             ));
         }
         // If a specific Page was requested, we only send that Page
@@ -176,6 +177,11 @@ export class OPCUABuilder {
             this.lastMessageId = opcUaMetaDataMessage.MessageId;
         }
         return opcUaMetaDataMessage;
+    }
+
+    public getMessageId(): string {
+        const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
+        return this.getUniqueMessageId(proposedMessageId);
     }
 
     /**
