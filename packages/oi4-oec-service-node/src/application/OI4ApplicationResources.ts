@@ -1,4 +1,5 @@
 import {
+    AAS,
     Health,
     IContainerConfig,
     IContainerConfigConfigName,
@@ -99,6 +100,14 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.health;
         }
         return this.sources.get(oi4Id?.toString())?.health;
+    }
+
+    public getAAS(oi4Id: Oi4Identifier): AAS {
+        if (oi4Id.equals(this.oi4Id)) {
+            return this.aas;
+        }
+        // TODO source found with the OI4Identifier as key...
+        return this.sources.get(oi4Id?.toString())?.aas;
     }
 
     public hasSource(oi4Id: Oi4Identifier): boolean {

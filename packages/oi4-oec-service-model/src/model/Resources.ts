@@ -18,7 +18,8 @@ export enum Resources {
     PUBLICATION_LIST = 'PublicationList',
     SUBSCRIPTION_LIST = 'SubscriptionList',
     REFERENCE_DESIGNATION = 'ReferenceDesignation',
-    INTERFACES = 'Interfaces'
+    INTERFACES = 'Interfaces',
+    AAS = 'AAS'
 }
 
 export function getResource(resource: string): Resources {
@@ -51,6 +52,8 @@ export function getResource(resource: string): Resources {
             return Resources.REFERENCE_DESIGNATION;
         case Resources.INTERFACES:
             return Resources.INTERFACES;
+        case Resources.AAS:
+            return Resources.AAS;
         default:
             throw new Error(`Unknown resource: ${Resources}`);
     }
@@ -231,5 +234,25 @@ export interface IComponentObject {
     Component: string;
     LicAuthors: string[];
     LicAddText: string;
+}
+
+export class AAS implements OI4Payload {
+    readonly AASId: number;
+    readonly GlobalAssetId: number; // UInt16 (from 0 to 100%)
+
+    constructor(id: number, gId: number) {
+        this.AASId = id;
+        this.GlobalAssetId = gId;
+    }
+
+    resourceType(): Resources {
+        return Resources.AAS;
+    }
+
+    static clone(source: AAS): AAS {
+        return new AAS(source.AASId, source.GlobalAssetId);
+    }
+
+
 }
 

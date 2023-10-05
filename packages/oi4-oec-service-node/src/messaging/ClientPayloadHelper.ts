@@ -39,6 +39,15 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
+    getAASPayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier): ValidatedPayload {
+        const aas = applicationResources.getAAS(oi4Id);
+        if (aas === undefined) {
+            return {abortSending: true, payload: undefined};
+        }
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(aas, oi4Id)];
+        return {abortSending: false, payload: payload};
+    }
+
     createMamResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, source?: Oi4Identifier): ValidatedPayload {
         if (source) { // get mam from a specific asset
             const mam = applicationResources.getMasterAssetModel(source);

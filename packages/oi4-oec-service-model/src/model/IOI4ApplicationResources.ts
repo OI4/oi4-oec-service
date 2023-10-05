@@ -1,5 +1,6 @@
 import {IContainerConfig} from './IContainer';
 import {
+    AAS,
     Health,
     License,
     LicenseText,
@@ -43,6 +44,8 @@ export interface IOI4ApplicationResources extends IOI4Resource {
     addSource(source: IOI4Resource): void;
 
     removeSource(oi4Id: Oi4Identifier): boolean;
+
+    getAAS(oi4Id: Oi4Identifier): AAS;
 }
 
 export interface IOI4Resource {
@@ -56,4 +59,5 @@ export interface IOI4Resource {
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
+    aas: AAS;
 }

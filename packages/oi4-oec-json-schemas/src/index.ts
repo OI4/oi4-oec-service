@@ -8,6 +8,7 @@ import serviceTypeSchemaJson from './schemas/constants/serviceType.schema.json';
 import DeviceHealthEnumerationSchemaJson from './schemas/constants/DeviceHealthEnumeration.schema.json';
 
 // Payloads
+import aasSchemaJson from './schemas/AAS.schema.json';
 import healthSchemaJson from './schemas/Health.schema.json';
 import mamSchemaJson from './schemas/MAM.schema.json';
 import licenseSchemaJson from './schemas/License.schema.json';
@@ -61,6 +62,7 @@ export {
     serviceTypeSchemaJson,
     DeviceHealthEnumerationSchemaJson,
     // Payloads
+    aasSchemaJson,
     healthSchemaJson,
     mamSchemaJson,
     licenseSchemaJson,

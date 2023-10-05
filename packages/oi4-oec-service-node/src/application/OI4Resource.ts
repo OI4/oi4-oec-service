@@ -12,7 +12,8 @@ import {
     Resources,
     RTLicense,
     SubscriptionList,
-    Oi4Identifier
+    Oi4Identifier,
+    AAS
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
 
@@ -32,7 +33,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected _rtLicense: RTLicense;
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
-
+    protected _aas: AAS;
 
     constructor(mam: MasterAssetModel) {
         super();
@@ -80,6 +81,14 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     // --- MAM ---
     get mam(): MasterAssetModel {
         return this._mam;
+    }
+
+    get aas(): AAS {
+        return this._aas;
+    }
+
+    set aas(aas: AAS) {
+        this._aas = aas;
     }
 
     // --- Profile ---

@@ -1,0 +1,16 @@
+{
+  "$id": "AAS.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A representation of an AAS message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["AASId, GlobalAssetId"],
+  "properties": {
+    "AASId": {
+      "$ref": "dataTypes/int32.schema.json"
+    },
+    "GlobalAssetId": {
+      "$ref": "dataTypes/int32.schema.json"
+    }
+  }
+}

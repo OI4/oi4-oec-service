@@ -1,0 +1,29 @@
+[
+  ["empty", {}],
+  [
+    "AASId is missing",
+    {
+      "GlobalAssetId": 50
+    }
+  ],
+  [
+    "GlobalAssetId is missing",
+    {
+      "AASId": 20
+    }
+  ],
+  [
+    "wrong AASId type",
+    {
+      "AASId": "20",
+      "GlobalAssetId": 50
+    }
+  ],
+  [
+    "wrong GlobalAssetId type",
+    {
+      "AASId": 20,
+      "GlobalAssetId": "50"
+    }
+  ]
+]
