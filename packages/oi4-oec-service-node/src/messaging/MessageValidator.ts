@@ -17,7 +17,7 @@ import {
 export class MessageValidator {
 
     static async doPreliminaryValidation(topic: string, parsedMessage: IOPCUANetworkMessage, builder: OPCUABuilder): Promise<void> {
-        if (parsedMessage.Messages.length === 0) {
+        if (topic.indexOf(`/${Methods.GET}/`) === -1 && parsedMessage?.Messages?.length === 0) {
             logger.log('Messages Array empty in message - check DataSetMessage format', ESyslogEventFilter.warning);
         }
 

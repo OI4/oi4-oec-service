@@ -338,7 +338,7 @@ export class OI4Application implements IOI4Application {
 
         const networkMessage = this.builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.MAM, this.builder.getMessageId());
 
-        const topic = (method: Methods) => `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}/${method}/${Resources.MAM}/${topicInfo.source.toString()}`;
+        const topic = (method: Methods): string => `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}/${method}/${Resources.MAM}/${topicInfo.source.toString()}`;
         //const baseTopic = `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}`;
         //const topic = `${baseTopic}/${Methods.PUB}/${Resources.MAM}/${topicInfo.source.toString()}`;
         // Check if MAM has been requested already

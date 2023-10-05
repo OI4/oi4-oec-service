@@ -3,7 +3,7 @@ import {
     ESyslogEventFilter,
     IContainerConfig,
     IOPCUANetworkMessage,
-    Methods, Oi4Identifier,
+    Methods,
     OPCUABuilder,
     Resources,
     StatusEvent, toOPCUANetworkMessage,
@@ -151,39 +151,33 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
                 }
             }
         }
-// TODO: this needs a rework. old source (now Source) is always an Oi4Identifier since V1.1 of the Guideline
-        let source: Oi4Identifier;
+
         let filter = undefined;
         const oi4IdSource = topicInfo.source;
         switch (topicInfo.resource) {
             case Resources.EVENT:
-                // TODO rework the events
-                source = undefined; // `${topicInfo.category}/${topicInfo.filter}`;
                 break;
 
             case Resources.LICENSE:
             case Resources.LICENSE_TEXT:
-                source = oi4IdSource;
                 filter = topicInfo.licenseId;
                 break;
 
             case Resources.CONFIG:
-                source = oi4IdSource;
                 filter = topicInfo.filter;
                 break;
 
             case Resources.PUBLICATION_LIST:
             case Resources.SUBSCRIPTION_LIST:
-                source = oi4IdSource;
                 filter = topicInfo.tag;
                 break;
 
             default:
-                source = oi4IdSource;
                 break;
         }
 
-        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, source, filter, page, perPage)
+        await oi4Application.sendResource(topicInfo.resource, parsedMessage.MessageId, oi4IdSource, filter, page, perPage);
+        logger.log(`Get request for ${topicInfo.resource} - ${oi4IdSource} responded`, ESyslogEventFilter.informational);
     }
 
     private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {

@@ -16,3 +16,4 @@ export {IOI4MessageBus, OI4MessageBus} from './messaging/OI4MessageBus';
 export * from './messaging/MqttMessageProcessor';
 export * from './messaging/MessagingModel';
 export * from './messaging/MessageBuffer';
+export * from './utilities/BaseCredentialsHelper';

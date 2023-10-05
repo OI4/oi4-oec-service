@@ -12,7 +12,7 @@ export class BaseCredentialsHelper {
         this.settingsPaths = settingsPaths;
     }
 
-    protected static decodeFromBase64(string: string) {
+    public static decodeFromBase64(string: string): string {
         const buff = Buffer.from(string, 'base64');
         return buff.toString('utf-8');
     }
@@ -27,7 +27,7 @@ export class BaseCredentialsHelper {
         return this.decodeFromBase64(cleanedSecret);
     }
 
-    protected static validateAndParseCredentials(decodedCredentials: string): Credentials {
+    public static validateAndParseCredentials(decodedCredentials: string): Credentials {
         const usernamePasswordSeparatorPosition = indexOf(decodedCredentials, ':');
         if( decodedCredentials.startsWith(':') ||
             usernamePasswordSeparatorPosition == -1) {
