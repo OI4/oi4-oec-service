@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-node",
-  "version": "1.1.0-preview.8",
+  "version": "1.1.0-preview.9",
   "description": "An OI4-compliant base service covering most of the \"mandatory\" functionality by the development guideline",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "MIT",
@@ -20,9 +20,9 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-conformity-validator": "^1.1.0-preview.8",
-    "@oi4/oi4-oec-service-logger": "^1.1.0-preview.8",
-    "@oi4/oi4-oec-service-model": "^1.1.0-preview.8",
+    "@oi4/oi4-oec-service-conformity-validator": "^1.1.0-preview.9",
+    "@oi4/oi4-oec-service-logger": "^1.1.0-preview.9",
+    "@oi4/oi4-oec-service-model": "^1.1.0-preview.9",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1"
