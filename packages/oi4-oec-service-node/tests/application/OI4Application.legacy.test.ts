@@ -15,8 +15,8 @@ import fs = require('fs'); /*tslint:disable-line*/
 import {IOI4Application, MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
 import {
     Application,
-    CDataSetWriterIdLookup,
     DataSetClassIds,
+    DataSetWriterIdManager,
     EDeviceHealth,
     EOPCUABaseDataType,
     EOPCUALocale,
@@ -450,7 +450,7 @@ describe('OI4MessageBus legacy test', () => {
     }
 
     it('should prepare profile payload when filter !== oi4Id', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.Profile.toString(), Resources.PROFILE);
+        const result = await getPayload('', Resources.PROFILE);
         checkProfilePayload(result.payload[0]);
     });
 
@@ -460,12 +460,12 @@ describe('OI4MessageBus legacy test', () => {
     });
 
     it('should prepare rt license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.RtLicense.toString(), Resources.RT_LICENSE);
+        const result = await getPayload('', Resources.RT_LICENSE);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
     });
 
     it('should prepare health payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.Health.toString(), Resources.HEALTH, defaultOI4Id);
+        const result = await getPayload('', Resources.HEALTH, defaultOI4Id);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
     });
 
@@ -476,7 +476,7 @@ describe('OI4MessageBus legacy test', () => {
     });
 
     it('should prepare license payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.License.toString(), Resources.LICENSE, defaultOI4Id);
+        const result = await getPayload('', Resources.LICENSE, defaultOI4Id);
         for (let i = 0; i < result.payload.length; i++) {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({components: getResourceInfo().license[i].Components}));
@@ -505,7 +505,7 @@ describe('OI4MessageBus legacy test', () => {
 
     // TODO refactor this test
     it('should prepare config payload', async () => {
-        const result = await getPayload(CDataSetWriterIdLookup.Config.toString(), Resources.CONFIG, defaultOI4Id);
+        const result = await getPayload('', Resources.CONFIG, defaultOI4Id);
         expect(result).toBeDefined();
         //expect(JSON.stringify(result.payload[0].Payload))
         //    .toBe(JSON.stringify(getResourceInfo().config));
@@ -555,7 +555,7 @@ describe('OI4MessageBus legacy test', () => {
             PublisherId: `Registry/${appId}`,
             Messages: [
                 {
-                    DataSetWriterId: CDataSetWriterIdLookup[Resources.EVENT],
+                    DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, appId),
                     Source: appId,
                     Payload:
                         {
