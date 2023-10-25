@@ -14,6 +14,7 @@ const oi4ApplicationResources = new MockOI4ApplicationResources();
 let oi4Application: IOI4Application;
 
 const publishMock = jest.spyOn(MockOI4MessageBus.prototype, 'publish');
+
 /********************************
  * Test functions and factories *
  ********************************/
