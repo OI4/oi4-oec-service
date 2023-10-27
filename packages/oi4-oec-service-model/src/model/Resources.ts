@@ -237,10 +237,10 @@ export interface IComponentObject {
 }
 
 export class AAS implements OI4Payload {
-    readonly AASId: number;
-    readonly GlobalAssetId: number; // UInt16 (from 0 to 100%)
+    readonly AASId: string;
+    readonly GlobalAssetId: string;
 
-    constructor(id: number, gId: number) {
+    constructor(id: string, gId: string) {
         this.AASId = id;
         this.GlobalAssetId = gId;
     }

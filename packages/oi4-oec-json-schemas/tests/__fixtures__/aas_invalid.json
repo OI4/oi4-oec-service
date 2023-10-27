@@ -3,13 +3,13 @@
   [
     "AASId is missing",
     {
-      "GlobalAssetId": 50
+      "GlobalAssetId": "50"
     }
   ],
   [
     "GlobalAssetId is missing",
     {
-      "AASId": 20
+      "AASId": "20"
     }
   ],
   [

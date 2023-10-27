@@ -7,10 +7,10 @@
   "required": ["AASId, GlobalAssetId"],
   "properties": {
     "AASId": {
-      "$ref": "dataTypes/int32.schema.json"
+      "type": "string"
     },
     "GlobalAssetId": {
-      "$ref": "dataTypes/int32.schema.json"
+      "type": "string"
     }
   }
 }

@@ -1,107 +1,107 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`mam schema (0) match fails for invalid config -> empty: empty 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must have required property 'DeviceClass'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'DeviceManual'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'DeviceRevision'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'HardwareRevision'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'Manufacturer'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'ManufacturerUri'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'Model'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'ProductCode'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'ProductInstanceUri'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'RevisionCounter'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'SerialNumber'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m[31m  must have required property 'SoftwareRevision'[39m
-[31m    Path:     MAM.schema.json#/required[39m
-[31m[39m"
+  must have required property 'DeviceClass'
+    Path:     MAM.schema.json#/required
+  must have required property 'DeviceManual'
+    Path:     MAM.schema.json#/required
+  must have required property 'DeviceRevision'
+    Path:     MAM.schema.json#/required
+  must have required property 'HardwareRevision'
+    Path:     MAM.schema.json#/required
+  must have required property 'Manufacturer'
+    Path:     MAM.schema.json#/required
+  must have required property 'ManufacturerUri'
+    Path:     MAM.schema.json#/required
+  must have required property 'Model'
+    Path:     MAM.schema.json#/required
+  must have required property 'ProductCode'
+    Path:     MAM.schema.json#/required
+  must have required property 'ProductInstanceUri'
+    Path:     MAM.schema.json#/required
+  must have required property 'RevisionCounter'
+    Path:     MAM.schema.json#/required
+  must have required property 'SerialNumber'
+    Path:     MAM.schema.json#/required
+  must have required property 'SoftwareRevision'
+    Path:     MAM.schema.json#/required
+"
 `;
 
 exports[`mam schema (1) match fails for invalid config -> null values: null values 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /Description must be object[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/type[39m
-[31m[39m[31m  /DeviceClass must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/DeviceClass/type[39m
-[31m[39m[31m  /DeviceManual must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/DeviceManual/type[39m
-[31m[39m[31m  /DeviceRevision must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/DeviceRevision/type[39m
-[31m[39m[31m  /HardwareRevision must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/HardwareRevision/type[39m
-[31m[39m[31m  /Manufacturer/Locale must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Manufacturer/Text must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/Text/type[39m
-[31m[39m[31m  /ManufacturerUri must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/ManufacturerUri/type[39m
-[31m[39m[31m  /Model/Locale must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type[39m
-[31m[39m[31m  /Model/Text must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/Text/type[39m
-[31m[39m[31m  /ProductCode must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/ProductCode/type[39m
-[31m[39m[31m  /ProductInstanceUri must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/ProductInstanceUri/type[39m
-[31m[39m[31m  /RevisionCounter must be >= -2147483648[39m
-[31m    Received: [33m<number>[39m[31m -2147483649[39m
-[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/minimum[39m
-[31m[39m[31m  /SerialNumber must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/SerialNumber/type[39m
-[31m[39m[31m  /SoftwareRevision must be string[39m
-[31m    Received: [33m<null>[39m[31m[39m
-[31m    Path:     MAM.schema.json#/properties/SoftwareRevision/type[39m
-[31m[39m"
+  /Description must be object
+    Received: <null>
+    Path:     MAM.schema.json#/type
+  /DeviceClass must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/DeviceClass/type
+  /DeviceManual must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/DeviceManual/type
+  /DeviceRevision must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/DeviceRevision/type
+  /HardwareRevision must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/HardwareRevision/type
+  /Manufacturer/Locale must be string
+    Received: <null>
+    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type
+  /Manufacturer/Text must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/Text/type
+  /ManufacturerUri must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/ManufacturerUri/type
+  /Model/Locale must be string
+    Received: <null>
+    Path:     MAM.schema.jsonconstants/locale.pattern.schema.json/type
+  /Model/Text must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/Text/type
+  /ProductCode must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/ProductCode/type
+  /ProductInstanceUri must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/ProductInstanceUri/type
+  /RevisionCounter must be >= -2147483648
+    Received: <number> -2147483649
+    Path:     MAM.schema.jsondataTypes/int32.schema.json/minimum
+  /SerialNumber must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/SerialNumber/type
+  /SoftwareRevision must be string
+    Received: <null>
+    Path:     MAM.schema.json#/properties/SoftwareRevision/type
+"
 `;
 
 exports[`mam schema (2) match fails for invalid config -> invalid property Foobar: invalid property Foobar 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  must NOT have additional properties, but found 'Foobar'[39m
-[31m    Expected: [33m<boolean>[39m[31m false[39m
-[31m    Path:     MAM.schema.json#/additionalProperties[39m
-[31m[39m[31m  /RevisionCounter must be <= 2147483647[39m
-[31m    Received: [33m<number>[39m[31m 2147483648[39m
-[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum[39m
-[31m[39m"
+  must NOT have additional properties, but found 'Foobar'
+    Expected: <boolean> false
+    Path:     MAM.schema.json#/additionalProperties
+  /RevisionCounter must be <= 2147483647
+    Received: <number> 2147483648
+    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum
+"
 `;
 
 exports[`mam schema (3) match fails for invalid config -> revision counter exceeds int32: revision counter exceeds int32 1`] = `
-"[2mexpect([22m[31mreceived[39m[2m).toMatchSchema([22m[32mschema[39m[2m)[22m
+"expect(received).toMatchSchema(schema)
 
 received
-[31m  /RevisionCounter must be <= 2147483647[39m
-[31m    Received: [33m<number>[39m[31m 2147483648[39m
-[31m    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum[39m
-[31m[39m"
+  /RevisionCounter must be <= 2147483647
+    Received: <number> 2147483648
+    Path:     MAM.schema.jsondataTypes/int32.schema.json/maximum
+"
 `;

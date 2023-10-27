@@ -1,11 +1,11 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {
-    Application,
     buildOecJsonValidator,
     DataSetClassIds,
     DataSetWriterIdManager,
-    Device,
+    profileApplication,
+    profileDevice,
     EAssetType,
     ESyslogEventFilter,
     IOPCUADataSetMessage,
@@ -40,7 +40,7 @@ export class ConformityValidator {
     private readonly messageBusLookup: IMessageBusLookup;
     private builder: OPCUABuilder;
     private readonly jsonValidator: Ajv;
-    static completeProfileList: Resources[] = Application.full;
+    static completeProfileList: Resources[] = profileApplication.full;
     static readonly serviceTypes = serviceTypeSchemaJson.enum;
 
     private readonly conformityErrorLogLevel: ESyslogEventFilter;
@@ -338,9 +338,9 @@ export class ConformityValidator {
     static getMandatoryResources(assetType: EAssetType): Resources[] {
         let mandatoryResources: Resources[];
         if (assetType === EAssetType.application) {
-            mandatoryResources = Application.mandatory;
+            mandatoryResources = profileApplication.mandatory;
         } else {
-            mandatoryResources = Device.mandatory;
+            mandatoryResources = profileDevice.mandatory;
         }
         return mandatoryResources;
     }

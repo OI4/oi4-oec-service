@@ -4,5 +4,5 @@ const baseConfig = require('../../jest.config')
 module.exports = {
   ...baseConfig,
   moduleNameMapper: {},
-  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
 }

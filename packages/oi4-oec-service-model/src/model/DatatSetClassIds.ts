@@ -10,6 +10,7 @@ export interface IDataSetClassIds extends Record<string, string> {
     PublicationList: string;
     SubscriptionList: string;
     Interfaces: string;
+    AAS: string;
 }
 
 export const DataSetClassIds: IDataSetClassIds = {
@@ -24,5 +25,6 @@ export const DataSetClassIds: IDataSetClassIds = {
     PublicationList: '217434d6-6e1e-4230-b907-f52bc9ffe152',
     SubscriptionList: 'e5d68c47-c276-4929-8ab9-4c1090cac785',
     ReferenceDesignation: '27a75019-164a-496d-a38b-90e8a55c2cfa',
-    Interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54'
+    Interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54',
+    AAS: '96d22d73-bce6-42d3-9949-123456'
 }

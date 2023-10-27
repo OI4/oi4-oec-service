@@ -1,5 +1,5 @@
 import {
-    Application,
+    profileApplication,
     EDeviceHealth,
     Health,
     IContainerConfig,
@@ -40,7 +40,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
 
         this._mam = mam;
 
-        this._profile = new Profile(Application.mandatory);
+        this._profile = new Profile(profileApplication.mandatory);
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
 

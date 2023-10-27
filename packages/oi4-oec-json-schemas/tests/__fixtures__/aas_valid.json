@@ -2,8 +2,8 @@
   [
     "normal AAS",
     {
-      "AASId": 20,
-      "AASSubModelId": 50
+      "AASId": "ABC_20",
+      "GlobalAssetId": "ABC_50"
     }
   ]
 ]
