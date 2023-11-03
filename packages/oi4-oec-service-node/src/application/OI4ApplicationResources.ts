@@ -17,12 +17,14 @@ import {
     Resources,
     RTLicense,
     SubscriptionList,
-    SubscriptionListConfig
+    SubscriptionListConfig,
+    OI4ResourceEvent
 } from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
-import {OI4Resource, OI4ResourceEvent} from './OI4Resource';
+import {OI4Resource} from './OI4Resource';
 import os from 'os';
 import path = require('path');
+import EventEmitter from 'events';
 
 export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
@@ -38,9 +40,8 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
     /**
      * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
      * */
-    constructor(mamFile = defaultMAMFile) {
-        super(OI4ApplicationResources.extractMamFile(mamFile));
-
+    constructor(mamFile = defaultMAMFile, emitter = new EventEmitter()) {
+        super(OI4ApplicationResources.extractMamFile(mamFile), emitter);
         this.sources = new Map<string, IOI4Resource>();
 
         this.dataLookup = {};
@@ -81,6 +82,10 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         throw new Error(`MAM file ${path.resolve(filePath)} does not exist`);
     }
 
+    public on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): EventEmitter {
+        return this.eventEmitter.on(event, listener);
+    }
+
     get oi4Id(): Oi4Identifier {
         return this.mam.getOI4Id();
     }
@@ -109,14 +114,20 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return this.sources.get(oi4Id?.toString());
     }
 
-    public addSource(source: IOI4Resource): void {
+    public addSource(src: IOI4Resource | MasterAssetModel): IOI4Resource {
+        const source: IOI4Resource = (src as IOI4Resource).mam !== undefined ? src as IOI4Resource : new OI4Resource(src as MasterAssetModel, this.eventEmitter);
         this.sources.set(source.oi4Id?.toString(), source);
         // TODO add sub resource to publication and subscription list
-        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id);
+        this.emit(OI4ResourceEvent.RESOURCE_ADDED, source.oi4Id, Resources.MAM);
+        return source;
+    }
+
+    public newSource(mam: MasterAssetModel): IOI4Resource {
+        return new OI4Resource(mam, this.eventEmitter);
     }
 
     public removeSource(oi4Id: Oi4Identifier): boolean {
-        this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id);
+        this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id, Resources.MAM);
         return this.sources.delete(oi4Id?.toString());
         // TODO remove sub resource to publication and subscription list
     }

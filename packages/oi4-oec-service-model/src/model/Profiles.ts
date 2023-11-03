@@ -17,7 +17,7 @@ const profileFull: Resources [] = [
     Resources.INTERFACES
 ];
 
-export const Application = {
+export const profileApplication = {
     mandatory:  [
         Resources.MAM,
         Resources.HEALTH,
@@ -29,7 +29,7 @@ export const Application = {
     full: profileFull
 };
 
-export const Device = {
+export const profileDevice = {
 
     mandatory: [
         Resources.MAM,

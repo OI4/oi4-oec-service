@@ -12,6 +12,7 @@ import {
 } from './Resources';
 import {IOPCUAMetaData, IOPCUANetworkMessage} from '../opcua/model/IOPCUA';
 import {Oi4Identifier} from './Oi4Identifier';
+import {EventEmitter} from 'events';
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 
@@ -32,7 +33,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean;
 
-    on(event: string, listener: Function): this;
+    on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): EventEmitter;
 
     addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 
@@ -40,9 +41,10 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     getSource(oi4Id: Oi4Identifier): IOI4Resource;
 
-    addSource(source: IOI4Resource): void;
+    addSource(source: IOI4Resource | MasterAssetModel): IOI4Resource;
 
     removeSource(oi4Id: Oi4Identifier): boolean;
+
 }
 
 export interface IOI4Resource {
@@ -56,4 +58,10 @@ export interface IOI4Resource {
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
+}
+
+export enum OI4ResourceEvent {
+    RESOURCE_CHANGED = 'resourceChanged',
+    RESOURCE_ADDED = 'resourceAdded',
+    RESOURCE_REMOVED = 'resourceRemoved',
 }

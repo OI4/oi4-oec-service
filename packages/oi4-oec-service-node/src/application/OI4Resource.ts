@@ -1,5 +1,5 @@
 import {
-    Application,
+    profileApplication,
     EDeviceHealth,
     Health,
     IContainerConfig,
@@ -12,17 +12,15 @@ import {
     Resources,
     RTLicense,
     SubscriptionList,
-    Oi4Identifier
+    Oi4Identifier,
+    //AAS,
+    OI4ResourceEvent
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
 
-export enum OI4ResourceEvent {
-    RESOURCE_CHANGED = 'resourceChanged',
-    RESOURCE_ADDED = 'resourceChanged',
-    RESOURCE_REMOVED = 'resourceRemoved',
-}
+export class OI4Resource implements IOI4Resource {
+    readonly eventEmitter: EventEmitter;
 
-export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected readonly _profile: Profile;
     protected readonly _mam: MasterAssetModel;
     protected _health: Health;
@@ -33,13 +31,12 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
 
-
-    constructor(mam: MasterAssetModel) {
-        super();
+    constructor(mam: MasterAssetModel, eventEmitter: EventEmitter) {
+        this.eventEmitter = eventEmitter;
 
         this._mam = mam;
 
-        this._profile = new Profile(Application.mandatory);
+        this._profile = new Profile(profileApplication.mandatory);
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
 
@@ -50,6 +47,10 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         this._publicationList = []
 
         this._subscriptionList = []
+    }
+
+    emit(event: OI4ResourceEvent, oi4Id: Oi4Identifier, resource: Resources): boolean {
+        return this.eventEmitter.emit(event, oi4Id, resource);
     }
 
     get oi4Id(): Oi4Identifier {
@@ -67,7 +68,7 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     }
 
     // --- HEALTH ---
-    get health() {
+    get health(): Health {
         return this._health;
     }
 
@@ -81,6 +82,15 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
     get mam(): MasterAssetModel {
         return this._mam;
     }
+
+    //get aas(): AAS {
+    //    return this._aas;
+    //}
+
+    //set aas(aas: AAS) {
+    //    this._aas = aas;
+    //    this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.AAS);
+    //}
 
     // --- Profile ---
     get profile(): Profile {
@@ -128,8 +138,8 @@ export class OI4Resource extends EventEmitter implements IOI4Resource {
         return this._publicationList.filter((elem: PublicationList) => {
             if (oi4Id !== undefined && !oi4Id.equals(elem.Source)) return false;
             if (resourceType !== undefined && elem.Resource !== resourceType) return false;
-            if (tag !== undefined && elem.Filter !== tag) return false;
-            return true;
+            return !(tag !== undefined && elem.Filter !== tag);
+
         });
     }
 
