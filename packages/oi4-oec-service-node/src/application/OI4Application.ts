@@ -20,14 +20,14 @@ import {
     ServiceTypes,
     StatusEvent,
     SubscriptionList,
-    SubscriptionListConfig
+    SubscriptionListConfig,
+    OI4ResourceEvent
 } from '@oi4/oi4-oec-service-model';
 import {oi4Namespace, TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
 import {ClientCallbacksHelper, IClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
 import {IMqttMessageProcessor, MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
 import {MqttSettings} from './MqttSettings';
-import {OI4ResourceEvent} from './OI4Resource';
 import {ISubscriptionGrant} from 'mqtt';
 import {IOI4MessageBus, OI4MessageBus} from '../messaging/OI4MessageBus';
 
@@ -201,13 +201,13 @@ export class OI4Application implements IOI4Application {
     }
 
     private resourceChangedCallback(oi4Id: Oi4Identifier, resource: Resources): void {
-        if (resource === Resources.HEALTH) {
-            this.sendResource(Resources.HEALTH, '', oi4Id, '').then();
-        }
+        logger.log(`Resource changed called for: ${resource} - ${oi4Id.toString()}`, ESyslogEventFilter.informational);
+        this.sendResource(resource, '', oi4Id, '').then();
     }
 
-    private resourceAddedCallback(oi4Id: Oi4Identifier): void {
-        this.sendResource(Resources.MAM, '', oi4Id, '').then();
+    private resourceAddedCallback(oi4Id: Oi4Identifier, resource = Resources.MAM): void {
+        logger.log(`Resource added called for: ${resource} - ${oi4Id.toString()}`, ESyslogEventFilter.informational);
+        this.sendResource(resource, '', oi4Id, '').then();
     }
 
     // GET SECTION ----------------//
