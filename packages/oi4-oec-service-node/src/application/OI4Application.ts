@@ -21,7 +21,8 @@ import {
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig,
-    OI4ResourceEvent
+    OI4ResourceEvent,
+    getDataSetClassId
 } from '@oi4/oi4-oec-service-model';
 import {oi4Namespace, TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
@@ -68,6 +69,8 @@ export interface IOI4Application {
     preparePayload(resource: Resources, source: Oi4Identifier, filter?: string): Promise<ValidatedPayload>;
 
     requestMAM(topicInfo: TopicInfo): Promise<void>;
+
+    sendSetResource(topicInfo: TopicInfo, resource: any): Promise<void>;
 }
 
 export class OI4Application implements IOI4Application {
@@ -360,6 +363,20 @@ export class OI4Application implements IOI4Application {
             logger.log(`MAM for app ${topicInfo.appId} and resource: ${topicInfo.source} already requested.`, ESyslogEventFilter.debug);
         }
 
+    }
+
+    public async sendSetResource(topicInfo: TopicInfo, payload: any): Promise<void> {
+        const dsp: IOPCUADataSetMessage = {
+            DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(topicInfo.resource, topicInfo.source),
+            Filter: topicInfo.filter,
+            Payload: payload,
+            SequenceNumber: 0,
+            Source: topicInfo.source,
+        };
+        const networkMessage = this.builder.buildOPCUANetworkMessage([dsp], new Date(), getDataSetClassId(topicInfo.resource), this.builder.getMessageId());
+        const filter = topicInfo.filter !== undefined ? `/${topicInfo.filter}` : '';
+        const topic = `${oi4Namespace}/${topicInfo.serviceType}/${topicInfo.appId.toString()}/${Methods.SET}/${topicInfo.resource}/${topicInfo.source.toString()}${filter}`;
+        await this.messageBus.publish(topic, networkMessage);
     }
 
     // Basic Error Functions
