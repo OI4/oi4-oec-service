@@ -16,7 +16,6 @@ import {
     PublicationList,
     PublicationListConfig,
     Resources,
-    RTLicense,
     SubscriptionList,
     SubscriptionListConfig,
     OI4ResourceEvent
@@ -33,7 +32,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build OI4Id and Serialnumbers
  * */
-class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
+export class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
     readonly sources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
@@ -261,5 +260,3 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return !(validation.Values != undefined && !validation.Values.includes(value));
     }
 }
-
-export {OI4ApplicationResources, IContainerConfig, RTLicense};
