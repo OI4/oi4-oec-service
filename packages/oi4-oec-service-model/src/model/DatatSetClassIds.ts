@@ -15,6 +15,7 @@ export interface IDataSetClassIds extends Record<string, string> {
     AAS: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const DataSetClassIds: IDataSetClassIds = {
     MAM: '360ca8f3-5e66-42a2-8f10-9cdf45f4bf58',
     Health: 'd8e7b6df-42ba-448a-975a-199f59e8ffeb',

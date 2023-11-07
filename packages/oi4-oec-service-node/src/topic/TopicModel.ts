@@ -14,8 +14,8 @@ export interface ITopicInfo {
     appId: Oi4Identifier;
     method: Methods;
     resource: Resources;
-    category?: string;
     source?: Oi4Identifier;
+    category?: string;
     filter?: string;
 
     toString(): string;
@@ -44,6 +44,56 @@ export class TopicInfo implements ITopicInfo {
     public toString(): string {
         const getOptional = (part: string): string => part !== undefined ? `/${part}` : '';
         return `${oi4Namespace}/${this.serviceType}/${this.appId.toString()}/${this.method}/${this.resource}${getOptional(this.source?.toString())}${getOptional(this.filter)}`;
+    }
+
+    public static builder(): TopicInfoBuilder {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        return new TopicInfoBuilder();
+    }
+}
+
+export class TopicInfoBuilder {
+    _serviceType: ServiceTypes;
+    _appId: Oi4Identifier;
+    _method: Methods;
+    _resource: Resources;
+    _source?: Oi4Identifier;
+    _category?: string;
+    _filter?: string;
+
+    public serviceType(serviceType: ServiceTypes): TopicInfoBuilder {
+        this._serviceType = serviceType;
+        return this;
+    }
+
+    public appId(appId: Oi4Identifier): TopicInfoBuilder {
+        this._appId = appId;
+        return this;
+    }
+
+    public method(method: Methods): TopicInfoBuilder {
+        this._method = method;
+        return this;
+    }
+
+    public source(source: Oi4Identifier): TopicInfoBuilder {
+        this._source = source;
+        return this;
+    }
+
+    public category(category: string): TopicInfoBuilder {
+        this._category = category;
+        return this;
+    }
+    public filter(filter: string): TopicInfoBuilder {
+        this._filter = filter;
+        return this;
+    }
+
+    public build(): ITopicInfo {
+        const topic = new TopicInfo(this._serviceType, this._appId, this._method, this._resource, this._source, this._filter);
+        topic.category = this._category;
+        return topic;
     }
 }
 
