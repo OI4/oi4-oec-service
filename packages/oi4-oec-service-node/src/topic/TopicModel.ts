@@ -76,10 +76,16 @@ export class TopicInfoBuilder {
         return this;
     }
 
+    public resource(resource: Resources): TopicInfoBuilder {
+        this._resource = resource;
+        return this;
+    }
+
     public source(source: Oi4Identifier): TopicInfoBuilder {
         this._source = source;
         return this;
     }
+
 
     public category(category: string): TopicInfoBuilder {
         this._category = category;

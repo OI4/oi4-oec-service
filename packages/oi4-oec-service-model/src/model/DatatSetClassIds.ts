@@ -1,4 +1,4 @@
-import {Resources} from "./Resources";
+import {Resources} from './Resources';
 
 export interface IDataSetClassIds extends Record<string, string> {
     MAM: string;
