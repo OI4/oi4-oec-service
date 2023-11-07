@@ -9,23 +9,48 @@ import {
 
 export const oi4Namespace = 'Oi4';
 
-export class TopicInfo {
+export interface ITopicInfo {
+    serviceType: ServiceTypes;
+    appId: Oi4Identifier;
+    method: Methods;
+    resource: Resources;
+    category?: string;
+    source?: Oi4Identifier;
+    filter?: string;
 
-    public topic: string;
+    toString(): string;
+}
+
+export class TopicInfo implements ITopicInfo {
+    public serviceType: ServiceTypes;
     public appId: Oi4Identifier;
     public method: Methods;
     public resource: Resources;
     public category?: string;
-    public serviceType: ServiceTypes;
-    public tag?: string;
-    public filter?: string;
-    public licenseId?: string;
     public source?: Oi4Identifier;
+    public filter?: string;
+    public tag?: string;
+    public licenseId?: string;
+
+    constructor(serviceType: ServiceTypes, appId: Oi4Identifier, method: Methods, resource: Resources, source?: Oi4Identifier, filter?: string) {
+        this.appId = appId;
+        this.method = method;
+        this.resource = resource;
+        this.serviceType = serviceType;
+        this.source = source;
+        this.filter = filter;
+    }
+
+    public toString(): string {
+        const getOptional = (part: string): string => part !== undefined ? `/${part}` : '';
+        return `${oi4Namespace}/${this.serviceType}/${this.appId.toString()}/${this.method}/${this.resource}${getOptional(this.source?.toString())}${getOptional(this.filter)}`;
+    }
 }
 
 export type TopicWrapper = {
     topicArray: Array<string>;
     topicInfo: TopicInfo;
+    raw: string;
 }
 
 export function getTopicMethod(method: string): Methods {

@@ -7,7 +7,7 @@ import {
     Oi4Identifier,
     ServiceTypes
 } from '@oi4/oi4-oec-service-model';
-import {TopicInfo, TopicWrapper} from '../../../src';
+import {oi4Namespace, TopicInfo, TopicWrapper} from '../../../src';
 
 export type MessageItems = {
     serviceType: ServiceTypes;
@@ -36,7 +36,7 @@ export class MessageFactory {
         const oi4Id = Oi4Identifier.fromString('2/2/2/2');
         const method: Methods = Methods.GET;
         const resource: Resources = Resources.MAM;
-        const topic = `oi4/${serviceType}/${appId}/${method}/${resource}`;
+        const topic = `${oi4Namespace}/${serviceType}/${appId}/${method}/${resource}`;
         const source ='2/2/2/fakeSource';
         const licenseId = '1234';
         const filter = 'oi4_pv';
@@ -44,25 +44,13 @@ export class MessageFactory {
         const category = 'fakeCategory';
         const publisherId = `${serviceType}/${appId}`;
 
-        const getDefaultTopicInfo = (): TopicInfo => {
-            return {
-                topic: topic,
-                appId: appId,
-                method: method,
-                resource: resource,
-                category: category,
-                serviceType: serviceType,
-                tag: tag,
-                filter: filter,
-                licenseId: licenseId,
-                source:  Oi4Identifier.fromString(source)
-            }
-        };
+        const getDefaultTopicInfo = (): TopicInfo => new TopicInfo(serviceType, appId, method, resource,  Oi4Identifier.fromString(source), filter);
 
         const getDefaultTopicWrapper = (): TopicWrapper => {
             return {
                 topicArray: topic.split('/'),
-                topicInfo: getDefaultTopicInfo()
+                topicInfo: getDefaultTopicInfo(),
+                raw: `${oi4Namespace}/${serviceType}/${appId}/${method}/${resource}`
             }
         };
 
@@ -70,7 +58,7 @@ export class MessageFactory {
          * The topic prefix is "oi4/<serviceType>
          */
         const getTopicPrefix = (): string => {
-            return `oi4/${serviceType}`;
+            return `${oi4Namespace}/${serviceType}`;
         }
         return {
             serviceType,

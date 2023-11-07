@@ -1,5 +1,5 @@
 import {getResource, getServiceType, Methods, Oi4Identifier, Resources} from '@oi4/oi4-oec-service-model';
-import {getTopicMethod, TopicInfo, TopicWrapper} from './TopicModel';
+import {getTopicMethod, ITopicInfo, TopicInfo, TopicWrapper} from './TopicModel';
 
 /**
  This TopicParser make a qualitative validation of the topic info, for example checking
@@ -53,30 +53,19 @@ export class TopicParser {
 
     static getTopicWrapperWithCommonInfo(topic: string): TopicWrapper {
         const topicArray = topic.split('/');
-        const topicInfo: TopicInfo = TopicParser.extractCommonInfo(topic, topicArray);
-        return {topicArray, topicInfo};
+        const topicInfo: ITopicInfo = TopicParser.extractCommonInfo(topic, topicArray);
+        return {topicArray, topicInfo, raw: topic};
     }
 
-    private static extractCommonInfo(topic: string, topicArray: Array<string>): TopicInfo {
+    private static extractCommonInfo(topic: string, topicArray: Array<string>): ITopicInfo {
         if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
 
-        return {
-            topic: topic,
-            appId: Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
-            method: getTopicMethod(topicArray[6]),
-            resource: getResource(topicArray[7]),
-            filter: undefined,
-            category: undefined,
-            serviceType: getServiceType(topicArray[1]),
-            tag: undefined,
-            licenseId: undefined,
-            source: undefined,
-        };
+        return new TopicInfo(getServiceType(topicArray[1]), Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`), getTopicMethod(topicArray[6]), getResource(topicArray[7]));
     }
 
-    static extractResourceSpecificInfo(wrapper: TopicWrapper): TopicInfo {
+    static extractResourceSpecificInfo(wrapper: TopicWrapper): ITopicInfo {
         if (wrapper.topicInfo.method === Methods.PUB && wrapper.topicInfo.resource === Resources.EVENT) {
             TopicParser.extractPubEventInfo(wrapper);
         } else {
@@ -123,7 +112,7 @@ export class TopicParser {
 
     private static extractSource(wrapper: TopicWrapper): void {
         if (TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
-            throw new Error(`Malformed Oi4Id : ${wrapper.topicInfo.topic}`);
+            throw new Error(`Malformed Oi4Id : ${wrapper.raw}`);
         }
         wrapper.topicInfo.source = new Oi4Identifier(wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11], true);
     }
@@ -136,7 +125,7 @@ export class TopicParser {
         wrapper.topicInfo.licenseId = TopicParser.extractItem(wrapper, 12, 'Invalid licenseId: ');
     }
 
-    private static extractListInfo(wrapper: TopicWrapper) {
+    private static extractListInfo(wrapper: TopicWrapper): void {
         wrapper.topicInfo.source = Oi4Identifier.fromDNPString(TopicParser.extractItem(wrapper, 12, 'Invalid source: '));
         wrapper.topicInfo.filter = wrapper.topicInfo.source.toString();
         if (wrapper.topicArray.length == 14) {
@@ -145,18 +134,18 @@ export class TopicParser {
         }
     }
 
-    private static extractItem(wrapper: TopicWrapper, index: number, errorMsg: string) {
+    private static extractItem(wrapper: TopicWrapper, index: number, errorMsg: string): string {
         if (TopicParser.isStringEmpty(wrapper.topicArray[index])) {
-            throw new Error(`${errorMsg}${wrapper.topicInfo.topic}`);
+            throw new Error(`${errorMsg}${wrapper.raw}`);
         }
         return wrapper.topicArray[index];
     }
 
-    private static isAtLeastOneStringEmpty(strings: Array<string>) {
+    private static isAtLeastOneStringEmpty(strings: Array<string>): boolean {
         return strings.filter(str => TopicParser.isStringEmpty(str)).length > 0;
     }
 
-    private static isStringEmpty(string: string) {
+    private static isStringEmpty(string: string): boolean {
         return string === undefined || string === null || string.length == 0;
     }
 

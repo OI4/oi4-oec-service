@@ -92,7 +92,7 @@ export class MessageValidator {
         }
 
         if (isTopicStructureMalformed) {
-            throw new Error(`Invalid topic string structure ${wrapper.topicInfo.topic}`);
+            throw new Error(`Invalid topic string structure ${wrapper.topicInfo.toString()}`);
         }
     }
 
