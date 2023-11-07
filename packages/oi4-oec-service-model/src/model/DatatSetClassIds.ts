@@ -1,3 +1,5 @@
+import {Resources} from "./Resources";
+
 export interface IDataSetClassIds extends Record<string, string> {
     MAM: string;
     Health: string;
@@ -27,4 +29,39 @@ export const DataSetClassIds: IDataSetClassIds = {
     ReferenceDesignation: '27a75019-164a-496d-a38b-90e8a55c2cfa',
     Interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54',
     AAS: '96d22d73-bce6-42d3-9949-123456'
+}
+
+export function getDataSetClassId(resource: Resources): string {
+    switch (resource) {
+        case Resources.MAM:
+            return DataSetClassIds.MAM;
+        case Resources.HEALTH:
+            return DataSetClassIds.HEALTH;
+        case Resources.LICENSE:
+            return DataSetClassIds.LICENSE;
+        case Resources.LICENSE_TEXT:
+            return DataSetClassIds.LICENSE_TEXT;
+        case Resources.PROFILE:
+            return DataSetClassIds.PROFILE;
+        case Resources.DATA:
+            return DataSetClassIds.DATA;
+        case Resources.RT_LICENSE:
+            return DataSetClassIds.RT_LICENSE;
+        case Resources.CONFIG:
+            return DataSetClassIds.CONFIG;
+        case Resources.EVENT:
+            return DataSetClassIds.EVENT;
+        case Resources.METADATA:
+            return DataSetClassIds.METADATA;
+        case Resources.PUBLICATION_LIST:
+            return DataSetClassIds.PUBLICATION_LIST;
+        case Resources.SUBSCRIPTION_LIST:
+            return DataSetClassIds.SUBSCRIPTION_LIST;
+        case Resources.REFERENCE_DESIGNATION:
+            return DataSetClassIds.REFERENCE_DESIGNATION;
+        case Resources.INTERFACES:
+            return DataSetClassIds.INTERFACES;
+        default:
+            throw new Error(`Unknown resource: ${Resources}`);
+    }
 }
