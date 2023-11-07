@@ -4,18 +4,8 @@ import {Methods, Resources, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-serv
 
 describe('Unit test for TopicParser', () => {
 
-    const defaultTopicInfo: TopicInfo = {
-        topic: '',
-        appId: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
-        method: Methods.GET,
-        resource: Resources.MAM,
-        category: '',
-        serviceType: ServiceTypes.REGISTRY,
-        tag: '',
-        filter: '',
-        licenseId: '',
-        source: new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber'),
-    }
+    const oi4Id = new Oi4Identifier('acme.com', 'model', 'productCode', 'serialNumber');
+    const defaultTopicInfo: TopicInfo = new TopicInfo(ServiceTypes.REGISTRY, oi4Id, Methods.GET, Resources.MAM, oi4Id);
 
     const defaultTopicWrapper: TopicWrapper = {
         topicArray: ['', ''],

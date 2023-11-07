@@ -8,20 +8,20 @@ describe('Unit test for TopicParser', () => {
     const defaultMessageItems: MessageItems = MessageFactory.getDefaultMessageItems();
     const topicPrefix: string = defaultMessageItems.getTopicPrefix();
 
-    function getTopicWrapper(topic = defaultMessageItems.topic) {
+    function getTopicWrapper(topic = defaultMessageItems.topic): TopicWrapper {
         return TopicParser.getTopicWrapperWithCommonInfo(topic);
     }
 
-    it('If the appId is invalid an error is thrown', async () => {
+    it('If the appId is invalid an error is thrown', async (): Promise<void> => {
         const topic = `${topicPrefix}/mymanufacturer.com//1/1/${defaultMessageItems.method}/${defaultMessageItems.resource}`;
         expect(() => {
             TopicParser.getTopicWrapperWithCommonInfo(topic);
         }).toThrowError(`Invalid App id: ${topic}`);
     });
 
-    it('Common information are properly extracted', async () => {
+    it('Common information are properly extracted', async (): Promise<void> => {
         const wrapper: TopicWrapper = getTopicWrapper(defaultMessageItems.topic);
-        expect(wrapper.topicInfo.topic).toStrictEqual(defaultMessageItems.topic);
+        expect(wrapper.topicInfo.toString()).toStrictEqual(defaultMessageItems.topic);
         expect(wrapper.topicInfo.appId).toStrictEqual(defaultMessageItems.appId);
         expect(wrapper.topicInfo.method).toStrictEqual(defaultMessageItems.method);
         expect(wrapper.topicInfo.resource).toStrictEqual(defaultMessageItems.resource);
@@ -36,14 +36,14 @@ describe('Unit test for TopicParser', () => {
         expect(info.filter).toStrictEqual(defaultMessageItems.filter);
     });
 
-    function checkAgainstErrorForPubEvent(topic: string, errMsg: string) {
+    function checkAgainstErrorForPubEvent(topic: string, errMsg: string): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         expect(() => {
             TopicParser.extractResourceSpecificInfo(wrapper);
         }).toThrowError(errMsg);
     }
 
-    it('Invalid info for Pub event generate an error', async () => {
+    it('Invalid info for Pub event generate an error', async (): Promise<void> => {
         let topic = `${topicPrefix}/${defaultMessageItems.appId}/${Methods.PUB}/${Resources.EVENT}//${defaultMessageItems.filter}`;
         checkAgainstErrorForPubEvent(topic, `Invalid category: ${topic}`);
 
@@ -51,22 +51,22 @@ describe('Unit test for TopicParser', () => {
         checkAgainstErrorForPubEvent(topic, `Invalid filter: ${topic}`);
     });
 
-    it('Malformed Oi4Id generate an error', async () => {
-        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}////`;
+    it('Malformed Oi4Id generate an error', async (): Promise<void> => {
+        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         expect(() => {
             TopicParser.extractResourceSpecificInfo(wrapper);
         }).toThrowError(`Malformed Oi4Id : ${topic}`);
     });
 
-    it('Oi4Id is properly extracted', async () => {
+    it('Oi4Id is properly extracted', async (): Promise<void> => {
         const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}/${defaultMessageItems.oi4Id}`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.source).toStrictEqual(defaultMessageItems.oi4Id);
     });
 
-    function checkFilter(topic: string) {
+    function checkFilter(topic: string): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.filter).toStrictEqual(defaultMessageItems.filter);
@@ -91,7 +91,7 @@ describe('Unit test for TopicParser', () => {
         checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.METADATA}/${defaultMessageItems.oi4Id}/`);
     });
 
-    function checkLicense(topic: string) {
+    function checkLicense(topic: string): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.licenseId).toStrictEqual(defaultMessageItems.licenseId);
@@ -102,7 +102,7 @@ describe('Unit test for TopicParser', () => {
         checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
     });
 
-    function checkLicenseWithError(topic: string) {
+    function checkLicenseWithError(topic: string): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         expect(() => {
             TopicParser.extractResourceSpecificInfo(wrapper)
@@ -114,7 +114,7 @@ describe('Unit test for TopicParser', () => {
         checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/`);
     });
 
-    function checkList(topic: string, withTag = false) {
+    function checkList(topic: string, withTag = false): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
         expect(info.source).toStrictEqual(defaultMessageItems.source);
@@ -134,7 +134,7 @@ describe('Unit test for TopicParser', () => {
         checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
     });
 
-    function checkListWithError(topic: string, withTag = false) {
+    function checkListWithError(topic: string, withTag = false): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         if (withTag) {
             expect(() => {
@@ -147,7 +147,7 @@ describe('Unit test for TopicParser', () => {
         }
     }
 
-    it('In case of publicationList and subscriptionList, Source and filter are properly extracted', async () => {
+    it('In case of publicationList and subscriptionList, Source and filter are properly extracted', async (): Promise<void> => {
         checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/`);
         checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/`);
 
