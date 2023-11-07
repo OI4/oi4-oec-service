@@ -1,12 +1,16 @@
 import {
+    AAS,
     EOPCUAStatusCode,
     ESyslogEventFilter,
     IContainerConfig,
+    IOI4Resource,
     IOPCUANetworkMessage,
     Methods,
+    Oi4Identifier,
     OPCUABuilder,
     Resources,
-    StatusEvent, toOPCUANetworkMessage,
+    StatusEvent,
+    toOPCUANetworkMessage,
 } from '@oi4/oi4-oec-service-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
@@ -180,7 +184,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
         logger.log(`Get request for ${topicInfo.resource} - ${oi4IdSource} responded`, ESyslogEventFilter.informational);
     }
 
-    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application) {
+    private async executeSetActions(topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage, oi4Application: IOI4Application): Promise<void> {
         switch (topicInfo.resource) {
             case Resources.DATA: {
                 this.setData(topicInfo.filter, parsedMessage, oi4Application);
@@ -192,6 +196,18 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
                 }
                 break;
             }
+            case Resources.AAS: {
+                const getResource = (source: Oi4Identifier): IOI4Resource => source !== undefined ? oi4Application.applicationResources.getSource(source) : oi4Application.applicationResources;
+                for (const message of parsedMessage.Messages) {
+                    const resource = getResource(message.Source);
+                    if(resource === undefined){
+                        logger.log(`No source to set AAS found for ${message.Source.toString()}`, ESyslogEventFilter.informational);
+                        break;
+                    }
+                    resource.aas = AAS.clone(message.Payload);
+                }
+                break;
+            }
             default: {
                 break;
             }
@@ -199,7 +215,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     }
 
     // SET Function section ------//
-    private setData(cutTopic: string, data: IOPCUANetworkMessage, oi4Application: IOI4Application) {
+    private setData(cutTopic: string, data: IOPCUANetworkMessage, oi4Application: IOI4Application): void {
         const applicationResources = oi4Application.applicationResources;
         const filter = cutTopic;
         // This topicObject is also specific to the Resources. The data resource will include the TagName!
@@ -231,7 +247,7 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     }
 
 
-    private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application) {
+    private async executeDelActions(topicInfo: TopicInfo, oi4Application: IOI4Application): Promise<void> {
         switch (topicInfo.resource) {
             case Resources.DATA: {
                 this.deleteData(topicInfo.filter, oi4Application);
@@ -246,8 +262,9 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
     /**
      * Legacy: TODO: This is not specified by the specification yet
      * @param cutTopic - todo
+     * @param oi4Application
      */
-    private deleteData(cutTopic: string, oi4Application: IOI4Application) {
+    private deleteData(cutTopic: string, oi4Application: IOI4Application): void {
         const applicationResources = oi4Application.applicationResources;
         // ONLY SPECIFIC DATA CAN BE DELETED. WILDCARD DOES NOT DELETE EVERYTHING
         const tagName = cutTopic;

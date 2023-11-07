@@ -18,6 +18,7 @@
     "SubscriptionList",
     "ReferenceDesignation",
     "Interfaces",
+    "AAS",
     "FileUpload",
     "FileDownload",
     "FirmwareUpdate",

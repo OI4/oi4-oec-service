@@ -62,6 +62,8 @@ export function getDataSetClassId(resource: Resources): string {
             return DataSetClassIds.REFERENCE_DESIGNATION;
         case Resources.INTERFACES:
             return DataSetClassIds.INTERFACES;
+        case Resources.AAS:
+            return DataSetClassIds.AAS;
         default:
             throw new Error(`Unknown resource: ${Resources}`);
     }
