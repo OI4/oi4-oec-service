@@ -110,7 +110,7 @@ export class ClientPayloadHelper {
     }
 
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, filter?: string, tag?: string): ValidatedPayload {
-        const resourceType = filter !== undefined ? getResource(filter) : undefined;
+        const resourceType = filter ? getResource(filter) : undefined;
 
         const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
             const resource = getResource(elem.Resource);
