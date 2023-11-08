@@ -55,7 +55,7 @@ export function getResource(resource: string): Resources {
         case Resources.AAS:
             return Resources.AAS;
         default:
-            throw new Error(`Unknown resource: ${Resources}`);
+            throw new Error(`Unknown resource: ${resource}`);
     }
 }
 
