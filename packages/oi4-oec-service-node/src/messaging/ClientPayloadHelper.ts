@@ -39,6 +39,24 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
+    getAASPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
+        const aas = applicationResources.getAAS(source);
+        if (aas === undefined) {
+            return {abortSending: true, payload: undefined};
+        }
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(aas, source)];
+        return {abortSending: false, payload: payload};
+    }
+
+    getReferenceDesignationPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
+        const ref = applicationResources.getReferenceDesignation(source);
+        if (ref === undefined) {
+            return {abortSending: true, payload: undefined};
+        }
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(ref, source)];
+        return {abortSending: false, payload: payload};
+    }
+
     createMamResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, source?: Oi4Identifier): ValidatedPayload {
         if (source) { // get mam from a specific asset
             const mam = applicationResources.getMasterAssetModel(source);
@@ -101,7 +119,7 @@ export class ClientPayloadHelper {
     }
 
     createPublicationListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier, filter?: string, tag?: string): ValidatedPayload {
-        const resourceType = filter !== undefined ? getResource(filter) : undefined;
+        const resourceType = filter ? getResource(filter) : undefined;
 
         const payload: IOPCUADataSetMessage[] = applicationResources.getPublicationList(oi4Id, resourceType, tag).map((elem: PublicationList) => {
             const resource = getResource(elem.Resource);
@@ -121,7 +139,7 @@ export class ClientPayloadHelper {
     }
 
     createSubscriptionListSendResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id?: Oi4Identifier, filter?: string, tag?: string): ValidatedPayload {
-        const resourceType = filter !== undefined ? getResource(filter) : undefined;
+        const resourceType = filter ? getResource(filter) : undefined;
 
         const payload: IOPCUADataSetMessage[] = applicationResources.getSubscriptionList(oi4Id, resourceType, tag).map((elem: SubscriptionList) => {
             const resource = Resources.SUBSCRIPTION_LIST;
@@ -198,5 +216,4 @@ export class ClientPayloadHelper {
             Payload: event,
         }];
     }
-
 }

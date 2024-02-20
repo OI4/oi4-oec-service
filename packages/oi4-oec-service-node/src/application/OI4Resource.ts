@@ -1,5 +1,5 @@
 import {
-    profileApplication,
+    AAS,
     EDeviceHealth,
     Health,
     IContainerConfig,
@@ -7,16 +7,17 @@ import {
     License,
     LicenseText,
     MasterAssetModel,
+    Oi4Identifier,
+    OI4ResourceEvent,
     Profile,
+    profileApplication,
     PublicationList,
     Resources,
     RTLicense,
     SubscriptionList,
-    Oi4Identifier,
-    //AAS,
-    OI4ResourceEvent
 } from '@oi4/oi4-oec-service-model';
 import {EventEmitter} from 'events';
+import {ReferenceDesignation} from '@oi4/oi4-oec-service-model/dist/model/resources/ReferenceDesignation';
 
 export class OI4Resource implements IOI4Resource {
     readonly eventEmitter: EventEmitter;
@@ -30,6 +31,8 @@ export class OI4Resource implements IOI4Resource {
     protected _rtLicense: RTLicense;
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
+    protected _referenceDesignation: ReferenceDesignation;
+    protected _aas: AAS;
 
     constructor(mam: MasterAssetModel, eventEmitter: EventEmitter) {
         this.eventEmitter = eventEmitter;
@@ -83,14 +86,25 @@ export class OI4Resource implements IOI4Resource {
         return this._mam;
     }
 
-    //get aas(): AAS {
-    //    return this._aas;
-    //}
+    // --- AAS ---
+    get aas(): AAS {
+        return this._aas;
+    }
 
-    //set aas(aas: AAS) {
-    //    this._aas = aas;
-    //    this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.AAS);
-    //}
+    set aas(aas: AAS) {
+        this._aas = aas;
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.AAS);
+    }
+
+    // --- ReferenceDesignation ---
+    get referenceDesignation(): ReferenceDesignation {
+        return this._referenceDesignation;
+    }
+
+    set referenceDesignation(referenceDesignation: ReferenceDesignation) {
+        this._referenceDesignation = referenceDesignation;
+        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.REFERENCE_DESIGNATION);
+    }
 
     // --- Profile ---
     get profile(): Profile {

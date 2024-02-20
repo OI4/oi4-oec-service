@@ -1,10 +1,10 @@
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import {EValidity, IConformity, ISchemaConformity, IValidityDetails} from './model/IConformityValidator';
 import {
-    profileApplication,
     buildOecJsonValidator,
     DataSetClassIds,
     DataSetWriterIdManager,
+    profileApplication,
     profileDevice,
     EAssetType,
     ESyslogEventFilter,

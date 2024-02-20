@@ -16,10 +16,13 @@
     "AsynchAPI"
   ],
   "devDependencies": {
-    "@asyncapi/cli": "^0.17.0",
+    "@asyncapi/cli": "^0.60.1",
     "@asyncapi/generator": "^1.9.0",
-    "@asyncapi/html-template": "^0.24.8",
-    "@asyncapi/markdown-template": "^1.0.1"
+    "@asyncapi/html-template": "^1.0.0",
+    "@asyncapi/markdown-template": "^1.0.1",
+    "react": "^17.0.2",
+    "csstype": "^3.0.10",
+    "webpack": "^5.0.0"
   },
   "scripts": {
     "buildAsyncAPI": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",

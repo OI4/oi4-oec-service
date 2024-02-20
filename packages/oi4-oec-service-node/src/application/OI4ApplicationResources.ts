@@ -1,4 +1,5 @@
 import {
+    AAS,
     Health,
     IContainerConfig,
     IContainerConfigConfigName,
@@ -12,19 +13,19 @@ import {
     License,
     MasterAssetModel,
     Oi4Identifier,
+    OI4ResourceEvent,
     PublicationList,
     PublicationListConfig,
+    ReferenceDesignation,
     Resources,
-    RTLicense,
     SubscriptionList,
-    SubscriptionListConfig,
-    OI4ResourceEvent
+    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource} from './OI4Resource';
 import os from 'os';
-import path = require('path');
 import EventEmitter from 'events';
+import path = require('path');
 
 export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
@@ -32,7 +33,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
  * class that initializes the container state
  * Initializes the mam settings by a json file and build OI4Id and Serialnumbers
  * */
-class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
+export class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
     readonly sources: Map<string, IOI4Resource>;
     dataLookup: Record<string, IOPCUANetworkMessage>;
     metaDataLookup: Record<string, IOPCUADataSetMetaData>;
@@ -104,6 +105,22 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
             return this.health;
         }
         return this.sources.get(oi4Id?.toString())?.health;
+    }
+
+    public getAAS(oi4Id: Oi4Identifier): AAS {
+        if (oi4Id.equals(this.oi4Id)) {
+            return this.aas;
+        }
+        // TODO source found with the OI4Identifier as key...
+        return this.sources.get(oi4Id?.toString())?.aas;
+    }
+
+    public getReferenceDesignation(oi4Id: Oi4Identifier): ReferenceDesignation {
+        if (oi4Id.equals(this.oi4Id)) {
+            return this.referenceDesignation;
+        }
+        // TODO source found with the OI4Identifier as key...
+        return this.sources.get(oi4Id?.toString())?.referenceDesignation;
     }
 
     public hasSource(oi4Id: Oi4Identifier): boolean {
@@ -252,5 +269,3 @@ class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationReso
         return !(validation.Values != undefined && !validation.Values.includes(value));
     }
 }
-
-export {OI4ApplicationResources, IContainerConfig, RTLicense};

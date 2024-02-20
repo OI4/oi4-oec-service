@@ -14,7 +14,7 @@ const profileFull: Resources [] = [
     Resources.PUBLICATION_LIST,
     Resources.SUBSCRIPTION_LIST,
     Resources.REFERENCE_DESIGNATION,
-    Resources.INTERFACES
+    Resources.INTERFACES,
 ];
 
 export const profileApplication = {

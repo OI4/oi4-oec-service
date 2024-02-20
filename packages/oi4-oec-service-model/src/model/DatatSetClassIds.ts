@@ -12,6 +12,7 @@ export interface IDataSetClassIds extends Record<string, string> {
     PublicationList: string;
     SubscriptionList: string;
     Interfaces: string;
+    AAS: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,7 +28,8 @@ export const DataSetClassIds: IDataSetClassIds = {
     PublicationList: '217434d6-6e1e-4230-b907-f52bc9ffe152',
     SubscriptionList: 'e5d68c47-c276-4929-8ab9-4c1090cac785',
     ReferenceDesignation: '27a75019-164a-496d-a38b-90e8a55c2cfa',
-    Interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54'
+    Interfaces: '96d22d73-bce6-42d3-9949-45e0d04e4d54',
+    AAS: '96d22d73-bce6-42d3-9949-123456'
 }
 
 export function getDataSetClassId(resource: Resources): string {
@@ -60,6 +62,8 @@ export function getDataSetClassId(resource: Resources): string {
             return DataSetClassIds.REFERENCE_DESIGNATION;
         case Resources.INTERFACES:
             return DataSetClassIds.INTERFACES;
+        case Resources.AAS:
+            return DataSetClassIds.AAS;
         default:
             throw new Error(`Unknown resource: ${Resources}`);
     }
