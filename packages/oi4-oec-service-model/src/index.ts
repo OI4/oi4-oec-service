@@ -11,7 +11,6 @@ export * from './model/Payload';
 export * from './model/IOI4ApplicationResources';
 export * from './model/Oi4Identifier';
 export * from './model/ServiceTypes';
-export * from './model/resources/AAS';
 export * from './model/resources/Health';
 export * from './model/resources/License';
 export * from './model/resources/LicenseText';

@@ -1,5 +1,4 @@
 import {
-    AAS,
     EDeviceHealth,
     Health,
     IContainerConfig,
@@ -32,7 +31,6 @@ export class OI4Resource implements IOI4Resource {
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
     protected _referenceDesignation: ReferenceDesignation;
-    protected _aas: AAS;
 
     constructor(mam: MasterAssetModel, eventEmitter: EventEmitter) {
         this.eventEmitter = eventEmitter;
@@ -84,16 +82,6 @@ export class OI4Resource implements IOI4Resource {
     // --- MAM ---
     get mam(): MasterAssetModel {
         return this._mam;
-    }
-
-    // --- AAS ---
-    get aas(): AAS {
-        return this._aas;
-    }
-
-    set aas(aas: AAS) {
-        this._aas = aas;
-        this.emit(OI4ResourceEvent.RESOURCE_CHANGED, this.oi4Id, Resources.AAS);
     }
 
     // --- ReferenceDesignation ---

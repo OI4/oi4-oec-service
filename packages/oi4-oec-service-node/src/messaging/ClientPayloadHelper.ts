@@ -39,15 +39,6 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    getAASPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
-        const aas = applicationResources.getAAS(source);
-        if (aas === undefined) {
-            return {abortSending: true, payload: undefined};
-        }
-        const payload: IOPCUADataSetMessage[] = [this.createPayload(aas, source)];
-        return {abortSending: false, payload: payload};
-    }
-
     getReferenceDesignationPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
         const ref = applicationResources.getReferenceDesignation(source);
         if (ref === undefined) {

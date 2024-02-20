@@ -328,10 +328,6 @@ export class OI4Application implements IOI4Application {
                 payloadResult = this.clientPayloadHelper.createConfigSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
-            case Resources.AAS: {
-                payloadResult = this.clientPayloadHelper.getAASPayload(this.applicationResources, source);
-                break;
-            }
             case Resources.REFERENCE_DESIGNATION: {
                 payloadResult = this.clientPayloadHelper.getReferenceDesignationPayload(this.applicationResources, source);
                 break;

@@ -1,12 +1,9 @@
 import {
-    AAS,
     EOPCUAStatusCode,
     ESyslogEventFilter,
     IContainerConfig,
-    IOI4Resource,
     IOPCUANetworkMessage,
     Methods,
-    Oi4Identifier,
     OPCUABuilder,
     Resources,
     StatusEvent,
@@ -193,18 +190,6 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             case Resources.CONFIG: {
                 if (parsedMessage.Messages !== undefined && parsedMessage.Messages.length > 0) {
                     await this.setConfig(topicInfo, parsedMessage, oi4Application);
-                }
-                break;
-            }
-            case Resources.AAS: {
-                const getResource = (source: Oi4Identifier): IOI4Resource => source !== undefined ? oi4Application.applicationResources.getSource(source) : oi4Application.applicationResources;
-                for (const message of parsedMessage.Messages) {
-                    const resource = getResource(message.Source);
-                    if(resource === undefined){
-                        logger.log(`No source to set AAS found for ${message.Source.toString()}`, ESyslogEventFilter.informational);
-                        break;
-                    }
-                    resource.aas = AAS.clone(message.Payload);
                 }
                 break;
             }

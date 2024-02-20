@@ -1,5 +1,4 @@
 import {
-    AAS,
     Health,
     IContainerConfig,
     IContainerConfigConfigName,
@@ -105,14 +104,6 @@ export class OI4ApplicationResources extends OI4Resource implements IOI4Applicat
             return this.health;
         }
         return this.sources.get(oi4Id?.toString())?.health;
-    }
-
-    public getAAS(oi4Id: Oi4Identifier): AAS {
-        if (oi4Id.equals(this.oi4Id)) {
-            return this.aas;
-        }
-        // TODO source found with the OI4Identifier as key...
-        return this.sources.get(oi4Id?.toString())?.aas;
     }
 
     public getReferenceDesignation(oi4Id: Oi4Identifier): ReferenceDesignation {

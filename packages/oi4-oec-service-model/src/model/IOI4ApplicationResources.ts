@@ -10,7 +10,6 @@ import {Health} from './resources/Health';
 import {License} from './resources/License';
 import {SubscriptionList} from './resources/SubscriptionList';
 import {PublicationList} from './resources/PublicationList';
-import {AAS} from './resources/AAS';
 import {Profile} from './resources/Profile';
 import {LicenseText} from './resources/LicenseText';
 import {RTLicense} from './resources/RTLicense';
@@ -47,8 +46,6 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     removeSource(oi4Id: Oi4Identifier): boolean;
 
-    getAAS(oi4Id: Oi4Identifier): AAS;
-
     getReferenceDesignation(oi4Id: Oi4Identifier): ReferenceDesignation;
 }
 
@@ -64,7 +61,6 @@ export interface IOI4Resource {
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
     referenceDesignation: ReferenceDesignation;
-    aas: AAS;
 }
 
 export enum OI4ResourceEvent {
