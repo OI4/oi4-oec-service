@@ -39,12 +39,21 @@ export class ClientPayloadHelper {
         return {abortSending: false, payload: payload};
     }
 
-    getAASPayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier): ValidatedPayload {
-        const aas = applicationResources.getAAS(oi4Id);
+    getAASPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
+        const aas = applicationResources.getAAS(source);
         if (aas === undefined) {
             return {abortSending: true, payload: undefined};
         }
-        const payload: IOPCUADataSetMessage[] = [this.createPayload(aas, oi4Id)];
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(aas, source)];
+        return {abortSending: false, payload: payload};
+    }
+
+    getReferenceDesignationPayload(applicationResources: IOI4ApplicationResources, source: Oi4Identifier): ValidatedPayload {
+        const ref = applicationResources.getReferenceDesignation(source);
+        if (ref === undefined) {
+            return {abortSending: true, payload: undefined};
+        }
+        const payload: IOPCUADataSetMessage[] = [this.createPayload(ref, source)];
         return {abortSending: false, payload: payload};
     }
 
@@ -207,5 +216,4 @@ export class ClientPayloadHelper {
             Payload: event,
         }];
     }
-
 }

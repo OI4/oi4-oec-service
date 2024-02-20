@@ -7,6 +7,7 @@ import {
     DataSetWriterIdManager,
     EDeviceHealth,
     ESyslogEventFilter,
+    getDataSetClassId,
     IEvent,
     IOI4ApplicationResources,
     IOPCUADataSetMessage,
@@ -15,14 +16,13 @@ import {
     MasterAssetModel,
     Methods,
     Oi4Identifier,
+    OI4ResourceEvent,
     OPCUABuilder,
     Resources,
     ServiceTypes,
     StatusEvent,
     SubscriptionList,
-    SubscriptionListConfig,
-    OI4ResourceEvent,
-    getDataSetClassId
+    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {oi4Namespace, TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
@@ -330,6 +330,10 @@ export class OI4Application implements IOI4Application {
             }
             case Resources.AAS: {
                 payloadResult = this.clientPayloadHelper.getAASPayload(this.applicationResources, source);
+                break;
+            }
+            case Resources.REFERENCE_DESIGNATION: {
+                payloadResult = this.clientPayloadHelper.getReferenceDesignationPayload(this.applicationResources, source);
                 break;
             }
             default: {

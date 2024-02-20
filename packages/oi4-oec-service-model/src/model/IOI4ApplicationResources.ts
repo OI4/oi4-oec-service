@@ -1,19 +1,20 @@
 import {IContainerConfig} from './IContainer';
 import {
-    AAS,
-    Health,
-    License,
-    LicenseText,
-    MasterAssetModel,
-    Profile,
-    PublicationList,
     Resources,
-    RTLicense,
-    SubscriptionList
 } from './Resources';
 import {IOPCUAMetaData, IOPCUANetworkMessage} from '../opcua/model/IOPCUA';
 import {Oi4Identifier} from './Oi4Identifier';
 import {EventEmitter} from 'events';
+import {MasterAssetModel} from './resources/MasterAssetModel';
+import {Health} from './resources/Health';
+import {License} from './resources/License';
+import {SubscriptionList} from './resources/SubscriptionList';
+import {PublicationList} from './resources/PublicationList';
+import {AAS} from './resources/AAS';
+import {Profile} from './resources/Profile';
+import {LicenseText} from './resources/LicenseText';
+import {RTLicense} from './resources/RTLicense';
+import {ReferenceDesignation} from './resources/ReferenceDesignation';
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 
@@ -47,6 +48,8 @@ export interface IOI4ApplicationResources extends IOI4Resource {
     removeSource(oi4Id: Oi4Identifier): boolean;
 
     getAAS(oi4Id: Oi4Identifier): AAS;
+
+    getReferenceDesignation(oi4Id: Oi4Identifier): ReferenceDesignation;
 }
 
 export interface IOI4Resource {
@@ -60,6 +63,7 @@ export interface IOI4Resource {
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];
+    referenceDesignation: ReferenceDesignation;
     aas: AAS;
 }
 

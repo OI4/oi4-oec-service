@@ -23,12 +23,12 @@
   "dependencies": {
     "@oi4/oi4-oec-service-model": "^1.1.0-preview.10.aas",
     "async-mqtt": "^2.5.0",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.1",
     "winston": "^3.10.0",
     "winston-syslog": "^2.7.0"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.2",
+    "@types/uuid": "^9.0.7",
     "@types/winston-syslog": "^2.4.0"
   },
   "scripts": {

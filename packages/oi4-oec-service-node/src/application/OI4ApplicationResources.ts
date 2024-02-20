@@ -13,18 +13,19 @@ import {
     License,
     MasterAssetModel,
     Oi4Identifier,
+    OI4ResourceEvent,
     PublicationList,
     PublicationListConfig,
+    ReferenceDesignation,
     Resources,
     SubscriptionList,
-    SubscriptionListConfig,
-    OI4ResourceEvent
+    SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource} from './OI4Resource';
 import os from 'os';
-import path = require('path');
 import EventEmitter from 'events';
+import path = require('path');
 
 export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
@@ -112,6 +113,14 @@ export class OI4ApplicationResources extends OI4Resource implements IOI4Applicat
         }
         // TODO source found with the OI4Identifier as key...
         return this.sources.get(oi4Id?.toString())?.aas;
+    }
+
+    public getReferenceDesignation(oi4Id: Oi4Identifier): ReferenceDesignation {
+        if (oi4Id.equals(this.oi4Id)) {
+            return this.referenceDesignation;
+        }
+        // TODO source found with the OI4Identifier as key...
+        return this.sources.get(oi4Id?.toString())?.referenceDesignation;
     }
 
     public hasSource(oi4Id: Oi4Identifier): boolean {
