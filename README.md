@@ -26,7 +26,6 @@ The bash script `setenv.sh` will process the .env file and set the PAT as an env
 To install locally run
 
 ```sh
-export PACKAGES_AUTH_TOKEN = YOUR_GIT_HUB_PERSONAL_ACCESS_TOKEN
 yarn install
 yarn bootstrap
 yarn build
