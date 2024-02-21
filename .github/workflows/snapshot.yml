@@ -33,7 +33,8 @@ jobs:
       # Publish to npm if this version is not published
       - name: publish
         run: |
-          yarn publishIt
+          - run: echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
+          - yarn publishIt
         env:
           NPM_TOKEN: ${{ secrets.OI4_NPM_TOKEN }}
       # Push tag to GitHub if package.json version's tag is not tagged
