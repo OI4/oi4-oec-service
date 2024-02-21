@@ -12,7 +12,7 @@ If you want to contribute and do not know how, just reach out for the WG leads.
 The `oi4-oec-service` is a TypesScript application. To get started you need a proper NodeJS and Yarn installation.
 Please install [Node.js](https://nodejs.org/en) and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/).
 
-In case you use Windows as development platform, please use [Git Bash](https://git-scm.com/downloads) or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
+In case you use Windows as development platform, please use [Git Bash](https://git-scm.com/downloads) or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 ## Installation
 To install locally run
