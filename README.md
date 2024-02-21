@@ -10,6 +10,10 @@ If you want to contribute and do not know how, just reach out for the WG leads.
 
 ## Installation
 
+### Setup the environment
+The `oi4-oec-service` is a TypesScript application. To get started you need a proper NodeJS and Yarn installation.
+Please install [nodejs](https://nodejs.org/en) and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/).
+
 ### GitHub package repository access
 Dependencies to the oi4-service are available in the GitHub package repository. As the OI4 repositories are private, you need to authenticate to the GitHub repository using a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (PAT).
 The PAT must have the 'read:packages'.
