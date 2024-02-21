@@ -33,7 +33,7 @@ jobs:
       # Publish to npm if this version is not published
       - name: publish
         run: |
-          - echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
+          - yarn run createNpmrc
           - yarn publishIt
         env:
           NPM_TOKEN: ${{ secrets.OI4_NPM_TOKEN }}
