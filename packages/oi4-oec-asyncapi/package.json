@@ -3,10 +3,6 @@
   "version": "1.1.0-preview.12",
   "description": "AsyncAPI description of the OI4 OEC topics and messages",
   "license": "MIT",
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/OI4/oi4-dev-tools.git"
@@ -28,5 +24,5 @@
     "buildAsyncAPI": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
     "validate": "asyncapi validate asyncapi.yaml"
   },
-  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
+  "gitHead": "20f2d6e513ed1532fd58afb45c39b34385ec984f"
 }

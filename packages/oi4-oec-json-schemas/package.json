@@ -13,10 +13,6 @@
     "json",
     "schemas"
   ],
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
@@ -36,5 +32,5 @@
     "lint": "eslint .",
     "test": "jest "
   },
-  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
+  "gitHead": "20f2d6e513ed1532fd58afb45c39b34385ec984f"
 }
