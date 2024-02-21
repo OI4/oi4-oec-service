@@ -24,5 +24,6 @@
     "lint": "eslint src/**/*.ts test/**/*.ts",
     "test": "jest ",
     "linkIt": "yarn link"
-  }
+  },
+  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
 }
