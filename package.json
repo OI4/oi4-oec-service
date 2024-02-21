@@ -10,6 +10,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.8",
     "@types/lodash": "^4.14.178",
@@ -40,7 +43,8 @@
     "dependency:circular": "node_modules/madge/bin/cli.js --warning --circular ./",
     "test": "jest",
     "prePublish": "lerna publish prepatch --no-git-tag-version --preid alpha --loglevel silly --yes --force-publish",
-    "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes",
+    "publishIt": "lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private",
+    "createNpmrc": "echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc",
     "linkIt": "lerna run linkIt"
   },
   "engines": {

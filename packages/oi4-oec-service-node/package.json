@@ -11,13 +11,12 @@
     "oi4",
     "servcie"
   ],
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@oi4/oi4-oec-service-conformity-validator": "^1.1.0-preview.12",
@@ -41,5 +40,5 @@
     "test": "jest ",
     "linkIt": "yarn link"
   },
-  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
+  "gitHead": "bb653090f55c2dd8d9f641f5f5b28eb98e3a84b5"
 }

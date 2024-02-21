@@ -13,8 +13,7 @@
     "validator"
   ],
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -34,5 +33,5 @@
     "test": "jest ",
     "linkIt": "yarn link"
   },
-  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
+  "gitHead": "bb653090f55c2dd8d9f641f5f5b28eb98e3a84b5"
 }
