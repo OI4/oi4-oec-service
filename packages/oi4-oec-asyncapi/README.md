@@ -1,5 +1,9 @@
 [OI4 AsyncAPI - Markdown](asyncapi.md)
 
+AsyncAPI description of the OI4 OEC topics and messages
+
+# Usage
+
 To generate HTML pages run:
 
 ```shell script
