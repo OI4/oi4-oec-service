@@ -21,5 +21,5 @@
     "test": "jest ",
     "linkIt": "yarn link"
   },
-  "gitHead": "20f2d6e513ed1532fd58afb45c39b34385ec984f"
+  "gitHead": "bb653090f55c2dd8d9f641f5f5b28eb98e3a84b5"
 }
