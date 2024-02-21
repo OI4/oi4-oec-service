@@ -12,6 +12,11 @@ If you want to contribute and do not know how, just reach out for the WG leads.
 The `oi4-oec-service` is a TypesScript application. To get started you need a proper NodeJS and Yarn installation.
 Please install [Node.js](https://nodejs.org/en) and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/).
 
+The service requires Node.js version 20 or higher. Either install the latest LTS version or use [nvm](https://github.com/nvm-sh/nvm) to manage your Node.js versions.
+```sh
+nvm use v20.9.0
+```
+
 In case you use Windows as development platform, please use [Git Bash](https://git-scm.com/downloads) or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 ## Installation
@@ -21,3 +26,5 @@ To install locally run
 yarn install
 yarn build
 ```
+
+Any `gyp ERR!` message that might popup can be ignored. It is a known issue and does not affect the build process.

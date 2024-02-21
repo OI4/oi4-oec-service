@@ -33,7 +33,6 @@
     "docker:stop": "docker stop oi4-service",
     "docker:start": "docker start oi4-service",
     "docker:rm": "docker rm oi4-service",
-    "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "buildCore": "lerna run buildCore",
     "clean": "lerna clean",
