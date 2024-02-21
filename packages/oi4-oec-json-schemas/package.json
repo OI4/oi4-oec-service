@@ -17,6 +17,9 @@
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist/schemas/**/*.json"
   ],

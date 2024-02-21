@@ -12,6 +12,9 @@
     "conformity",
     "validator"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/OI4/oi4-service.git"
