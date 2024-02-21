@@ -115,3 +115,4 @@ out
 .DS_Store
 ./prepare.sh
 */coverage
+/.npmrc
