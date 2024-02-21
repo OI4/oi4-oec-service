@@ -1,6 +1,6 @@
 {
   "name": "@oi4/oi4-oec-service-model",
-  "version": "1.1.0-preview.11",
+  "version": "1.1.0-preview.12",
   "description": "OI4 Open Edge Computing model",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "MIT",
@@ -21,8 +21,8 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-dnp-encoding": "^1.1.0-preview.11",
-    "@oi4/oi4-oec-json-schemas": "^1.1.0-preview.11"
+    "@oi4/oi4-oec-dnp-encoding": "^1.1.0-preview.12",
+    "@oi4/oi4-oec-json-schemas": "^1.1.0-preview.12"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
@@ -34,5 +34,5 @@
     "test": "jest ",
     "linkIt": "yarn link"
   },
-  "gitHead": "8593c989efffde727c365349b023000ad0fec2d0"
+  "gitHead": "795ed606d4925f616b964321a16840b42174f495"
 }

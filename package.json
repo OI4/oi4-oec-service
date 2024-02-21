@@ -1,10 +1,10 @@
 {
   "name": "@oi4/oi4-oec-service",
-  "version": "1.1.0-preview.11",
+  "version": "1.1.0-preview.12",
   "description": "Monorepo to handle all Open Industry 4.0 Alliance helpers",
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-service.git",
   "workspaces": [
@@ -33,7 +33,6 @@
     "docker:stop": "docker stop oi4-service",
     "docker:start": "docker start oi4-service",
     "docker:rm": "docker rm oi4-service",
-    "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "buildCore": "lerna run buildCore",
     "clean": "lerna clean",
