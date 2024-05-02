@@ -263,7 +263,7 @@
     merge-deep "^3.0.3"
     yaml "^2.3.1"
 
-"@asyncapi/parser@^2.0.0-next-major.14", "@asyncapi/parser@^2.1.0", "parserapiv1@npm:@asyncapi/parser@^2.1.0", "parserv2@npm:@asyncapi/parser@^2.1.0":
+"@asyncapi/parser@^2.0.0-next-major.14", "@asyncapi/parser@^2.1.0":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-2.1.2.tgz#2f7ba3bbd1cd7271e14e8968a46d0034f61212d0"
   integrity sha512-2pHKnr2P8EujcrvZo4x4zNwsEIAg5vb1ZEhl2+OH0YBg8EYH/Xx73XZ+bbwLaYIg1gvFjm29jNB9UL3CMeDU5w==
@@ -288,7 +288,7 @@
     jsonpath-plus "^7.2.0"
     node-fetch "2.6.7"
 
-"@asyncapi/parser@^3.0.0-next-major-spec.2", "@asyncapi/parser@^3.0.0-next-major-spec.3", "@asyncapi/parser@^3.0.2", "@asyncapi/parser@^3.0.5", "@asyncapi/parser@^3.0.6", "parserapiv3@npm:@asyncapi/parser@^3.0.6", "parserv3@npm:@asyncapi/parser@^3.0.0-next-major-spec.3":
+"@asyncapi/parser@^3.0.0-next-major-spec.2", "@asyncapi/parser@^3.0.0-next-major-spec.3", "@asyncapi/parser@^3.0.2", "@asyncapi/parser@^3.0.5", "@asyncapi/parser@^3.0.6":
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-3.0.6.tgz#f5593895094683c52b70376f65c888ceae9446f2"
   integrity sha512-oHTaeXG9DOdBlBZ90xCSPCl3kT5XE851+Rxn47bMfG05Z48csZ1o9wFUl/SzQt+L8HgplFeQG4n/7EJHYOlcWQ==
@@ -4464,14 +4464,14 @@ ajv@^6.10.2, ajv@^6.12.3, ajv@^6.12.4, ajv@^6.12.5:
     uri-js "^4.2.2"
 
 ajv@^8.0.0, ajv@^8.11.0, ajv@^8.12.0, ajv@^8.6.0, ajv@^8.6.3, ajv@^8.8.2:
-  version "8.12.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.12.0.tgz#d1a0527323e22f53562c567c00991577dfbe19d1"
-  integrity sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.13.0.tgz#a3939eaec9fb80d217ddf0c3376948c023f28c91"
+  integrity sha512-PRA911Blj99jR5RMeTunVbNXMF6Lp4vZXnk5GQjcnUWUTsrXtekg/pnmFFI2u/I36Y/2bITGS30GZCXei6uNkA==
   dependencies:
-    fast-deep-equal "^3.1.1"
+    fast-deep-equal "^3.1.3"
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
-    uri-js "^4.2.2"
+    uri-js "^4.4.1"
 
 alterschema@^1.1.2:
   version "1.1.3"
@@ -6400,9 +6400,9 @@ ecc-jsbn@~0.1.1:
     safer-buffer "^2.1.0"
 
 ejs@^3.1.6, ejs@^3.1.7, ejs@^3.1.8:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
-  integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.10.tgz#69ab8358b14e896f80cc39e62087b88500c3ac3b"
+  integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
 
@@ -7116,9 +7116,9 @@ fn.name@1.x.x:
   integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
 
 follow-redirects@^1.15.4:
-  version "1.15.5"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.5.tgz#54d4d6d062c0fa7d9d17feb008461550e3ba8020"
-  integrity sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -11155,6 +11155,31 @@ parse5@6.0.1:
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-6.0.1.tgz#e1a1c085c569b3dc08321184f19a39cc27f7c30b"
   integrity sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==
 
+"parserapiv1@npm:@asyncapi/parser@^2.1.0":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-2.1.2.tgz#2f7ba3bbd1cd7271e14e8968a46d0034f61212d0"
+  integrity sha512-2pHKnr2P8EujcrvZo4x4zNwsEIAg5vb1ZEhl2+OH0YBg8EYH/Xx73XZ+bbwLaYIg1gvFjm29jNB9UL3CMeDU5w==
+  dependencies:
+    "@asyncapi/specs" "^5.1.0"
+    "@openapi-contrib/openapi-schema-to-json-schema" "~3.2.0"
+    "@stoplight/json" "^3.20.2"
+    "@stoplight/json-ref-readers" "^1.2.2"
+    "@stoplight/json-ref-resolver" "^3.1.5"
+    "@stoplight/spectral-core" "^1.16.1"
+    "@stoplight/spectral-functions" "^1.7.2"
+    "@stoplight/spectral-parsers" "^1.0.2"
+    "@stoplight/spectral-ref-resolver" "^1.0.3"
+    "@stoplight/types" "^13.12.0"
+    "@types/json-schema" "^7.0.11"
+    "@types/urijs" "^1.19.19"
+    ajv "^8.11.0"
+    ajv-errors "^3.0.0"
+    ajv-formats "^2.1.1"
+    avsc "^5.7.5"
+    js-yaml "^4.1.0"
+    jsonpath-plus "^7.2.0"
+    node-fetch "2.6.7"
+
 "parserapiv2@npm:@asyncapi/parser@3.0.0-next-major-spec.8":
   version "3.0.0-next-major-spec.8"
   resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-3.0.0-next-major-spec.8.tgz#34fb8034d6d2b042c8f40ef0f97c0be0adea4761"
@@ -11177,6 +11202,81 @@ parse5@6.0.1:
     node-fetch "2.6.7"
     ramldt2jsonschema "^1.2.3"
     webapi-parser "^0.5.0"
+
+"parserapiv3@npm:@asyncapi/parser@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-3.0.6.tgz#f5593895094683c52b70376f65c888ceae9446f2"
+  integrity sha512-oHTaeXG9DOdBlBZ90xCSPCl3kT5XE851+Rxn47bMfG05Z48csZ1o9wFUl/SzQt+L8HgplFeQG4n/7EJHYOlcWQ==
+  dependencies:
+    "@asyncapi/specs" "^6.4.0"
+    "@openapi-contrib/openapi-schema-to-json-schema" "~3.2.0"
+    "@stoplight/json" "^3.20.2"
+    "@stoplight/json-ref-readers" "^1.2.2"
+    "@stoplight/json-ref-resolver" "^3.1.5"
+    "@stoplight/spectral-core" "^1.16.1"
+    "@stoplight/spectral-functions" "^1.7.2"
+    "@stoplight/spectral-parsers" "^1.0.2"
+    "@stoplight/spectral-ref-resolver" "^1.0.3"
+    "@stoplight/types" "^13.12.0"
+    "@types/json-schema" "^7.0.11"
+    "@types/urijs" "^1.19.19"
+    ajv "^8.11.0"
+    ajv-errors "^3.0.0"
+    ajv-formats "^2.1.1"
+    avsc "^5.7.5"
+    js-yaml "^4.1.0"
+    jsonpath-plus "^7.2.0"
+    node-fetch "2.6.7"
+
+"parserv2@npm:@asyncapi/parser@^2.1.0":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-2.1.2.tgz#2f7ba3bbd1cd7271e14e8968a46d0034f61212d0"
+  integrity sha512-2pHKnr2P8EujcrvZo4x4zNwsEIAg5vb1ZEhl2+OH0YBg8EYH/Xx73XZ+bbwLaYIg1gvFjm29jNB9UL3CMeDU5w==
+  dependencies:
+    "@asyncapi/specs" "^5.1.0"
+    "@openapi-contrib/openapi-schema-to-json-schema" "~3.2.0"
+    "@stoplight/json" "^3.20.2"
+    "@stoplight/json-ref-readers" "^1.2.2"
+    "@stoplight/json-ref-resolver" "^3.1.5"
+    "@stoplight/spectral-core" "^1.16.1"
+    "@stoplight/spectral-functions" "^1.7.2"
+    "@stoplight/spectral-parsers" "^1.0.2"
+    "@stoplight/spectral-ref-resolver" "^1.0.3"
+    "@stoplight/types" "^13.12.0"
+    "@types/json-schema" "^7.0.11"
+    "@types/urijs" "^1.19.19"
+    ajv "^8.11.0"
+    ajv-errors "^3.0.0"
+    ajv-formats "^2.1.1"
+    avsc "^5.7.5"
+    js-yaml "^4.1.0"
+    jsonpath-plus "^7.2.0"
+    node-fetch "2.6.7"
+
+"parserv3@npm:@asyncapi/parser@^3.0.0-next-major-spec.3":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@asyncapi/parser/-/parser-3.0.6.tgz#f5593895094683c52b70376f65c888ceae9446f2"
+  integrity sha512-oHTaeXG9DOdBlBZ90xCSPCl3kT5XE851+Rxn47bMfG05Z48csZ1o9wFUl/SzQt+L8HgplFeQG4n/7EJHYOlcWQ==
+  dependencies:
+    "@asyncapi/specs" "^6.4.0"
+    "@openapi-contrib/openapi-schema-to-json-schema" "~3.2.0"
+    "@stoplight/json" "^3.20.2"
+    "@stoplight/json-ref-readers" "^1.2.2"
+    "@stoplight/json-ref-resolver" "^3.1.5"
+    "@stoplight/spectral-core" "^1.16.1"
+    "@stoplight/spectral-functions" "^1.7.2"
+    "@stoplight/spectral-parsers" "^1.0.2"
+    "@stoplight/spectral-ref-resolver" "^1.0.3"
+    "@stoplight/types" "^13.12.0"
+    "@types/json-schema" "^7.0.11"
+    "@types/urijs" "^1.19.19"
+    ajv "^8.11.0"
+    ajv-errors "^3.0.0"
+    ajv-formats "^2.1.1"
+    avsc "^5.7.5"
+    js-yaml "^4.1.0"
+    jsonpath-plus "^7.2.0"
+    node-fetch "2.6.7"
 
 pascal-case@^3.1.2:
   version "3.1.2"
@@ -12766,7 +12866,16 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -12851,7 +12960,14 @@ stringify-object@^3.2.1:
     is-obj "^1.0.1"
     is-regexp "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@6.0, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
+strip-ansi@6.0, strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -14047,7 +14163,7 @@ wordwrap@^1.0.0:
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -14069,6 +14185,15 @@ wrap-ansi@^6.0.1:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
