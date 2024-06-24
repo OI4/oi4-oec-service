@@ -48,7 +48,7 @@
     "linkIt": "lerna run linkIt"
   },
   "engines": {
-    "node": ">=20.0.0 <22.0.0",
+    "node": ">=20.0.0 <22.3.0",
     "yarn": ">=1.22.0 <2"
   }
 }
