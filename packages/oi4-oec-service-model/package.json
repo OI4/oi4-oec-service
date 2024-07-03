@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@oi4/oi4-oec-dnp-encoding": "^1.1.0-preview.12",
-    "@oi4/oi4-oec-json-schemas": "^1.1.0-preview.12"
+    "@oi4/oi4-oec-json-schemas": "^1.1.0-preview.12",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
