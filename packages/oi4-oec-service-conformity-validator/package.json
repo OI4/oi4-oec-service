@@ -20,7 +20,7 @@
     "url": "https://github.com/OI4/oi4-service.git"
   },
   "dependencies": {
-    "@oi4/oi4-oec-service-logger": "^1.1.0-preview.12",
+    "@oi4/oi4-oec-service-logger": "^1.1.0-preview.13",
     "async-mqtt": "^2.5.0"
   },
   "scripts": {
