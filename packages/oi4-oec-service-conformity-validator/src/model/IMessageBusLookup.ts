@@ -18,7 +18,7 @@ export class GetRequest {
     public getTopic(action: string = Methods.PUB): string {
         let topic = `${this.TopicPreamble}/${action}/${this.Resource}`;
         if (this.Source === undefined) {
-            return;
+            return topic;
         }
         topic = `${this.TopicPreamble}/${action}/${this.Resource}/${this.Source}`;
 

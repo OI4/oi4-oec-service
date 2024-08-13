@@ -59,6 +59,7 @@
             },
             "Values": {
               "type": "array",
+              "additionalItems": false,
               "uniqueItems": true,
               "readOnly": true,
               "items": {

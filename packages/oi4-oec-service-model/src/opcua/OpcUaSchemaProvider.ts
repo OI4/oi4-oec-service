@@ -17,7 +17,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
 export const buildOpcUaJsonValidator = (): Ajv => {
-    const jsonValidator = new Ajv();
+    const jsonValidator = new Ajv({strict: false});
     addFormats(jsonValidator)
 
     // OPC UA common Schemas
