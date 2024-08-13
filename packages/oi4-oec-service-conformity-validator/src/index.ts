@@ -494,13 +494,25 @@ export class ConformityValidator {
 
             } else { // Since it's a data message, we can check against schemas
                 try {
-                    for (const payloads of payload.Messages) {
-                        const schemaName = ConformityValidator.getPubPayloadSchema(resource);
-                        payloadValidationResult = await this.jsonValidator.validate(schemaName, payloads.Payload);
-                        if (!payloadValidationResult) {
-                            const paginationResult = await this.jsonValidator.validate('Pagination.schema.json', payloads.Payload);
+                    for (const message of payload.Messages) {
+                        const dswi = message['DataSetWriterId'];
+                        if (dswi  > 9) {
+                            const schemaName = ConformityValidator.getPubPayloadSchema(resource);
+                            payloadValidationResult = this.jsonValidator.validate(schemaName, message.Payload);
+                        } else if (dswi === 2) {
+                            const paginationResult = this.jsonValidator.validate('Pagination.schema.json', message.Payload);
                             if (!paginationResult) break; // No need to further check messages, we already have an error
                             payloadValidationResult = true; // If it was a conform pagination object, we accept it
+                        } else if (dswi === 1 || dswi === 3){
+                            const message = `Message with DataSetWriterId of ${dswi} is only valid for Get requests`;
+                            logger.log(message, ESyslogEventFilter.error);
+                            payloadResultMsgArr.push(message);
+                            payloadValidationResult = false;
+                        } else {
+                            const message = `Message with DataSetWriterId of ${dswi} is invalid`;
+                            logger.log(message, ESyslogEventFilter.error);
+                            payloadResultMsgArr.push(message);
+                            payloadValidationResult = false;
                         }
                     }
                 } catch (payloadValidationErr) {
