@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@oi4/oi4-oec-service-logger": "^1.1.0-preview.13",
-    "async-mqtt": "^2.5.0"
+    "async-mqtt": "^2.6.3"
   },
   "scripts": {
     "build": "yarn run clean && tsc -b tsconfig.json",
