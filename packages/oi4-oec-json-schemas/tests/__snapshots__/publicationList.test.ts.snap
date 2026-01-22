@@ -18,7 +18,7 @@ exports[`publicationList schema (1) match fails for invalid publicationList -> p
 
 received
   /Resource must be equal to one of the allowed values
-    Expected: [\\"MAM\\",\\"Health\\",\\"Config\\",\\"License\\",\\"LicenseText\\",\\"RtLicense\\",\\"Data\\",\\"Metadata\\",\\"Event\\",\\"Profile\\",\\"PublicationList\\",\\"SubscriptionList\\",\\"ReferenceDesignation\\",\\"Interfaces\\",\\"FileUpload\\",\\"FileDownload\\",\\"FirmwareUpdate\\",\\"Blink\\",\\"NewDataSetWriterId\\"]
+    Expected: ["MAM","Health","Config","License","LicenseText","RtLicense","Data","Metadata","Event","Profile","PublicationList","SubscriptionList","ReferenceDesignation","Interfaces","AAS","FileUpload","FileDownload","FirmwareUpdate","Blink","NewDataSetWriterId"]
     Received: <string> unknown
     Path:     PublicationList.schema.jsonconstants/resources.schema.json/enum
 "
@@ -55,8 +55,8 @@ exports[`publicationList schema (5) match fails for invalid publicationList -> p
 "expect(received).toMatchSchema(schema)
 
 received
-  /Source must match pattern \\"^(([a-z0-9-]+\\\\.)*([a-z0-9-]*)(?:/[^/\`\\\\^
-]+){3})$\\"
+  /Source must match pattern "^(([a-z0-9-]+\\.)*([a-z0-9-]*)(?:/[^/\`\\^
+]+){3})$"
     Received: <string> provider.com
     Path:     PublicationList.schema.jsonOi4Identifier.schema.json/pattern
 "

@@ -39,5 +39,61 @@
       "Health": "FAILURE_1",
       "HealthScore": 0
     }
+  ],
+  [
+    "health with empty Details array",
+    {
+      "Health": "NORMAL_0",
+      "HealthScore": 100,
+      "Details": []
+    }
+  ],
+  [
+    "health with single Detail entry",
+    {
+      "Health": "MAINTENANCE_REQUIRED_4",
+      "HealthScore": 75,
+      "Details": [
+        {
+          "Health": "MAINTENANCE_REQUIRED_4",
+          "DiagnosticCode": "F-238",
+          "Location": "temperature-sensor-1"
+        }
+      ]
+    }
+  ],
+  [
+    "health with multiple Detail entries",
+    {
+      "Health": "FAILURE_1",
+      "HealthScore": 0,
+      "Details": [
+        {
+          "Health": "MAINTENANCE_REQUIRED_4",
+          "DiagnosticCode": "W-100",
+          "Location": "toner-unit",
+          "Description": {
+            "Locale": "en-US",
+            "Text": "Toner level low"
+          }
+        },
+        {
+          "Health": "FAILURE_1",
+          "DiagnosticCode": "E-500",
+          "Location": "paper-feed"
+        }
+      ]
+    }
+  ],
+  [
+    "health with Detail having only mandatory Health field",
+    {
+      "Health": "OFF_SPEC_3",
+      "Details": [
+        {
+          "Health": "OFF_SPEC_3"
+        }
+      ]
+    }
   ]
 ]

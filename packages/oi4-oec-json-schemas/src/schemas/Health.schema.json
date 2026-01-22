@@ -1,18 +1,27 @@
 {
   "$id": "Health.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of a Message",
+  "description": "Health message structure as defined in ADR 001 - supports multiple subordinate health statuses",
   "type": "object",
   "additionalProperties": false,
   "required": ["Health"],
   "properties": {
     "Health": {
-      "$ref": "constants/DeviceHealthEnumeration.schema.json"
+      "$ref": "constants/DeviceHealthEnumeration.schema.json",
+      "description": "Most severe health status as defined by NAMUR NE107"
     },
     "HealthScore": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "description": "Current health level as a percentage (0-100%)"
+    },
+    "Details": {
+      "type": "array",
+      "description": "List of subordinate health statuses of an asset or service",
+      "items": {
+        "$ref": "HealthDetailObject.schema.json"
+      }
     }
   }
 }

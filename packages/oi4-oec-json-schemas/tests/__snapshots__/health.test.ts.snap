@@ -23,7 +23,7 @@ exports[`health schema (2) match fails for invalid config -> health is not withi
 
 received
   /Health must be equal to one of the allowed values
-    Expected: [\\"NORMAL_0\\",\\"FAILURE_1\\",\\"CHECK_FUNCTION_2\\",\\"OFF_SPEC_3\\",\\"MAINTENANCE_REQUIRED_4\\"]
+    Expected: ["NORMAL_0","FAILURE_1","CHECK_FUNCTION_2","OFF_SPEC_3","MAINTENANCE_REQUIRED_4"]
     Received: <string> blub
     Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum
 "
@@ -57,11 +57,42 @@ received
     Received: <number> 0
     Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/type
   /Health must be equal to one of the allowed values
-    Expected: [\\"NORMAL_0\\",\\"FAILURE_1\\",\\"CHECK_FUNCTION_2\\",\\"OFF_SPEC_3\\",\\"MAINTENANCE_REQUIRED_4\\"]
+    Expected: ["NORMAL_0","FAILURE_1","CHECK_FUNCTION_2","OFF_SPEC_3","MAINTENANCE_REQUIRED_4"]
     Received: <number> 0
     Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum
   /HealthScore must be integer
     Received: <string> CHECK_FUNCTION_2
     Path:     Health.schema.json#/properties/HealthScore/type
+"
+`;
+
+exports[`health schema (6) match fails for invalid config -> details is not an array: details is not an array 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Details must be array
+    Received: <string> invalid
+    Path:     Health.schema.json#/properties/Details/type
+"
+`;
+
+exports[`health schema (7) match fails for invalid config -> details item missing Health field: details item missing Health field 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Details/0 must have required property 'Health'
+    Received: <object> {"DiagnosticCode":"F-100"}
+    Path:     Health.schema.json#/required
+"
+`;
+
+exports[`health schema (8) match fails for invalid config -> details item with invalid Health value: details item with invalid Health value 1`] = `
+"expect(received).toMatchSchema(schema)
+
+received
+  /Details/0/Health must be equal to one of the allowed values
+    Expected: ["NORMAL_0","FAILURE_1","CHECK_FUNCTION_2","OFF_SPEC_3","MAINTENANCE_REQUIRED_4"]
+    Received: <string> INVALID_STATUS
+    Path:     Health.schema.jsonconstants/DeviceHealthEnumeration.schema.json/enum
 "
 `;

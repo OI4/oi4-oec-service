@@ -15,7 +15,7 @@ exports[`LocalizedText schema (1) match fails for invalid config -> Invalid Loca
 "expect(received).toMatchSchema(schema)
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
+  /Locale must match pattern "^[A-z]{2}(-[A-z]{2,3})?$"
     Received: <string> ene
     Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
 "
@@ -25,7 +25,7 @@ exports[`LocalizedText schema (2) match fails for invalid config -> Invalid Loca
 "expect(received).toMatchSchema(schema)
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
+  /Locale must match pattern "^[A-z]{2}(-[A-z]{2,3})?$"
     Received: <string> en-USofA
     Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
 "
@@ -54,7 +54,7 @@ exports[`LocalizedText schema (5) match fails for invalid config -> empty Locale
 "expect(received).toMatchSchema(schema)
 
 received
-  /Locale must match pattern \\"^[A-z]{2}(-[A-z]{2,3})?$\\"
+  /Locale must match pattern "^[A-z]{2}(-[A-z]{2,3})?$"
     Received: <empty string>
     Path:     LocalizedText.schema.jsonconstants/locale.pattern.schema.json/pattern
   /Text must NOT have fewer than 1 characters
