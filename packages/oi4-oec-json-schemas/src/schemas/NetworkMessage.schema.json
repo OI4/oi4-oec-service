@@ -1,7 +1,7 @@
 {
   "$id": "NetworkMessage.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of an event",
+  "description": "OPC UA PubSub NetworkMessage representation. ADR 005: CorrelationId updated for OPC UA compliance.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,11 +10,11 @@
     "PublisherId",
     "Messages"
   ],
-  "$comment": "TODO: oi4identifier needs to be updated and implemented here. NetworkMessageBase was removed, if necessary, we can patch it back in",
+  "$comment": "ADR 005: CorrelationId is now optional and follows OPC UA Part 14 specification",
   "properties": {
     "CorrelationId": {
       "type": "string",
-      "description": "Correlation ID used for logging and as debug information"
+      "description": "ADR 005: Optional correlation identifier for request-response matching. Used to correlate response messages to their original request. Follows OPC UA Part 14-7.2.2.1 specification."
     },
     "DataSetClassId": {
       "type": "string",
