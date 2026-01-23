@@ -60,7 +60,7 @@ export class OPCUABuilder {
             }
             const wholeMsgLengthBytes = Buffer.byteLength(JSON.stringify(currentMessage));
             if (wholeMsgLengthBytes + this.msgSizeOffset < this._maxMessageSize && (perPage === 0 || (perPage !== 0 && currentMessage.Messages.length < perPage))) {
-                currentMessage.Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Source, remainingPayloads.Status, remainingPayloads.Filter, remainingPayloads.MetaDataVersion));
+                currentMessage.Messages.push(this.buildOPCUADataSetMessage(remainingPayloads.Payload, timestamp, remainingPayloads.DataSetWriterId, remainingPayloads.Oi4Identifier, remainingPayloads.Status, remainingPayloads.Filter, remainingPayloads.MetaDataVersion));
             } else {
                 // This is the paginationObject
                 currentMessage.Messages.push(this.buildOPCUADataSetMessage(
@@ -128,7 +128,7 @@ export class OPCUABuilder {
         //   opcUaDataPayload = [this.buildOPCUAData(actualPayload, timestamp)];
         // }
         const opcUaDataPayload: IOPCUADataSetMessage[] = dataSetPayloads.filter(payload => payload !== undefined).//
-            map(payload => this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Source, payload.Status, payload.Filter, payload.MetaDataVersion));
+            map(payload => this.buildOPCUADataSetMessage(payload.Payload, timestamp, payload.DataSetWriterId, payload.Oi4Identifier, payload.Status, payload.Filter, payload.MetaDataVersion));
 
         const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
         const opcUaDataMessage: IOPCUANetworkMessage = {
@@ -155,11 +155,11 @@ export class OPCUABuilder {
      * @param fieldProperties - the properties of each field. Currently consists of unit, description, type, min/max and valueRank. TODO: this is not finalized yet
      * @param classId - the DataSetClassId that is used for the data (health, license etc.)
      * @param dataSetWriterId - An identifier for DataSetWriter which published the DataSetMetaData. It is unique within the scope of a Publisher. The related DataSetMessage (9.2.3) to this DataSetMetaData contains the same DataSetWriterId.
-     * @param filter - The filter is mandatory, but does not belong to OPC UA DataSetMetaData according to Part 14-7.2.3.4.2-Table 93. In combination with the used resource in the topic, the filter, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7).
-     * @param source - The Source is mandatory, but does not belong to OPC UA DataSetMessage according to Part 14-7.2.3.3-Table 92. In combination with the used resource in the topic, the Source, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present.
+     * @param filter - The filter is mandatory, but does not belong to OPC UA DataSetMetaData according to Part 14-7.2.3.4.2-Table 93. In combination with the used resource in the topic, the filter, together with the Oi4Identifier, contains the readable reference to the DataSetWriterId and is identical to the filter in the topic (8.1.7).
+     * @param oi4Identifier - ADR 004: Renamed from 'source'. The Oi4Identifier is mandatory, but does not belong to OPC UA DataSetMessage according to Part 14-7.2.3.3-Table 92. In combination with the used resource in the topic, the Oi4Identifier, together with the filter, contains the readable reference to the DataSetWriterId and is identical to the Oi4Identifier in the topic (8.1.6) if present.
      * @param correlationId - If the message is a response to a get, or a forward, input the MessageID of the request as the correlation id. Default: ''
      */
-    buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, source: Oi4Identifier, correlationId = ''): IOPCUAMetaData {
+    buildOPCUAMetaDataMessage(metaDataName: string, metaDataDescription: string, fieldProperties: any, classId: string, dataSetWriterId: number, filter: string, oi4Identifier: Oi4Identifier, correlationId = ''): IOPCUAMetaData {
         const opcUaMetaDataPayload: IOPCUADataSetMetaDataType = this.buildOPCUAMetaData(metaDataName, metaDataDescription, classId, fieldProperties);
         const proposedMessageId = `${Date.now().toString()}-${this.publisherId}`;
         const opcUaMetaDataMessage: IOPCUAMetaData = {
@@ -168,7 +168,7 @@ export class OPCUABuilder {
             PublisherId: this.publisherId,
             DataSetWriterId: dataSetWriterId,
             Filter: filter,
-            Source: source,
+            Oi4Identifier: oi4Identifier, // ADR 004: Renamed from 'Source'
             CorrelationId: correlationId,
             MetaData: opcUaMetaDataPayload,
         };
@@ -199,7 +199,7 @@ export class OPCUABuilder {
             DataSetWriterId: dataSetWriterId,
             Timestamp: timestamp.toISOString(),
             Filter: filter,
-            Source: source.toString() as any,
+            Oi4Identifier: source, // ADR 004: Renamed from 'Source'
             Payload: actualPayload,
         };
         if (typeof metaDataVersion !== 'undefined' && metaDataVersion !== null) {

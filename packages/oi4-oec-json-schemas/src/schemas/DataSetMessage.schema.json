@@ -1,21 +1,26 @@
 {
   "$id": "DataSetMessage.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of a Message",
+  "description": "OPC UA PubSub DataSetMessage representation. ADR 004: Renamed Source to Oi4Identifier for OPC compliance.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "DataSetWriterId",
     "Payload",
-    "Source"
+    "Oi4Identifier"
   ],
   "properties": {
     "DataSetWriterId": {
       "$ref": "dataTypes/uint16.schema.json"
     },
+    "Oi4Identifier": {
+      "type": "string",
+      "description": "OI4 Identifier of the data source. ADR 004: Renamed from 'Source' for OPC UA compliance. Contains the readable reference to the DataSetWriterId (8.1.6)."
+    },
     "Filter": {
       "type": "string",
-      "description": "In combination with the used Resource in the topic, the Filter, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the Filter in the topic (8.1.7)."
+      "description": "Optional filter value. In combination with the Oi4Identifier, contains the readable reference to the DataSetWriterId (8.1.7). Deprecated per ADR 004.",
+      "deprecated": true
     },
     "MetaDataVersion": {
       "$ref": "ConfigurationVersionDataType.schema.json"
@@ -36,10 +41,6 @@
     "Payload": {
       "type": "object",
       "description": "This object contains the name-value pairs specified by the PublishedDataSet."
-    },
-    "Source": {
-      "type": "string",
-      "description": "In combination with the used Resource in the topic, the Source, together with the Filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present."
     }
   }
 }
