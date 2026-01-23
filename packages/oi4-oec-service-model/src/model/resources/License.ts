@@ -1,6 +1,11 @@
 import {OI4Payload} from '../Payload';
 import {Resources} from '../Resources';
 
+/**
+ * License resource for software component licensing information.
+ * @deprecated ADR 002: Use SBOM files (SPDX or CycloneDX) at /opt/oi4/licenses instead.
+ * This resource will be removed in a future version.
+ */
 export class License implements OI4Payload {
     readonly LicenseId: string;
     readonly Components: IComponentObject[];

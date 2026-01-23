@@ -1,7 +1,13 @@
+/**
+ * Available OI4 resource types.
+ * Note: LICENSE and LICENSE_TEXT are deprecated per ADR 002.
+ */
 export enum Resources {
     MAM = 'MAM',
     HEALTH = 'Health',
+    /** @deprecated ADR 002: Use SBOM files at /opt/oi4/licenses instead */
     LICENSE = 'License',
+    /** @deprecated ADR 002: Use SBOM files at /opt/oi4/licenses instead */
     LICENSE_TEXT = 'LicenseText',
     PROFILE = 'Profile',
     DATA = 'Data',

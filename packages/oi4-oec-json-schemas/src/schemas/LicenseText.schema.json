@@ -1,7 +1,8 @@
 {
   "$id": "LicenseText.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "A representation of an event",
+  "description": "License text resource. DEPRECATED per ADR 002: Use SBOM files at /opt/oi4/licenses instead.",
+  "deprecated": true,
   "type": "object",
   "additionalProperties": false,
   "required": ["LicenseText"],
