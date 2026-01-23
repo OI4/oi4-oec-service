@@ -1,5 +1,19 @@
 import {getResource, getServiceType, Methods, Oi4Identifier, Resources} from '@oi4/oi4-oec-service-model';
-import {getTopicMethod, ITopicInfo, TopicInfo, TopicWrapper} from './TopicModel';
+import {getTopicMethod, ITopicInfo, oi4Namespace, oi4NamespaceV2, TopicInfo, TopicWrapper} from './TopicModel';
+
+/**
+ * Detects the namespace version from a topic string.
+ * Supports both legacy 'Oi4' and versioned 'Oi4v2' namespaces (ADR 003).
+ */
+function detectNamespace(topicPart: string): { namespace: string; isVersioned: boolean } {
+    if (topicPart === oi4NamespaceV2) {
+        return { namespace: oi4NamespaceV2, isVersioned: true };
+    }
+    if (topicPart === oi4Namespace) {
+        return { namespace: oi4Namespace, isVersioned: false };
+    }
+    throw new Error(`Invalid namespace: ${topicPart}. Expected '${oi4Namespace}' or '${oi4NamespaceV2}'.`);
+}
 
 /**
  This TopicParser make a qualitative validation of the topic info, for example checking
@@ -58,11 +72,22 @@ export class TopicParser {
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>): ITopicInfo {
+        // Detect namespace version (ADR 003)
+        const { namespace } = detectNamespace(topicArray[0]);
+
         if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
 
-        return new TopicInfo(getServiceType(topicArray[1]), Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`), getTopicMethod(topicArray[6]), getResource(topicArray[7]));
+        return new TopicInfo(
+            getServiceType(topicArray[1]),
+            Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
+            getTopicMethod(topicArray[6]),
+            getResource(topicArray[7]),
+            undefined,
+            undefined,
+            namespace
+        );
     }
 
     static extractResourceSpecificInfo(wrapper: TopicWrapper): ITopicInfo {
