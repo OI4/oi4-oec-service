@@ -8,10 +8,21 @@ import {
 } from '@oi4/oi4-oec-service-model';
 
 /**
- * Legacy namespace identifier for OI4 topics.
- * @deprecated ADR 003: Use oi4NamespaceV2 for new implementations.
+ * Versioned namespace identifier for OI4 topics according to guideline version v02
  */
-export const oi4Namespace = 'Oi4';
+export const oi4Namespace = 'Oi4v2';
+
+/**
+ * Versioned namespace identifier for OI4 topics (ADR 003).
+ * New implementations should use this namespace prefix.
+ */
+export const oi4NamespaceV2 = 'Oi4v2';
+
+/**
+ * Default namespace to use for new topic publications.
+ * Set to v2 namespace as per ADR 003.
+ */
+export const oi4DefaultNamespace = oi4NamespaceV2;
 
 /**
  * Versioned namespace identifier for OI4 topics (ADR 003).

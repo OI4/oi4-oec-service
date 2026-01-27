@@ -27,7 +27,12 @@ export interface IOPCUANetworkMessage {
   MessageType: EOPCUAMessageType;
   PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
   DataSetClassId: GUID;
-  ReplyTo?: MessageId;
+  /**
+   * ADR 005: Optional correlation identifier for request-response matching.
+   * Used to correlate response messages to their original request.
+   * Follows OPC UA Part 14-7.2.2.1 specification.
+   */
+  CorrelationId?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
 }
 
@@ -39,10 +44,8 @@ export interface IOPCUADataSetMessage {
   MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
   Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
-  /** @deprecated ADR 004: Use Oi4Identifier instead */
-  Filter?: string;
-  /** OI4 Identifier of the data source. ADR 004: Renamed from 'Source'. */
-  Oi4Identifier: Oi4Identifier;
+  DataSetWriterName: Oi4Identifier;
+  WriterGroupName?: string;
   Payload: any; // TODO: arbitrary object?
 }
 
@@ -52,10 +55,8 @@ export interface IOPCUADataSetMetaData {
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
-  /** @deprecated ADR 004: May be removed in future versions */
-  Filter: string;
-  /** OI4 Identifier of the data source. ADR 004: Renamed from 'Source'. */
-  Oi4Identifier: Oi4Identifier;
+  DataSetWriterName: Oi4Identifier;
+  WriterGroupName: string;
   CorrelationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
 }
