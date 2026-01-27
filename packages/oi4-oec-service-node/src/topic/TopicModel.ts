@@ -24,6 +24,18 @@ export const oi4NamespaceV2 = 'Oi4v2';
  */
 export const oi4DefaultNamespace = oi4NamespaceV2;
 
+/**
+ * Versioned namespace identifier for OI4 topics (ADR 003).
+ * New implementations should use this namespace prefix.
+ */
+export const oi4NamespaceV2 = 'Oi4v2';
+
+/**
+ * Default namespace to use for new topic publications.
+ * Set to v2 namespace as per ADR 003.
+ */
+export const oi4DefaultNamespace = oi4NamespaceV2;
+
 export interface ITopicInfo {
     namespace: string;
     serviceType: ServiceTypes;

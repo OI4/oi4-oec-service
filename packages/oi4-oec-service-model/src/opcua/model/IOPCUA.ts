@@ -19,6 +19,9 @@ export interface IMasterAssetModel {
   Description: IOPCUALocalizedText;
 }
 
+/**
+ * OPC UA PubSub NetworkMessage structure.
+ */
 export interface IOPCUANetworkMessage {
   MessageId: MessageId;
   MessageType: EOPCUAMessageType;
@@ -34,6 +37,7 @@ export interface IOPCUANetworkMessage {
 }
 
 // Data Message containing the values
+// ADR 004: Renamed 'Source' to 'Oi4Identifier' for OPC UA compliance
 export interface IOPCUADataSetMessage {
   DataSetWriterId: number; // oi4ID
   SequenceNumber?: number;
