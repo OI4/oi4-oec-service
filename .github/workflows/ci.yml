@@ -1,45 +1,49 @@
-name: release-snapshot
+name: CI/CD
 
 env:
   CI: true
+
 on:
   push:
     branches:
+      - main
       - development
     tags:
       - "!*"
+
 jobs:
   release:
-    name: Setup
+    name: Build & Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating tags and releases
+      id-token: write # Required for npm Trusted Publishing (OIDC)
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: install
-        run: |
-          yarn install
-      # Build packages
+        run: yarn install
+
       - name: build
-        run: |
-          yarn build
-      # No test so far -> skip them for now
-      #- name: test
-      #  run: npm test
-      # Publish to npm if this version is not published
+        run: yarn build
+
+      # Publish to npm using Trusted Publishing (OIDC)
+      # Uses npm CLI explicitly to support --provenance
       - name: publish
         run: |
-          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
-          lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private
-        env:
-          NPM_TOKEN: ${{ secrets.OI4_NPM_TOKEN }}
-      # Push tag to GitHub if package.json version's tag is not tagged
-      - name: package-version
+          lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private --npm-client=npm -- --provenance
+
+      - name: get package version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+
       # Create GitHub Repo tag
       - name: package-version-to-git-tag
         uses: pkgdeps/git-tag-action@v3.0.0
@@ -49,3 +53,11 @@ jobs:
           version: ${{ env.PACKAGE_VERSION }}
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
+
+      # Create GitHub Repo release (Only on main)
+      - name: Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_NOTES.md
+          tag_name: v${{ env.PACKAGE_VERSION }}
