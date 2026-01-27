@@ -8,25 +8,11 @@ import {
 } from '@oi4/oi4-oec-service-model';
 
 /**
- * Legacy namespace identifier for OI4 topics.
- * @deprecated ADR 003: Use oi4NamespaceV2 for new implementations.
+ * Versioned namespace identifier for OI4 topics according to guideline version v02
  */
-export const oi4Namespace = 'Oi4';
-
-/**
- * Versioned namespace identifier for OI4 topics (ADR 003).
- * New implementations should use this namespace prefix.
- */
-export const oi4NamespaceV2 = 'Oi4v2';
-
-/**
- * Default namespace to use for new topic publications.
- * Set to v2 namespace as per ADR 003.
- */
-export const oi4DefaultNamespace = oi4NamespaceV2;
+export const oi4Namespace = 'Oi4v2';
 
 export interface ITopicInfo {
-    namespace: string;
     serviceType: ServiceTypes;
     appId: Oi4Identifier;
     method: Methods;
@@ -39,7 +25,6 @@ export interface ITopicInfo {
 }
 
 export class TopicInfo implements ITopicInfo {
-    public namespace: string;
     public serviceType: ServiceTypes;
     public appId: Oi4Identifier;
     public method: Methods;
@@ -50,16 +35,7 @@ export class TopicInfo implements ITopicInfo {
     public tag?: string;
     public licenseId?: string;
 
-    constructor(
-        serviceType: ServiceTypes,
-        appId: Oi4Identifier,
-        method: Methods,
-        resource: Resources,
-        source?: Oi4Identifier,
-        filter?: string,
-        namespace: string = oi4DefaultNamespace
-    ) {
-        this.namespace = namespace;
+    constructor(serviceType: ServiceTypes, appId: Oi4Identifier, method: Methods, resource: Resources, source?: Oi4Identifier, filter?: string) {
         this.appId = appId;
         this.method = method;
         this.resource = resource;
@@ -70,7 +46,7 @@ export class TopicInfo implements ITopicInfo {
 
     public toString(): string {
         const getOptional = (part: string): string => part !== undefined ? `/${part}` : '';
-        return `${this.namespace}/${this.serviceType}/${this.appId.toString()}/${this.method}/${this.resource}${getOptional(this.source?.toString())}${getOptional(this.filter)}`;
+        return `${oi4Namespace}/${this.serviceType}/${this.appId.toString()}/${this.method}/${this.resource}${getOptional(this.source?.toString())}${getOptional(this.filter)}`;
     }
 
     public static builder(): TopicInfoBuilder {
@@ -80,7 +56,6 @@ export class TopicInfo implements ITopicInfo {
 }
 
 export class TopicInfoBuilder {
-    _namespace: string = oi4DefaultNamespace;
     _serviceType: ServiceTypes;
     _appId: Oi4Identifier;
     _method: Methods;
@@ -88,11 +63,6 @@ export class TopicInfoBuilder {
     _source?: Oi4Identifier;
     _category?: string;
     _filter?: string;
-
-    public namespace(namespace: string): TopicInfoBuilder {
-        this._namespace = namespace;
-        return this;
-    }
 
     public serviceType(serviceType: ServiceTypes): TopicInfoBuilder {
         this._serviceType = serviceType;
@@ -130,7 +100,7 @@ export class TopicInfoBuilder {
     }
 
     public build(): ITopicInfo {
-        const topic = new TopicInfo(this._serviceType, this._appId, this._method, this._resource, this._source, this._filter, this._namespace);
+        const topic = new TopicInfo(this._serviceType, this._appId, this._method, this._resource, this._source, this._filter);
         topic.category = this._category;
         return topic;
     }
