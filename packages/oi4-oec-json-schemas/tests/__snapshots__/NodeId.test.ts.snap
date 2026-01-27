@@ -13,7 +13,7 @@ received
   must have required property 'Id'
     Path:     NodeId.schema.json#/required
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -25,11 +25,11 @@ received
   /Id must be integer
     Received: <string> SomeString
     Path:     NodeId.schema.jsondataTypes/uint32.schema.json/type
-  /Id must match format \\"uuid\\"
+  /Id must match format "uuid"
     Received: <string> SomeString
     Path:     NodeId.schema.json#/properties/Id/format
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -57,7 +57,7 @@ received
     Received: <number> 42
     Path:     NodeId.schema.json#/properties/Id/type
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -85,7 +85,7 @@ received
     Received: <number> 42
     Path:     NodeId.schema.json#/properties/Id/type
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -103,14 +103,14 @@ received
   /IdType must be <= 1
     Received: <number> 2
     Path:     NodeId.schema.json#/properties/IdType/maximum
-  /Id must match format \\"uuid\\"
+  /Id must match format "uuid"
     Received: <string> Invalid
     Path:     NodeId.schema.json#/properties/Id/format
   /IdType must be >= 3
     Received: <number> 2
     Path:     NodeId.schema.json#/properties/IdType/minimum
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -131,14 +131,14 @@ received
   /IdType must be <= 2
     Received: <number> 3
     Path:     NodeId.schema.json#/properties/IdType/maximum
-  /Id must match format \\"uuid\\"
+  /Id must match format "uuid"
     Received: <string> %?
     Path:     NodeId.schema.json#/properties/Id/format
-  /Id must match pattern \\"^[-A-Za-z0-9+/]*={0,3}$\\"
+  /Id must match pattern "^[-A-Za-z0-9+/]*={0,3}$"
     Received: <string> %?
     Path:     NodeId.schema.json#/properties/Id/pattern
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;
@@ -166,7 +166,7 @@ received
     Received: <number> 42
     Path:     NodeId.schema.json#/properties/Id/type
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/numberType\\"},{\\"$ref\\":\\"#/definitions/stringType\\"},{\\"$ref\\":\\"#/definitions/guidType\\"},{\\"$ref\\":\\"#/definitions/opaqueType\\"}]
+    Expected: [{"$ref":"#/definitions/numberType"},{"$ref":"#/definitions/stringType"},{"$ref":"#/definitions/guidType"},{"$ref":"#/definitions/opaqueType"}]
     Path:     NodeId.schema.json#/oneOf
 "
 `;

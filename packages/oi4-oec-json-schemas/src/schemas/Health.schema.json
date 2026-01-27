@@ -7,12 +7,21 @@
   "required": ["Health"],
   "properties": {
     "Health": {
-      "$ref": "constants/DeviceHealthEnumeration.schema.json"
+      "$ref": "constants/DeviceHealthEnumeration.schema.json",
+      "description": "Most severe health status as defined by NAMUR NE107"
     },
     "HealthScore": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "description": "Current health level as a percentage (0-100%)"
+    },
+    "Details": {
+      "type": "array",
+      "description": "List of subordinate health statuses of an asset or service",
+      "items": {
+        "$ref": "HealthDetailObject.schema.json"
+      }
     }
   }
 }

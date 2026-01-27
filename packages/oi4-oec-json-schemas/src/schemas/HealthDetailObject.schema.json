@@ -1,0 +1,26 @@
+{
+  "$id": "HealthDetailObject.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A detail object containing subordinate health status information",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Health"],
+  "properties": {
+    "Health": {
+      "$ref": "constants/DeviceHealthEnumeration.schema.json",
+      "description": "Health status as defined by NAMUR NE107"
+    },
+    "DiagnosticCode": {
+      "type": "string",
+      "description": "Manufacturer specific detail information about the event - e.g., F-238"
+    },
+    "Location": {
+      "type": "string",
+      "description": "Actual location of the raised health event within the asset/service"
+    },
+    "Description": {
+      "$ref": "LocalizedText.schema.json",
+      "description": "Additional description of the health status"
+    }
+  }
+}

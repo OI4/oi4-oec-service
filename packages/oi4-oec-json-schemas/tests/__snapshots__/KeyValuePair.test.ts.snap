@@ -29,11 +29,11 @@ exports[`KeyValuePair schema (2) match fails for invalid config -> invalid key: 
 
 received
   /Key must have required property 'NamespaceIndex'
-    Received: <object> {\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}
+    Received: <object> {"Name":"","NameSpaceIndex":0}
     Path:     KeyValuePair.schema.json#/required
   must NOT have additional properties, but found 'NameSpaceIndex'
     Expected: <boolean> false
-    Received: <object> {\\"Name\\":\\"\\",\\"NameSpaceIndex\\":0}
+    Received: <object> {"Name":"","NameSpaceIndex":0}
     Path:     KeyValuePair.schema.json#/additionalProperties
 "
 `;
@@ -57,7 +57,7 @@ received
     Path:     KeyValuePair.schema.json#/additionalProperties
   must NOT have additional properties, but found 'foo'
     Expected: <boolean> false
-    Received: <object> {\\"Name\\":\\"\\",\\"NamespaceIndex\\":0,\\"foo\\":\\"bar\\"}
+    Received: <object> {"Name":"","NamespaceIndex":0,"foo":"bar"}
     Path:     KeyValuePair.schema.json#/additionalProperties
 "
 `;

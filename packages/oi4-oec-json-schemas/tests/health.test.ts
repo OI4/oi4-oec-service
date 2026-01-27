@@ -1,6 +1,9 @@
 import { matchersWithOptions } from 'jest-json-schema'
 import schema from '../src/schemas/Health.schema.json'
+import healthDetailObjectSchema from '../src/schemas/HealthDetailObject.schema.json'
 import deviceHealthEnumerationSchema from '../src/schemas/constants/DeviceHealthEnumeration.schema.json'
+import localizedTextSchema from '../src/schemas/LocalizedText.schema.json'
+import localePatternSchema from '../src/schemas/constants/locale.pattern.schema.json'
 
 import validHealthObjs from './__fixtures__/healths_valid.json'
 import invalidHealthObjs from './__fixtures__/healths_invalid.json'
@@ -10,6 +13,9 @@ expect.extend(
     verbose: true,
   }, (ajv) => {
     ajv.addSchema(deviceHealthEnumerationSchema)
+    ajv.addSchema(healthDetailObjectSchema)
+    ajv.addSchema(localizedTextSchema)
+    ajv.addSchema(localePatternSchema)
   })
 )
 

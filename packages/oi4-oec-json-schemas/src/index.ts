@@ -9,6 +9,7 @@ import DeviceHealthEnumerationSchemaJson from './schemas/constants/DeviceHealthE
 
 // Payloads
 import healthSchemaJson from './schemas/Health.schema.json';
+import healthDetailObjectSchemaJson from './schemas/HealthDetailObject.schema.json';
 import mamSchemaJson from './schemas/MAM.schema.json';
 import licenseSchemaJson from './schemas/License.schema.json';
 import licenseTextSchemaJson from './schemas/LicenseText.schema.json';
@@ -62,6 +63,7 @@ export {
     DeviceHealthEnumerationSchemaJson,
     // Payloads
     healthSchemaJson,
+    healthDetailObjectSchemaJson,
     mamSchemaJson,
     licenseSchemaJson,
     licenseTextSchemaJson,

@@ -33,5 +33,34 @@
       "Health": 0,
       "HealthScore": "CHECK_FUNCTION_2"
     }
+  ],
+  [
+    "details is not an array",
+    {
+      "Health": "NORMAL_0",
+      "Details": "invalid"
+    }
+  ],
+  [
+    "details item missing Health field",
+    {
+      "Health": "NORMAL_0",
+      "Details": [
+        {
+          "DiagnosticCode": "F-100"
+        }
+      ]
+    }
+  ],
+  [
+    "details item with invalid Health value",
+    {
+      "Health": "NORMAL_0",
+      "Details": [
+        {
+          "Health": "INVALID_STATUS"
+        }
+      ]
+    }
   ]
 ]

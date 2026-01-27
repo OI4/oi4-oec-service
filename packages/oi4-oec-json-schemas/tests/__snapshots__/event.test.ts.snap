@@ -21,7 +21,7 @@ received
   must have required property 'Category'
     Path:     Event.schema.json#/required
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -48,7 +48,7 @@ received
     Path:     Event.schema.json#/additionalProperties
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Category'
     Path:     Event.schema.json#/required
@@ -60,7 +60,7 @@ received
     Path:     Event.schema.json#/additionalProperties
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Category'
     Path:     Event.schema.json#/required
@@ -71,7 +71,7 @@ received
     Expected: <boolean> false
     Path:     Event.schema.json#/additionalProperties
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -96,7 +96,7 @@ received
     Path:     Event.schema.json#/additionalProperties
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -107,7 +107,7 @@ received
     Path:     Event.schema.json#/additionalProperties
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -117,7 +117,7 @@ received
     Expected: <boolean> false
     Path:     Event.schema.json#/additionalProperties
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -135,7 +135,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":11}
+    Received: <object> {"SymbolicId":11}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_NE107_2
@@ -143,14 +143,14 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":11}
+    Received: <object> {"SymbolicId":11}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_GENERIC_99
     Received: <string> CAT_STATUS_1
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -168,11 +168,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'MSG'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'HEADER'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -186,11 +186,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'MSG'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'HEADER'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -200,7 +200,7 @@ received
     Received: <string> CAT_SYSLOG_0
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -217,11 +217,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'MSG'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'HEADER'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -233,11 +233,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'MSG'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'HEADER'
     Expected: <boolean> false
-    Received: <object> {\\"MSG\\":\\"<MSG>\\",\\"HEADER\\":\\"<HEADER>\\"}
+    Received: <object> {"MSG":"<MSG>","HEADER":"<HEADER>"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -246,7 +246,7 @@ received
     Received: <string> CAT_SYSLOG_0
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -261,7 +261,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_NE107_2
@@ -269,14 +269,14 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_GENERIC_99
     Received: <string> CAT_SYSLOG_0
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -294,11 +294,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'DiagnosticCode'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Location'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -309,11 +309,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'DiagnosticCode'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Location'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -326,7 +326,7 @@ received
     Received: <string> CAT_NE107_2
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -343,11 +343,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'DiagnosticCode'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Location'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -357,11 +357,11 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'DiagnosticCode'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Location'
     Expected: <boolean> false
-    Received: <object> {\\"DiagnosticCode\\":\\"F-238\\",\\"Location\\":\\"Floor 1\\"}
+    Received: <object> {"DiagnosticCode":"F-238","Location":"Floor 1"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -372,7 +372,7 @@ received
     Received: <string> CAT_NE107_2
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -391,18 +391,18 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'SymbolicId'
     Expected: <boolean> false
-    Received: <object> {\\"SymbolicId\\":\\"Good\\"}
+    Received: <object> {"SymbolicId":"Good"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_GENERIC_99
     Received: <string> CAT_NE107_2
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -420,7 +420,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -431,7 +431,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
@@ -442,13 +442,13 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must NOT have additional properties, but found 'Unsupported'
     Expected: <boolean> false
     Path:     Event.schema.json#/additionalProperties
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -465,7 +465,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -475,7 +475,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
@@ -485,12 +485,12 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   must have required property 'Number'
     Path:     Event.schema.json#/required
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
@@ -505,7 +505,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_SYSLOG_0
@@ -513,7 +513,7 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_NE107_2
@@ -521,14 +521,14 @@ received
     Path:     Event.schema.json#/properties/Category/const
   must NOT have additional properties, but found 'Foo'
     Expected: <boolean> false
-    Received: <object> {\\"Foo\\":\\"bar\\"}
+    Received: <object> {"Foo":"bar"}
     Path:     Event.schema.json#/properties/Details/additionalProperties
   /Category must be equal to constant
     Expected: <string> CAT_GENERIC_99
     Received: <string> CAT_GENERIC_0
     Path:     Event.schema.json#/properties/Category/const
   must match exactly one schema in oneOf
-    Expected: [{\\"$ref\\":\\"#/definitions/statusEvent\\"},{\\"$ref\\":\\"#/definitions/syslogEvent\\"},{\\"$ref\\":\\"#/definitions/ne107Event\\"},{\\"$ref\\":\\"#/definitions/genericEvent\\"}]
+    Expected: [{"$ref":"#/definitions/statusEvent"},{"$ref":"#/definitions/syslogEvent"},{"$ref":"#/definitions/ne107Event"},{"$ref":"#/definitions/genericEvent"}]
     Path:     Event.schema.json#/oneOf
 "
 `;
