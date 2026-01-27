@@ -10,64 +10,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### ADR 001 - Rework Health Message (9.3.2)
 
-**Status**: Completed
+**Status**: Pending
 
 **Summary**: Extended the Health message structure to support multiple subordinate health statuses and additional diagnostic information.
 
 **Changes**:
-- Added `HealthDetailObject.schema.json` - new schema for detail objects
-- Extended `Health.schema.json` with optional `Details` array
-- Updated `Health.ts` model with `HealthDetailObject` interface
-- Added test fixtures for Details array functionality
-
-**Files Modified**:
-- `packages/oi4-oec-json-schemas/src/schemas/Health.schema.json`
-- `packages/oi4-oec-json-schemas/src/schemas/HealthDetailObject.schema.json` (new)
-- `packages/oi4-oec-json-schemas/src/index.ts`
-- `packages/oi4-oec-service-model/src/model/resources/Health.ts`
-- `packages/oi4-oec-json-schemas/tests/__fixtures__/healths_valid.json`
-- `packages/oi4-oec-json-schemas/tests/__fixtures__/healths_invalid.json`
-- `packages/oi4-oec-json-schemas/tests/health.test.ts`
+- TBD
 
 **Migration Notes**:
-- The `Details` property is optional, existing Health messages remain valid
-- `HealthScore` is now optional (was implicitly required before)
-- New `HealthDetailObject` structure supports: Health (required), DiagnosticCode, Location, Description
+- TBD
 
 **Tests Added**:
-- 4 new valid test cases for Details array
-- 3 new invalid test cases for Details validation
-- Total: 20 health tests passing
+- TBD
 
 ---
 
 ### ADR 002 - Rework License Handling
 
-**Status**: Completed
+**Status**: Pending
 
-**Summary**: License and LicenseText resources are deprecated in favor of SBOM files stored at `/opt/oi4/licenses`.
+**Summary**: License and LicenseText resources are deprecated in favor of SBOM files.
 
 **Changes**:
-- Marked `License.schema.json` as deprecated
-- Marked `LicenseText.schema.json` as deprecated  
-- Added `@deprecated` JSDoc tags to `License.ts` and `LicenseText.ts` models
-- Added deprecation comments to `Resources.LICENSE` and `Resources.LICENSE_TEXT` enum values
-
-**Files Modified**:
-- `packages/oi4-oec-json-schemas/src/schemas/License.schema.json`
-- `packages/oi4-oec-json-schemas/src/schemas/LicenseText.schema.json`
-- `packages/oi4-oec-service-model/src/model/resources/License.ts`
-- `packages/oi4-oec-service-model/src/model/resources/LicenseText.ts`
-- `packages/oi4-oec-service-model/src/model/Resources.ts`
+- TBD
 
 **Migration Notes**:
-- License information should now be provided via SBOM files (SPDX or CycloneDX format)
-- SBOM files must be placed at `/opt/oi4/licenses` mount path
-- The License and LicenseText resources remain functional but are deprecated
-- Future versions will remove these resources entirely
+- TBD
 
 **Tests Added**:
-- No new tests required (deprecation is documentation-only change)
+- TBD
 
 ---
 

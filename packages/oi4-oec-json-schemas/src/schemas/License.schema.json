@@ -1,7 +1,8 @@
 {
   "$id": "License.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "License Schema",
+  "description": "License Schema. DEPRECATED per ADR 002: Use SBOM files at /opt/oi4/licenses instead.",
+  "deprecated": true,
   "type": "object",
   "additionalProperties": false,
   "required": ["Components"],

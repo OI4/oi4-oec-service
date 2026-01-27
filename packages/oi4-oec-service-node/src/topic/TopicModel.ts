@@ -7,7 +7,10 @@ import {
     Resources
 } from '@oi4/oi4-oec-service-model';
 
-export const oi4Namespace = 'Oi4';
+/**
+ * Versioned namespace identifier for OI4 topics according to guideline version v02
+ */
+export const oi4Namespace = 'Oi4v2';
 
 export interface ITopicInfo {
     serviceType: ServiceTypes;
