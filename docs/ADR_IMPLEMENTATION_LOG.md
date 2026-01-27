@@ -29,12 +29,12 @@ This document tracks the implementation of Architecture Decision Records (ADRs) 
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| 001 | Rework Health message (9.3.2) | Pending |
-| 002 | Rework license handling | Pending |
-| 003 | Broker topic versioning concept | Pending |
-| 004 | Renaming DataSetMessage keys 'Source' and 'Filter' for OPC compliance | Pending |
-| 005 | Fix NetworkMessage key 'CorrelationId' for OPC compliance | Pending |
-| 008 | Delete unused Resources | Pending |
+| 001 | Rework Health message (9.3.2) | ✅ Completed |
+| 002 | Rework license handling | ✅ Completed |
+| 003 | Broker topic versioning concept | ✅ Completed |
+| 004 | Renaming DataSetMessage keys 'Source' and 'Filter' for OPC compliance | ✅ Completed |
+| 005 | Fix NetworkMessage key 'CorrelationId' for OPC compliance | ✅ Completed |
+| 008 | Delete unused Resources | ✅ Completed |
 
 ---
 
@@ -178,9 +178,32 @@ Remove resources that are no longer used.
 - [x] Initial analysis completed
 - [x] Node.js engine updated to >=22.0.0
 - [x] Baseline tests documented
-- [ ] ADR 001 implementation
-- [ ] ADR 002 implementation
-- [ ] ADR 003 implementation
-- [ ] ADR 004 implementation
-- [ ] ADR 005 implementation
-- [ ] ADR 008 implementation
+- [x] ADR 001 implementation - COMPLETED
+  - Created HealthDetailObject.schema.json
+  - Extended Health.schema.json with Details array
+  - Updated Health.ts TypeScript model
+  - Added test fixtures (valid and invalid)
+  - Updated health.test.ts with new schema references
+  - All 232 tests passing in oi4-oec-json-schemas
+- [x] ADR 002 implementation - COMPLETED
+  - Marked License.schema.json as deprecated
+  - Marked LicenseText.schema.json as deprecated
+  - Added @deprecated JSDoc tags to License.ts and LicenseText.ts
+  - Added deprecation comments to Resources enum
+- [x] ADR 003 implementation - COMPLETED
+  - Updated topicPath.schema.json to support Oi4v2 namespace
+  - Added oi4NamespaceV2 and oi4DefaultNamespace constants
+  - Extended TopicInfo with namespace property
+  - Added detectNamespace() function to TopicParser
+- [x] ADR 004 implementation - COMPLETED
+  - Renamed Source to Oi4Identifier in DataSetMessage.schema.json
+  - Marked Filter as deprecated
+  - Updated IOPCUADataSetMessage and IOPCUADataSetMetaData interfaces
+  - Updated OPCUABuilder methods
+- [x] ADR 005 implementation - COMPLETED
+  - Updated NetworkMessage.schema.json description
+  - Updated CorrelationId documentation for OPC UA Part 14 compliance
+  - Updated IOPCUANetworkMessage interface documentation
+- [x] ADR 008 implementation - COMPLETED
+  - Added deprecation notice to resources.schema.json
+  - Documented deprecated resources (License, LicenseText)
