@@ -3,7 +3,6 @@
   "version": "2.0.0-preview.1",
   "description": "AsyncAPI description of the OI4 OEC topics and messages",
   "license": "MIT",
-  "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/OI4/oi4-dev-tools.git"

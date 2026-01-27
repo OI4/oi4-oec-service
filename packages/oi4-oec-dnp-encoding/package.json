@@ -3,7 +3,6 @@
   "version": "2.0.0-preview.1",
   "description": "helper functions to encode & decode from/into dnp-encoding",
   "license": "MIT",
-  "private": false,
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "keywords": [

@@ -116,3 +116,12 @@ out
 ./prepare.sh
 */coverage
 /.npmrc
+
+# Yarn Berry
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

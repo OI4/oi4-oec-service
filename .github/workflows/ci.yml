@@ -36,10 +36,15 @@ jobs:
         run: yarn build
 
       # Publish to npm using Trusted Publishing (OIDC)
-      # Uses npm CLI explicitly to support --provenance
+      # Switch to npm client temporarily because yarn v1 does not support provenance
+      # and lerna requires a clean tree, so we commit the change locally.
       - name: publish
         run: |
-          lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private --npm-client=npm -- --provenance
+          sed -i 's/"npmClient": "yarn"/"npmClient": "npm"/' lerna.json
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git commit -am "chore: switch to npm for provenance" || true
+          lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private -- --provenance
 
       - name: get package version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
