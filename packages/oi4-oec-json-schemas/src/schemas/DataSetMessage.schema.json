@@ -1,26 +1,25 @@
 {
   "$id": "DataSetMessage.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "OPC UA PubSub DataSetMessage representation. ADR 004: Renamed Source to Oi4Identifier for OPC compliance.",
+  "description": "OPC UA PubSub DataSetMessage representation.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "DataSetWriterId",
-    "Payload",
-    "Oi4Identifier"
+    "DataSetWriterName",
+    "Payload"
   ],
   "properties": {
     "DataSetWriterId": {
       "$ref": "dataTypes/uint16.schema.json"
     },
-    "Oi4Identifier": {
+    "DataSetWriterName": {
       "type": "string",
-      "description": "OI4 Identifier of the data source. ADR 004: Renamed from 'Source' for OPC UA compliance. Contains the readable reference to the DataSetWriterId (8.1.6)."
+      "description": "OI4 Identifier of the data source. Contains the readable reference to the DataSetWriterId (8.1.6)."
     },
-    "Filter": {
+    "WriterGroupName": {
       "type": "string",
-      "description": "Optional filter value. In combination with the Oi4Identifier, contains the readable reference to the DataSetWriterId (8.1.7). Deprecated per ADR 004.",
-      "deprecated": true
+      "description": "Optional filter value. In combination with the Oi4Identifier, contains the readable reference to the DataSetWriterId (8.1.7)",
     },
     "MetaDataVersion": {
       "$ref": "ConfigurationVersionDataType.schema.json"
