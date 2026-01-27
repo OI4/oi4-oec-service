@@ -3,8 +3,8 @@ import {EDeviceHealth} from '../EContainer';
 import {Resources} from '../Resources';
 
 /**
- * Detail object containing subordinate health status information.
- * Introduced in ADR 001 to support multiple overlapping health statuses.
+ * Detail object containing subordinate health status information,
+ * supporting multiple overlapping health statuses.
  */
 export interface HealthDetailObject {
     /** Health status as defined by NAMUR NE107 (mandatory) */
@@ -21,8 +21,7 @@ export interface HealthDetailObject {
 }
 
 /**
- * Health message structure as defined in ADR 001.
- * Supports multiple subordinate health statuses via the Details array.
+ * Health message structure supports multiple subordinate health statuses via the Details array.
  */
 export class Health implements OI4Payload {
     /** Most severe health status as defined by NAMUR NE107 */
