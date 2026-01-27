@@ -8,10 +8,9 @@ import {
 } from '@oi4/oi4-oec-service-model';
 
 /**
- * Legacy namespace identifier for OI4 topics.
- * @deprecated ADR 003: Use oi4NamespaceV2 for new implementations.
+ * Versioned namespace identifier for OI4 topics according to guideline version v02
  */
-export const oi4Namespace = 'Oi4';
+export const oi4Namespace = 'Oi4v2';
 
 /**
  * Versioned namespace identifier for OI4 topics (ADR 003).
