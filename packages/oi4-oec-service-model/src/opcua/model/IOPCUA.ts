@@ -21,7 +21,6 @@ export interface IMasterAssetModel {
 
 /**
  * OPC UA PubSub NetworkMessage structure.
- * ADR 005: CorrelationId updated for OPC UA Part 14 compliance.
  */
 export interface IOPCUANetworkMessage {
   MessageId: MessageId;
@@ -38,30 +37,24 @@ export interface IOPCUANetworkMessage {
 }
 
 // Data Message containing the values
-// ADR 004: Renamed 'Source' to 'Oi4Identifier' for OPC UA compliance
 export interface IOPCUADataSetMessage {
   DataSetWriterId: number; // oi4ID
   SequenceNumber?: number;
   MetaDataVersion?: IOPCUAConfigurationVersionDataType;
   Timestamp?: string; // TODO: Date type?
   Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
-  /** @deprecated ADR 004: Use Oi4Identifier instead */
-  Filter?: string;
-  /** OI4 Identifier of the data source. ADR 004: Renamed from 'Source'. */
-  Oi4Identifier: Oi4Identifier;
+  DataSetWriterName: Oi4Identifier;
+  WriterGroupName?: string;
   Payload: any; // TODO: arbitrary object?
 }
 
-// ADR 004: Renamed 'Source' to 'Oi4Identifier' for OPC UA compliance
 export interface IOPCUADataSetMetaData {
   MessageId: string; // TODO: Not yet defined <unixTimestampInMs-PublisherId>
   MessageType: EOPCUAMessageType;
   PublisherId: string; // OI4-id!
   DataSetWriterId: number;
-  /** @deprecated ADR 004: May be removed in future versions */
-  Filter: string;
-  /** OI4 Identifier of the data source. ADR 004: Renamed from 'Source'. */
-  Oi4Identifier: Oi4Identifier;
+  DataSetWriterName: Oi4Identifier;
+  WriterGroupName: string;
   CorrelationId: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
 }
