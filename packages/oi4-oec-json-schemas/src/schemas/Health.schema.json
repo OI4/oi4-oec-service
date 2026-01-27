@@ -1,7 +1,7 @@
 {
   "$id": "Health.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Health message structure as defined in ADR 001 - supports multiple subordinate health statuses",
+  "description": "A representation of a Message",
   "type": "object",
   "additionalProperties": false,
   "required": ["Health"],
