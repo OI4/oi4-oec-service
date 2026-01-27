@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "keywords": [],
-  "repository": "https://github.com/OI4/oi4-service.git",
+  "repository": "https://github.com/OI4/oi4-oec-service",
   "workspaces": [
     "packages/*"
   ],

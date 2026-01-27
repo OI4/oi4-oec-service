@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OI4/oi4-dev-tools.git"
+    "url": "https://github.com/OI4/oi4-oec-service"
   },
   "keywords": [
     "OI4",
