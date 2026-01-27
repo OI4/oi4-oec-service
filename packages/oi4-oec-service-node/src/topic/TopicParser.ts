@@ -58,11 +58,22 @@ export class TopicParser {
     }
 
     private static extractCommonInfo(topic: string, topicArray: Array<string>): ITopicInfo {
+        // Detect namespace version (ADR 003)
+        const { namespace } = detectNamespace(topicArray[0]);
+
         if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
 
-        return new TopicInfo(getServiceType(topicArray[1]), Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`), getTopicMethod(topicArray[6]), getResource(topicArray[7]));
+        return new TopicInfo(
+            getServiceType(topicArray[1]),
+            Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
+            getTopicMethod(topicArray[6]),
+            getResource(topicArray[7]),
+            undefined,
+            undefined,
+            namespace
+        );
     }
 
     static extractResourceSpecificInfo(wrapper: TopicWrapper): ITopicInfo {
