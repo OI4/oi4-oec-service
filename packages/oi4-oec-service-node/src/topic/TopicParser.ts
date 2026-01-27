@@ -1,5 +1,5 @@
 import {getResource, getServiceType, Methods, Oi4Identifier, Resources} from '@oi4/oi4-oec-service-model';
-import {getTopicMethod, ITopicInfo, oi4Namespace, TopicInfo, TopicWrapper} from './TopicModel';
+import {getTopicMethod, ITopicInfo, TopicInfo, TopicWrapper} from './TopicModel';
 
 /**
  This TopicParser make a qualitative validation of the topic info, for example checking
@@ -34,11 +34,6 @@ export class TopicParser {
      --- length = 13 -> ALL fields are mandatory
      - Oi4/<serviceType>/<appId>/{get/set/pub}/metadata                         /<oi4Identifier>?/<filter>?
      --- length = 13 -> ALL fields are mandatory
-     - Oi4/<serviceType>/<appId>/{get/pub}/license                              /<oi4Identifier>?/<licenseId>?
-     - Oi4/<serviceType>/<appId>/{get/pub}/licenseText                          /<oi4Identifier>?/<licenseId>?
-     --- length = 8 -> no oi4Id and no licenseId
-     --- length = 12 -> yes Oi4Id but no licenseId
-     --- length = 13 -> yes oi4Id and yes licenseId
      - Oi4/<serviceType>/<appId>/{get/pub}/publicationList                      /<oi4Identifier>?/<resourceType>?/<tag>?
      - Oi4/<serviceType>/<appId>/{get/pub}/subscriptionList                     /<oi4Identifier>?/<resourceType>?/<tag>?
      --- length = 8 -> no oi4Identifier and no resourceType and no tag
@@ -57,11 +52,7 @@ export class TopicParser {
         return {topicArray, topicInfo, raw: topic};
     }
 
-    private static extractCommonInfo(topic: string, topicArray: Array<string>): ITopicInfo {
-        // Detect namespace version (ADR 003)
-        const { namespace } = detectNamespace(topicArray[0]);
-
-        if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
+    private static extractCommonInfo(topic: string, topicArray: Array<string>): ITopicInfo {if (TopicParser.isAtLeastOneStringEmpty([topicArray[2], topicArray[3], topicArray[4], topicArray[5]])) {
             throw new Error(`Invalid App id: ${topic}`);
         }
 
@@ -69,10 +60,7 @@ export class TopicParser {
             getServiceType(topicArray[1]),
             Oi4Identifier.fromString(`${topicArray[2]}/${topicArray[3]}/${topicArray[4]}/${topicArray[5]}`),
             getTopicMethod(topicArray[6]),
-            getResource(topicArray[7]),
-            undefined,
-            undefined,
-            namespace
+            getResource(topicArray[7])
         );
     }
 
@@ -104,13 +92,6 @@ export class TopicParser {
                         TopicParser.extractFilter(wrapper)
                         break;
                     }
-
-                    case Resources.LICENSE_TEXT:
-                    case Resources.LICENSE: {
-                        TopicParser.extractLicense(wrapper);
-                        break;
-                    }
-
                     case Resources.PUBLICATION_LIST:
                     case Resources.SUBSCRIPTION_LIST: {
                         TopicParser.extractListInfo(wrapper);
@@ -130,10 +111,6 @@ export class TopicParser {
 
     private static extractFilter(wrapper: TopicWrapper): void {
         wrapper.topicInfo.filter = TopicParser.extractItem(wrapper, 12, 'Invalid filter: ');
-    }
-
-    private static extractLicense(wrapper: TopicWrapper): void {
-        wrapper.topicInfo.licenseId = TopicParser.extractItem(wrapper, 12, 'Invalid licenseId: ');
     }
 
     private static extractListInfo(wrapper: TopicWrapper): void {

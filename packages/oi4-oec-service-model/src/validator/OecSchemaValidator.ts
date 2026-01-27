@@ -3,7 +3,6 @@ import {
     resourcesSchemaJson,
     topicPathSchemaJson,
     DeviceHealthEnumerationSchemaJson,
-    interfacesSchemaJson,
     DataSetMetaDataSchemaJson,
     DataSetMetaDataTypeSchemaJson,
     dataPVSchemaJson,
@@ -14,18 +13,11 @@ import {
     KeyValuePairSchemaJson,
     NodeIdSchemaJson,
     QualifiedNameSchemaJson,
-    BaseDataTypeSchemaJson
-} from '@oi4/oi4-oec-json-schemas';
-
-// Payloads
-import {
+    BaseDataTypeSchemaJson,
     healthSchemaJson,
     mamSchemaJson,
-    licenseSchemaJson,
-    licenseTextSchemaJson,
     profileSchemaJson,
     eventSchemaJson,
-    rtLicenseSchemaJson,
     configPublishSchemaJson,
     configSetSchemaJson,
     publicationListSchemaJson,
@@ -52,11 +44,8 @@ export const buildOecJsonValidator = (): Ajv => {
     // OI4 OEC payload schemas
     jsonValidator.addSchema(healthSchemaJson, 'Health.schema.json');
     jsonValidator.addSchema(mamSchemaJson, 'MAM.schema.json');
-    jsonValidator.addSchema(licenseSchemaJson, 'License.schema.json');
-    jsonValidator.addSchema(licenseTextSchemaJson, 'LicenseText.schema.json');
     jsonValidator.addSchema(profileSchemaJson, 'Profile.schema.json');
     jsonValidator.addSchema(eventSchemaJson, 'Event.schema.json');
-    jsonValidator.addSchema(rtLicenseSchemaJson, 'RtLicense.schema.json');
     jsonValidator.addSchema(configPublishSchemaJson, 'ConfigPublish.schema.json');
     jsonValidator.addSchema(configSetSchemaJson, 'ConfigSet.schema.json');
     jsonValidator.addSchema(publicationListSchemaJson, 'PublicationList.schema.json');
@@ -64,7 +53,6 @@ export const buildOecJsonValidator = (): Ajv => {
     jsonValidator.addSchema(referenceDesignationSchemaJson, 'ReferenceDesignation.schema.json');
     jsonValidator.addSchema(localeSchemaJson, 'Locale.schema.json');
     jsonValidator.addSchema(paginationSchemaJson, 'Pagination.schema.json');
-    jsonValidator.addSchema(interfacesSchemaJson, 'Interfaces.schema.json');
 
     jsonValidator.addSchema(dataPVSchemaJson, 'DataPV.schema.json');
     jsonValidator.addSchema(DataSetMetaDataSchemaJson, 'DataSetMetaData.schema.json');

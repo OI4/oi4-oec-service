@@ -37,7 +37,6 @@ export interface IOPCUANetworkMessage {
 }
 
 // Data Message containing the values
-// ADR 004: Renamed 'Source' to 'Oi4Identifier' for OPC UA compliance
 export interface IOPCUADataSetMessage {
   DataSetWriterId: number; // oi4ID
   SequenceNumber?: number;
@@ -49,7 +48,6 @@ export interface IOPCUADataSetMessage {
   Payload: any; // TODO: arbitrary object?
 }
 
-// ADR 004: Renamed 'Source' to 'Oi4Identifier' for OPC UA compliance
 export interface IOPCUADataSetMetaData {
   MessageId: string; // TODO: Not yet defined <unixTimestampInMs-PublisherId>
   MessageType: EOPCUAMessageType;

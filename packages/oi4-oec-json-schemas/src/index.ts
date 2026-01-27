@@ -11,17 +11,13 @@ import DeviceHealthEnumerationSchemaJson from './schemas/constants/DeviceHealthE
 import healthSchemaJson from './schemas/Health.schema.json';
 import healthDetailObjectSchemaJson from './schemas/HealthDetailObject.schema.json';
 import mamSchemaJson from './schemas/MAM.schema.json';
-import licenseSchemaJson from './schemas/License.schema.json';
-import licenseTextSchemaJson from './schemas/LicenseText.schema.json';
 import profileSchemaJson from './schemas/Profile.schema.json';
 import eventSchemaJson from './schemas/Event.schema.json';
-import rtLicenseSchemaJson from './schemas/RtLicense.schema.json';
 import publicationListSchemaJson from './schemas/PublicationList.schema.json';
 import subscriptionListSchemaJson from './schemas/SubscriptionList.schema.json';
 import referenceDesignationSchemaJson from './schemas/ReferenceDesignation.schema.json';
 import localeSchemaJson from './schemas/Locale.schema.json';
 import paginationSchemaJson from './schemas/Pagination.schema.json';
-import interfacesSchemaJson from './schemas/Interfaces.schema.json';
 
 import NetworkMessageSchemaJson from './schemas/NetworkMessage.schema.json';
 import ConfigurationVersionDataTypeSchemaJson from './schemas/ConfigurationVersionDataType.schema.json';
@@ -65,11 +61,8 @@ export {
     healthSchemaJson,
     healthDetailObjectSchemaJson,
     mamSchemaJson,
-    licenseSchemaJson,
-    licenseTextSchemaJson,
     profileSchemaJson,
     eventSchemaJson,
-    rtLicenseSchemaJson,
     publicationListSchemaJson,
     subscriptionListSchemaJson,
     referenceDesignationSchemaJson,
@@ -81,7 +74,6 @@ export {
     LocalizedTextSchemaJson,
     configPublishSchemaJson,
     configSetSchemaJson,
-    interfacesSchemaJson,
     dataPVSchemaJson,
 
     DataSetMetaDataSchemaJson,
