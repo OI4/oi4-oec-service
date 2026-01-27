@@ -364,7 +364,7 @@ export class ConformityValidator {
         let eRes: number;
         const schemaResult: ISchemaConformity = await this.checkSchemaConformity(Resources.METADATA, parsedMessage);
         if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
-            if (parsedMessage.CorrelationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+            if (parsedMessage.ReplyTo === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
                 eRes = EValidity.ok;
             } else {
                 eRes = EValidity.partial;
@@ -422,7 +422,7 @@ export class ConformityValidator {
         let eRes: number;
         const schemaResult: ISchemaConformity = await this.checkSchemaConformity(resource, parsedMessage);
         if (schemaResult.schemaResult) { // Check if the schema validator threw any faults, schemaResult is an indicator for overall faults
-            if (parsedMessage.CorrelationId === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
+            if (parsedMessage.ReplyTo === conformityPayload.MessageId) { // Check if the correlationId matches our messageId (according to guideline)
                 eRes = EValidity.ok;
             } else {
                 eRes = EValidity.partial;
@@ -605,8 +605,8 @@ export class ConformityValidator {
         for (const dataSetMessage of messages) {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 logger.log(`Found pagination in ${resource}!`);
-            } else if (ConformityValidator.isNotEmpty(dataSetMessage.Filter) && this.checkOi4IdConformity(dataSetMessage.Source)) {
-                result.push({Source: dataSetMessage.Source, Filter: dataSetMessage.Filter});
+            } else if (ConformityValidator.isNotEmpty(dataSetMessage.WriterGroupName) && this.checkOi4IdConformity(dataSetMessage.DataSetWriterName)) {
+                result.push({Source: dataSetMessage.DataSetWriterName, Filter: dataSetMessage.WriterGroupName});
             }
         }
 

@@ -32,7 +32,7 @@ export interface IOPCUANetworkMessage {
    * Used to correlate response messages to their original request.
    * Follows OPC UA Part 14-7.2.2.1 specification.
    */
-  CorrelationId?: MessageId;
+  ReplyTo?: MessageId;
   Messages: IOPCUADataSetMessage[]; // TODO: This should be generic (either Messages or MetaData)
 }
 
@@ -55,7 +55,7 @@ export interface IOPCUADataSetMetaData {
   DataSetWriterId: number;
   DataSetWriterName: Oi4Identifier;
   WriterGroupName: string;
-  CorrelationId: string;
+  ReplyTo: string;
   MetaData: IOPCUADataSetMetaDataType; // TODO: This should be generic (MetaData)
 }
 

@@ -6,7 +6,7 @@ export function toOPCUANetworkMessageRaw(networkMessage: IOPCUANetworkMessage): 
     const messages: IOPCUADataSetMessageRaw[] = networkMessage.Messages.map(message => {
         return {
             ...message,
-            Source: message.Source.toString()
+            DataSetWriterName: message.DataSetWriterName.toString()
         }
     });
     return {
@@ -19,7 +19,7 @@ export function toOPCUANetworkMessage(networkMessage: IOPCUANetworkMessageRaw): 
     const messages: IOPCUADataSetMessage[] = networkMessage.Messages.map(message => {
         return {
             ...message,
-            Source: Oi4Identifier.fromDNPString(message.Source)
+            DataSetWriterName: Oi4Identifier.fromDNPString(message.DataSetWriterName)
         }
     });
     return {
@@ -33,7 +33,7 @@ export interface IOPCUANetworkMessageRaw {
     MessageType: EOPCUAMessageType;
     PublisherId: string; // TODO: string in the format <serviceType>/<appId>, need to add validators
     DataSetClassId: string;
-    CorrelationId?: string;
+    ReplyTo?: string;
     Messages: IOPCUADataSetMessageRaw[]; // TODO: This should be generic (either Messages or MetaData)
 }
 
@@ -44,7 +44,7 @@ export interface IOPCUADataSetMessageRaw {
     MetaDataVersion?: IOPCUAConfigurationVersionDataType;
     Timestamp?: string; // TODO: Date type?
     Status?: EOPCUAStatusCode; //Optional and shall not be shown, when Status = 0 => OK
-    Filter?: string;
-    Source: string;
+    WriterGroupName?: string;
+    DataSetWriterName: string;
     Payload: any; // TODO: arbitrary object?
 }

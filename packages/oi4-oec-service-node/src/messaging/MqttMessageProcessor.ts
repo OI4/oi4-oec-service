@@ -159,11 +159,6 @@ export class MqttMessageProcessor extends EventEmitter implements IMqttMessagePr
             case Resources.EVENT:
                 break;
 
-            case Resources.LICENSE:
-            case Resources.LICENSE_TEXT:
-                filter = topicInfo.licenseId;
-                break;
-
             case Resources.CONFIG:
                 filter = topicInfo.filter;
                 break;

@@ -14,7 +14,6 @@ import winston, {Logger as WinstonLogger, transports} from 'winston';
 import {Syslog, SyslogTransportInstance} from 'winston-syslog';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore TODO: this lib does not have any typings, but the api is simple enough
 const glossyParser = require('glossy').Parse;
 
 /**
@@ -35,7 +34,7 @@ class Logger {
     private _name: string; /*tslint:disable-line*/
     private _mqttClient?: mqtt.AsyncClient;
     private readonly _oi4Id?: Oi4Identifier;
-     private readonly _serviceType?: string;
+    private readonly _serviceType?: string;
     private readonly _builder?: OPCUABuilder;
     private readonly syslogFilterToEnum = {
         debug: 7,
@@ -111,23 +110,23 @@ class Logger {
             });
             glossyParser.parse(msg, (parsedMessage: any) => {
                 if (this._builder) {
-                    const event : SyslogEvent = new SyslogEvent(parsedMessage.prival);
+                    const event: SyslogEvent = new SyslogEvent(parsedMessage.prival);
                     event.Category = EventCategory.CAT_SYSLOG_0,
-                    event.Details = {
-                        MSG: parsedMessage.message,
-                        HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
-                    };
+                        event.Details = {
+                            MSG: parsedMessage.message,
+                            HEADER: `${parsedMessage.time.toISOString()} ${parsedMessage.host}`,
+                        };
 
                     const syslogDataMessage = this._builder.buildOPCUANetworkMessage([{
-                         Source: oi4Id,
-                         Payload: event,
-                         DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
-                     }], new Date(),  DataSetClassIds.Event); /*tslint:disable-line*/
+                        DataSetWriterName: oi4Id,
+                        Payload: event,
+                        DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, oi4Id),
+                    }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
                     if (this._mqttClient) {
                         /* Optimistic log...if we want to be certain, we have to convert this to async */
                         this._mqttClient.publish(
-                             `Oi4/${this._serviceType}/${this._oi4Id}/Pub/Event/${this._oi4Id}/${EventCategory.CAT_SYSLOG_0}/${data.level}`,
-                             JSON.stringify(syslogDataMessage)
+                            `Oi4/${this._serviceType}/${this._oi4Id}/Pub/Event/${this._oi4Id}/${EventCategory.CAT_SYSLOG_0}/${data.level}`,
+                            JSON.stringify(syslogDataMessage)
                         );
                     }
                 }

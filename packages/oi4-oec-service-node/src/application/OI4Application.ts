@@ -123,7 +123,7 @@ export class OI4Application implements IOI4Application {
         mqttSettings.will = {
             topic: `${oi4Namespace}/${this.serviceType}/${this.oi4Id}/${Methods.PUB}/${Resources.HEALTH}/${this.oi4Id.toString()}`,
             payload: JSON.stringify(this.builder.buildOPCUANetworkMessage([{
-                Source: this.oi4Id,
+                DataSetWriterName: this.oi4Id,
                 Payload: this.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.FAILURE_1, 0),
                 DataSetWriterId: 0,
             }], new Date(), DataSetClassIds.Health)), /*tslint:disable-line*/
@@ -372,10 +372,10 @@ export class OI4Application implements IOI4Application {
     public async sendSetResource(topicInfo: TopicInfo, payload: any): Promise<void> {
         const dsp: IOPCUADataSetMessage = {
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(topicInfo.resource, topicInfo.source),
-            Filter: topicInfo.filter,
+            WriterGroupName: topicInfo.filter,
             Payload: payload,
             SequenceNumber: 0,
-            Source: topicInfo.source,
+            DataSetWriterName: topicInfo.source,
         };
         const networkMessage = this.builder.buildOPCUANetworkMessage([dsp], new Date(), getDataSetClassId(topicInfo.resource), this.builder.getMessageId());
         const filter = topicInfo.filter !== undefined ? `/${topicInfo.filter}` : '';
@@ -450,7 +450,7 @@ export class OI4Application implements IOI4Application {
     public async sendEventStatus(status: StatusEvent, source: Oi4Identifier): Promise<void> {
         const networkMessage = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            Source: source,
+            DataSetWriterName: source,
             Payload: status,
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, source),
         }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/
@@ -460,7 +460,7 @@ export class OI4Application implements IOI4Application {
     async getConfig(): Promise<void> {
         const networkMessage = this.builder.buildOPCUANetworkMessage([{
             SequenceNumber: 1,
-            Source: this.oi4Id,
+            DataSetWriterName: this.oi4Id,
             Payload: this.applicationResources.config,
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.CONFIG, this.oi4Id),
         }], new Date(), DataSetClassIds.Event); /*tslint:disable-line*/

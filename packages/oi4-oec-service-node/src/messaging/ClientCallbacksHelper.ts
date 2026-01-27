@@ -36,7 +36,7 @@ export class ClientCallbacksHelper implements IClientCallbacksHelper {
         await oi4application.messageBus.publish(
             `${topicPreamble}/${Methods.PUB}/${Resources.MAM}/${oi4Id}`,
             oi4application.builder.buildOPCUANetworkMessage([{
-                Source: oi4Id,
+                DataSetWriterName: oi4Id,
                 Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.HEALTH, oi4Id),
             }], new Date(), DataSetClassIds.MAM),

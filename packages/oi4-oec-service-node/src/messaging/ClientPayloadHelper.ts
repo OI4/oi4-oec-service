@@ -24,7 +24,7 @@ export class ClientPayloadHelper {
     createPayload(payload: OI4Payload, source: Oi4Identifier): IOPCUADataSetMessage {
         return {
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(payload.resourceType(), source),
-            Source: source,
+            DataSetWriterName: source,
             Payload: payload,
         };
     };
@@ -99,8 +99,8 @@ export class ClientPayloadHelper {
         for (const license of licenses) {
             payload.push({
                 DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), source),
-                Filter: license.LicenseId,
-                Source: source ?? applicationResources.oi4Id,
+                WriterGroupName: license.LicenseId,
+                DataSetWriterName: source ?? applicationResources.oi4Id,
                 Timestamp: new Date().toISOString(),
                 Payload: {Components: license.Components},
             })
@@ -117,8 +117,8 @@ export class ClientPayloadHelper {
             const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id);
             return {
                 DataSetWriterId: dataSetWriterId,
-                Filter: resource,
-                Source: applicationResources.oi4Id,
+                WriterGroupName: resource,
+                DataSetWriterName: applicationResources.oi4Id,
                 Payload: {
                     ...elem,
                     Source: elem.Source.toString()
@@ -137,8 +137,8 @@ export class ClientPayloadHelper {
             const dataSetWriterId = DataSetWriterIdManager.getDataSetWriterId(resource, applicationResources.oi4Id);
             return {
                 DataSetWriterId: dataSetWriterId,
-                Filter: resource,
-                Source: applicationResources.oi4Id,
+                WriterGroupName: resource,
+                DataSetWriterName: applicationResources.oi4Id,
                 Payload: elem,
             } as IOPCUADataSetMessage;
         });
@@ -162,8 +162,8 @@ export class ClientPayloadHelper {
                 }
                 return {
                     DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.CONFIG, oi4Id),
-                    Filter: configFilter,
-                    Source: oi4Id,
+                    WriterGroupName: configFilter,
+                    DataSetWriterName: oi4Id,
                     Payload: config
                 };
             }
@@ -201,8 +201,8 @@ export class ClientPayloadHelper {
     createPublishEventMessage(filter: string, source: Oi4Identifier, event: IEvent): IOPCUADataSetMessage[] {
         return [{
             DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(event.resourceType(), source),
-            Filter: filter,
-            Source: source,
+            WriterGroupName: filter,
+            DataSetWriterName: source,
             Timestamp: new Date().toISOString(),
             Payload: event,
         }];
