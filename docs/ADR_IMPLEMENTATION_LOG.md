@@ -176,7 +176,7 @@ Remove resources that are no longer used.
 ### Date: 2026-01-22
 
 - [x] Initial analysis completed
-- [x] Node.js engine updated to >=22.0.0
+- [x] Node.js engine updated to >=24.0.0
 - [x] Baseline tests documented
 - [x] ADR 001 implementation - COMPLETED
   - Created HealthDetailObject.schema.json
