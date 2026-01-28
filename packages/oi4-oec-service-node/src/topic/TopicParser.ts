@@ -92,6 +92,11 @@ export class TopicParser {
                         TopicParser.extractFilter(wrapper)
                         break;
                     }
+                    case Resources.LICENSE:
+                    case Resources.LICENSE_TEXT: {
+                        wrapper.topicInfo.licenseId = TopicParser.extractItem(wrapper, 12, 'Invalid licenseId: ');
+                        break;
+                    }
                     case Resources.PUBLICATION_LIST:
                     case Resources.SUBSCRIPTION_LIST: {
                         TopicParser.extractListInfo(wrapper);

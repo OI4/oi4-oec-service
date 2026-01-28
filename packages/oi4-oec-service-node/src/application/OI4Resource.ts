@@ -7,6 +7,7 @@ import {
     LicenseText,
     MasterAssetModel,
     Oi4Identifier,
+    OI4ResourceDefinition,
     OI4ResourceEvent,
     Profile,
     profileApplication,
@@ -14,12 +15,12 @@ import {
     Resources,
     RTLicense,
     SubscriptionList,
+    TypedEventEmitter,
 } from '@oi4/oi4-oec-service-model';
-import {EventEmitter} from 'events';
 import {ReferenceDesignation} from '@oi4/oi4-oec-service-model/dist/model/resources/ReferenceDesignation';
 
 export class OI4Resource implements IOI4Resource {
-    readonly eventEmitter: EventEmitter;
+    readonly eventEmitter: TypedEventEmitter<OI4ResourceDefinition>;
 
     protected readonly _profile: Profile;
     protected readonly _mam: MasterAssetModel;
@@ -32,7 +33,7 @@ export class OI4Resource implements IOI4Resource {
     protected _subscriptionList: SubscriptionList[];
     protected _referenceDesignation: ReferenceDesignation;
 
-    constructor(mam: MasterAssetModel, eventEmitter: EventEmitter) {
+    constructor(mam: MasterAssetModel, eventEmitter: TypedEventEmitter<OI4ResourceDefinition>) {
         this.eventEmitter = eventEmitter;
 
         this._mam = mam;

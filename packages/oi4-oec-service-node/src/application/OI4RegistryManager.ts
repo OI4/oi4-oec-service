@@ -1,6 +1,5 @@
-import {ESyslogEventFilter, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {ESyslogEventFilter, IOPCUANetworkMessage, Oi4Identifier, ServiceTypes, TypedEventEmitter} from '@oi4/oi4-oec-service-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
-import {EventEmitter} from 'events';
 
 /**
  * The OI4RegistryManager class is a singleton that manages the OI4 registry.
@@ -9,7 +8,12 @@ import {EventEmitter} from 'events';
 export namespace OI4RegistryManager {
 
     export const oi4RegistryChanged = 'oi4_registry_changed';
-    const emitter: EventEmitter = new EventEmitter();
+
+    export type OI4RegistryManagerDefinition = {
+        [oi4RegistryChanged]: [oldId: Oi4Identifier | undefined, newId: Oi4Identifier];
+    };
+
+    const emitter: TypedEventEmitter<OI4RegistryManagerDefinition> = new TypedEventEmitter();
 
     let oi4Id: Oi4Identifier = undefined;
 
@@ -19,7 +23,7 @@ export namespace OI4RegistryManager {
             return;
         }
         if (!newId.equals(oi4Id)) {
-            emitter.emit(oi4RegistryChanged, oi4Id, newId);
+            emitter.emit(oi4RegistryChanged, oi4Id as Oi4Identifier | undefined, newId);
             oi4Id = newId;
             logger.log(`Saved registry OI4 ID: ${oi4Id}`);
         }
@@ -58,9 +62,8 @@ export namespace OI4RegistryManager {
         oi4Id = undefined;
     }
 
-    export function getEmitter(): EventEmitter {
+    export function getEmitter(): TypedEventEmitter<OI4RegistryManagerDefinition> {
         return emitter;
     }
 
 }
-

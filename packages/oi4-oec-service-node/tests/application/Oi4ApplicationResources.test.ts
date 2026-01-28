@@ -1,22 +1,19 @@
-import {OI4ApplicationResources} from '../../src';
-import {OI4ResourceEvent} from '../../src/application/OI4Resource';
-import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
 import {
-    EDeviceHealth,
-    Health,
+    EOPCUABaseDataType,
+    EOPCUALocale,
     IContainerConfig,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
     IOI4Resource,
-    PublicationList,
-    PublicationListConfig,
-    PublicationListMode,
-    Resources,
-    EOPCUABaseDataType,
-    EOPCUALocale,
-    IMasterAssetModel,
-    Oi4Identifier
+    MasterAssetModel,
+    Methods,
+    Oi4Identifier,
+    OI4ResourceEvent,
+    Resources
 } from '@oi4/oi4-oec-service-model';
+import {OI4ApplicationResources} from '../../src/application/OI4ApplicationResources';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
+import {OI4Resource} from '../../src/application/OI4Resource';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
@@ -177,7 +174,7 @@ describe('Test Oi4ApplicationResources', () => {
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
@@ -190,17 +187,18 @@ describe('Test Oi4ApplicationResources', () => {
         expect(receivedResource).toBe(Resources.CONFIG);
     });
 
-    it('setConfig updates source configuration', () => {
-        const oi4Identifier = new Oi4Identifier('vendor.com', 'a', 'b', 'c');
-        const source = createResourceWithConfig(oi4Identifier);
-        appResources.addSource(source);
+    it('setConfig updates sub source configuration', () => {
+        const oi4Identifier = new Oi4Identifier('myvendor.com', 'model', 'product', 'serial');
+        const mam = new MasterAssetModel(oi4Identifier);
+        appResources.addSource(mam);
+        appResources.setConfig(oi4Identifier, 'filter 1', createConfig());
 
         const setConfig = createConfig();
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
@@ -219,7 +217,7 @@ describe('Test Oi4ApplicationResources', () => {
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -244,7 +242,7 @@ describe('Test Oi4ApplicationResources', () => {
         };
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -261,7 +259,7 @@ describe('Test Oi4ApplicationResources', () => {
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '56789';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -278,7 +276,7 @@ describe('Test Oi4ApplicationResources', () => {
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })

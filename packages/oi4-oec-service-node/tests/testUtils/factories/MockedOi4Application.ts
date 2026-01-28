@@ -12,6 +12,7 @@ import {ClientPayloadHelper} from '../../../src';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {IOI4MessageBus} from '../../../src/messaging/OI4MessageBus';
 import {MockOI4MessageBus} from './MockOI4MessageBus';
+import {IMqttMessageProcessor} from '../../../src/messaging/MqttMessageProcessor';
 
 export class MockOi4Application implements IOI4Application {
     applicationResources: IOI4ApplicationResources;
@@ -20,12 +21,25 @@ export class MockOi4Application implements IOI4Application {
     clientPayloadHelper: ClientPayloadHelper;
     serviceType: ServiceTypes;
     topicPreamble: string;
+    mqttMessageProcessor: IMqttMessageProcessor;
 
     constructor(applicationResources: IOI4ApplicationResources, serviceType: ServiceTypes) {
         this.applicationResources = applicationResources;
         this.serviceType = serviceType;
         this.topicPreamble = `${this.serviceType}/${this.applicationResources.oi4Id}`;
         this.messageBus = new MockOI4MessageBus();
+    }
+
+    preparePayload(data: any): Buffer {
+        return Buffer.from(JSON.stringify(data));
+    }
+
+    requestMAM(): Promise<void> {
+        return Promise.resolve();
+    }
+
+    sendSetResource(): Promise<void> {
+        return Promise.resolve();
     }
 
     sendData(): Promise<any> {
@@ -50,13 +64,13 @@ export class MockOi4Application implements IOI4Application {
         return Promise.resolve(false);
     }
 
-    sendEvent(event: IEvent, filter: string): Promise<void> {
-        logger.log(`sendEvent called with event: ${event}, filter: ${filter}`);
+    sendEvent(event: IEvent, source: Oi4Identifier, filter: string): Promise<void> {
+        logger.log(`sendEvent called with event: ${event}, source: ${source}, filter: ${filter}`);
         return Promise.resolve(undefined);
     }
 
-    sendEventStatus(status: StatusEvent): Promise<void> {
-        logger.log(`sendEventStatus called with status: ${status}`);
+    sendEventStatus(status: StatusEvent, source: Oi4Identifier): Promise<void> {
+        logger.log(`sendEventStatus called with status: ${status}, source: ${source}`);
         return Promise.resolve(undefined);
     }
 
@@ -70,7 +84,7 @@ export class MockOi4Application implements IOI4Application {
         return Promise.resolve(undefined);
     }
 
-    sendResource(resource: Resources, messageId: string, source: string, filter: string, page: number, perPage: number): Promise<void> {
+    sendResource(resource: Resources, messageId: string, source: Oi4Identifier, filter: string, page: number, perPage: number): Promise<void> {
         logger.log(`sendResource called with resource: ${resource}, messageId: ${messageId}, source: ${source}, filter: ${filter}, page: ${page}, perPage: ${perPage}`);
         return Promise.resolve(undefined);
     }

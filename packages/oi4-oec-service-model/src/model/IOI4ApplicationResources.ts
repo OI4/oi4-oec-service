@@ -4,7 +4,7 @@ import {
 } from './Resources';
 import {IOPCUAMetaData, IOPCUANetworkMessage} from '../opcua/model/IOPCUA';
 import {Oi4Identifier} from './Oi4Identifier';
-import {EventEmitter} from 'events';
+import {TypedEventEmitter} from './TypedEventEmitter';
 import {MasterAssetModel} from './resources/MasterAssetModel';
 import {Health} from './resources/Health';
 import {License} from './resources/License';
@@ -14,6 +14,10 @@ import {Profile} from './resources/Profile';
 import {LicenseText} from './resources/LicenseText';
 import {RTLicense} from './resources/RTLicense';
 import {ReferenceDesignation} from './resources/ReferenceDesignation';
+
+export type OI4ResourceDefinition = {
+    [key in OI4ResourceEvent]: [oi4Id: Oi4Identifier, resource: Resources];
+};
 
 export interface IOI4ApplicationResources extends IOI4Resource {
 
@@ -34,7 +38,7 @@ export interface IOI4ApplicationResources extends IOI4Resource {
 
     setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean;
 
-    on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): EventEmitter;
+    on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): TypedEventEmitter<OI4ResourceDefinition>;
 
     addDataSet(dataSetName: string, data: IOPCUANetworkMessage, metadata: IOPCUAMetaData): void;
 

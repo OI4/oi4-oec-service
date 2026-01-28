@@ -180,11 +180,11 @@ export class OI4Application implements IOI4Application {
     }
 
     addListener(event: string | symbol, listener: (...args: never[]) => void): void {
-        this.mqttMessageProcessor.addListener(event, listener);
+        this.mqttMessageProcessor.addListener(event as any, listener as any);
     }
 
     removeListener(event: string | symbol, listener: (...args: never[]) => void): void {
-        this.mqttMessageProcessor.removeListener(event, listener);
+        this.mqttMessageProcessor.removeListener(event as any, listener as any);
     }
 
     private async initIncomingMessageListeners(): Promise<void> {

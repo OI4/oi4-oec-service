@@ -18,6 +18,7 @@ export * from './model/resources/MasterAssetModel';
 export * from './model/resources/Profile';
 export * from './model/resources/PublicationList';
 export * from './model/resources/ReferenceDesignation';
+export * from './model/TypedEventEmitter';
 export * from './model/resources/RTLicense';
 export * from './model/resources/SubscriptionList';
 export * from './DataSetWriterIdManager';

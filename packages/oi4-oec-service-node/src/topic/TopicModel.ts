@@ -33,6 +33,7 @@ export class TopicInfo implements ITopicInfo {
     public source?: Oi4Identifier;
     public filter?: string;
     public tag?: string;
+    public licenseId?: string; // Added licenseId
 
     constructor(
         serviceType: ServiceTypes,

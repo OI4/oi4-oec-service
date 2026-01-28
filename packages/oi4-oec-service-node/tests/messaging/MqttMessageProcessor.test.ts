@@ -1,6 +1,6 @@
-import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
-import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
-import {MqttMessageProcessor, OI4RegistryManager, oi4Namespace} from '../../src';
+import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
+import {MockedOPCUABuilderFactory} from '../testUtils/factories/MockedOPCUABuilderFactory';
+import {OI4RegistryManager, oi4Namespace} from '../../src';
 import {setLogger} from '@oi4/oi4-oec-service-logger';
 import {
     DataSetClassIds,
@@ -10,9 +10,10 @@ import {
     Resources,
     ServiceTypes
 } from '@oi4/oi4-oec-service-model';
-import {MockOi4Application} from '../testUtils/Factories/MockedOi4Application';
-import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
-import {MqttMessageProcessorEventStatus} from '../../src/messaging/MqttMessageProcessor';
+import {MockOi4Application} from '../testUtils/factories/MockedOi4Application';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
+import {TopicInfo} from '../../src/topic/TopicModel';
+import {foreignMessage, MqttMessageProcessor} from '../../src/messaging/MqttMessageProcessor';
 
 interface MockedData {
     oi4Id: Oi4Identifier;
@@ -85,7 +86,7 @@ describe('Unit test for MqttMessageProcessor', () => {
     async function checkResultGet(resource: string, fakeTopic: string, source: string = undefined, filter: string = undefined): Promise<void> {
         oi4Application.sendResource = jest.fn();
         const processor = new MqttMessageProcessor();
-        processor.on(MqttMessageProcessorEventStatus.GET_DATA, oi4Application.sendResource);
+        // processor.on(MqttMessageProcessorEventStatus.GET_DATA, oi4Application.sendResource);
         await processMessage(fakeTopic, resource, processor);
 
         expect(oi4Application.sendResource).toHaveBeenCalledWith(resource, undefined, source, filter, 0, 0);

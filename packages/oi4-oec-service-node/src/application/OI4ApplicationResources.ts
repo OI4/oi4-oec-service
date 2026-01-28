@@ -12,18 +12,19 @@ import {
     License,
     MasterAssetModel,
     Oi4Identifier,
+    OI4ResourceDefinition,
     OI4ResourceEvent,
     PublicationList,
     PublicationListConfig,
     ReferenceDesignation,
     Resources,
     SubscriptionList,
-    SubscriptionListConfig
+    SubscriptionListConfig,
+    TypedEventEmitter
 } from '@oi4/oi4-oec-service-model';
 import {existsSync, readFileSync} from 'fs';
 import {OI4Resource} from './OI4Resource';
 import os from 'os';
-import EventEmitter from 'events';
 import path = require('path');
 
 export const defaultMAMFile = '/etc/oi4/config/mam.json';
@@ -40,7 +41,7 @@ export class OI4ApplicationResources extends OI4Resource implements IOI4Applicat
     /**
      * constructor that initializes the mam settings by retrieving the mam.json out of /etc/oi4/config/mam.json
      * */
-    constructor(mamFile = defaultMAMFile, emitter = new EventEmitter()) {
+    constructor(mamFile = defaultMAMFile, emitter = new TypedEventEmitter<OI4ResourceDefinition>()) {
         super(OI4ApplicationResources.extractMamFile(mamFile), emitter);
         this.sources = new Map<string, IOI4Resource>();
 
@@ -82,7 +83,7 @@ export class OI4ApplicationResources extends OI4Resource implements IOI4Applicat
         throw new Error(`MAM file ${path.resolve(filePath)} does not exist`);
     }
 
-    public on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): EventEmitter {
+    public on(event: OI4ResourceEvent, listener: (oi4Id: Oi4Identifier, resource: Resources) => void): TypedEventEmitter<OI4ResourceDefinition> {
         return this.eventEmitter.on(event, listener);
     }
 
