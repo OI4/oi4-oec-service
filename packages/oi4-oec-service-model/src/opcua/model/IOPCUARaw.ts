@@ -17,9 +17,11 @@ export function toOPCUANetworkMessageRaw(networkMessage: IOPCUANetworkMessage): 
 
 export function toOPCUANetworkMessage(networkMessage: IOPCUANetworkMessageRaw): IOPCUANetworkMessage {
     const messages: IOPCUADataSetMessage[] = networkMessage.Messages.map(message => {
+        const dataSetWriterName: Oi4Identifier =  typeof message.DataSetWriterName === 'string' ?  Oi4Identifier.fromDNPString(message.DataSetWriterName.toString()) : objectToOi4Identifier(message.DataSetWriterName);
+
         return {
             ...message,
-            DataSetWriterName: Oi4Identifier.fromDNPString(message.DataSetWriterName)
+            DataSetWriterName: dataSetWriterName
         }
     });
     return {
@@ -47,4 +49,13 @@ export interface IOPCUADataSetMessageRaw {
     WriterGroupName?: string;
     DataSetWriterName: string;
     Payload: any; // TODO: arbitrary object?
+}
+
+function objectToOi4Identifier(obj: any): Oi4Identifier {
+    return new Oi4Identifier(
+        obj['manufacturerUri'],
+        obj['model'],
+        obj['productCode'],
+        obj['serialNumber']
+    );
 }

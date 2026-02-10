@@ -14,7 +14,6 @@ import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
 import {IOI4Application, MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
 import {
-    Application,
     DataSetClassIds,
     DataSetWriterIdManager,
     EDeviceHealth,
@@ -27,27 +26,23 @@ import {
     Health,
     IOI4ApplicationResources,
     IOPCUANetworkMessage,
-    License,
-    LicenseText,
     MasterAssetModel,
     Methods,
     Oi4Identifier,
+    OI4ResourceEvent,
     OPCUABuilder,
     Profile,
     PublicationList,
     PublicationListConfig,
     Resources,
-    RTLicense,
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig,
+    profileApplication
 } from '@oi4/oi4-oec-service-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {OI4ResourceEvent} from '../../src/application/OI4Resource';
 import {MockOI4MessageBus} from '../testUtils/factories/MockOI4MessageBus';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 const onEvent = () => jest.fn(async (event, cb) => {
     await cb(event);
 });
@@ -78,13 +73,7 @@ const defaultOI4Id = defaultAppId;
 export const serialNumber = '23kl41oßmß132';
 
 const getResourceInfo = (): IOI4ApplicationResources => {
-    const licenseText = new Map<string, LicenseText>();
-    licenseText.set('a', LicenseText.clone({LicenseText: '1'} as LicenseText));
-    licenseText.set('b', LicenseText.clone({LicenseText: '2'} as LicenseText));
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    // TODO refactor, this is not solved in a good way. Implement a class with OI4ApplicationResources as parent and overwrite what is needed.
+    // refactor, this is not solved in a good way. Implement a class with OI4ApplicationResources as parent and overwrite what is needed.
     // And harmonize it with the other mocks
     return {
         oi4Id: defaultAppId,
@@ -129,38 +118,16 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 Resource: Resources.HEALTH,
                 Config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
-                Source: new Oi4Identifier('1', '1', '1', '1'),
-            } as PublicationList),
+                DataSetWriterName: new Oi4Identifier('1', '1', '1', '1'),
+            } as unknown as PublicationList),
             PublicationList.clone({
                 Resource: Resources.MAM,
                 Config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
-                Source: new Oi4Identifier('2', '2', '2', '2'),
-            } as PublicationList),
-            PublicationList.clone({
-                Resource: Resources.LICENSE,
-                Config: PublicationListConfig.MODE_1,
-                DataSetWriterId: 3,
-                Source: new Oi4Identifier('3', '3', '3', '3'),
-            } as PublicationList)
+                DataSetWriterName: new Oi4Identifier('2', '2', '2', '2'),
+            } as unknown as PublicationList),
         ],
-        profile: new Profile(Application.mandatory),
-        licenseText: licenseText,
-        license: [
-            new License('1', [
-                    {LicAuthors: ['a-01', 'a-02'], Component: 'comp-01', LicAddText: 'text-a'},
-                    {LicAuthors: ['b-01', 'b-01'], Component: 'comp-02', LicAddText: 'text-b'},
-                    {LicAuthors: ['c-01', 'c-01'], Component: 'comp-03', LicAddText: 'text-c'},
-                ]
-            ),
-            new License('2', [
-                    {LicAuthors: ['aa-01', 'aa-02'], Component: 'comp-001', LicAddText: 'text-aa'},
-                    {LicAuthors: ['bb-01', 'bb-01'], Component: 'comp-002', LicAddText: 'text-bb'},
-                    {LicAuthors: ['cc-01', 'cc-01'], Component: 'comp-003', LicAddText: 'text-cc'},
-                ],
-            )
-        ],
-        rtLicense: new RTLicense(),
+        profile: new Profile(profileApplication.mandatory),
         health: new Health(EDeviceHealth.NORMAL_0, 100),
         mam: MasterAssetModel.clone({
             DeviceClass: 'OI4.Aggregation',
@@ -186,8 +153,6 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             RevisionCounter: 1,
             ProductInstanceUri: 'wo/'
         } as MasterAssetModel),
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         dataLookup: {
             'tag-01': {
                 MessageId: '1',
@@ -204,8 +169,6 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 Messages: []
             }
         },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         metaDataLookup: {
             'tag-01': {
                 MessageId: 'meta-01',
@@ -213,10 +176,9 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 PublisherId: '',
                 DataSetWriterId: 0,
                 Filter: '',
-                Source: '',
+                DataSetWriterName: '',
                 CorrelationId: '',
                 MetaData: undefined
-
             },
             'tag-02': {
                 MessageId: 'meta-02',
@@ -224,7 +186,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 PublisherId: '',
                 DataSetWriterId: 0,
                 Filter: '',
-                Source: '',
+                DataSetWriterName: '',
                 CorrelationId: '',
                 MetaData: undefined
             }
@@ -234,8 +196,6 @@ const getResourceInfo = (): IOI4ApplicationResources => {
             SubscriptionList.clone({TopicPath: 'path-02', Config: SubscriptionListConfig.NONE_0} as SubscriptionList),
             SubscriptionList.clone({TopicPath: 'path-03', Config: SubscriptionListConfig.NONE_0} as SubscriptionList)
         ],
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         on: jest.fn(),
         getMasterAssetModel(): MasterAssetModel {
             return this.mam;
@@ -243,11 +203,6 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         getHealth(): Health {
             return this.health;
         },
-        getLicense(): License[] {
-            return this.license;
-        },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
         getPublicationList(): PublicationList[] {
             return this.publicationList;
         },
@@ -260,7 +215,7 @@ const getResourceInfo = (): IOI4ApplicationResources => {
         addDataSet(): void {
             return;
         }
-    } as IOI4ApplicationResources;
+    } as unknown as IOI4ApplicationResources;
 }
 
 let defaultOi4ApplicationResources: IOI4ApplicationResources;
@@ -280,10 +235,9 @@ describe('OI4MessageBus legacy test', () => {
 
     beforeAll(() => {
         jest.useFakeTimers();
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: () => void) => {
             cb();
+            return null as any;
         });
         jest.spyOn(fs, 'existsSync').mockReturnValue(false);
         jest.spyOn(MqttCredentialsHelper.prototype, 'loadUserCredentials').mockReturnValue({
@@ -323,41 +277,33 @@ describe('OI4MessageBus legacy test', () => {
 
     it('should trigger all events', async () => {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const publish = jest.fn((topic, _) => {
+        const publish = jest.fn((topic) => {
             console.log(topic);
             return topic;
         });
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             () => {
                 return {
                     connected: true,
                     reconnecting: false,
                     publish: publish,
                     subscribe: jest.fn(),
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                    // @ts-ignore
                     on: onEvent()
-                }
+                } as any;
             }
         );
 
         const onMock = onEvent();
         jest.spyOn(mqtt, 'connect').mockImplementation(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             () => {
                 return {
                     connected: true,
                     reconnecting: false,
                     publish: publish,
                     subscribe: jest.fn(),
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                    // @ts-ignore
                     on: onMock
-                }
+                } as any;
             }
         );
 
@@ -459,28 +405,9 @@ describe('OI4MessageBus legacy test', () => {
         checkProfilePayload(result.payload[0]);
     });
 
-    it('should prepare rt license payload', async () => {
-        const result = await getPayload('', Resources.RT_LICENSE);
-        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().rtLicense));
-    });
-
     it('should prepare health payload', async () => {
         const result = await getPayload('', Resources.HEALTH, defaultOI4Id);
         expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().health));
-    });
-
-    it('should prepare license text payload', async () => {
-        const filter = 'a';
-        const result = await getPayload(filter, Resources.LICENSE_TEXT);
-        expect(JSON.stringify(result.payload[0].Payload)).toBe(JSON.stringify(getResourceInfo().licenseText.get(filter)));
-    });
-
-    it('should prepare license payload', async () => {
-        const result = await getPayload('', Resources.LICENSE, defaultOI4Id);
-        for (let i = 0; i < result.payload.length; i++) {
-            expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({components: getResourceInfo().license[i].Components}));
-        }
     });
 
     it('should prepare publicationList  payload', async () => {
@@ -490,7 +417,7 @@ describe('OI4MessageBus legacy test', () => {
             expect(JSON.stringify(result.payload[i].Payload))
                 .toBe(JSON.stringify({
                     ...getResourceInfo().publicationList[i],
-                    Source: getResourceInfo().publicationList[i].Source
+                    DataSetWriterName: getResourceInfo().publicationList[i].Source
                 }));
         }
     });
@@ -556,7 +483,7 @@ describe('OI4MessageBus legacy test', () => {
             Messages: [
                 {
                     DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.EVENT, appId),
-                    Source: appId,
+                    DataSetWriterName: appId,
                     Payload:
                         {
                             Category: EventCategory.CAT_STATUS_1,

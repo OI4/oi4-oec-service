@@ -3,11 +3,11 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "27a75019-164a-496d-a38b-90e8a55c2cfa",
-  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 489,
-      "Filter": "room_206",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "room_206",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 17,
       "Timestamp": "2020-01-01T00:00:00.000Z",
       "Payload": {

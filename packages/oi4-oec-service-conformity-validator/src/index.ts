@@ -27,8 +27,8 @@ import {GetRequest, IMessageBusLookup} from './model/IMessageBusLookup';
 export * from './model/IConformityValidator';
 
 interface ItemRef {
-    Source: Oi4Identifier;
-    Filter: string;
+    DataSetWriterName: Oi4Identifier;
+    WriterGroupName: string;
 }
 
 /**
@@ -90,7 +90,6 @@ export class ConformityValidator {
 
         const conformityObject = ConformityValidator.initializeValidityObject();
         let errorSoFar = false;
-        let licenseList: ItemRef[] = [];
         let dataList: ItemRef[] = [];
         let resObj: IValidityDetails; // Container for validation results
 
@@ -147,7 +146,6 @@ export class ConformityValidator {
         }
 
         // move evaluation of some resources to the end to ensure that data for evaluation of these resources was previously read
-        ConformityValidator.moveToEnd(checkList, Resources.LICENSE_TEXT);
         ConformityValidator.moveToEnd(checkList, Resources.METADATA);
 
         conformityObject.checkedResourceList = checkList;
@@ -165,7 +163,7 @@ export class ConformityValidator {
                 switch (resource) {
                     case Resources.METADATA:
                         for (const data of dataList) {
-                            resObj = await this.checkMetaDataConformity(topicPreamble, data.Source, data.Filter);
+                            resObj = await this.checkMetaDataConformity(topicPreamble, data.DataSetWriterName, data.WriterGroupName);
                             if (resObj.validity != EValidity.ok) {
                                 // meta data not valid --> don't continue
                                 break;
@@ -176,18 +174,6 @@ export class ConformityValidator {
                     case Resources.DATA:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, source);
                         dataList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resources.DATA);
-                        break;
-
-
-                    case Resources.INTERFACES:
-                        // TODO Update if specification is released
-                        // INTERFACES are not fully described in specification yet
-                        // we don't know if INTERFACES support get-requests
-                        resObj = {
-                            validity: EValidity.default,
-                            validityErrors: ['Resource result ignored, ok'],
-                            dataSetMessages: []
-                        }
                         break;
 
                     case Resources.EVENT:
@@ -203,30 +189,6 @@ export class ConformityValidator {
                     case Resources.PROFILE:
                         // profile was already checked
                         continue;
-
-                    case Resources.LICENSE_TEXT:
-                        if (licenseList.length == 0) {
-                            // just check if there is any license text
-                            resObj = await this.checkResourceConformity(topicPreamble, resource, source);
-                        } else {
-                            for (const license of licenseList) {
-                                if (license.Filter === 'Pagination') {
-                                    continue;
-                                }
-                                resObj = await this.checkResourceConformity(topicPreamble, resource, license.Source, license.Filter);
-                                if (resObj.validity != EValidity.ok) {
-                                    // text not valid --> don't continue
-                                    break;
-                                }
-                            }
-                        }
-
-                        break;
-
-                    case Resources.LICENSE:
-                        resObj = await this.checkResourceConformity(topicPreamble, resource, source);
-                        licenseList = ConformityValidator.collectItemReferences(resObj.dataSetMessages, Resources.LICENSE);
-                        break;
 
                     default:
                         resObj = await this.checkResourceConformity(topicPreamble, resource, source);
@@ -606,7 +568,7 @@ export class ConformityValidator {
             if (typeof dataSetMessage.Payload.page !== 'undefined') {
                 logger.log(`Found pagination in ${resource}!`);
             } else if (ConformityValidator.isNotEmpty(dataSetMessage.WriterGroupName) && this.checkOi4IdConformity(dataSetMessage.DataSetWriterName)) {
-                result.push({Source: dataSetMessage.DataSetWriterName, Filter: dataSetMessage.WriterGroupName});
+                result.push({DataSetWriterName: dataSetMessage.DataSetWriterName, WriterGroupName: dataSetMessage.WriterGroupName});
             }
         }
 

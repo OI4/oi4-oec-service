@@ -16,6 +16,7 @@ import {
     MasterAssetModel,
     Methods,
     Oi4Identifier,
+    oi4Namespace,
     OI4ResourceEvent,
     OPCUABuilder,
     Resources,
@@ -24,7 +25,7 @@ import {
     SubscriptionList,
     SubscriptionListConfig
 } from '@oi4/oi4-oec-service-model';
-import {oi4Namespace, TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
+import {TopicInfo, ValidatedFilter, ValidatedPayload} from '../topic/TopicModel';
 import {ClientPayloadHelper} from '../messaging/ClientPayloadHelper';
 import {ClientCallbacksHelper, IClientCallbacksHelper} from '../messaging/ClientCallbacksHelper';
 import {IMqttMessageProcessor, MqttMessageProcessor} from '../messaging/MqttMessageProcessor';
@@ -295,24 +296,12 @@ export class OI4Application implements IOI4Application {
             case Resources.MAM:
                 payloadResult = this.clientPayloadHelper.createMamResourcePayload(this.applicationResources, this.oi4Id, source);
                 break;
-            case Resources.RT_LICENSE: { // This is the default case, just send the resource if the tag is ok
-                payloadResult = this.clientPayloadHelper.createRTLicenseResourcePayload(this.applicationResources, this.oi4Id);
-                break;
-            }
             case Resources.PROFILE: {
                 payloadResult = this.clientPayloadHelper.createProfileSendResourcePayload(this.applicationResources);
                 break;
             }
             case Resources.HEALTH: {
                 payloadResult = this.clientPayloadHelper.getHealthPayload(this.applicationResources, source);
-                break;
-            }
-            case Resources.LICENSE_TEXT: {
-                payloadResult = this.clientPayloadHelper.createLicenseTextSendResourcePayload(this.applicationResources, filter);
-                break;
-            }
-            case Resources.LICENSE: {
-                payloadResult = this.clientPayloadHelper.createLicenseSendResourcePayload(this.applicationResources, source, filter);
                 break;
             }
             case Resources.PUBLICATION_LIST: {

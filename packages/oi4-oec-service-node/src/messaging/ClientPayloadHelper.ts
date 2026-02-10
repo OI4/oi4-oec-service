@@ -9,7 +9,6 @@ import {
     IOI4ApplicationResources,
     IOI4Resource,
     IOPCUADataSetMessage,
-    License,
     Oi4Identifier,
     OI4Payload,
     PublicationList,
@@ -72,40 +71,8 @@ export class ClientPayloadHelper {
         return new Health(deviceHealth, score);
     }
 
-    createRTLicenseResourcePayload(applicationResources: IOI4ApplicationResources, oi4Id: Oi4Identifier): ValidatedPayload {
-        const payload = [this.createPayload(applicationResources.rtLicense, oi4Id)];
-        return {abortSending: false, payload: payload};
-    }
-
     createProfileSendResourcePayload(applicationResources: IOI4ApplicationResources): ValidatedPayload {
         const payload = [this.createPayload(applicationResources.profile, applicationResources.oi4Id)];
-        return {abortSending: false, payload: payload};
-    }
-
-    createLicenseTextSendResourcePayload(applicationResources: IOI4ApplicationResources, filter: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-        if (!applicationResources.licenseText.has(filter)) {
-            return {abortSending: true, payload: undefined};
-        }
-        payload.push(this.createPayload(applicationResources.licenseText.get(filter), applicationResources.oi4Id));
-        return {abortSending: false, payload: payload};
-    }
-
-    // TODO Rework
-    createLicenseSendResourcePayload(applicationResources: IOI4ApplicationResources, source?: Oi4Identifier, licenseId?: string): ValidatedPayload {
-        const payload: IOPCUADataSetMessage[] = [];
-        const licenses: License[] = applicationResources.getLicense(source, licenseId);
-
-        for (const license of licenses) {
-            payload.push({
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(license.resourceType(), source),
-                WriterGroupName: license.LicenseId,
-                DataSetWriterName: source ?? applicationResources.oi4Id,
-                Timestamp: new Date().toISOString(),
-                Payload: {Components: license.Components},
-            })
-        }
-
         return {abortSending: false, payload: payload};
     }
 
@@ -121,7 +88,7 @@ export class ClientPayloadHelper {
                 DataSetWriterName: applicationResources.oi4Id,
                 Payload: {
                     ...elem,
-                    Source: elem.Source.toString()
+                    Source: elem.Source?.toString()
                 },
             } as IOPCUADataSetMessage;
         });

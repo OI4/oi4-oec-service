@@ -4,13 +4,9 @@ import {
     Oi4Identifier,
     ServiceTypes,
     Methods,
-    Resources
+    Resources,
+    oi4Namespace
 } from '@oi4/oi4-oec-service-model';
-
-/**
- * Versioned namespace identifier for OI4 topics according to guideline version v02
- */
-export const oi4Namespace = 'Oi4v2';
 
 export interface ITopicInfo {
     serviceType: ServiceTypes;

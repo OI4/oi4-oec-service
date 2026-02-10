@@ -7,12 +7,9 @@ import {Oi4Identifier} from './Oi4Identifier';
 import {TypedEventEmitter} from './TypedEventEmitter';
 import {MasterAssetModel} from './resources/MasterAssetModel';
 import {Health} from './resources/Health';
-import {License} from './resources/License';
 import {SubscriptionList} from './resources/SubscriptionList';
 import {PublicationList} from './resources/PublicationList';
 import {Profile} from './resources/Profile';
-import {LicenseText} from './resources/LicenseText';
-import {RTLicense} from './resources/RTLicense';
 import {ReferenceDesignation} from './resources/ReferenceDesignation';
 
 export type OI4ResourceDefinition = {
@@ -29,8 +26,6 @@ export interface IOI4ApplicationResources extends IOI4Resource {
     getMasterAssetModel(oi4Id: Oi4Identifier): MasterAssetModel;
 
     getHealth(oi4Id: Oi4Identifier): Health;
-
-    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[];
 
     getSubscriptionList(oi4Id?: Oi4Identifier, resourceType?: Resources, tag?: string): SubscriptionList[];
 
@@ -58,9 +53,6 @@ export interface IOI4Resource {
     readonly profile: Profile;
     readonly mam: MasterAssetModel;
     health: Health;
-    license: License[];
-    licenseText: Map<string, LicenseText>;
-    rtLicense: RTLicense;
     config: IContainerConfig;
     publicationList: PublicationList[];
     subscriptionList: SubscriptionList[];

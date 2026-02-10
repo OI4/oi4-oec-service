@@ -9,7 +9,6 @@ import {
     IOPCUADataSetMetaData,
     IOPCUAMetaData,
     IOPCUANetworkMessage,
-    License,
     MasterAssetModel,
     Oi4Identifier,
     OI4ResourceDefinition,
@@ -31,7 +30,7 @@ export const defaultMAMFile = '/etc/oi4/config/mam.json';
 
 /**
  * class that initializes the container state
- * Initializes the mam settings by a json file and build OI4Id and Serialnumbers
+ * Initializes the mam settings by a JSON file and build OI4Id and Serialnumbers
  * */
 export class OI4ApplicationResources extends OI4Resource implements IOI4ApplicationResources {
     readonly sources: Map<string, IOI4Resource>;
@@ -139,23 +138,6 @@ export class OI4ApplicationResources extends OI4Resource implements IOI4Applicat
         this.emit(OI4ResourceEvent.RESOURCE_REMOVED, oi4Id, Resources.MAM);
         return this.sources.delete(oi4Id?.toString());
         // TODO remove sub resource to publication and subscription list
-    }
-
-    getLicense(oi4Id: Oi4Identifier, licenseId?: string): License[] {
-        if (oi4Id === undefined) {
-            return this.license;
-        }
-
-        const license = oi4Id.equals(this.oi4Id) ? this.license : this.sources.get(oi4Id?.toString())?.license;
-        if (license === undefined) {
-            return [];
-        }
-
-        if (licenseId === undefined) {
-            return license;
-        }
-
-        return license.filter((elem: License) => elem.LicenseId === licenseId ? elem : null);
     }
 
     setConfig(oi4Id: Oi4Identifier, filter: string, config: IContainerConfig): boolean {
