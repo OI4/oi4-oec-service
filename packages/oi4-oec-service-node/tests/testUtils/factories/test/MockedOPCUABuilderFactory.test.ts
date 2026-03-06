@@ -35,7 +35,7 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         const fieldProperty = {payload: 'payload'};
         const dataSetWriterId = 1;
         const filter = 'filter';
-        const source = 'source';
+        const source = Oi4Identifier.fromString('vendor.com/model/productCode/serialNumber');
         const correlationId = 'correlationId';
 
         const checkOPCUAJSONValidityMock = MockedOPCUABuilderFactory.mockOPCUABuilderMethod('buildOPCUAMetaDataMessage',
@@ -45,9 +45,9 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
                     MessageType: EOPCUAMessageType.uaMetadata,
                     PublisherId: '2',
                     DataSetWriterId: 3,
-                    Filter: filter,
-                    Source: source,
-                    CorrelationId: correlationId,
+                    WriterGroupName: filter,
+                    DataSetWriterName: source,
+                    ReplyTo: correlationId,
                     MetaData: {}
                 }
             });
@@ -61,9 +61,9 @@ describe('Unit test for MockedOPCUABuilderFactory.test', () => {
         expect(valid.MessageType).toBe(EOPCUAMessageType.uaMetadata);
         expect(valid.PublisherId).toBe('2');
         expect(valid.DataSetWriterId).toBe(3);
-        expect(valid.Filter).toBe(filter);
-        expect(valid.Source).toBe(source);
-        expect(valid.CorrelationId).toBe(correlationId);
+        expect(valid.WriterGroupName).toBe(filter);
+        expect(valid.DataSetWriterName).toBe(source);
+        expect(valid.ReplyTo).toBe(correlationId);
         expect(valid.MetaData).toStrictEqual({});
     });
 

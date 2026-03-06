@@ -40,7 +40,7 @@ describe('Unit test for MAMStorage reading', () => {
         try {
             await builder.checkOPCUAJSONValidity(mam);
         } catch (error) {
-            expect(error).toBe('Validation failed with: can\'t resolve reference DataSetMessage.schema.json from id NetworkMessage.schema.json#');
+            expect(error).toBe('Validation failed with: can\'t resolve reference DataSetMessage.schema.json from id NetworkMessage.schema.json');
         }
     });
 
@@ -48,9 +48,7 @@ describe('Unit test for MAMStorage reading', () => {
     it('should increase over flow counter when last message equals actual message id when building network message', () => {
         const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
         const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => sameMessageIdPrefix);
+        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => 0);
         const msg = builder.buildOPCUANetworkMessage([], new Date(), DataSetClassIds.MAM, '0');
         expect(msg.MessageId.charAt(0)).toEqual('0');
         dateMock.mockRestore();
@@ -60,10 +58,8 @@ describe('Unit test for MAMStorage reading', () => {
     it('should increase over flow counter when last message equals actual message id when building metada message', () => {
         const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
         const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => sameMessageIdPrefix);
-        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', 'sub');
+        const dateMock = jest.spyOn(Date, 'now').mockImplementation(() => 0);
+        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', oi4Id);
         expect(msg.MessageId.charAt(0)).toEqual('0');
         dateMock.mockRestore();
     });
@@ -71,7 +67,7 @@ describe('Unit test for MAMStorage reading', () => {
     it('should update last message when building metadata message', () => {
         const sameMessageIdPrefix = `abc/${ServiceTypes.REGISTRY}/oi4`;
         const builder = createOPCUABuilderWithLastMessageId(sameMessageIdPrefix);
-        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', 'sub');
+        const msg = builder.buildOPCUAMetaDataMessage('metadata', 'meda description', {}, '0', 0, '0', oi4Id);
         expect(msg.MessageId).toEqual(builder.lastMessageId);
     });
 
@@ -89,15 +85,15 @@ describe('Unit test for MAMStorage reading', () => {
 
         const messages: IOPCUADataSetMessage[] = [{
             DataSetWriterId: 1,
-            Source: 'a/b/c/d',
-            Filter: 'filter',
+            DataSetWriterName: Oi4Identifier.fromString('a/b/c/d'),
+            WriterGroupName: 'filter',
             Payload: [],
             Timestamp: '2022-01-01T12:00:00.000'
         },
             {
                 DataSetWriterId: 2,
-                Source: 'e/f/g/h',
-                Filter: 'oee',
+                DataSetWriterName: Oi4Identifier.fromString('e/f/g/h'),
+                WriterGroupName: 'oee',
                 Payload: [],
                 Timestamp: '2022-01-01T12:00:00.000'
             }]
@@ -108,8 +104,8 @@ describe('Unit test for MAMStorage reading', () => {
         expect(paginatedMessages.length).toEqual(2);
         expect(paginatedMessages[0].Messages.length).toEqual(2);
         expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-        expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
-        expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
+        expect(paginatedMessages[0].Messages[0].DataSetWriterName.toString()).toBe('a/b/c/d');
+        expect(paginatedMessages[0].Messages[0].WriterGroupName).toBe('filter');
         expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
         expect(paginatedMessages[0].Messages[1].Payload.Page).toBe(1);
@@ -119,8 +115,8 @@ describe('Unit test for MAMStorage reading', () => {
         expect(paginatedMessages[0].Messages[1].Payload.PaginationId).toBeTruthy(); // TODO:
 
         expect(paginatedMessages[1].Messages[0].DataSetWriterId).toBe(2);
-        expect(paginatedMessages[1].Messages[0].Source).toBe('e/f/g/h');
-        expect(paginatedMessages[1].Messages[0].Filter).toBe('oee');
+        expect(paginatedMessages[1].Messages[0].DataSetWriterName.toString()).toBe('e/f/g/h');
+        expect(paginatedMessages[1].Messages[0].WriterGroupName).toBe('oee');
         expect(paginatedMessages[1].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
         expect(paginatedMessages[1].Messages[1].Payload.Page).toBe(2);
@@ -137,15 +133,15 @@ describe('Unit test for MAMStorage reading', () => {
 
         const messages: IOPCUADataSetMessage[] = [{
             DataSetWriterId: 1,
-            Source: Oi4Identifier.fromString('a/b/c/d'),
-            Filter: 'filter',
+            DataSetWriterName: Oi4Identifier.fromString('a/b/c/d'),
+            WriterGroupName: 'filter',
             Payload: [],
             Timestamp: '2022-01-01T12:00:00.000'
         },
             {
                 DataSetWriterId: 2,
-                Source: Oi4Identifier.fromString('e/f/g/h'),
-                Filter: 'oee',
+                DataSetWriterName: Oi4Identifier.fromString('e/f/g/h'),
+                WriterGroupName: 'oee',
                 Payload: [],
                 Timestamp: '2022-01-01T12:00:00.000'
             }]
@@ -156,13 +152,13 @@ describe('Unit test for MAMStorage reading', () => {
         expect(paginatedMessages.length).toEqual(1);
         expect(paginatedMessages[0].Messages.length).toEqual(3);
         expect(paginatedMessages[0].Messages[0].DataSetWriterId).toBe(1);
-        expect(paginatedMessages[0].Messages[0].Source).toBe('a/b/c/d');
-        expect(paginatedMessages[0].Messages[0].Filter).toBe('filter');
+        expect(paginatedMessages[0].Messages[0].DataSetWriterName.toString()).toBe('a/b/c/d');
+        expect(paginatedMessages[0].Messages[0].WriterGroupName).toBe('filter');
         expect(paginatedMessages[0].Messages[0].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
         expect(paginatedMessages[0].Messages[1].DataSetWriterId).toBe(2);
-        expect(paginatedMessages[0].Messages[1].Source).toBe('e/f/g/h');
-        expect(paginatedMessages[0].Messages[1].Filter).toBe('oee');
+        expect(paginatedMessages[0].Messages[1].DataSetWriterName.toString()).toBe('e/f/g/h');
+        expect(paginatedMessages[0].Messages[1].WriterGroupName).toBe('oee');
         expect(paginatedMessages[0].Messages[1].Timestamp).toEqual('2022-02-01T23:00:00.000Z');
 
         expect(paginatedMessages[0].Messages[2].Payload.Page).toBe(1);

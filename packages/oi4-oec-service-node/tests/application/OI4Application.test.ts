@@ -1,12 +1,14 @@
 import {MockOI4MessageBus} from '../testUtils/factories/MockOI4MessageBus';
-import {EOPCUAStatusCode, IOPCUANetworkMessage, Methods, Resources, StatusEvent} from '@oi4/oi4-oec-service-model';
-import {IOI4Application, MqttSettings, OI4Application, oi4Namespace} from '../../src';
+import {EOPCUAStatusCode, IOPCUANetworkMessage, Methods, Resources, StatusEvent, oi4Namespace} from '@oi4/oi4-oec-service-model';
+import {IOI4Application, MqttSettings, OI4Application} from '../../src';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MockOI4ApplicationResources} from '../testUtils/factories/MockOI4ApplicationResources';
 
 /********************************
  * Test variables and constants *
  ********************************/
+export const serialNumber = '1';
+
 const messageBusMock = new MockOI4MessageBus();
 //const appId = new Oi4Identifier('1', '1', '1', '1');
 
@@ -54,6 +56,10 @@ describe('OI4MessageBus test', () => {
         publishMock.mockClear();
     });
 
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     afterAll(() => {
         jest.resetModules();
     });
@@ -75,7 +81,7 @@ describe('OI4MessageBus test', () => {
     });
 
     it('should send status', async () => {
-        const status: StatusEvent = new StatusEvent(EOPCUAStatusCode.Good, 'allGood');
+        const status: StatusEvent = new StatusEvent(EOPCUAStatusCode.Good);
 
         const mock = jest.spyOn(MockOI4MessageBus.prototype, 'publish');
         mock.mockImplementation((topic: string, networkMessage: IOPCUANetworkMessage) => {

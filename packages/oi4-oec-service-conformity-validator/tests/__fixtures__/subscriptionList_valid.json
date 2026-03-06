@@ -3,12 +3,12 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "e5d68c47-c276-4929-8ab9-4c1090cac785",
-  "CorrelationId": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1639693510094-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [
     {
       "DataSetWriterId": 227,
-      "Filter": "data",
-      "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
+      "WriterGroupName": "data",
+      "DataSetWriterName": "provider.com/FieldDataService/FDS-001/1200-0345",
       "Payload": {
         "TopicPath": "Oi4/OTConnector/provider.com/FieldDataService/FDS-001/1200-0345/Pub/SubscriptionList/provider.com/FieldDataService/FDS-001/1200-0345/data/oee",
         "Interval": 0,

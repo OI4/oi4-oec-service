@@ -8,24 +8,23 @@ import {
     Resources,
     StatusEvent,
     toOPCUANetworkMessage,
+    TypedEventEmitter
 } from '@oi4/oi4-oec-service-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {TopicInfo, TopicWrapper} from '../topic/TopicModel';
 import {TopicParser} from '../topic/TopicParser';
 import {PayloadTypes} from './MessagingModel';
 import {OI4RegistryManager} from '../application/OI4RegistryManager';
-import EventEmitter from 'events';
 import {MessageValidator} from './MessageValidator';
 import {IOI4Application} from '../application/OI4Application';
 
 export const foreignMessage = Symbol('foreignMessage');
 
-export enum MqttMessageProcessorEventStatus {
-    GET_DATA = 'getData',
-    SET_CONFIG = 'setConfig',
+export type MqttMessageProcessorDefinition = {
+    [foreignMessage]: [topicInfo: TopicInfo, parsedMessage: IOPCUANetworkMessage];
 }
 
-export interface IMqttMessageProcessor extends EventEmitter {
+export interface IMqttMessageProcessor extends TypedEventEmitter<MqttMessageProcessorDefinition> {
     processMqttMessage(topic: string, message: Buffer, builder: OPCUABuilder, oi4Application: IOI4Application): Promise<void>;
 
     addRequestedMAM(topic: string, subscribed: boolean): void;
@@ -33,7 +32,7 @@ export interface IMqttMessageProcessor extends EventEmitter {
     hasMAMRequest(topic: string): boolean;
 }
 
-export class MqttMessageProcessor extends EventEmitter implements IMqttMessageProcessor {
+export class MqttMessageProcessor extends TypedEventEmitter<MqttMessageProcessorDefinition> implements IMqttMessageProcessor {
 
     private readonly requestedMAMTopics: Map<string, boolean>;
 

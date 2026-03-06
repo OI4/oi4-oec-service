@@ -4,7 +4,6 @@ import {
     EDeviceHealth,
     Health,
     IOI4ApplicationResources,
-    LicenseText,
     Resources,
     SubscriptionList,
     SyslogEvent,
@@ -12,7 +11,7 @@ import {
     EOPCUALocale,
     Oi4Identifier
 } from '@oi4/oi4-oec-service-model';
-import {MockedIApplicationResourceFactory} from '../testUtils/Factories/MockedIApplicationResourceFactory';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
 
 describe('Unit test for ClientPayloadHelper', () => {
 
@@ -22,7 +21,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     const OI4_ID_2 = Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`);
 
     const default_payload = [{
-        Source: OI4_ID.toString(),
+        DataSetWriterName: OI4_ID,
         DataSetWriterId: 0,
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
@@ -56,10 +55,10 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(statePayload.HealthScore).toBe(0);
     });
 
-    function checkForUndefinedPayload(validatedPayload: ValidatedPayload): void {
-        expect(validatedPayload.abortSending).toBe(true);
-        expect(validatedPayload.payload).toBe(undefined);
-    }
+    // function checkForUndefinedPayload(validatedPayload: ValidatedPayload): void {
+    //     expect(validatedPayload.abortSending).toBe(true);
+    //     expect(validatedPayload.payload).toBe(undefined);
+    // }
 
     function checkForEmptyPayload(validatedPayload: ValidatedPayload): void {
         expect(validatedPayload.abortSending).toBe(true);
@@ -74,33 +73,6 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(mamPayload.abortSending).toBe(false);
     })
 
-    it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'whatever');
-        checkForUndefinedPayload(validatedPayload);
-    });
-
-    function createLicenseMockedPayload(dataSetWriterId: number, payload: any, oi4Id = OI4_ID) {
-        return [{
-            Source: oi4Id.toString(),
-            DataSetWriterId: dataSetWriterId,
-            Payload: payload
-        }];
-    };
-
-    it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'fakeKey');
-        expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText'), mockedOI4ApplicationResources.oi4Id));
-    });
-
-    it('createLicenseSendResourcePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedOI4ApplicationResources, OI4_ID_2.toString(), 'license');
-        expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload.length).toBe(1);
-        expect(validatedPayload.payload[0].Source).toBe(OI4_ID_2.toString());
-        expect(validatedPayload.payload[0].Filter).toBe('1');
-    });
-
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: Oi4Identifier) {
         return {
             DataSetWriterId: datasetWriterId,
@@ -113,14 +85,12 @@ describe('Unit test for ClientPayloadHelper', () => {
     function createMockedPayloadWithSource(source: string, dataSetWriterId: number, payload: any, filter?: string) {
         return [{
             DataSetWriterId: dataSetWriterId,
-            Source: source,
-            Filter: filter,
+            DataSetWriterName: Oi4Identifier.fromString(source),
+            WriterGroupName: filter,
             Payload: payload,
         }];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number, resource = Resources.HEALTH, itemDataSetWriterId = 42, subOI4Id = OI4_ID, filter?: string, oi4Id = OI4_ID) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createPublicationMockedPayload(resource, itemDataSetWriterId, subOI4Id);
@@ -150,12 +120,6 @@ describe('Unit test for ClientPayloadHelper', () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, Oi4Identifier.fromString(`not_there_${OI4_ID}_2`));
         checkForEmptyPayload(validatedPayload);
     });
-
-    it('createPublicationListSendResourcePayload return undefined when resource does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resources.LICENSE);
-        checkForEmptyPayload(validatedPayload);
-    });
-
 
     it('createPublicationListSendResourcePayload return undefined when filter does not match', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resources.HEALTH, '');
@@ -209,12 +173,12 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(2);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.DataSetWriterName.toString()).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.WriterGroupName).toBe('filter1');
         expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
         const payload2 = validatedPayload.payload[1];
-        expect(payload2.Source).toStrictEqual('vendor.com/1/2/3');
-        expect(payload2.Filter).toBe('filter2');
+        expect(payload2.DataSetWriterName.toString()).toStrictEqual('vendor.com/1/2/3');
+        expect(payload2.WriterGroupName).toBe('filter2');
         expect(payload2.Payload['group2'].Name.Text).toBe('group 2');
     });
 
@@ -225,8 +189,8 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.DataSetWriterName.toString()).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.WriterGroupName).toBe('filter1');
         expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
@@ -237,8 +201,8 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.Source).toStrictEqual('vendor.com/1/2/3');
-        expect(payload1.Filter).toBe('filter2');
+        expect(payload1.DataSetWriterName.toString()).toStrictEqual('vendor.com/1/2/3');
+        expect(payload1.WriterGroupName).toBe('filter2');
         expect(payload1.Payload['group2'].Name.Text).toBe('group 2');
     });
 
@@ -249,8 +213,8 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.Filter).toBe('filter1');
+        expect(payload1.DataSetWriterName.toString()).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.WriterGroupName).toBe('filter1');
         expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
@@ -273,8 +237,8 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(validatedPayload.abortSending).toBe(false);
         expect(validatedPayload.payload.length).toBe(1);
         const payload1 = validatedPayload.payload[0];
-        expect(payload1.Source).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
-        expect(payload1.Filter).toBe(undefined);
+        expect(payload1.DataSetWriterName.toString()).toStrictEqual(mockedOI4ApplicationResources.oi4Id.toString());
+        expect(payload1.WriterGroupName).toBe(undefined);
         expect(payload1.Payload['group1'].Name.Text).toBe('group 1');
     });
 
@@ -284,12 +248,12 @@ describe('Unit test for ClientPayloadHelper', () => {
             MSG: 'fakeMSG',
             HEADER: 'fakeHeader',
         };
-        const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', 'fakeSource', event);
+        const message: IOPCUADataSetMessage[] = clientPayloadHelper.createPublishEventMessage('fakeFilter', Oi4Identifier.fromString('vendor.com/1/2/3'), event);
         expect(message.length).toBe(1);
         const extractedMessage = message[0];
         expect(extractedMessage.DataSetWriterId).toBe(0);
-        expect(extractedMessage.Filter).toBe('fakeFilter');
-        expect(extractedMessage.Source).toBe('fakeSource');
+        expect(extractedMessage.WriterGroupName).toBe('fakeFilter');
+        expect(extractedMessage.DataSetWriterName.toString()).toBe('vendor.com/1/2/3');
         expect(extractedMessage.Payload).toStrictEqual(event);
     });
 

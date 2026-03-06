@@ -19,7 +19,7 @@
     },
     "WriterGroupName": {
       "type": "string",
-      "description": "Optional filter value. In combination with the Oi4Identifier, contains the readable reference to the DataSetWriterId (8.1.7)",
+      "description": "Optional WriterGroupName value. In combination with the Oi4Identifier, contains the readable reference to the DataSetWriterId (8.1.7)"
     },
     "MetaDataVersion": {
       "$ref": "ConfigurationVersionDataType.schema.json"

@@ -35,7 +35,7 @@ export class Oi4Identifier {
     }
 
     equals(other: Oi4Identifier): boolean {
-        return other !== undefined && //
+        return other != null && //
             this.manufacturerUri === other.manufacturerUri && //
             this.model === other.model && //
             this.productCode === other.productCode && //

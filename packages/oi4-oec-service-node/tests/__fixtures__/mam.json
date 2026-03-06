@@ -1,19 +1,19 @@
 {
-  "Manufacturer":{"Locale":"en-US","Text":"Hilscher"},
-  "ManufacturerUri":"hilscher.com",
-  "Model": {"Locale":"en-US","Text":"OEC Registry"},
-  "ProductCode":"OEC-REG",
+  "Manufacturer":{"Locale":"en-US","Text":"MyCompany"},
+  "ManufacturerUri":"mymanufacturer.com",
+  "Model": {"Locale":"en-US","Text":"MyModel"},
+  "ProductCode":"my-procuct-code",
   "HardwareRevision":"",
   "SoftwareRevision":"1.1.0",
   "DeviceRevision":"1.0.0",
   "DeviceManual":"1.0",
-  "DeviceClass":"Registry",
-  "SerialNumber":"OEC-Registry",
+  "DeviceClass":"OTConnector",
+  "SerialNumber":"my-serial-number",
   "ProductInstanceUri":"Oi4/Appid/Service",
   "RevisionCounter":0,
   "Description":
   {
     "Locale":"en-US",
-    "Text":"The OEC Registry, an Open Industry 4.0 Alliance application"
+    "Text":"Dummy data for testing the OEC service"
   }
 }

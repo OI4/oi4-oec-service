@@ -9,17 +9,17 @@
       "DataSetWriterId": 753,
       "Filter": "oee",
       "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "ReplyTo": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "MetaData": {
         "Name": "Dataset1",
         "Description": {
           "Text": "Description",
-          "Locale":  "en-US" 
+          "Locale":  "en-US"
         },
         "Namespaces": [],
-        "StructureDataTypes": [], 
-        "EnumDataTypes":  [], 
-        "SimpleDataTypes": [] 
+        "StructureDataTypes": [],
+        "EnumDataTypes":  [],
+        "SimpleDataTypes": []
       }
     }
   ],
@@ -32,17 +32,17 @@
       "DataSetWriterId": 753,
       "Filter": "oee",
       "Source": "provider.com/FieldDataService/FDS-001/1200-0345",
-      "CorrelationId": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
+      "ReplyTo": "1639693510000-ITConnector/consumer.com/MEService/MES%2fOnPrem/Inst07322",
       "MetaData": {
         "Name": "Dataset1",
         "Description": {
           "Text": "Description",
-          "Locale":  "en-US" 
+          "Locale":  "en-US"
         },
         "Namespaces": [],
-        "structureDataTypes": [], 
-        "EnumDataTypes":  [], 
-        "SimpleDataTypes": [] 
+        "structureDataTypes": [],
+        "EnumDataTypes":  [],
+        "SimpleDataTypes": []
       }
     }
   ]

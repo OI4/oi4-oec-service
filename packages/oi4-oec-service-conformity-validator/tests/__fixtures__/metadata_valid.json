@@ -3,9 +3,9 @@
   "MessageType": "ua-metadata",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetWriterId": 753,
-  "Filter": "oee",
-  "Source": "openindustry4.com/nd/nd/nd",
-  "CorrelationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "WriterGroupName": "oee",
+  "DataSetWriterName": "openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
   "MetaData": {
     "Name": "Dataset1",
     "Description": {

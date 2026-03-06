@@ -37,7 +37,7 @@ describe('Unit test for OI4RegistryManager', () => {
         expect(() => OI4RegistryManager.getOi4Id()).toThrow(Error);
         expect(() => OI4RegistryManager.getOi4Id()).toThrow('Currently there is no oi4Id saved.');
         const callback = jest.fn();
-        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.oi4RegistryChanged, callback);
+        OI4RegistryManager.getEmitter().addListener(OI4RegistryManager.oi4RegistryChanged, callback as any);
 
         OI4RegistryManager.checkForOi4Registry(parsedMessage);
         expect(callback).toBeCalledTimes(1);

@@ -12,7 +12,7 @@ import {
 /**
  The MessageValidator makes a qualitative validation on the publisherId and on the dataSetClassId,
  plus a quantitative validation of the TopicModel (checks if the topic string structure is correct and
- carries enough information the the requested action)
+ carries enough information the requested action)
  */
 export class MessageValidator {
 
@@ -62,7 +62,7 @@ export class MessageValidator {
 
     // TODO refactor me
     private static checkForMalformedTopic(wrapper: TopicWrapper): void {
-        const allowedGetResourcesLength8And12 = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACES, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST, Resources.AAS];
+        const allowedGetResourcesLength8And12 = [Resources.MAM, Resources.HEALTH, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.CONFIG, Resources.DATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST, Resources.AAS];
         let isTopicStructureMalformed;
 
         switch (wrapper.topicArray.length) {
@@ -97,7 +97,7 @@ export class MessageValidator {
     }
 
     private static checkAgainstMalformedTopicLength8(info: TopicInfo, allowedGetResources: Array<Resources>): boolean {
-        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.CONFIG, Resources.DATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
 
         return this.checkAgainstResources(info, allowedGetResources, allowedPubResources);
     }
@@ -107,14 +107,14 @@ export class MessageValidator {
     }
 
     private static checkAgainstMalformedTopicLength12(info: TopicInfo, allowedGetResources: Array<Resources>): boolean {
-        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.RT_LICENSE, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.INTERFACES, Resources.CONFIG, Resources.DATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST, Resources.AAS];
+        const allowedPubResources = [Resources.MAM, Resources.HEALTH, Resources.PROFILE, Resources.REFERENCE_DESIGNATION, Resources.CONFIG, Resources.DATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST, Resources.AAS];
         const allowedSetDelResources = [Resources.REFERENCE_DESIGNATION, Resources.AAS];
 
         return this.checkAgainstResources(info, allowedGetResources, allowedPubResources, allowedSetDelResources, allowedSetDelResources);
     }
 
     private static checkAgainstMalformedTopicLength13(info: TopicInfo): boolean {
-        const allowedGetPubResources = [Resources.CONFIG, Resources.DATA, Resources.METADATA, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
+        const allowedGetPubResources = [Resources.CONFIG, Resources.DATA, Resources.METADATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
         const allowedSetResources = [Resources.CONFIG, Resources.DATA, Resources.METADATA, Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
         const allowedDelResources = [Resources.PUBLICATION_LIST, Resources.SUBSCRIPTION_LIST];
 

@@ -3,12 +3,12 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "543ae05e-b6d9-4161-a0a3-350a0fac5976",
-  "CorrelationId": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1639693510000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [
     {
       "DataSetWriterId": 623,
-      "Filter": "Status/Good",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "Status/Good",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "SequenceNumber": 14,
       "Timestamp": "2021-12-16T22:25:10.094Z",
       "Payload": {

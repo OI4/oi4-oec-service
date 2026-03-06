@@ -13,7 +13,7 @@ describe('Test OI4MessageBusFactory', () => {
         jest.useFakeTimers();
         mockConnection = jest.spyOn(mqtt, 'connect')
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
+            // @ts-expect-error
             .mockImplementation((res) => {
                 return {
                     ...{options: res}, ...{
@@ -48,7 +48,7 @@ describe('Test OI4MessageBusFactory', () => {
                 privateKey: ''
             },
             applicationSpecificStorages: undefined,
-            certificateStorage: '',
+            certificateStorage: `${__dirname}/../__fixtures__/certs`,
             secretStorage: '',
         };
 
@@ -56,9 +56,8 @@ describe('Test OI4MessageBusFactory', () => {
         const factory: OI4ApplicationFactory = new OI4ApplicationFactory(resources, settingsPaths);
         const oi4Application = factory.createOI4Application() as OI4Application;
         expect(oi4Application).toBeDefined();
-        expect(oi4Application.messageBus.client).toBeDefined();
-        expect(oi4Application.messageBus.client.connected).toBeTruthy();
-        const options = oi4Application.messageBus.client.options;
+        expect(oi4Application.messageBus.getClient().connected).toBeTruthy();
+        const options = oi4Application.messageBus.getClient().options;
         expect(options).toBeDefined();
         expect(options.clientId).toBe(os.hostname());
     });

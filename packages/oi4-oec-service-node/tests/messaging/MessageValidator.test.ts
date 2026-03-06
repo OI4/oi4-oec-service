@@ -6,17 +6,17 @@ import {
     Resources,
     ServiceTypes
 } from '@oi4/oi4-oec-service-model';
-import {LoggerItems, MockedLoggerFactory} from '../testUtils/Factories/MockedLoggerFactory';
-import {MockedOPCUABuilderFactory} from '../testUtils/Factories/MockedOPCUABuilderFactory';
+import {LoggerItems, MockedLoggerFactory} from '../testUtils/factories/MockedLoggerFactory';
+import {MockedOPCUABuilderFactory} from '../testUtils/factories/MockedOPCUABuilderFactory';
 import {MessageValidator} from '../../src/messaging/MessageValidator';
-import {MessageFactory, MessageItems} from '../testUtils/Factories/MessageFactory';
+import {MessageFactory, MessageItems} from '../testUtils/factories/MessageFactory';
 import {TopicWrapper} from '@oi4/oi4-oec-service-node';
 
 describe('Unit test for TopicParser', () => {
 
     const loggerItems: LoggerItems = MockedLoggerFactory.getLoggerItems();
-    const logContainsOnly: Function = loggerItems.logContainsOnly;
-    const clearLogFile: Function = loggerItems.clearLogFile;
+    const logContainsOnly = loggerItems.logContainsOnly;
+    const clearLogFile = loggerItems.clearLogFile;
 
     let defaultParsedMessage: IOPCUANetworkMessage = undefined;
     let defaultMockedBuilder: OPCUABuilder = undefined;
@@ -33,14 +33,15 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('If payload messages is empty a message is written n in the log', async () => {
-        await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
+        const topic = defaultMessageItems.topic.replace('/Get/', '/Pub/');
+        await MessageValidator.doPreliminaryValidation(topic, defaultParsedMessage, defaultMockedBuilder);
         expect(logContainsOnly('Messages Array empty in message - check DataSetMessage format')).toBeTruthy();
     });
 
     it('If payload messages are not empty no message is written in in the log', async () => {
         defaultParsedMessage.Messages = [{
             DataSetWriterId: 1,
-            Source: Oi4Identifier.fromString('a/b/c/d'),
+            DataSetWriterName: Oi4Identifier.fromString('a/b/c/d'),
             Payload: {}
         }]
         await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
@@ -48,7 +49,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     // TODO refactor to Jest exception assertion
-    async function checkAgainstError(caller: Function, errMsg: string): Promise<void> {
+    async function checkAgainstError(caller: () => Promise<void> | void, errMsg: string): Promise<void> {
         let errorThrown = false;
         try {
             await caller.call([]);
@@ -80,8 +81,9 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('If topic string is malformed, an error is thrown', async () => {
-        const errMsg = `Invalid topic string structure ${defaultMessageItems.topic}`;
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
+        const errMsg = `Invalid topic string structure ${wrapper.topicInfo.toString()}`;
+
         wrapper.topicArray = ['', ''];
         // TODO applied recommendation to remove await...was this a good idea?
         await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
@@ -97,14 +99,14 @@ describe('Unit test for TopicParser', () => {
     });
 
     async function checkAgainstWrongTopicData(newWrapper: TopicWrapper) {
-        const errMsg = `Invalid topic string structure ${newWrapper.topicInfo.topic}`;
+        const errMsg = `Invalid topic string structure ${newWrapper.topicInfo.toString()}`;
         await checkAgainstError(async () => MessageValidator.doTopicDataValidation(newWrapper, defaultParsedMessage), errMsg);
     }
 
     function createCustomMessageInfo(newTopicString: string, method: Methods, resource: Resources) {
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
         wrapper.topicInfo.method = method;
-        wrapper.topicInfo.topic = newTopicString;
+        wrapper.raw = newTopicString;
         wrapper.topicInfo.resource = resource;
         wrapper.topicArray = newTopicString.split('/');
         return wrapper;

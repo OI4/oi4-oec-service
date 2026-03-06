@@ -1,22 +1,23 @@
-import {OI4ApplicationResources} from '../../src';
-import {OI4ResourceEvent} from '../../src/application/OI4Resource';
-import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
 import {
     EDeviceHealth,
+    EOPCUABaseDataType,
+    EOPCUALocale,
     Health,
     IContainerConfig,
     IContainerConfigConfigName,
     IContainerConfigGroupName,
+    IMasterAssetModel,
     IOI4Resource,
+    MasterAssetModel,
+    Oi4Identifier,
+    OI4ResourceEvent,
     PublicationList,
     PublicationListConfig,
     PublicationListMode,
-    Resources,
-    EOPCUABaseDataType,
-    EOPCUALocale,
-    IMasterAssetModel,
-    Oi4Identifier
+    Resources
 } from '@oi4/oi4-oec-service-model';
+import {OI4ApplicationResources} from '../../src';
+import {MockedIApplicationResourceFactory} from '../testUtils/factories/MockedIApplicationResourceFactory';
 import fs = require('fs');
 
 describe('Test Oi4ApplicationResources', () => {
@@ -47,9 +48,11 @@ describe('Test Oi4ApplicationResources', () => {
     });
 
     it('should be able to set sub resource', () => {
+        const mam = MockedIApplicationResourceFactory.getMockedDefaultMasterAssetModel('registry.com', '1', '1', '1');
         const value = {
             oi4Id: oi4Id01,
-            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50)
+            health: new Health(EDeviceHealth.MAINTENANCE_REQUIRED_4, 50),
+            mam: mam
         } as OI4ApplicationResources;
         appResources.addSource(value);
         expect(appResources.sources.has(oi4Id01.toString())).toBeTruthy();
@@ -97,23 +100,10 @@ describe('Test Oi4ApplicationResources', () => {
         appResources.sources.set(oi4Id01.toString(), value01);
         appResources.sources.set(oi4Id02.toString(), value02);
         appResources.sources.set(oi4Id03.toString(), value03);
-        const sources: IterableIterator<IOI4Resource> = appResources.getSource() as IterableIterator<IOI4Resource>;
+        const sources: IterableIterator<IOI4Resource> = appResources.sources.values();
         expect(sources.next().value).toEqual(value01);
         expect(sources.next().value).toEqual(value02);
         expect(sources.next().value).toEqual(value03);
-    });
-
-    it('If oi4Id not valid then an empty list is returned', () => {
-        expect(appResources.getLicense(appResources.oi4Id)).toStrictEqual([]);
-    });
-
-    it('If oi4Id undefined all licenses are returned', () => {
-        const license = appResources.getLicense(undefined);
-        expect(license.length).toBe(0);
-    });
-
-    it('If oi4Id has a value but licenseId is undefined all licenses are returned', () => {
-        expect(appResources.getLicense(new Oi4Identifier('a', 'b', 'c', 'd')).length).toBe(0);
     });
 
     it('should filter publicationList', () => {
@@ -134,7 +124,7 @@ describe('Test Oi4ApplicationResources', () => {
 
 
     function createConfig(): IContainerConfig {
-        const containerConfig: IContainerConfig = {
+        return {
             'group-a': {
                 Name: {Locale: EOPCUALocale.enUS, Text: 'group-a'},
                 'config_a': {
@@ -151,24 +141,20 @@ describe('Test Oi4ApplicationResources', () => {
                 Name: {Locale: EOPCUALocale.enUS, Text: 'filter 1'}
             }
         };
-
-        return containerConfig;
     }
 
-    function createResourceWithConfig(oi4Id: Oi4Identifier): IOI4Resource {
-        return {
-            oi4Id: oi4Id,
-            config: createConfig(),
-            profile: undefined,
-            mam: undefined,
-            health: undefined,
-            license: [],
-            licenseText: undefined,
-            rtLicense: undefined,
-            publicationList: [],
-            subscriptionList: []
-        };
-    }
+    // function createResourceWithConfig(oi4Id: Oi4Identifier): IOI4Resource {
+    //     return {
+    //         oi4Id: oi4Id,
+    //         config: createConfig(),
+    //         profile: undefined,
+    //         mam: undefined,
+    //         health: undefined,
+    //         referenceDesignation: undefined,
+    //         publicationList: [],
+    //         subscriptionList: [],
+    //     };
+    // }
 
     it('setConfig updates main configuration', () => {
         appResources.config = createConfig();
@@ -177,7 +163,7 @@ describe('Test Oi4ApplicationResources', () => {
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
@@ -190,17 +176,22 @@ describe('Test Oi4ApplicationResources', () => {
         expect(receivedResource).toBe(Resources.CONFIG);
     });
 
-    it('setConfig updates source configuration', () => {
-        const oi4Identifier = new Oi4Identifier('vendor.com', 'a', 'b', 'c');
-        const source = createResourceWithConfig(oi4Identifier);
-        appResources.addSource(source);
+    it('setConfig updates sub source configuration', () => {
+        const oi4Identifier = new Oi4Identifier('myvendor.com', 'model', 'product', 'serial');
+        const mam = new MasterAssetModel();
+        mam.ManufacturerUri = oi4Identifier.manufacturerUri;
+        mam.Model = {Locale: EOPCUALocale.enUS, Text: oi4Identifier.model};
+        mam.ProductCode = oi4Identifier.productCode;
+        mam.SerialNumber = oi4Identifier.serialNumber;
+        appResources.addSource(mam);
+        appResources.setConfig(oi4Identifier, 'filter 1', createConfig());
 
         const setConfig = createConfig();
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })
@@ -219,7 +210,7 @@ describe('Test Oi4ApplicationResources', () => {
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '1000';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -244,7 +235,7 @@ describe('Test Oi4ApplicationResources', () => {
         };
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -261,7 +252,7 @@ describe('Test Oi4ApplicationResources', () => {
         ((setConfig['group-a'] as IContainerConfigGroupName)['config_a'] as IContainerConfigConfigName).Value = '56789';
 
         let receivedOi4Id: Oi4Identifier = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_CHANGED, (oi4Id: Oi4Identifier) => {
             receivedOi4Id = oi4Id;
         })
 
@@ -278,7 +269,7 @@ describe('Test Oi4ApplicationResources', () => {
 
         let receivedOi4Id: Oi4Identifier = undefined;
         let receivedResource: Resources = undefined;
-        appResources.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resources) => {
+        appResources.eventEmitter.once(OI4ResourceEvent.RESOURCE_ADDED, (oi4Id: Oi4Identifier, res: Resources) => {
             receivedOi4Id = oi4Id;
             receivedResource = res;
         })

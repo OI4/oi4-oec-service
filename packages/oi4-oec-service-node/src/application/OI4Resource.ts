@@ -3,36 +3,31 @@ import {
     Health,
     IContainerConfig,
     IOI4Resource,
-    License,
-    LicenseText,
     MasterAssetModel,
     Oi4Identifier,
+    OI4ResourceDefinition,
     OI4ResourceEvent,
     Profile,
     profileApplication,
     PublicationList,
     Resources,
-    RTLicense,
     SubscriptionList,
+    TypedEventEmitter,
 } from '@oi4/oi4-oec-service-model';
-import {EventEmitter} from 'events';
 import {ReferenceDesignation} from '@oi4/oi4-oec-service-model/dist/model/resources/ReferenceDesignation';
 
 export class OI4Resource implements IOI4Resource {
-    readonly eventEmitter: EventEmitter;
+    readonly eventEmitter: TypedEventEmitter<OI4ResourceDefinition>;
 
     protected readonly _profile: Profile;
     protected readonly _mam: MasterAssetModel;
     protected _health: Health;
     protected _config: IContainerConfig;
-    protected _license: License[];
-    protected _licenseText: Map<string, LicenseText>;
-    protected _rtLicense: RTLicense;
     protected _publicationList: PublicationList[];
     protected _subscriptionList: SubscriptionList[];
     protected _referenceDesignation: ReferenceDesignation;
 
-    constructor(mam: MasterAssetModel, eventEmitter: EventEmitter) {
+    constructor(mam: MasterAssetModel, eventEmitter: TypedEventEmitter<OI4ResourceDefinition>) {
         this.eventEmitter = eventEmitter;
 
         this._mam = mam;
@@ -40,10 +35,6 @@ export class OI4Resource implements IOI4Resource {
         this._profile = new Profile(profileApplication.mandatory);
 
         this.health = new Health(EDeviceHealth.NORMAL_0, 100);
-
-        this._license = [];
-        this._licenseText = new Map<string, LicenseText>();
-        this._rtLicense = new RTLicense();
 
         this._publicationList = []
 
@@ -97,34 +88,6 @@ export class OI4Resource implements IOI4Resource {
     // --- Profile ---
     get profile(): Profile {
         return this._profile;
-    }
-
-    // --- License ---
-
-    get license(): License[] {
-        return this._license;
-    }
-
-    private set license(license) {
-        this._license = license
-    }
-
-    // --- LicenseText ---
-    get licenseText(): Map<string, LicenseText> {
-        return this._licenseText;
-    }
-
-    private set licenseText(licenseText) {
-        this._licenseText = licenseText;
-    }
-
-    // --- rtLicense ---
-    get rtLicense(): RTLicense {
-        return this._rtLicense;
-    }
-
-    private set rtLicense(rtLicense) {
-        this._rtLicense = rtLicense;
     }
 
     // --- publicationList ---

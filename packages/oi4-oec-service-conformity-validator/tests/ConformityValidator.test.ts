@@ -2,23 +2,25 @@ import mqtt = require('async-mqtt');
 import {ConformityValidator, EValidity} from '../src';
 import {GetRequest, IMessageBusLookup, PubResponse} from '../src/model/IMessageBusLookup';
 import {logger} from '@oi4/oi4-oec-service-logger';
-import {EAssetType, ESyslogEventFilter, Methods, Resources, Oi4Identifier, ServiceTypes} from '@oi4/oi4-oec-service-model';
+import {
+    EAssetType,
+    ESyslogEventFilter,
+    Methods,
+    Resources,
+    Oi4Identifier,
+    ServiceTypes,
+    oi4Namespace
+} from '@oi4/oi4-oec-service-model';
 
 import mam_valid from './__fixtures__/mam_valid.json';
 import health_valid from './__fixtures__/health_valid.json';
-import license_valid from './__fixtures__/license_valid.json';
-import licenseText_valid from './__fixtures__/licenseText_valid.json';
-import licenseText_apache_valid from './__fixtures__/licenseText_apache_valid.json';
 import publicationList_valid from './__fixtures__/publicationList_valid.json';
 import subscriptionList_valid from './__fixtures__/subscriptionList_valid.json';
 import data_valid from './__fixtures__/data_valid.json';
 import metadata_valid from './__fixtures__/metadata_valid.json';
 import referenceDesignation_valid from './__fixtures__/referenceDesignation_valid.json';
-import license_with_pagination_valid from './__fixtures__/license_with_pagination_valid.json';
 import config_valid from './__fixtures__/config_valid.json';
 import event_valid from './__fixtures__/event_valid.json';
-import interfaces_valid from './__fixtures__/interfaces_valid.json';
-import rtLicense_valid from './__fixtures__/rtLicense_valid.json';
 
 import profile_app_valid from './__fixtures__/profile_app_valid.json';
 import profile_app_data_valid from './__fixtures__/profile_app_data_valid.json';
@@ -42,13 +44,13 @@ jest.mock('@oi4/oi4-oec-service-logger', () => ({
 
 interface ITestData {
     resource: Resources;
-    source?: string;
-    filter?: string;
+    dataSetWriterName?: string;
+    writerGroupName?: string;
     message: any;
 }
 
 const addFilter = (data: ITestData): string => {
-    return data.filter ? `/${data.filter}` : '';
+    return data.writerGroupName ? `/${data.writerGroupName}` : '';
 };
 
 const getMqttClient = (): mqtt.AsyncClient => {
@@ -60,7 +62,7 @@ const getMqttClient = (): mqtt.AsyncClient => {
 
 const defaultAppId = Oi4Identifier.fromString('openindustry4.com/nd/nd/nd');
 const defaultSource = Oi4Identifier.fromString('vendor.com/a/b/c');
-const defaultTopic = `Oi4/Registry/${defaultAppId}`;
+const defaultTopic = `${oi4Namespace}/Registry/${defaultAppId}`;
 
 function equal(a: string, b: string): boolean {
     if ((a == undefined || a.length == 0) && (b == undefined || b.length == 0)) {
@@ -71,44 +73,38 @@ function equal(a: string, b: string): boolean {
 }
 
 function getSource(data: ITestData): Oi4Identifier | undefined {
-    return data.source == undefined ? undefined : Oi4Identifier.fromString(data.source);
+    return data.dataSetWriterName == undefined ? undefined : Oi4Identifier.fromString(data.dataSetWriterName);
 }
 
 const validDeviceTestData: ITestData[] = [
     {resource: Resources.MAM, message: mam_valid},
     {resource: Resources.HEALTH, message: health_valid},
     {resource: Resources.PROFILE, message: profile_app_valid},
-    {resource: Resources.LICENSE, message: license_valid},
-    {resource: Resources.LICENSE, message: license_with_pagination_valid},
-    {resource: Resources.LICENSE_TEXT, message: licenseText_valid},
-    {resource: Resources.LICENSE_TEXT, message: licenseText_apache_valid},
     {resource: Resources.PUBLICATION_LIST, message: publicationList_valid},
     {resource: Resources.SUBSCRIPTION_LIST, message: subscriptionList_valid},
     {resource: Resources.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
     {resource: Resources.DATA, message: data_valid},
     {resource: Resources.CONFIG, message: config_valid},
-    {resource: Resources.EVENT, message: event_valid, source: defaultSource.toString(), filter: 'Status/Good'},
-    {resource: Resources.INTERFACES, message: interfaces_valid},
-    {resource: Resources.RT_LICENSE, message: rtLicense_valid}];
+    {resource: Resources.EVENT, message: event_valid, dataSetWriterName: defaultSource.toString(), writerGroupName: 'Status/Good'}];
 
 const allValidDeviceTestData: ITestData[] = validDeviceTestData.concat([
     {resource: Resources.METADATA, message: metadata_valid}]);
 
 
-function getObjectUnderTest(response: ITestData[] = [], fixCorrelationId = true): ConformityValidator {
+function getObjectUnderTest(response: ITestData[] = [], fixReplyTo = true): ConformityValidator {
     const mqttClient = getMqttClient();
 
     publish.mockImplementation(async (request: GetRequest) => {
 
         const responseEntry = response.find((entry) =>
             entry.resource == request.Resource &&
-            equal(entry.source, request.Source?.toString()) &&
-            equal(entry.filter, request.Filter));
+            equal(entry.dataSetWriterName, request.Source?.toString()) &&
+            equal(entry.writerGroupName, request.Filter));
         const message = responseEntry.message;
 
-        if (fixCorrelationId) {
+        if (fixReplyTo) {
             const decodedMessage = JSON.parse(request.JsonMessage);
-            message.CorrelationId = decodedMessage.MessageId;
+            message.ReplyTo = decodedMessage.MessageId;
         }
 
         //const req = request.Resource === Resources.EVENT ? new GetRequest(request.TopicPreamble, request.Resource, request.Message, responseEntry.source, 'Status/Good') : request;
@@ -139,56 +135,37 @@ describe('Unit test for ConformityValidator ', () => {
             {resource: Resources.MAM, message: mam_valid},
             {resource: Resources.HEALTH, message: health_valid},
             {resource: Resources.PROFILE, message: profile_full_valid},
-            {resource: Resources.LICENSE, message: license_valid},
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'MIT',
-                message: licenseText_valid
-            },
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'Apache%202.0',
-                message: licenseText_valid
-            },
             {resource: Resources.PUBLICATION_LIST, message: publicationList_valid},
             {resource: Resources.CONFIG, message: config_valid},
             {resource: Resources.REFERENCE_DESIGNATION, message: referenceDesignation_valid},
             {resource: Resources.EVENT, message: event_valid},
-            {resource: Resources.RT_LICENSE, message: rtLicense_valid},
             {resource: Resources.DATA, message: data_valid},
             {
                 resource: Resources.METADATA,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'oee',
+                dataSetWriterName: 'openindustry4.com/nd/nd/nd',
+                writerGroupName: 'oee',
                 message: metadata_valid
             },
-            {resource: Resources.INTERFACES, message: interfaces_valid},
             {resource: Resources.SUBSCRIPTION_LIST, message: subscriptionList_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(applicationMessages);
-        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic, undefined, applicationMessages.map(resource => resource.resource));
+        let result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic, undefined, applicationMessages.map(resource => resource.resource));
+        result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic, undefined, applicationMessages.map(resource => resource.resource));
 
         expect(result.validity).toBe(EValidity.ok);
         expect(result.resources['MAM'].validity).toBe(EValidity.ok);
         expect(result.resources['Health'].validity).toBe(EValidity.ok);
         expect(result.resources['Profile'].validity).toBe(EValidity.ok);
-        expect(result.resources['License'].validity).toBe(EValidity.ok);
-        expect(result.resources['LicenseText'].validity).toBe(EValidity.ok);
         expect(result.resources['PublicationList'].validity).toBe(EValidity.ok);
         expect(result.resources['Config'].validity).toBe(EValidity.ok);
         expect(result.resources['ReferenceDesignation'].validity).toBe(EValidity.ok);
         expect(result.resources['Event'].validity).toBe(EValidity.default);
         expect(result.resources['Event'].validityErrors).toContain('Resource result ignored, ok');
-        expect(result.resources['RtLicense'].validity).toBe(EValidity.ok);
         expect(result.resources['Data'].validity).toBe(EValidity.ok);
         expect(result.resources['Metadata'].validity).toBe(EValidity.ok);
-        expect(result.resources['Interfaces'].validity).toBe(EValidity.default);
-        expect(result.resources['Interfaces'].validityErrors).toContain('Resource result ignored, ok');
         expect(result.resources['SubscriptionList'].validity).toBe(EValidity.ok);
-        expect(result.checkedResourceList.length).toEqual(14)
+        expect(result.checkedResourceList.length).toEqual(10)
     });
 
 
@@ -198,19 +175,6 @@ describe('Unit test for ConformityValidator ', () => {
             {resource: Resources.MAM, message: mam_valid},
             {resource: Resources.HEALTH, message: health_valid},
             {resource: Resources.PROFILE, message: profile_app_valid},
-            {resource: Resources.LICENSE, message: license_valid},
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'MIT',
-                message: licenseText_valid
-            },
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'Apache%202.0',
-                message: licenseText_valid
-            },
             {resource: Resources.PUBLICATION_LIST, message: publicationList_valid}
         ]
 
@@ -221,74 +185,17 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.resources['MAM'].validity).toBe(EValidity.ok);
         expect(result.resources['Health'].validity).toBe(EValidity.ok);
         expect(result.resources['Profile'].validity).toBe(EValidity.ok);
-        expect(result.resources['License'].validity).toBe(EValidity.ok);
-        expect(result.resources['LicenseText'].validity).toBe(EValidity.ok);
         expect(result.resources['PublicationList'].validity).toBe(EValidity.ok);
-        expect(result.checkedResourceList.sort()).toEqual([Resources.HEALTH, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.MAM, Resources.PROFILE, Resources.PUBLICATION_LIST])
-    });
-
-    it('should return full application conformity for license with pagination', async () => {
-
-        const applicationMessages: ITestData[] = [
-            {resource: Resources.MAM, message: mam_valid},
-            {resource: Resources.HEALTH, message: health_valid},
-            {resource: Resources.PROFILE, message: profile_app_valid},
-            {resource: Resources.LICENSE, message: license_with_pagination_valid},
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'MIT',
-                message: licenseText_valid
-            },
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'Apache%202.0',
-                message: licenseText_valid
-            },
-            {resource: Resources.PUBLICATION_LIST, message: publicationList_valid}
-        ]
-
-        const objectUnderTest = getObjectUnderTest(applicationMessages);
-        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
-
-        expect(result.validity).toBe(EValidity.ok);
-        expect(result.resources['License'].validity).toBe(EValidity.ok);
-        expect(result.resources['LicenseText'].validity).toBe(EValidity.ok);
-    });
-
-
-    it('should return partial application conformity if license text is missing', async () => {
-
-        // license resource references an "Apache" license but this license is missing in the "LicenseText" resource
-        const applicationMessages: ITestData[] = [
-            {resource: Resources.MAM, message: mam_valid},
-            {resource: Resources.HEALTH, message: health_valid},
-            {resource: Resources.PROFILE, message: profile_app_valid},
-            {resource: Resources.LICENSE, message: license_valid},
-            {
-                resource: Resources.LICENSE_TEXT,
-                source: 'openindustry4.com/nd/nd/nd',
-                filter: 'MIT',
-                message: licenseText_valid
-            },
-            {resource: Resources.PUBLICATION_LIST, message: publicationList_valid}
-        ]
-
-        const objectUnderTest = getObjectUnderTest(applicationMessages);
-        const result = await objectUnderTest.checkConformity(EAssetType.application, defaultTopic);
-
-        expect(result.validity).toBe(EValidity.partial);
-        expect(result.resources['LicenseText'].validity).toBe(EValidity.nok);
+        expect(result.checkedResourceList.sort()).toEqual([Resources.HEALTH, Resources.MAM, Resources.PROFILE, Resources.PUBLICATION_LIST])
     });
 
     it('should return full device conformity', async () => {
         const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: sourceString, message: mam_valid},
-            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
-            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
+            {resource: Resources.MAM, dataSetWriterName: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, dataSetWriterName: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, dataSetWriterName: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, dataSetWriterName: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -301,10 +208,10 @@ describe('Unit test for ConformityValidator ', () => {
     it('should detect unknown resource in profile', async () => {
         const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: sourceString, message: mam_valid},
-            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
-            {resource: Resources.PROFILE, source: sourceString, message: profile_device_unknown_resource},
-            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
+            {resource: Resources.MAM, dataSetWriterName: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, dataSetWriterName: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, dataSetWriterName: sourceString, message: profile_device_unknown_resource},
+            {resource: Resources.REFERENCE_DESIGNATION, dataSetWriterName: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -318,10 +225,10 @@ describe('Unit test for ConformityValidator ', () => {
     it('should return partial device conformity if health is wrong', async () => {
         const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: sourceString, message: mam_valid},
-            {resource: Resources.HEALTH, source: sourceString, message: mam_valid}, // return mam for health
-            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid}
+            {resource: Resources.MAM, dataSetWriterName: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, dataSetWriterName: sourceString, message: mam_valid}, // return mam for health
+            {resource: Resources.PROFILE, dataSetWriterName: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, dataSetWriterName: sourceString, message: referenceDesignation_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -338,11 +245,11 @@ describe('Unit test for ConformityValidator ', () => {
     it('should detect missing meta data', async () => {
         const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: sourceString, message: mam_valid},
-            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
-            {resource: Resources.PROFILE, source: sourceString, message: profile_device_data_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid},
-            {resource: Resources.DATA, source: sourceString, message: data_valid}
+            {resource: Resources.MAM, dataSetWriterName: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, dataSetWriterName: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, dataSetWriterName: sourceString, message: profile_device_data_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, dataSetWriterName: sourceString, message: referenceDesignation_valid},
+            {resource: Resources.DATA, dataSetWriterName: sourceString, message: data_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -355,7 +262,7 @@ describe('Unit test for ConformityValidator ', () => {
     it('should validate meta data conformity', async () => {
 
         const messages: ITestData[] = [
-            {resource: Resources.METADATA, source: defaultSource.toString(), message: metadata_valid},
+            {resource: Resources.METADATA, dataSetWriterName: defaultSource.toString(), message: metadata_valid},
         ]
 
         const objectUnderTest = getObjectUnderTest(messages);
@@ -367,11 +274,11 @@ describe('Unit test for ConformityValidator ', () => {
     it('should evaluate additional resources not included in the profile', async () => {
         const sourceString = defaultSource.toString();
         const deviceMessages: ITestData[] = [
-            {resource: Resources.MAM, source: sourceString, message: mam_valid},
-            {resource: Resources.HEALTH, source: sourceString, message: health_valid},
-            {resource: Resources.PROFILE, source: sourceString, message: profile_device_valid},
-            {resource: Resources.REFERENCE_DESIGNATION, source: sourceString, message: referenceDesignation_valid},
-            {resource: Resources.CONFIG, source: sourceString, message: config_valid}
+            {resource: Resources.MAM, dataSetWriterName: sourceString, message: mam_valid},
+            {resource: Resources.HEALTH, dataSetWriterName: sourceString, message: health_valid},
+            {resource: Resources.PROFILE, dataSetWriterName: sourceString, message: profile_device_valid},
+            {resource: Resources.REFERENCE_DESIGNATION, dataSetWriterName: sourceString, message: referenceDesignation_valid},
+            {resource: Resources.CONFIG, dataSetWriterName: sourceString, message: config_valid}
         ]
 
         const objectUnderTest = getObjectUnderTest(deviceMessages);
@@ -388,10 +295,10 @@ describe('Unit test for ConformityValidator ', () => {
         async (data: ITestData) => {
 
             const objectUnderTest = getObjectUnderTest([data]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.writerGroupName);
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
+            const getTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.dataSetWriterName}${addFilter(data)}`;
+            const pubTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.dataSetWriterName}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.ok);
             expect(logger.log).toHaveBeenCalledTimes(2);
@@ -401,19 +308,19 @@ describe('Unit test for ConformityValidator ', () => {
     )
 
     it.each(allValidDeviceTestData)(
-        '($#) should return partial conformity for wrong correlationId -> $resource',
+        '($#) should return partial conformity for wrong replyTo -> $resource',
         async (data: ITestData) => {
             const objectUnderTest = getObjectUnderTest([data], false);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.writerGroupName);
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter(data)}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter(data)}`;
+            const getTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.dataSetWriterName}${addFilter(data)}`;
+            const pubTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.dataSetWriterName}${addFilter(data)}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(logger.log).toHaveBeenCalledTimes(3);
             expect(logger.log).toHaveBeenCalledWith(`Trying to validate resource ${data.resource} on ${getTopic} (Low-Level).`, ESyslogEventFilter.debug);
             expect(logger.log).toHaveBeenCalledWith(`Received conformity message on ${data.resource} from ${pubTopic}.`, ESyslogEventFilter.debug);
-            expect(logger.log).toHaveBeenCalledWith(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+            expect(logger.log).toHaveBeenCalledWith(`ReplyTo did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
         }
     )
 
@@ -430,17 +337,17 @@ describe('Unit test for ConformityValidator ', () => {
             const objectUnderTest = getObjectUnderTest([{
                 resource: data.resource,
                 message: message,
-                source: data.source,
-                filter: data.filter
+                dataSetWriterName: data.dataSetWriterName,
+                writerGroupName: data.writerGroupName
             }]);
-            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.filter);
+            const result = await objectUnderTest.checkResourceConformity(defaultTopic, data.resource, getSource(data), data.writerGroupName);
 
             const addFilter = (): string => {
-                return data.filter ? `/${data.filter}` : '';
+                return data.writerGroupName ? `/${data.writerGroupName}` : '';
             };
 
-            const getTopic: string = data.source == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.source}${addFilter()}`;
-            const pubTopic: string = data.source == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.source}${addFilter()}`;
+            const getTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Get/${data.resource}` : `${defaultTopic}/Get/${data.resource}/${data.dataSetWriterName}${addFilter()}`;
+            const pubTopic: string = data.dataSetWriterName == undefined ? `${defaultTopic}/Pub/${data.resource}` : `${defaultTopic}/Pub/${data.resource}/${data.dataSetWriterName}${addFilter()}`;
 
             expect(result.validity).toBe(EValidity.partial);
             expect(logger.log).toHaveBeenCalledTimes(3);
@@ -515,7 +422,7 @@ describe('Unit test for ConformityValidator ', () => {
 
     it('should return mandatory application resources', () => {
         const resources = ConformityValidator.getMandatoryResources(EAssetType.application);
-        expect([Resources.MAM, Resources.HEALTH, Resources.LICENSE, Resources.LICENSE_TEXT, Resources.PROFILE, Resources.PUBLICATION_LIST].sort()).toEqual(resources.sort());
+        expect([Resources.MAM, Resources.HEALTH, Resources.PROFILE, Resources.PUBLICATION_LIST].sort()).toEqual(resources.sort());
     })
 
     it('should return mandatory device resources', () => {

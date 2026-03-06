@@ -32,7 +32,7 @@ describe('Unit test for MAMStorage reading', () => {
         try {
             await builder.checkOPCUAJSONValidity(mam);
         } catch (error) {
-            expect(error).toBe('Validation failed with: can\'t resolve reference DataSetMessage.schema.json from id NetworkMessage.schema.json#');
+            expect(error).toBe('Validation failed with: can\'t resolve reference DataSetMessage.schema.json from id NetworkMessage.schema.json');
         }
     });
 });

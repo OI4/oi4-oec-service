@@ -80,6 +80,9 @@ export class TopicParser {
     }
 
     private static extractResourceInfo(wrapper: TopicWrapper): void {
+        if (wrapper.topicArray.length > 8 && wrapper.topicArray.length < 12) {
+            throw new Error(`Malformed Oi4Id : ${wrapper.raw}`);
+        }
         if (wrapper.topicArray.length >= 12) {
 
             TopicParser.extractSource(wrapper);
@@ -103,6 +106,8 @@ export class TopicParser {
     }
 
     private static extractSource(wrapper: TopicWrapper): void {
+        // console.log(`Checking malformed Oi4Id: ${wrapper.raw}`);
+        // console.log(`Parts: ${JSON.stringify(wrapper.topicArray.slice(8, 12))}`);
         if (TopicParser.isAtLeastOneStringEmpty([wrapper.topicArray[8], wrapper.topicArray[9], wrapper.topicArray[10], wrapper.topicArray[11]])) {
             throw new Error(`Malformed Oi4Id : ${wrapper.raw}`);
         }
@@ -114,8 +119,7 @@ export class TopicParser {
     }
 
     private static extractListInfo(wrapper: TopicWrapper): void {
-        wrapper.topicInfo.source = Oi4Identifier.fromDNPString(TopicParser.extractItem(wrapper, 12, 'Invalid source: '));
-        wrapper.topicInfo.filter = wrapper.topicInfo.source.toString();
+        wrapper.topicInfo.filter = TopicParser.extractItem(wrapper, 12, 'Invalid source: ');
         if (wrapper.topicArray.length == 14) {
             wrapper.topicInfo.tag = TopicParser.extractItem(wrapper, 13, 'Invalid tag: ');
             wrapper.topicInfo.filter += `/${wrapper.topicInfo.tag}`;

@@ -9,7 +9,8 @@ describe('Unit test for TopicParser', () => {
 
     const defaultTopicWrapper: TopicWrapper = {
         topicArray: ['', ''],
-        topicInfo: defaultTopicInfo
+        topicInfo: defaultTopicInfo,
+        raw: ''
     };
 
     it('Wrong topic structures are recognized', async () => {

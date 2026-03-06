@@ -14,6 +14,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@hyperjump/json-schema-core": "0.28.5",
     "@types/draft-js": "^0.11.17",
     "@types/jest": "^29.5.8",
     "@types/lodash": "^4.14.178",
@@ -52,5 +53,10 @@
     "node": ">=22.0.0",
     "yarn": ">=1.22.0"
   },
-  "packageManager": "yarn@4.12.0"
+  "packageManager": "yarn@4.12.0",
+  "dependenciesMeta": {
+    "@hyperjump/json-schema-core": {
+      "built": false
+    }
+  }
 }

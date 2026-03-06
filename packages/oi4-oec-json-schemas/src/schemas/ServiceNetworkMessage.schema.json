@@ -11,9 +11,9 @@
     "Message"
   ],
   "properties": {
-    "CorrelationId": {
+    "ReplyTo": {
       "type": "string",
-      "description": "Correlation ID used for logging and as debug information"
+      "description": "ReplyTo used for logging and as debug information"
     },
     "DataSetClassId": {
       "type": "string",

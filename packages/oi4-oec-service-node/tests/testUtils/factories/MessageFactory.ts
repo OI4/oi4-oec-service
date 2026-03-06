@@ -5,9 +5,10 @@ import {
     EOPCUAMessageType,
     IOPCUANetworkMessage,
     Oi4Identifier,
-    ServiceTypes
+    ServiceTypes,
+    oi4Namespace
 } from '@oi4/oi4-oec-service-model';
-import {oi4Namespace, TopicInfo, TopicWrapper} from '../../../src';
+import {TopicInfo, TopicWrapper} from '../../../src';
 
 export type MessageItems = {
     serviceType: ServiceTypes;
@@ -19,11 +20,14 @@ export type MessageItems = {
     appId: Oi4Identifier;
     tag: string;
     filter: string;
-    licenseId: string;
     source: string;
     publisherId: string;
+    resourceType: Resources;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     getTopicPrefix: Function;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     getDefaultTopicInfo: Function;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     getDefaultTopicWrapper: Function;
 }
 
@@ -37,12 +41,12 @@ export class MessageFactory {
         const method: Methods = Methods.GET;
         const resource: Resources = Resources.MAM;
         const topic = `${oi4Namespace}/${serviceType}/${appId}/${method}/${resource}`;
-        const source ='2/2/2/fakeSource';
-        const licenseId = '1234';
+        const source ='2/2/2/2';
         const filter = 'oi4_pv';
         const tag = 'tag';
         const category = 'fakeCategory';
         const publisherId = `${serviceType}/${appId}`;
+        const resourceType = Resources.DATA;
 
         const getDefaultTopicInfo = (): TopicInfo => new TopicInfo(serviceType, appId, method, resource,  Oi4Identifier.fromString(source), filter);
 
@@ -70,9 +74,9 @@ export class MessageFactory {
             method,
             tag,
             filter,
-            licenseId,
             source,
             publisherId,
+            resourceType,
             getTopicPrefix,
             getDefaultTopicInfo,
             getDefaultTopicWrapper,

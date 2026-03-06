@@ -11,10 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Click to see more.</summary>
 
 ### Added
-- 
+- Introduced `TypedEventEmitter` to provide type-safe event emitting and listening, replacing standard `EventEmitter`.
+- Added unit tests for `TypedEventEmitter`.
 
 ### Changed
-- 
+- Refactored `EventEmitter` usage to `TypedEventEmitter` in `OI4ApplicationResources`, `OI4Resource`, `OI4RegistryManager`, `MqttMessageProcessor`, and `MessageBusLookup`.
+- Updated `MockedOPCUABuilderFactory` tests to match `IOPCUADataSetMetaData` interface changes (renamed `Source` to `DataSetWriterName`, `Filter` to `WriterGroupName`, `CorrelationId` to `ReplyTo`).
+- Updated `ClientPayloadHelper` and `MessageValidator` tests to match `IOPCUADataSetMessage` interface changes for OPC UA compliance.
 
 ### Deprecated
 -

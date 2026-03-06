@@ -3,11 +3,11 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "217434d6-6e1e-4230-b907-f52bc9ffe152",
-  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 161,
-      "Filter": "MAM",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "MAM",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "Payload": {
         "Resource": "MAM",
         "Source": "openindustry4.com/nd/nd/nd",
@@ -17,8 +17,8 @@
       }
     }, {
       "DataSetWriterId": 161,
-      "Filter": "Health",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "Health",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "Payload": {
         "Resource": "Health",
         "Source": "openindustry4.com/nd/nd/nd",
@@ -29,8 +29,8 @@
       }
     }, {
       "DataSetWriterId": 161,
-      "Filter": "Profile",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "Profile",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "Payload": {
         "Resource": "Profile",
         "Source": "openindustry4.com/nd/nd/nd",
@@ -41,8 +41,8 @@
       }
     }, {
       "DataSetWriterId": 161,
-      "Filter": "Event",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "Event",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "Payload": {
         "Resource": "Event",
         "Source": "openindustry4.com/nd/nd/nd",
@@ -54,8 +54,8 @@
       }
     }, {
       "DataSetWriterId": 161,
-      "Filter": "Data",
-      "Source": "openindustry4.com/nd/nd/nd",
+      "WriterGroupName": "Data",
+      "DataSetWriterName": "openindustry4.com/nd/nd/nd",
       "Payload": {
         "Resource": "Data",
         "Source": "openindustry4.com/nd/nd/nd",
