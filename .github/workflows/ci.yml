@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important: Lerna needs git history for canary versioning
 
       - name: setup Node
         uses: actions/setup-node@v4
@@ -49,10 +51,15 @@ jobs:
       - name: build
         run: yarn build
 
+      - name: Publish Snapshot
+        if: github.ref == 'refs/heads/development'
+        run: yarn publish:snapshot -- --provenance
+
       # Publish to npm using Trusted Publishing (OIDC)
       # Switch to npm client temporarily because yarn v1 does not support provenance
       # and lerna requires a clean tree, so we commit the change locally.
       - name: publish
+        if: github.ref == 'refs/heads/main'
         run: |
           sed -i 's/"npmClient": "yarn"/"npmClient": "npm"/' lerna.json
           git config --global user.email "actions@github.com"
@@ -61,13 +68,16 @@ jobs:
           lerna publish from-package --no-git-tag-version --loglevel silly --yes --no-private -- --provenance
 
       - name: get package version
+        if: github.ref == 'refs/heads/main'
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
 
       # Create GitHub Repo tag
       - name: package-version-to-git-tag
+        if: github.ref == 'refs/heads/main'
         uses: pkgdeps/git-tag-action@v3.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
           github_repo: ${{ github.repository }}
           version: ${{ env.PACKAGE_VERSION }}
           git_commit_sha: ${{ github.sha }}
