@@ -1,10 +1,7 @@
 import {
-    DataSetClassIds,
-    DataSetWriterIdManager,
-    EDeviceHealth,
     ESyslogEventFilter,
-    Methods,
-    Resources
+    StatusEvent,
+    EOPCUAStatusCode
 } from '@oi4/oi4-oec-service-model';
 import {logger} from '@oi4/oi4-oec-service-logger';
 import {IOI4Application} from '../application/OI4Application';
@@ -30,17 +27,7 @@ export class ClientCallbacksHelper implements IClientCallbacksHelper {
     };
 
     async onCloseCallback(oi4application: IOI4Application): Promise<void> {
-        const oi4Id = oi4application.oi4Id;
-        const topicPreamble = oi4application.topicPreamble;
-
-        await oi4application.messageBus.publish(
-            `${topicPreamble}/${Methods.PUB}/${Resources.MAM}/${oi4Id}`,
-            oi4application.builder.buildOPCUANetworkMessage([{
-                DataSetWriterName: oi4Id,
-                Payload: oi4application.clientPayloadHelper.createHealthStatePayload(EDeviceHealth.NORMAL_0, 0),
-                DataSetWriterId: DataSetWriterIdManager.getDataSetWriterId(Resources.HEALTH, oi4Id),
-            }], new Date(), DataSetClassIds.MAM),
-        );
+        await oi4application.sendEventStatus(new StatusEvent(EOPCUAStatusCode.Good), oi4application.oi4Id);
         logger.log('Connection to mqtt broker closed');
     };
 

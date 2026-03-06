@@ -8,11 +8,11 @@ import {
     SubscriptionListConfig, Oi4Identifier, OPCUABuilder, ServiceTypes
 } from '@oi4/oi4-oec-service-model';
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
-import {ClientPayloadHelper} from '../../../src';
+import {ClientPayloadHelper, ValidatedPayload} from '../../../src';
 import {logger} from '@oi4/oi4-oec-service-logger';
-import {IOI4MessageBus} from '../../../src/messaging/OI4MessageBus';
+import {IOI4MessageBus} from '../../../src';
 import {MockOI4MessageBus} from './MockOI4MessageBus';
-import {IMqttMessageProcessor} from '../../../src/messaging/MqttMessageProcessor';
+import {IMqttMessageProcessor} from '../../../src';
 
 export class MockOi4Application implements IOI4Application {
     applicationResources: IOI4ApplicationResources;
@@ -30,8 +30,18 @@ export class MockOi4Application implements IOI4Application {
         this.messageBus = new MockOI4MessageBus();
     }
 
-    preparePayload(data: any): Buffer {
-        return Buffer.from(JSON.stringify(data));
+    // eslint-disable-next-line @typescript-eslint/naming-convention,@typescript-eslint/no-unused-vars
+    preparePayload(resource: Resources, _source: Oi4Identifier, _filter?: string): Promise<ValidatedPayload> {
+        return Promise.resolve({
+            abortSending: false,
+            payload: [{
+                DataSetWriterId: 0,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                DataSetWriterName: this.oi4Id,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                Payload: resource
+            } as any]
+        });
     }
 
     requestMAM(): Promise<void> {

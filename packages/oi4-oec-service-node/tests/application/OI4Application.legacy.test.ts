@@ -12,7 +12,7 @@
  */
 import mqtt = require('async-mqtt'); /*tslint:disable-line*/
 import fs = require('fs'); /*tslint:disable-line*/
-import {IOI4Application, MqttCredentialsHelper, MqttSettings, OI4Application, oi4Namespace} from '../../src';
+import {IOI4Application, MqttCredentialsHelper, MqttSettings, OI4Application} from '../../src';
 import {
     DataSetClassIds,
     DataSetWriterIdManager,
@@ -38,7 +38,8 @@ import {
     StatusEvent,
     SubscriptionList,
     SubscriptionListConfig,
-    profileApplication
+    profileApplication,
+    oi4Namespace
 } from '@oi4/oi4-oec-service-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
 import {MockOI4MessageBus} from '../testUtils/factories/MockOI4MessageBus';
@@ -66,7 +67,7 @@ const getStandardMqttConfig = (): MqttSettings => {
 }
 
 
-const defaultTopicPrefix = `${oi4Namespace}/Registry`;
+const defaultTopicPrefix = `${oi4Namespace}/Aggregation`;
 const defaultValidFilter = '1';
 const defaultAppId = new Oi4Identifier('1', '1', '1', '1');
 const defaultOI4Id = defaultAppId;
@@ -119,12 +120,14 @@ const getResourceInfo = (): IOI4ApplicationResources => {
                 Config: PublicationListConfig.INTERVAL_2,
                 DataSetWriterId: 1,
                 DataSetWriterName: new Oi4Identifier('1', '1', '1', '1'),
+                Source: new Oi4Identifier('1', '1', '1', '1'),
             } as unknown as PublicationList),
             PublicationList.clone({
                 Resource: Resources.MAM,
                 Config: PublicationListConfig.NONE_0,
                 DataSetWriterId: 2,
                 DataSetWriterName: new Oi4Identifier('2', '2', '2', '2'),
+                Source: new Oi4Identifier('2', '2', '2', '2'),
             } as unknown as PublicationList),
         ],
         profile: new Profile(profileApplication.mandatory),
@@ -414,11 +417,13 @@ describe('OI4MessageBus legacy test', () => {
         const result = await getPayload(Resources.PUBLICATION_LIST, Resources.PUBLICATION_LIST, defaultOI4Id);
         for (let i = 0; i < result.payload.length; i++) {
             // TODO change from oi4 to source...just in case it fails
+            const expectedPayload = {
+                ...getResourceInfo().publicationList[i],
+            };
+            // @ts-ignore
+            expectedPayload.Source = getResourceInfo().publicationList[i].Source.toString();
             expect(JSON.stringify(result.payload[i].Payload))
-                .toBe(JSON.stringify({
-                    ...getResourceInfo().publicationList[i],
-                    DataSetWriterName: getResourceInfo().publicationList[i].Source
-                }));
+                .toBe(JSON.stringify(expectedPayload));
         }
     });
 
@@ -496,6 +501,7 @@ describe('OI4MessageBus legacy test', () => {
 
     it('should replace old config with new config and emit status status via mqtt process', async () => {
         const status: IOPCUANetworkMessage = getIOPCUANetworkMessage();
+        status.Messages[0].Payload = defaultOi4ApplicationResources.config['group-a'];
 
         const mock = jest.spyOn(OPCUABuilder.prototype, 'checkTopicPath').mockReturnValue(true);
         defaultOi4Application.sendEventStatus = jest.fn();

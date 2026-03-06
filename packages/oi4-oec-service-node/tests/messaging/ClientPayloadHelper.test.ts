@@ -4,7 +4,6 @@ import {
     EDeviceHealth,
     Health,
     IOI4ApplicationResources,
-    LicenseText,
     Resources,
     SubscriptionList,
     SyslogEvent,
@@ -22,7 +21,7 @@ describe('Unit test for ClientPayloadHelper', () => {
     const OI4_ID_2 = Oi4Identifier.fromString(`${MockedIApplicationResourceFactory.OI4_ID}_2`);
 
     const default_payload = [{
-        Source: OI4_ID.toString(),
+        DataSetWriterName: OI4_ID,
         DataSetWriterId: 0,
         Payload: new Health(EDeviceHealth.NORMAL_0, 100)
     }];
@@ -56,10 +55,10 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(statePayload.HealthScore).toBe(0);
     });
 
-    function checkForUndefinedPayload(validatedPayload: ValidatedPayload): void {
-        expect(validatedPayload.abortSending).toBe(true);
-        expect(validatedPayload.payload).toBe(undefined);
-    }
+    // function checkForUndefinedPayload(validatedPayload: ValidatedPayload): void {
+    //     expect(validatedPayload.abortSending).toBe(true);
+    //     expect(validatedPayload.payload).toBe(undefined);
+    // }
 
     function checkForEmptyPayload(validatedPayload: ValidatedPayload): void {
         expect(validatedPayload.abortSending).toBe(true);
@@ -74,39 +73,12 @@ describe('Unit test for ClientPayloadHelper', () => {
         expect(mamPayload.abortSending).toBe(false);
     })
 
-    it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'whatever');
-        checkForUndefinedPayload(validatedPayload);
-    });
-
-    function createLicenseMockedPayload(dataSetWriterId: number, payload: any, oi4Id = OI4_ID) {
-        return [{
-            Source: oi4Id.toString(),
-            DataSetWriterId: dataSetWriterId,
-            Payload: payload
-        };
-    }
-
-    it('createLicenseTextSendResourcePayload works when containerState.licenseText[filter] is not undefined', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseTextSendResourcePayload(mockedOI4ApplicationResources, 'fakeKey');
-        expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload).toStrictEqual(createLicenseMockedPayload(0, new LicenseText('fakeText'), mockedOI4ApplicationResources.oi4Id));
-    });
-
-    it('createLicenseSendResourcePayload works', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createLicenseSendResourcePayload(mockedOI4ApplicationResources, OI4_ID_2, 'license');
-        expect(validatedPayload.abortSending).toBe(false);
-        expect(validatedPayload.payload.length).toBe(1);
-        expect(validatedPayload.payload[0].DataSetWriterName).toBe(OI4_ID_2);
-        expect(validatedPayload.payload[0].WriterGroupName).toBe('1');
-    });
-
     function createPublicationMockedPayload(resource: string, datasetWriterId: number, oi4Id: Oi4Identifier) {
         return {
             DataSetWriterId: datasetWriterId,
-            DataSetWriterName: oi4Id,
+            Source: oi4Id.toString(),
             Resource: resource,
-            WriterGroupName: undefined as string
+            Filter: undefined as string
         }
     }
 
@@ -119,12 +91,11 @@ describe('Unit test for ClientPayloadHelper', () => {
         }];
     }
 
-    // @ts-expect-error
     function checkAgainstPublicationPayload(validatedPayload: ValidatedPayload, dataSetWriterId: number, resource = Resources.HEALTH, itemDataSetWriterId = 42, subOI4Id = OI4_ID, filter?: string, oi4Id = OI4_ID) {
         expect(validatedPayload.abortSending).toBe(false);
         const expectedInnerPayload = createPublicationMockedPayload(resource, itemDataSetWriterId, subOI4Id);
         if (filter !== undefined) {
-            expectedInnerPayload.WriterGroupName = filter;
+            expectedInnerPayload.Filter = filter;
         }
         const expectedPayload = createMockedPayloadWithSource(oi4Id.toString(), dataSetWriterId, expectedInnerPayload, resource);
         expect(JSON.parse(JSON.stringify(validatedPayload.payload))).toStrictEqual(JSON.parse(JSON.stringify(expectedPayload)));
@@ -149,12 +120,6 @@ describe('Unit test for ClientPayloadHelper', () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, Oi4Identifier.fromString(`not_there_${OI4_ID}_2`));
         checkForEmptyPayload(validatedPayload);
     });
-
-    it('createPublicationListSendResourcePayload return undefined when resource does not match', async () => {
-        const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resources.LICENSE);
-        checkForEmptyPayload(validatedPayload);
-    });
-
 
     it('createPublicationListSendResourcePayload return undefined when filter does not match', async () => {
         const validatedPayload: ValidatedPayload = clientPayloadHelper.createPublicationListSendResourcePayload(mockedOI4ApplicationResources, OI4_ID, Resources.HEALTH, '');

@@ -3,7 +3,7 @@
   "MessageType": "ua-data",
   "PublisherId": "Registry/openindustry4.com/nd/nd/nd",
   "DataSetClassId": "217434d6-6e1e-4230-b907-f52bc9ffe152",
-  "CorrelationId": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
+  "ReplyTo": "1577836800000-Registry/openindustry4.com/nd/nd/nd",
   "Messages": [{
       "DataSetWriterId": 161,
       "WriterGroupName": "MAM",

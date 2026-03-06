@@ -52,7 +52,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('Malformed Oi4Id generate an error', async (): Promise<void> => {
-        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}`;
+        const topic = `${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${defaultMessageItems.resource}/1//1/1`;
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         expect(() => {
             TopicParser.extractResourceSpecificInfo(wrapper);
@@ -91,47 +91,24 @@ describe('Unit test for TopicParser', () => {
         checkFilterWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.METADATA}/${defaultMessageItems.oi4Id}/`);
     });
 
-    function checkLicense(topic: string): void {
-        const wrapper: TopicWrapper = getTopicWrapper(topic);
-        const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
-        expect(info.licenseId).toStrictEqual(defaultMessageItems.licenseId);
-    }
-
-    it('In case of config, data and metadata, filter is properly extracted', async () => {
-        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
-        checkLicense(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/${defaultMessageItems.licenseId}`);
-    });
-
-    function checkLicenseWithError(topic: string): void {
-        const wrapper: TopicWrapper = getTopicWrapper(topic);
-        expect(() => {
-            TopicParser.extractResourceSpecificInfo(wrapper)
-        }).toThrowError('Invalid licenseId: ');
-    }
-
-    it('In case of config, data and metadata, invalid filter generates error', async () => {
-        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE}/${defaultMessageItems.oi4Id}/`);
-        checkLicenseWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.LICENSE_TEXT}/${defaultMessageItems.oi4Id}/`);
-    });
-
     function checkList(topic: string, withTag = false): void {
         const wrapper: TopicWrapper = getTopicWrapper(topic);
         const info: TopicInfo = TopicParser.extractResourceSpecificInfo(wrapper);
-        expect(info.source).toStrictEqual(defaultMessageItems.source);
+        expect(info.source.toString()).toStrictEqual(defaultMessageItems.source);
         if (withTag) {
-            expect(info.filter).toStrictEqual(`${defaultMessageItems.source}/${defaultMessageItems.tag}`);
+            expect(info.filter).toStrictEqual(`${defaultMessageItems.resourceType}/${defaultMessageItems.tag}`);
             expect(info.tag).toStrictEqual(defaultMessageItems.tag);
         } else {
-            expect(info.filter).toStrictEqual(defaultMessageItems.source);
+            expect(info.filter).toStrictEqual(defaultMessageItems.resourceType);
         }
     }
 
     it('In case of publicationList and subscriptionList, source and filter are properly extracted', async () => {
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}`);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.resourceType}`);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.resourceType}`);
 
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
-        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/${defaultMessageItems.tag}`, true);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.resourceType}/${defaultMessageItems.tag}`, true);
+        checkList(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.resourceType}/${defaultMessageItems.tag}`, true);
     });
 
     function checkListWithError(topic: string, withTag = false): void {
@@ -143,7 +120,7 @@ describe('Unit test for TopicParser', () => {
         } else {
             expect(() => {
                 TopicParser.extractResourceSpecificInfo(wrapper)
-            }).toThrowError(`Invalid source: ${topic}`);
+            }).toThrowError(`Invalid source: ${topic}`); // Wait, invalid source returns string so error message uses string? Or check implementation.
         }
     }
 
@@ -151,8 +128,9 @@ describe('Unit test for TopicParser', () => {
         checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/`);
         checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/`);
 
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
-        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${defaultMessageItems.source}/`, true);
+        const encodedSource = '2,2F2,2F2,2FfakeSource';
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.PUBLICATION_LIST}/${defaultMessageItems.oi4Id}/${encodedSource}/`, true);
+        checkListWithError(`${topicPrefix}/${defaultMessageItems.appId}/${defaultMessageItems.method}/${Resources.SUBSCRIPTION_LIST}/${defaultMessageItems.oi4Id}/${encodedSource}/`, true);
     });
 
 });

@@ -6,15 +6,15 @@
   "additionalProperties": false,
   "required": [
     "DataSetWriterId",
-    "Source"
+    "DataSetWriterName"
   ],
   "properties": {
     "DataSetWriterId": {
       "$ref": "dataTypes/uint16.schema.json"
     },
-    "Filter": {
+    "WriterGroupName": {
       "type": "string",
-      "description": "In combination with the used Resource in the topic, the Filter, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the Filter in the topic (8.1.7)."
+      "description": "In combination with the used Resource in the topic, the WriterGroupName, together with the Source, contains the readable reference to the DataSetWriterId and is identical to the WriterGroupName in the topic (8.1.7)."
     },
     "MetaDataVersion": {
       "$ref": "ConfigurationVersionDataType.schema.json"
@@ -33,9 +33,9 @@
       "description": "Timestamp in format 2019-06-26T13:16:00.000+01:00"
     },
     "Payload": {},
-    "Source": {
+    "DataSetWriterName": {
       "type": "string",
-      "description": "In combination with the used Resource in the topic, the Source, together with the Filter, contains the readable reference to the DataSetWriterId and is identical to the Source in the topic (8.1.6) if present."
+      "description": "In combination with the used Resource in the topic, the DataSetWriterName, together with the WriterGroupName, contains the readable reference to the DataSetWriterId and is identical to the DataSetWriterName in the topic (8.1.6) if present."
     }
   }
 }

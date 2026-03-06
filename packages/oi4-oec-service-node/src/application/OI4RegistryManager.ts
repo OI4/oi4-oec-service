@@ -22,7 +22,7 @@ export namespace OI4RegistryManager {
             logger.log('Invalid oi4Id: either undefined or empty')
             return;
         }
-        if (!newId.equals(oi4Id)) {
+        if (oi4Id === undefined || !newId.equals(oi4Id)) {
             emitter.emit(oi4RegistryChanged, oi4Id as Oi4Identifier | undefined, newId);
             oi4Id = newId;
             logger.log(`Saved registry OI4 ID: ${oi4Id}`);

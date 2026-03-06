@@ -15,6 +15,7 @@ import {
     QualifiedNameSchemaJson,
     BaseDataTypeSchemaJson,
     healthSchemaJson,
+    healthDetailObjectSchemaJson,
     mamSchemaJson,
     profileSchemaJson,
     eventSchemaJson,
@@ -43,6 +44,7 @@ export const buildOecJsonValidator = (): Ajv => {
 
     // OI4 OEC payload schemas
     jsonValidator.addSchema(healthSchemaJson, 'Health.schema.json');
+    jsonValidator.addSchema(healthDetailObjectSchemaJson, 'HealthDetailObject.schema.json');
     jsonValidator.addSchema(mamSchemaJson, 'MAM.schema.json');
     jsonValidator.addSchema(profileSchemaJson, 'Profile.schema.json');
     jsonValidator.addSchema(eventSchemaJson, 'Event.schema.json');

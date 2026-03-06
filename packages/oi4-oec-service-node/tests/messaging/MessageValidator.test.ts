@@ -33,7 +33,8 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('If payload messages is empty a message is written n in the log', async () => {
-        await MessageValidator.doPreliminaryValidation(defaultMessageItems.topic, defaultParsedMessage, defaultMockedBuilder);
+        const topic = defaultMessageItems.topic.replace('/Get/', '/Pub/');
+        await MessageValidator.doPreliminaryValidation(topic, defaultParsedMessage, defaultMockedBuilder);
         expect(logContainsOnly('Messages Array empty in message - check DataSetMessage format')).toBeTruthy();
     });
 
@@ -80,8 +81,9 @@ describe('Unit test for TopicParser', () => {
     });
 
     it('If topic string is malformed, an error is thrown', async () => {
-        const errMsg = `Invalid topic string structure ${defaultMessageItems.topic}`;
         const wrapper: TopicWrapper = defaultMessageItems.getDefaultTopicWrapper();
+        const errMsg = `Invalid topic string structure ${wrapper.topicInfo.toString()}`;
+
         wrapper.topicArray = ['', ''];
         // TODO applied recommendation to remove await...was this a good idea?
         await checkAgainstError(async () => MessageValidator.doTopicDataValidation(wrapper, defaultParsedMessage), errMsg);
@@ -97,7 +99,7 @@ describe('Unit test for TopicParser', () => {
     });
 
     async function checkAgainstWrongTopicData(newWrapper: TopicWrapper) {
-        const errMsg = `Invalid topic string structure ${newWrapper.raw}`;
+        const errMsg = `Invalid topic string structure ${newWrapper.topicInfo.toString()}`;
         await checkAgainstError(async () => MessageValidator.doTopicDataValidation(newWrapper, defaultParsedMessage), errMsg);
     }
 

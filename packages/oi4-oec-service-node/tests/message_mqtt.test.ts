@@ -3,15 +3,18 @@ import fs = require('fs'); /*tslint:disable-line*/
 import {MqttCredentialsHelper, MqttSettings, OI4Application} from '../src';
 import {
     EDeviceHealth,
+    EOPCUALocale,
     Health,
     IOI4ApplicationResources,
     IOI4Resource,
-    MasterAssetModel, Methods,
+    MasterAssetModel,
+    Methods,
+    Oi4Identifier,
+    oi4Namespace,
     Resources,
-    EOPCUALocale, Oi4Identifier, ServiceTypes
+    ServiceTypes
 } from '@oi4/oi4-oec-service-model';
 import {Logger} from '@oi4/oi4-oec-service-logger';
-import {oi4Namespace} from '@oi4/oi4-oec-service-node';
 
 const getStandardMqttConfig = (): MqttSettings => {
     return {
@@ -54,23 +57,35 @@ const getOi4ApplicationResources = (): IOI4ApplicationResources => {
         } as MasterAssetModel),
         subscriptionList: [],
         sources: new Map<string, IOI4Resource>(),
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        on(event: string, listener: Function) {
+        on() {
             return this;
         }
     } as unknown as IOI4ApplicationResources;
 }
 
 describe('Connection to MQTT with TLS', () => {
-    const onEvent = () => jest.fn(async (event, cb) => {
-        await cb(event);
-    });
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const publish = jest.fn((topic, _) => {
-        return topic;
-    });
+    const publish = jest.fn();
+    const createMockClient = () => {
+        const listeners: Record<string, Function[]> = {};
+        return {
+            connected: true,
+            reconnecting: false,
+            publish: publish,
+            subscribe: jest.fn(),
+            on: jest.fn((event, cb) => {
+                if (!listeners[event]) listeners[event] = [];
+                listeners[event].push(cb);
+            }),
+            // Helper to trigger events from tests
+            emit: async (event: string, ...args: any[]) => {
+                if (listeners[event]) {
+                    for (const cb of listeners[event]) {
+                        await cb(...args);
+                    }
+                }
+            }
+        };
+    };
 
     beforeAll(() => {
         jest.useFakeTimers();
@@ -89,25 +104,13 @@ describe('Connection to MQTT with TLS', () => {
         jest.resetAllMocks();
     });
 
-    it('should send birth message on connect', () => {
+    it('should send birth message on connect', async () => {
+        const mockClient = createMockClient();
+        jest.spyOn(mqtt, 'connect').mockImplementation(() => mockClient as any);
 
-        jest.spyOn(mqtt, 'connect').mockImplementation(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
-            () => {
-                return {
-                    connected: true,
-                    reconnecting: false,
-                    publish: publish,
-                    subscribe: jest.fn(),
-                    on: onEvent(),
-                }
-            }
-        );
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: any) => {
             cb();
+            return {} as any;
         });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -115,31 +118,24 @@ describe('Connection to MQTT with TLS', () => {
             .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
             .build() as OI4Application;
+
+        // Trigger connect event manually
+        await mockClient.emit('connect');
+
         expect(oi4Application.messageBus.getClient().connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
             expect.stringContaining(`${oi4Namespace}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.MAM}/${getOi4ApplicationResources().oi4Id}`),
-            expect.stringContaining(JSON.stringify({Health: EDeviceHealth.NORMAL_0, HealthScore: 0})));
+            expect.stringContaining(JSON.stringify(getOi4ApplicationResources().mam)),
+            undefined);
     });
 
     it('should send close message on close', async () => {
+        const mockClient = createMockClient();
+        jest.spyOn(mqtt, 'connect').mockImplementation(() => mockClient as any);
 
-        jest.spyOn(mqtt, 'connect').mockImplementation(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
-            () => {
-                return {
-                    connected: true,
-                    reconnecting: false,
-                    publish: publish,
-                    subscribe: jest.fn(),
-                    on: onEvent(),
-                }
-            }
-        );
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        jest.spyOn(global, 'setInterval').mockImplementation((cb: Function, ms: number) => {
+        jest.spyOn(global, 'setInterval').mockImplementation((cb: any) => {
             cb();
+            return {} as any;
         });
 
         const mqttOpts: MqttSettings = getStandardMqttConfig();
@@ -147,22 +143,25 @@ describe('Connection to MQTT with TLS', () => {
             .withApplicationResources(getOi4ApplicationResources())
             .withMqttSettings(mqttOpts)
             .build() as OI4Application;
+
+        // Trigger close event manually
+        await mockClient.emit('close');
+
         expect(oi4Application.messageBus.getClient().connected).toBeTruthy();
         expect(publish).toHaveBeenCalledWith(
-            expect.stringContaining(`Oi4/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/Pub/MAM/${getOi4ApplicationResources().oi4Id}`),
+            expect.stringContaining(`${oi4Namespace}/${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}/${Methods.PUB}/${Resources.EVENT}/Status/${encodeURI(`${getOi4ApplicationResources().mam.getServiceType()}/${getOi4ApplicationResources().oi4Id}`)}`),
             expect.stringContaining(JSON.stringify({
-                Health: EDeviceHealth.NORMAL_0,
-                HealthScore: 0
-            } as Health)));
+                Number: 0,
+                Category: 'CAT_STATUS_1'
+            })),
+            undefined);
     });
 
     it('should set will message on create', () => {
 
         jest.spyOn(mqtt, 'connect').mockImplementation(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-            // @ts-ignore
             (res) => {
-                return {...{options: res}, ...{on: jest.fn(), publish: jest.fn()}};
+                return {...{options: res}, ...{on: jest.fn(), publish: jest.fn()}} as any;
             }
         );
 

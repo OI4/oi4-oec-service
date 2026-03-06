@@ -1,6 +1,6 @@
-import {TypedEventEmitter} from '../src/model/TypedEventEmitter';
+import {TypedEventEmitter} from '../src';
 
-interface TestEvents extends Record<string, any[]>{
+interface TestEvents extends Record<string | number | symbol, any[]>{
     'noArgs': [];
     'oneArg': [string];
     'multipleArgs': [number, boolean];
@@ -81,7 +81,7 @@ describe('TypedEventEmitter', () => {
     });
 
     it('prependListener works', () => {
-        const order = [];
+        const order: number[] = [];
         emitter.on('noArgs', () => order.push(2));
         emitter.prependListener('noArgs', () => order.push(1));
         emitter.emit('noArgs');
@@ -89,7 +89,7 @@ describe('TypedEventEmitter', () => {
     });
 
     it('prependOnceListener works', () => {
-         const order = [];
+         const order: number[] = [];
         emitter.on('noArgs', () => order.push(2));
         emitter.prependOnceListener('noArgs', () => order.push(1));
         emitter.emit('noArgs');

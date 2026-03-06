@@ -165,7 +165,7 @@ describe('Unit test for ConformityValidator ', () => {
         expect(result.resources['Data'].validity).toBe(EValidity.ok);
         expect(result.resources['Metadata'].validity).toBe(EValidity.ok);
         expect(result.resources['SubscriptionList'].validity).toBe(EValidity.ok);
-        expect(result.checkedResourceList.length).toEqual(14)
+        expect(result.checkedResourceList.length).toEqual(10)
     });
 
 

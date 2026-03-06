@@ -388,8 +388,8 @@ export class ConformityValidator {
                 eRes = EValidity.ok;
             } else {
                 eRes = EValidity.partial;
-                errorMsgArr.push(`CorrelationId did not pass for ${pubTopic}.`);
-                logger.log(`CorrelationId did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
+                errorMsgArr.push(`ReplyTo did not pass for ${pubTopic}.`);
+                logger.log(`ReplyTo did not pass for ${pubTopic}.`, ESyslogEventFilter.error);
             }
         } else { // Oops, we have schema errors, let's show them to the user so they can fix them...
             logger.log(`Schema validation of message ${pubTopic} was not successful.`, ESyslogEventFilter.error);

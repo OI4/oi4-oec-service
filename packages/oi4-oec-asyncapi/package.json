@@ -15,9 +15,9 @@
     "access": "public"
   },
   "devDependencies": {
-    "@asyncapi/cli": "^5.0.6",
-    "@asyncapi/generator": "^3.1.1",
-    "@asyncapi/html-template": "^1.0.0",
+    "@asyncapi/cli": "^2.16.7",
+    "@asyncapi/generator": "^1.9.18",
+    "@asyncapi/html-template": "^3.5.5",
     "@asyncapi/markdown-template": "^1.0.1",
     "csstype": "^3.0.10",
     "react": "^17.0.2",
