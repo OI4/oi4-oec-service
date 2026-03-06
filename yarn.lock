@@ -9342,9 +9342,9 @@ __metadata:
   linkType: hard
 
 "dompurify@npm:^2.2.7":
-  version: 2.5.8
-  resolution: "dompurify@npm:2.5.8"
-  checksum: 10c0/4101708d190b67be00350369d72619266a2e0ebb7dcab12628cf07711329b1df12239baea613df41b65cba571128e8ea4c29c442f4e2c98670a9bb5563521f03
+  version: 2.5.9
+  resolution: "dompurify@npm:2.5.9"
+  checksum: 10c0/91cf3fd8ad07f969a740813a2101d573547954fd87925d729e8cfc592fa93c51fc3f7b298d336bd90c1a5eae1ad65d1ca06254b938fd84af84ef081c9c4b75ee
   languageName: node
   linkType: hard
 
@@ -17118,9 +17118,9 @@ __metadata:
   linkType: hard
 
 "qs@npm:~6.5.2":
-  version: 6.5.3
-  resolution: "qs@npm:6.5.3"
-  checksum: 10c0/6631d4f2fa9d315e480662646745a4aa3a708817fbffe2cbdacec8ab9be130f92740c66191770fe9b704bc5fa9c1cc1f6596f55ad132fef7bd3ad1582f199eb0
+  version: 6.5.5
+  resolution: "qs@npm:6.5.5"
+  checksum: 10c0/6a5728b92378776d194c19d2bcf8e8847fa96ecfa6eb64f64e7ac73a394043cacaf257be014fa1a86201077a1e0c5ef5760ee0e0d6b6a4fe9f5ae8afcf5b9254
   languageName: node
   linkType: hard
 
