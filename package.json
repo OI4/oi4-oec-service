@@ -5,7 +5,6 @@
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "MIT",
   "private": true,
-  "packageManager": "yarn@4.13.0",
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-oec-service",
   "workspaces": [
@@ -55,6 +54,7 @@
     "node": ">=22.0.0",
     "yarn": ">=1.22.0"
   },
+  "packageManager": "yarn@4.12.0",
   "dependenciesMeta": {
     "@hyperjump/json-schema-core": {
       "built": false
