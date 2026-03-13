@@ -31,7 +31,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Enable Corepack
-        run: corepack enable
+        run: |
+          corepack enable
+          yarn --version
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
