@@ -17,7 +17,7 @@
   "devDependencies": {
     "@asyncapi/cli": "^2.16.7",
     "@asyncapi/generator": "^1.9.18",
-    "@asyncapi/html-template": "^3.5.5",
+    "@asyncapi/html-template": "^0.28.4",
     "@asyncapi/markdown-template": "^1.0.1",
     "csstype": "^3.0.10",
     "react": "^17.0.2",
@@ -27,5 +27,8 @@
     "buildAsyncAPI": "ag asyncapi.yaml @asyncapi/html-template --debug -o dist --force-write && ag asyncapi.yaml @asyncapi/markdown-template --debug -o dist --force-write",
     "validate": "asyncapi validate asyncapi.yaml"
   },
-  "gitHead": "bb653090f55c2dd8d9f641f5f5b28eb98e3a84b5"
+  "gitHead": "bb653090f55c2dd8d9f641f5f5b28eb98e3a84b5",
+  "dependencies": {
+    "@types/draft-js": "0.10.33"
+  }
 }

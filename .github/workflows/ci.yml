@@ -46,10 +46,16 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: install
-        run: yarn install --immutable
+        run: |
+            ulimit -n 65536
+            yarn install --immutable
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
 
       - name: build
         run: yarn build
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
 
       - name: Publish Snapshot
         if: github.ref == 'refs/heads/development'

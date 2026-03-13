@@ -5,6 +5,7 @@
   "author": "Open Industry 4.0 Alliance - Community",
   "license": "MIT",
   "private": true,
+  "packageManager": "yarn@4.13.0",
   "keywords": [],
   "repository": "https://github.com/OI4/oi4-oec-service",
   "workspaces": [
@@ -15,7 +16,7 @@
   },
   "devDependencies": {
     "@hyperjump/json-schema-core": "0.28.5",
-    "@types/draft-js": "^0.11.17",
+    "@types/draft-js": "^0.10.33",
     "@types/jest": "^29.5.8",
     "@types/lodash": "^4.14.178",
     "@types/node": "^24.0.0",
@@ -23,7 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "ci-info": "^4.0.0",
-    "eslint": "^8.53.0",
+    "eslint": "9.26.0",
     "jest": "^29.7.0",
     "lerna": "^9.0.3",
     "lint-staged": "^15.1.0",
@@ -54,7 +55,6 @@
     "node": ">=22.0.0",
     "yarn": ">=1.22.0"
   },
-  "packageManager": "yarn@4.12.0",
   "dependenciesMeta": {
     "@hyperjump/json-schema-core": {
       "built": false
