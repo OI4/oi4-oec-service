@@ -21,7 +21,7 @@
   "dependencies": {
     "@oi4/oi4-oec-service-model": "^2.0.0-preview.1",
     "async-mqtt": "^2.5.0",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "winston": "^3.10.0",
     "winston-syslog": "^2.7.0"
   },
